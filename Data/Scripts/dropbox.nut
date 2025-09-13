@@ -2,13 +2,14 @@ appKey <- GetEnvDecode("IU_DROPBOX_APP_KEY");
 appSecret <- GetEnvDecode("IU_DROPBOX_APP_SECRET");
 accessType <- "app_folder";
 
-redirectUri <- "https://svistunov.dev/blank.html";
-redirectUrlEscaped <- "https:\\/\\/svistunov\\.dev\\/blank\\.html";
+const REDIRECT_URI = "https://svistunov.dev/blank.html";
+const REDIRECT_URI_ESCAPED = "https:\\/\\/svistunov\\.dev\\/blank\\.html";
 
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
 authCode <- "";
+redirectUrl <- "";
     
 function _SignRequest(url, token) {
     nm.addQueryHeader("Authorization", "Bearer " + token);
@@ -17,7 +18,7 @@ function _SignRequest(url, token) {
 }
 
 function OnUrlChangedCallback(data) {
-    local reg = CRegExp("^" + redirectUrlEscaped, "");
+    local reg = CRegExp("^" + REDIRECT_URI_ESCAPED, "");
     if ( reg.match(data.url) ) {
         local br = data.browser;
         local regError = CRegExp("error=([^&]+)", "");
@@ -68,7 +69,7 @@ function _ObtainAccessToken()  {
         nm.setUrl(url);
         nm.addQueryParam("code", authCode);
         nm.addQueryParam("grant_type", "authorization_code");
-        nm.addQueryParam("redirect_uri", redirectUri);
+        nm.addQueryParam("redirect_uri", redirectUrl);
         nm.addQueryParam("client_id", appKey);
         nm.addQueryParam("client_secret", appSecret);
         nm.doPost("");
@@ -97,19 +98,68 @@ function Authenticate() {
         return 1;
     }
     
-    local browser = CWebBrowser();
-    browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
-    browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
+    local server = WebServer();
+    local port = 0;
+
+    local htmlHead =  @"<html>
+                            <head>
+                                <meta http-equiv='content-type' content='text/html; charset=utf-8' />
+                                <title>%s</title>
+                            </head>
+                            <body>";
+
+    htmlHead = format(htmlHead, tr("oauth.title", "Authorization"));   
     
-    local url = "https://www.dropbox.com/oauth2/authorize?" + 
+    local htmlFooter = "</body></html>";
+
+    server.resource("^/$", "GET", function(d) {
+        local responseBody = "";
+        if ("code" in d.queryParams){
+            authCode = d.queryParams.code;
+            responseBody = htmlHead + "<h1>" + tr("oauth.title", "Authorization") + "</h1><p>" + tr("oauth.success", "Success! Now you can close this page.")+"</p>" + htmlFooter;
+        } else {
+            responseBody = htmlHead + "<h1>" + tr("oauth.title", "Authorization") + "</h1><p>" + tr("oauth.success", "Failed to obtain confirmation code") + "</p>" +  htmlFooter;
+        }
+
+        return {
+            responseBody = responseBody,
+            stopDelay = 500
+        };
+    }, null);
+
+    local ports = [49707, 39517, 22690, 27966, 51502];
+
+    foreach (localPort in ports) {
+        port = server.bind(localPort);
+        if (port != 0) {
+            break;
+        }
+    }
+
+    if (port != 0) {
+        redirectUrl = "http://127.0.0.1:" + port;
+        local url = "https://www.dropbox.com/oauth2/authorize?" + 
             "client_id=" + appKey  + 
             "&response_type=code" +
             "&token_access_type=offline" + 
-            "&redirect_uri=" + nm.urlEncode(redirectUri);
+            "&redirect_uri=" + nm.urlEncode(redirectUrl);
+        ShellOpenUrl(url);
+        server.start();
+    } else {
+        local browser = CWebBrowser();
+        browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
+        browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
+        redirectUrl = REDIRECT_URI;
+        local url = "https://www.dropbox.com/oauth2/authorize?" + 
+                "client_id=" + appKey  + 
+                "&response_type=code" +
+                "&token_access_type=offline" + 
+                "&redirect_uri=" + nm.urlEncode(redirectUrl);
 
-    browser.navigateToUrl(url);
-    browser.showModal();
-    
+        browser.navigateToUrl(url);
+        browser.showModal();
+    }
+        
     return _ObtainAccessToken();
 }
 
@@ -359,7 +409,6 @@ function _RegReplace(str, pattern, replace_with) {
 
 function GetServerParamList() {
     return {
-        token = "token"
         UploadPath = "Upload Path"
     };
 }
