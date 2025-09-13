@@ -1,6 +1,6 @@
 clientId <- "4851603";
-redirectUri <- "https://oauth.vk.com/blank.html";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+redirectUri <- "https://oauth.vk.ru/blank.html";
+redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.ru\\/blank\\.html";
 apiVersion <- "5.131";
 expiresIn <- 0;
 testMode <- "1"; // not used
@@ -68,7 +68,7 @@ function OnNavigateError(data) {
 
 function checkResponse(json) {
     try {
-        WriteLog("error", "vk.com error: " + json.error.error_msg);
+        WriteLog("error", "vk.ru error: " + json.error.error_msg);
         return 0;
     } catch ( ex ) {
 
@@ -99,12 +99,12 @@ function Authenticate() {
     ServerParams.setParam("expiresIn", "");
     ServerParams.setParam("tokenTime", "");
     local browser = CWebBrowser();
-    browser.setTitle(tr("vk.browser.title", "Vk.com authorization"))
+    browser.setTitle(tr("vk.browser.title", "vk.ru authorization"))
     browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
     //browser.setOnNavigateErrorCallback(OnNavigateError, null);
     //browser.setOnLoadFinishedCallback(OnLoadFinished, null);
 
-    local url = "https://oauth.vk.com/authorize?" +
+    local url = "https://oauth.vk.ru/authorize?" +
             "client_id=" + clientId  +
             "&scope=photos" +
             "&redirect_uri=" + nm.urlEncode(redirectUri) +
@@ -149,7 +149,7 @@ function DoLogout() {
 function GetFolderList(list) {
     local userId = ServerParams.getParam("userId");
     local token = ServerParams.getParam("token");
-    nm.doGet("https://api.vk.com/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
+    nm.doGet("https://api.vk.ru/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
     if (nm.responseCode() != 200) {
         return 0;
     }
@@ -165,7 +165,7 @@ function GetFolderList(list) {
         album.setTitle(item.title);
         album.setSummary(item.description );
         album.setAccessType(StringPrivacyToAccessType(item.privacy_view.category));
-        album.setViewUrl("https://vk.com/album" + userId + "_" + item.id);
+        album.setViewUrl("https://vk.ru/album" + userId + "_" + item.id);
         list.AddFolderItem(album);
     }
     return 1;
@@ -174,7 +174,7 @@ function GetFolderList(list) {
 function GetFirstAlbumId() {
     local userId = ServerParams.getParam("userId");
     local token = ServerParams.getParam("token");
-    nm.doGet("https://api.vk.com/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
+    nm.doGet("https://api.vk.ru/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
     if ( nm.responseCode() != 200 ) {
         return 0;
     }
@@ -204,7 +204,7 @@ function CreateFolder(parentAlbum, album) {
     nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
     nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
 
-    nm.setUrl("https://api.vk.com/method/photos.createAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
+    nm.setUrl("https://api.vk.ru/method/photos.createAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
     nm.doPost("");
     if ( nm.responseCode() != 200 && nm.responseCode() != 201 ) {
@@ -220,7 +220,7 @@ function CreateFolder(parentAlbum, album) {
     album.setSummary(t.response.description);
     album.setAccessType(StringPrivacyToAccessType(t.response.privacy_view.category));
     album.setTitle(t.response.title);
-    album.setViewUrl("https://vk.com/album" + userId + "_" + t.response.id);
+    album.setViewUrl("https://vk.ru/album" + userId + "_" + t.response.id);
 
     return 1;
 }
@@ -240,7 +240,7 @@ function ModifyFolder(album) {
     nm.addQueryParam("owner_id", userId);
     nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
     nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
-    nm.setUrl("https://api.vk.com/method/photos.editAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
+    nm.setUrl("https://api.vk.ru/method/photos.editAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
     nm.doPost("");
     if ( nm.responseCode() == 200 ) {
@@ -273,7 +273,7 @@ function UploadFile(FileName, options) {
     }
     local thumbWidth = options.getParam("THUMBWIDTH");
     thumbWidth = thumbWidth.tointeger();
-    nm.doGet("https://api.vk.com/method/photos.getUploadServer?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token+"&album_id="+albumId);
+    nm.doGet("https://api.vk.ru/method/photos.getUploadServer?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token+"&album_id="+albumId);
     if ( nm.responseCode() != 200 ) {
         return 0;
     }
@@ -298,7 +298,7 @@ function UploadFile(FileName, options) {
         nm.addQueryParam("photo_sizes", "1");
         nm.addQueryParam("https", "1");
 
-        nm.setUrl("https://api.vk.com/method/photos.save?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
+        nm.setUrl("https://api.vk.ru/method/photos.save?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
         nm.doPost("");
         if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {
@@ -327,7 +327,7 @@ function UploadFile(FileName, options) {
 
             options.setDirectUrl(directUrl);
             options.setThumbUrl(thumbUrl);
-            options.setViewUrl("https://vk.com/photo" + userId  + "_" + item.id);
+            options.setViewUrl("https://vk.ru/photo" + userId  + "_" + item.id);
 
             return 1;
         }

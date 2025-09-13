@@ -2,8 +2,8 @@ appKey <- GetEnvDecode("IU_DROPBOX_APP_KEY");
 appSecret <- GetEnvDecode("IU_DROPBOX_APP_SECRET");
 accessType <- "app_folder";
 
-redirectUri <- "https://oauth.vk.com/blank.html";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+redirectUri <- "https://svistunov.dev/blank.html";
+redirectUrlEscaped <- "https:\\/\\/svistunov\\.dev\\/blank\\.html";
 
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";

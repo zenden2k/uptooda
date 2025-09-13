@@ -1,7 +1,7 @@
 clientId <- "62e3f09c348d5696c9805ef1f200d5663b026283";
 clientSecret <- "8acf539a452aae12f0d8156140f9cc3d05bd7cf6";
-redirectUri <- "https://oauth.vk.com/blank.html";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+redirectUri <- "https://svistunov.dev/blank.html";;
+redirectUrlEscaped <- "https:\\/\\/svistunov\\.dev\\/blank\\.html";
 code <- "";
 login <- "";
 //Docs: https://dev.bitly.com/get_started.html
