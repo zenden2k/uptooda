@@ -5,462 +5,365 @@ accessType <- "app_folder";
 authStep1Url <- "https://www.flickr.com/services/oauth/request_token";
 authStep2Url <- "https://www.flickr.com/services/oauth/access_token";
 
-oauth_token_secret <- "";
-oauth_token <- "";
-
 function BeginLogin() {
-	try {
-		return Sync.beginAuth();
-	}
-	catch ( ex ) {
-	}
-	return true;
+    try {
+        return Sync.beginAuth();
+    }
+    catch ( ex ) {
+    }
+    return true;
 }
 
 function EndLogin() {
-	try {
-		return Sync.endAuth();
-	} catch ( ex ) {
-		
-	}
-	return true;
-}
-
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
-
-function generateNonce() {
-	local res = "";
-	res += format("%d%d%d", random()%2000, random()%2000, random()%2000);
-	return res;
-}
-
-function custom_compare(item1,item2){
-	local a = item1.a+"="+item1.b;
-	local b = item2.a+"="+item2.b;
-	if(a>b) return 1;
-	else if(a<b) return -1;
-	return 0;
-}
-
-function openUrl(url) {
-	try{
-		return ShellOpenUrl(url);
-	}catch(ex){}
-
-	system("start "+ reg_replace(url,"&","^&") );
-}
-
-
-function base64Encode(input) {
-	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    local output = "";
-    local chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    local i = 0;
-	local len = input.len() ;
-
-    while ( i < len ) {
-
-        chr1 = input[i++];
-		if ( i< len) {
-			chr2 = input[i++];
-		} else {
-			chr2 = 0;
-		}
-		if ( i < len ) {
-			chr3 = input[i++];
-		} else {
-			chr3 = 0;
-		}
-
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-        enc4 = chr3 & 63;
-
-        if (chr2 == 0) {
-            enc3 = enc4 = 64;
-        } else if (chr3 == 0) {
-            enc4 = 64;
-        }
-		//print("enc1=" + enc1 + " enc2=" + enc2 + " enc3=" + enc3);
-        output = output + format("%c", keyStr[enc1] ) + 
-			format ( "%c", keyStr[enc2]) 
-			+ format("%c", keyStr[enc3])
-			+ format("%c", keyStr[enc4]);
+    try {
+        return Sync.endAuth();
+    } catch ( ex ) {
+        
     }
-
-    return output;
-}
-
-
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
-}
-
-function checkResponse() {
-	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
-		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
-		return 0;
-	}
-	return 1;
-}
-
-
-function signRequest(method, url,params, token,tokenSecret) {
-	
-	if ( token != "" ) {
-		params.append({a="oauth_token",b=token});
-	}	
-	params.sort(custom_compare);
-
-	local normalizedRequest = "";
-	
-	normalizedRequest += "&" + url_encode(url);
-	local tableLen = params.len();
-	local baseString = "";
-	for ( local i=0; i< tableLen; i++ ) {
-		params[i].b = (params[i].b);
-		if ( i > 0 ) {
-			baseString += "&" ;
-		}
-		baseString += params[i].a + "=" + url_encode(params[i].b);
-		
-	}
-
-	
-	normalizedRequest = method+"&"+url_encode(url) + "&" + url_encode(baseString) ;
-	
-
-	local oauth_signature = hmac_sha1(appSecret + "&" + tokenSecret, normalizedRequest, true);
-	//oauth_signature = base64Encode(oauth_signature);
-	params.append({a="oauth_signature",b=oauth_signature});
-	params.sort(custom_compare);
-	
-	local getStr="";
-	local authorizationString = "OAuth ";
-	for ( local i=0; i< params.len(); i++ ) {
-		if ( i!=0) {
-			authorizationString += ",";
-			 getStr += "&";
-		}
-		getStr += params[i].a + "=" + url_encode(params[i].b);
-	}
-	
-	local sign = "GET";
-	sign += "&" + authStep1Url;
-	
-	return getStr;
-}
-
-function sendOauthRequest(method, url, params, token,tokenSecret) {
-	local getStr = signRequest(method,url,params,  token,tokenSecret);
-
-
-	if ( method == "GET") {
-		nm.doGet(url + "?" + getStr);
-	} else if ( method == "POST") {
-		nm.setUrl(url);
-		local tableLen = params.len();
-
-		for ( local i=0; i< tableLen; i++ ) {
-			nm.addQueryParam( params[i].a, params[i].b);		
-		}
-		nm.doPost("");
-	}
-	return 0;
-}
-function _DoLogin() {
-	oauth_token_secret = ServerParams.getParam("oauth_token_secret");
-	oauth_token = ServerParams.getParam("oauth_token");
-	
-	if ( oauth_token_secret != ""  &&  oauth_token != ""){
-		return 1;
-	}
-	local email = ServerParams.getParam("Login");
-	
-	local params=[	{a="oauth_consumer_key", b=appKey},
-					{a="oauth_signature_method", b="HMAC-SHA1"},
-					{a="oauth_timestamp", b=""+time()},
-					{a="oauth_version", b="1.0"},
-					{a="oauth_nonce", b=generateNonce() },
-					{a="oauth_callback", b="oob"}
-			  ];
-	sendOauthRequest("GET", authStep1Url, params, "", "");
-	if ( !checkResponse() ) {
-		return 0;
-	}
-	local data =  nm.responseBody();
-
-	local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
-	local temp_oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
-	if ( temp_oauth_token == "" ) {
-		return 0;
-	}
-	openUrl("https://www.flickr.com/services/oauth/authorize?oauth_token=" + temp_oauth_token);
-	
-	msgBox("Please allow Image Uploader to connect with your Flickr account (in web browser) and then press OK.\r\n\r\n"+
-		"Пожалуйста, разрешите Image Uploader подключиться к вашему аккаунту Flickr (нажмите кнопку Allow в запущенном браузере), и после этого нажмите OK."
-	);
-	
-	local verificationCode = InputDialog("Please enter verification code:", "");
-	local params2=[	{a="oauth_consumer_key", b=appKey},
-					{a="oauth_signature_method", b="HMAC-SHA1"},
-					{a="oauth_timestamp", b=""+time()},
-					{a="oauth_version", b="1.0"},
-					{a="oauth_nonce", b=generateNonce() },
-					{a="oauth_verifier", b=verificationCode }					
-			  ];
-	sendOauthRequest("GET", authStep2Url, params2, temp_oauth_token, temp_oauth_token_secret);
-	data =  nm.responseBody();
-	
-	oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
-	oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
-	
-	if ( oauth_token_secret != "" && oauth_token != "" ) {
-		
-		ServerParams.setParam("oauth_token_secret", oauth_token_secret);
-		ServerParams.setParam("oauth_token", oauth_token);
-		return 1;
-	}
-	return 0;
+    return true;
 }
 
 function DoLogin() {
-	if (!BeginLogin() ) {
-		return false;
-	}
-	local res = _DoLogin();
-	
-	EndLogin();
-	return res;
-}
-function isAuthorized() {
-	if ( oauth_token_secret != "" && oauth_token != "" ) {
-		return true;
-	}
-	return false;
+    if (!BeginLogin() ) {
+        return false;
+    }
+    local res = Authenticate();
+    
+    EndLogin();
+    return res;
 }
 
-function msgBox(text) {
-	try {
-		DebugMessage(text, false);
-		return true;
-	}catch(ex) {
-	}
-	local tempScript = "%temp%\\imguploader_msgbox.vbs";
-	system("echo Set objArgs = WScript.Arguments : messageText = objArgs(0) : MsgBox messageText > \"" + tempScript + "\"");
-	system("cscript \"" + tempScript + "\" \"" + text + "\"");
-	system("del /f /q \"" + tempScript + "\"");
-	
-	
-	return true;
-}
-function  UploadFile(FileName, options) {		
-
-	if (!DoLogin() ) {
-		return 0;
-	}
-	local userPath = ServerParams.getParam("UploadPath");
-	if ( userPath!="" && userPath[userPath.len()-1] != "/") {
-		userPath+= "/";
-	}
-	local path = "sandbox/" + userPath + ExtractFileName(FileName);
-	
-	local uploadUrl = "https://up.flickr.com/services/upload/";
-	local albumId = options.getFolderID();
-
-	
-	nm.setUrl(uploadUrl);
-	local params=[	{a="oauth_consumer_key", b=appKey},
-					{a="oauth_signature_method", b="HMAC-SHA1"},
-					{a="oauth_timestamp", b=""+time()},
-					{a="oauth_version", b="1.0"},
-					{a="oauth_nonce", b=generateNonce() },
-					{a="oauth_callback", b="oob"}
-			  ];
-	signRequest("POST", uploadUrl, params, oauth_token, oauth_token_secret);
-	nm.addQueryParamFile("photo", FileName, ExtractFileName(FileName), "");
-	local tableLen = params.len();
-
-	for ( local i=0; i< tableLen; i++ ) {
-		nm.addQueryParam( params[i].a, params[i].b);		
-	}
-	
-	nm.doUploadMultipartData();
-	local data = nm.responseBody();
-	local photoid = regex_simple(data, "<photoid>(.+)</photoid>", 0);
-
-	nm.doGet("https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=" + appKey + "&photo_id="+photoid);
-	
-	data = nm.responseBody();
-	local originalPhoto = regex_simple(data, "label=\"Original\".+source=\"(.+)\"", 0);
-	local thumbUrl = regex_simple(data, "label=\"Thumbnail\".+source=\"(.+)\"", 0);
-	
-	if ( originalPhoto != "") {
-
-		options.setDirectUrl(originalPhoto);
-		options.setThumbUrl(thumbUrl);
-		
-		nm.doGet("https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=" + appKey +"&photo_id=" + photoid +"&oauth_token="+oauth_token);
-		data = nm.responseBody();
-		local photoPage  = regex_simple(data, "type=\"photopage\">(.+)<", 0);
-		options.setViewUrl(photoPage );
-		
-		if ( albumId != "") {
-			
-			local params3=[	{a="oauth_consumer_key", b=appKey},
-				{a="oauth_signature_method", b="HMAC-SHA1"},
-				{a="oauth_timestamp", b=""+time()},
-				{a="oauth_version", b="1.0"},
-				{a="oauth_nonce", b=generateNonce() },
-				{a="api_key", b=appKey},
-				{a="method", b="flickr.photosets.addPhoto"},
-				{a="photoset_id", b=albumId},
-				{a="photo_id", b=photoid}
-			];
-			  
-			sendOauthRequest("POST", "https://api.flickr.com/services/rest/", params3, oauth_token, oauth_token_secret);
-		}
-		return 1;
-	}
-	
-	return 0;
+function _RegexSimple(data, regStr, start) {
+    local ex = regexp(regStr);
+    local res = ex.capture(data, start);
+    local resultStr = "";
+    if (res != null){
+        resultStr = data.slice(res[1].begin, res[1].end);
+    }
+    return resultStr;
 }
 
-function GetFolderList(list)
-{
-	if (!DoLogin() ) {
-		return 0;
-	}
-	
-	local params=[	{a="oauth_consumer_key", b=appKey},
-					{a="oauth_signature_method", b="HMAC-SHA1"},
-					{a="oauth_timestamp", b=""+time()},
-					{a="oauth_version", b="1.0"},
-					{a="oauth_nonce", b=generateNonce() },
-					{a="api_key", b=appKey},
-					{a="method", b="flickr.photosets.getList"}
-			  ];
-			  
-	sendOauthRequest("GET", "https://api.flickr.com/services/rest/", 
-	params, oauth_token, oauth_token_secret);
-	local data = nm.responseBody();
-	//DebugMessage(data);
-	local start = 0;
-	while(1)
-	{
-		local title="",id="",summary="";
-		local ex = regexp("<photoset ");
-		local res = ex.search(data, start);
-		local link = "";
-		local album = CFolderItem();
-		if(res != null){	
-			start = res.end;
-		}
-		else break;
-		
-		id = regex_simple(data,"id=\"(\\d+)\"",start);
-		title = regex_simple(data,"<title>(.+)</title>",start);
-		summary = regex_simple(data,"<description>(.+)</description>",start);
-		
-		album.setId(id);
-		album.setTitle(title);
-		album.setSummary(summary);
-		//album.setViewUrl(link);
-		//album.setParentId(parentid);
-
-		list.AddFolderItem(album);
-		
-	}
-	
-	return 1; //success
+function _GenerateNonce() {
+    local res = "";
+    res += format("%d%d%d", random()%2000, random()%2000, random()%2000);
+    return res;
 }
 
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
+function _CustomCompare(item1, item2) {
+    local a = item1.a+"="+item1.b;
+    local b = item2.a+"="+item2.b;
+    if(a>b) return 1;
+    else if(a<b) return -1;
+    return 0;
 }
 
-
-
-function hex2int(str){
-	local res = 0;
-	local step = 1;
-	for( local i = str.len() -1; i >= 0; i-- ) {
-		local val = 0;
-		local ch = str[i];
-		if ( ch >= 'a' && ch <= 'f' ) {
-			val = 10 + ch - 'a';
-		}
-		else if ( ch >= '0' && ch <= '9' ) {
-			val = ch - '0';
-		}
-		res += step * val;
-		step = step * 16;
-	}
-	return res;
+function _CheckResponse() {
+    if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
+        WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+        return 0;
+    }
+    return 1;
 }
 
-function unescape_json_string(data) {
-    local tmp;
-
-    local ch = 0x0424;
-	local result = data;
-	local ex = regexp("\\\\u([0-9a-fA-F]{1,4})");
-	local start = 0;
-	local res = null;
-	for(;;) {
-		res = ex.capture(data, start);
-		local resultStr = "";
-		if (res == null){
-			break;
-		}
-			
-		resultStr = data.slice(res[1].begin, res[1].end);
-		ch = hex2int(resultStr);
-		start = res[1].end;
-		 if(ch>=0x00000000 && ch<=0x0000007F)
-			tmp = format("%c",(ch&0x7f));
-		else if(ch>=0x00000080 && ch<=0x000007FF)
-			tmp = format("%c%c",(((ch>>6)&0x1f)|0xc0),((ch&0x3f)|0x80));
-		else if(ch>=0x00000800 && ch<=0x0000FFFF)
-		   tmp= sprintf("%c%c%c",(((ch>>12)&0x0f)|0xe0),(((ch>>6)&0x3f)|0x80),((ch&0x3f)|0x80));
-			result = reg_replace( result, "\\u"+resultStr, tmp);
-   
-	}
-
-    return result;
+function _CreateOauthParams(a) {
+    local params = [
+        {a = "oauth_consumer_key", b = appKey},
+        {a = "oauth_signature_method", b = "HMAC-SHA1"},
+        {a = "oauth_timestamp", b = time().tostring()},
+        {a = "oauth_version", b = "1.0"},
+        {a = "oauth_nonce", b = _GenerateNonce() },
+        {a = "oauth_callback", b = "oob"}
+    ];
+    params.extend(a); 
+    return params;
 }
 
-function GetServerParamList()
-{
-	local a =
-	{
-		oauth_token_secret = "oauth_token_secret"
-		oauth_token = "oauth_token"
-	}
-	return a;
+function _SignRequest(method, url, params, token, tokenSecret) {
+    if ( token != "" ) {
+        params.append({a="oauth_token",b=token});
+    }
+    params.sort(_CustomCompare);
+
+    local normalizedRequest = "";
+
+    normalizedRequest += "&" + url_encode(url);
+    local tableLen = params.len();
+    local baseString = "";
+    for ( local i=0; i< tableLen; i++ ) {
+        params[i].b = (params[i].b);
+        if ( i > 0 ) {
+            baseString += "&" ;
+        }
+        baseString += params[i].a + "=" + url_encode(params[i].b);
+    }
+
+    normalizedRequest = method+"&"+url_encode(url) + "&" + url_encode(baseString) ;
+
+    local oauth_signature = hmac_sha1(appSecret + "&" + tokenSecret, normalizedRequest, true);
+    params.append({a="oauth_signature",b=oauth_signature});
+    params.sort(_CustomCompare);
+
+    local getStr="";
+    local authorizationString = "OAuth ";
+    for ( local i=0; i< params.len(); i++ ) {
+        if ( i!=0) {
+            authorizationString += ",";
+             getStr += "&";
+        }
+        getStr += params[i].a + "=" + url_encode(params[i].b);
+    }
+
+    local sign = "GET";
+    sign += "&" + authStep1Url;
+
+    return getStr;
+}
+
+function _SendOauthRequest(method, url, params, token, tokenSecret) {
+    local getStr = _SignRequest(method, url, params, token, tokenSecret);
+
+    if ( method == "GET") {
+        nm.doGet(url + "?" + getStr);
+    } else if ( method == "POST") {
+        nm.setUrl(url);
+        local tableLen = params.len();
+
+        for ( local i=0; i< tableLen; i++ ) {
+            nm.addQueryParam( params[i].a, params[i].b);
+        }
+        nm.doPost("");
+    }
+    return 0;
+}
+
+function Authenticate() {
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
+
+    if ( oauth_token_secret != ""  &&  oauth_token != ""){
+        return 1;
+    }
+    local email = ServerParams.getParam("Login");
+
+    local params = [{a="oauth_consumer_key", b=appKey},
+                    {a="oauth_signature_method", b="HMAC-SHA1"},
+                    {a="oauth_timestamp", b=""+time()},
+                    {a="oauth_version", b="1.0"},
+                    {a="oauth_nonce", b=_GenerateNonce() },
+                    {a="oauth_callback", b="oob"}
+    ];
+    _SendOauthRequest("GET", authStep1Url, params, "", "");
+    if (!_CheckResponse()) {
+        return 0;
+    }
+    local data = nm.responseBody();
+
+    local temp_oauth_token_secret = _RegexSimple(data, "oauth_token_secret=([^&]+)", 0);
+    local temp_oauth_token = _RegexSimple(data, "oauth_token=([^&]+)", 0);
+    if ( temp_oauth_token == "" ) {
+        return 0;
+    }
+
+    ShellOpenUrl("https://www.flickr.com/services/oauth/authorize?oauth_token=" + temp_oauth_token);
+
+    MessageBox(tr("flickr.confirmation.text", "Please allow Image Uploader to connect with your Flickr account (in web browser) and then press OK.\r\n\r\n"), "Flickr Uploader", "", "");
+
+    local verificationCode = InputDialog(tr("flickr.verification", "Please enter verification code:"), "");
+    local params2 = [
+        {a="oauth_consumer_key", b=appKey},
+        {a="oauth_signature_method", b="HMAC-SHA1"},
+        {a="oauth_timestamp", b=""+time()},
+        {a="oauth_version", b="1.0"},
+        {a="oauth_nonce", b=_GenerateNonce() },
+        {a="oauth_verifier", b=verificationCode }
+    ];
+    _SendOauthRequest("GET", authStep2Url, params2, temp_oauth_token, temp_oauth_token_secret);
+    data =  nm.responseBody();
+
+    oauth_token_secret = _RegexSimple(data, "oauth_token_secret=([^&]+)", 0);
+    oauth_token = _RegexSimple(data, "oauth_token=([^&]+)", 0);
+
+    if ( oauth_token_secret != "" && oauth_token != "" ) {
+        ServerParams.setParam("oauth_token_secret", oauth_token_secret);
+        ServerParams.setParam("oauth_token", oauth_token);
+        return 1;
+    }
+    return 0;
+}
+
+function IsAuthenticated() {
+    return ServerParams.getParam("oauth_token_secret") != "" && ServerParams.getParam("oauth_token") != "";
+}
+
+function UploadFile(filePath, options) {
+    if(!DoLogin()) {
+        return -1;
+    }
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
+    local userPath = ServerParams.getParam("UploadPath");
+    if ( userPath!="" && userPath[userPath.len()-1] != "/") {
+        userPath+= "/";
+    }
+    local path = "sandbox/" + userPath + ExtractFileName(filePath);
+
+    local uploadUrl = "https://up.flickr.com/services/upload/";
+    local albumId = options.getFolderID();
+
+    nm.setUrl(uploadUrl);
+    local params = [
+        {a="oauth_consumer_key", b=appKey},
+        {a="oauth_signature_method", b="HMAC-SHA1"},
+        {a="oauth_timestamp", b=""+time()},
+        {a="oauth_version", b="1.0"},
+        {a="oauth_nonce", b=_GenerateNonce() },
+        {a="oauth_callback", b="oob"},
+    ];
+
+    /*if (task.isVideo()) {
+        params.append({a="content_type", b="3"});
+    }*/
+    _SignRequest("POST", uploadUrl, params, oauth_token, oauth_token_secret);
+    nm.addQueryParamFile("photo", filePath, ExtractFileName(filePath), GetFileMimeType(filePath));
+
+    local tableLen = params.len();
+
+    for ( local i=0; i< tableLen; i++ ) {
+        nm.addQueryParam( params[i].a, params[i].b);
+    }
+
+    nm.doUploadMultipartData();
+    local data = nm.responseBody();
+    local photoid = _RegexSimple(data, "<photoid>(.+)</photoid>", 0);
+    local originalPhoto = "";
+    local thumbUrl = "";
+
+    if (true) {
+        nm.doGet("https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&format=json&nojsoncallback=1&api_key=" + appKey + "&photo_id="+photoid);
+
+        if (nm.responseCode() != 200) {
+            WriteLog("error", "[flickr] Failed to obtain links to images");
+            return 0;
+        }
+        data = nm.responseBody();
+
+        local t = ParseJSON(data);
+
+
+        if (!("sizes" in t)) {
+            WriteLog("error", "[flickr] Invalid response from server");
+            return 0;
+        }
+
+        foreach (i, val in t.sizes.size) {
+            if (val.label == "Original" || i == t.sizes.size.len() - 1) {
+                originalPhoto = val.source;
+            } else if (val.label == "Thumbnail") {
+                thumbUrl = val.source;
+            }
+        }
+    }
+
+    if (originalPhoto != "") {
+        options.setDirectUrl(originalPhoto);
+        options.setThumbUrl(thumbUrl);
+        local params = [
+            {a="method", b="flickr.photos.getInfo"},
+            {a="format", b="json"},
+            {a="nojsoncallback", b="1"},
+            {a="photo_id", b=photoid}
+        ];
+
+        _SendOauthRequest("GET", "https://api.flickr.com/services/rest/", _CreateOauthParams(params), oauth_token, oauth_token_secret);
+        //nm.doGet("https://api.flickr.com/services/rest/?method=flickr.photos.getInfo&format=json&nojsoncallback=1&api_key=" + appKey +"&photo_id=" + photoid +"&oauth_token="+oauth_token);
+
+        local photoPage = "";
+        if (nm.responseCode() == 200) {
+            local t = ParseJSON(nm.responseBody());
+            if ("photo" in t) {
+                foreach(i, val in t.photo.urls.url) {
+                    if (val.type == "photopage") {
+                        photoPage = val._content;
+                        break;
+                    }
+                }
+            }
+        }
+
+        options.setViewUrl(photoPage);
+
+        if (albumId != "") {
+
+            local params3=[	{a="oauth_consumer_key", b=appKey},
+                {a="oauth_signature_method", b="HMAC-SHA1"},
+                {a="oauth_timestamp", b=""+time()},
+                {a="oauth_version", b="1.0"},
+                {a="oauth_nonce", b=_GenerateNonce() },
+                {a="api_key", b=appKey},
+                {a="method", b="flickr.photosets.addPhoto"},
+                {a="photoset_id", b=albumId},
+                {a="photo_id", b=photoid}
+            ];
+
+            _SendOauthRequest("POST", "https://api.flickr.com/services/rest/", params3, oauth_token, oauth_token_secret);
+        }
+        return 1;
+    }
+
+    return 0;
+}
+
+function GetFolderList(list) {
+    
+    if(!DoLogin()) {
+        return 0;
+    }
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
+    local params=[
+        {a="oauth_consumer_key", b=appKey},
+        {a="oauth_signature_method", b="HMAC-SHA1"},
+        {a="oauth_timestamp", b=""+time()},
+        {a="oauth_version", b="1.0"},
+        {a="oauth_nonce", b=_GenerateNonce() },
+        {a="api_key", b=appKey},
+        {a="format", b="json"},
+        {a="nojsoncallback", b="1"},
+        {a="method", b="flickr.photosets.getList"}
+     ];
+
+    _SendOauthRequest("GET", "https://api.flickr.com/services/rest/", params, oauth_token, oauth_token_secret);
+    if (nm.responseCode() != 200) {
+        return 0;
+    }
+
+    local t = ParseJSON(nm.responseBody());
+    if (!("photosets" in t)) {
+        WriteLog("error", "[flickr] Invalid response from server");
+        return 0;
+    }
+
+    foreach(i,item in t.photosets.photoset) {
+        local album = CFolderItem();
+        album.setId(item.id);
+        album.setTitle(item.title._content);
+        album.setSummary(item.description._content);
+        list.AddFolderItem(album);
+    }
+
+    return 1; //success
+}
+
+/*
+Flickr API requires a photo id for creating a photoset :(
+
+function CreateFolder(parentAlbum, album) {
+}
+*/
+
+function GetServerParamList() {
+    return {
+        oauth_token_secret = "oauth_token_secret"
+        oauth_token = "oauth_token"
+    }
 }

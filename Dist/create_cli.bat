@@ -1,5 +1,5 @@
 @echo off
-SET CLI_VERSION=0.2.8
+SET CLI_VERSION=0.2.9
 set zipcmd="C:/Program Files/7-Zip/7z.exe"
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
@@ -19,11 +19,11 @@ mkdir %temp_dir%\Data\Update
 
 rem signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem  "..\Build\CLI\win32\release\executable\imgupload.exe"  
 Copy "..\Build\CLI\Release\CLI.exe" %temp_dir%\imgupload.exe
-rem Copy "..\Build\release\curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
+Copy "..\Build\CLI\Release\curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
 Copy "..\Data\servers.xml" %temp_dir%\Data\
 
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
-Copy "..\Data\Update\iu_servers*.xml" %temp_dir%\Data\Update\
+rem Copy "..\Data\Update\iu_servers*.xml" %temp_dir%\Data\Update\
 
 
 cd %temp_dir%

@@ -25,7 +25,8 @@
 #include <cstdio>
 #include <map>
 #include <string>
-
+#include <filesystem>
+#include <sys/stat.h>
 #ifdef _WIN32
     #include <WinSock.h>
     #include "Func/WinUtils.h"
@@ -406,58 +407,22 @@ int64_t stringToInt64(const std::string& str)
     return strtoll(str.c_str(), nullptr, 10);
 }
 
-int64_t getFileSize(const std::string& utf8Filename)
-{
-#ifdef _WIN32
-   #ifdef _MSC_VER
-	struct _stat64  stats;
-   #else
-      _stati64 stats;
-   #endif
-    memset(&stats, 0, sizeof(stats));
-    stats.st_size = -1;
-    std::wstring wideFileName = Utf8ToWstring(utf8Filename);
-    if(_wstati64(wideFileName.c_str(), &stats)!=0) {
-        int err = errno;
-        switch (err) {
-            case ENOENT: 
-                LOG(WARNING) << "Call to _wstati64 failed. File not found." << std::endl <<  utf8Filename; 
-            break;
-            case EINVAL: 
-                LOG(WARNING) << "Call to _wstati64 failed. Invalid parameter.";
-            break;
-            default: /* Should never be reached. */
-                LOG(ERROR) << "Call to _wstati64 failed. Unexpected error in _wstati64.";
-        }
+int64_t getFileSize(const std::string& utf8Filename) {
+	if (utf8Filename.empty()) {
+		return -1;
+	}
 
-        if (err != ENOENT) {
-            WIN32_FILE_ATTRIBUTE_DATA fad;
-            memset(&fad, 0, sizeof(fad));
+	std::error_code ec;
+	auto path = std::filesystem::u8path(utf8Filename);
 
-            if (!GetFileAttributesEx(wideFileName.c_str(), GetFileExInfoStandard, &fad)) {
-                DWORD lastError = GetLastError();
-                LOG(ERROR) << WinUtils::FormatWindowsErrorMessage(lastError);
-                return -1;
-            }
-            LARGE_INTEGER size;
-            size.HighPart = fad.nFileSizeHigh;
-            size.LowPart = fad.nFileSizeLow;
-            return size.QuadPart;
-        }
-        return -1;
-   }
-#else
-   struct stat64 stats;
-   std::string path = Utf8ToSystemLocale(utf8Filename);
-   if(-1 == stat64(path.c_str(), &stats))
-   {
-      return -1;
-   }
-#endif
-     return stats.st_size;
+	if (!std::filesystem::is_regular_file(path, ec) || ec) {
+		return -1;
+	}
+
+	auto size = std::filesystem::file_size(path, ec);
+	return ec ? -1 : static_cast<int64_t>(size);
 }
 
-// �������������� ������� ����� � ������
 std::string fileSizeToString(int64_t nBytes)
 {
     double number = 0;
@@ -535,3 +500,28 @@ void DatePlusDays(struct tm* date, int days){
 
 
 } // end of namespace IuCoreUtils
+
+#ifdef _USING_V110_SDK71_ 
+/*
+
+int _stat64i32(const char *path, struct _stat64i32 *buffer)
+{
+	WIN32_FILE_ATTRIBUTE_DATA data;
+	if (!GetFileAttributesExA(path, GetFileExInfoStandard, &data))
+		return -1;
+
+	buffer->st_ino = 0;
+	buffer->st_mode = ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? S_IFDIR : S_IFREG) |
+		((data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? S_IREAD : S_IREAD | S_IWRITE);
+	buffer->st_dev = buffer->st_rdev = 0;
+	buffer->st_nlink = 1;
+	buffer->st_uid = 0;
+	buffer->st_gid = 0;
+	buffer->st_size = data.nFileSizeLow;
+	buffer->st_atime = (*(uint64_t*)&data.ftLastAccessTime) / 10000000 - 11644473600LL;
+	buffer->st_mtime = (*(uint64_t*)&data.ftLastWriteTime) / 10000000 - 11644473600LL;
+	buffer->st_ctime = (*(uint64_t*)&data.ftCreationTime) / 10000000 - 11644473600LL;
+	return 0;
+}
+*/
+#endif

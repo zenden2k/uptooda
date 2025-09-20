@@ -108,6 +108,8 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("getCurlInfoString", &INetworkClient::getCurlInfoString).
         Func("getCurlInfoInt", &INetworkClient::getCurlInfoInt).
         Func("getCurlInfoDouble", &INetworkClient::getCurlInfoDouble).
+        Func("getCurlResult", &INetworkClient::getCurlResult).
+        Func("getCurlResultString", &INetworkClient::getCurlResultString).
         Func("setReferer", &INetworkClient::setReferer));
 }
 
@@ -264,11 +266,25 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterHtmlElementClass(vm);
 #endif
 }
+
+void RegisterConstants(Sqrat::SqratVM& vm) {
+	using namespace Sqrat;
+
+	ConstTable(vm.GetVM()).Enum("ResultCode", Enumeration(vm.GetVM()).
+		Const("FatalError", static_cast<int>(ResultCode::FatalError)).
+		Const("TryAgain", static_cast<int>(ResultCode::TryAgain)).
+		Const("FatalServerError", static_cast<int>(ResultCode::FatalServerError)).
+		Const("Failure", static_cast<int>(ResultCode::Failure)).
+		Const("Success", static_cast<int>(ResultCode::Success))
+	);
+}
+
 void RegisterAPI(Sqrat::SqratVM& vm)
 {
     threadVm = vm.GetVM();
     //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
+	RegisterConstants(vm);
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }

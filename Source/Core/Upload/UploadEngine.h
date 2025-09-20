@@ -93,6 +93,18 @@ struct UploadAction
 };
 
 /**
+ * Task result code
+ */
+enum class ResultCode {
+	FatalError = -3,
+	TryAgain = -2,
+	FatalServerError = -1,
+	Failure = 0,
+	Success = 1
+};
+
+
+/**
 CFolderItem class
 */
 class CFolderItem

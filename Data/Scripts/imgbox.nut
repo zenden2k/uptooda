@@ -1,7 +1,7 @@
-baseUrl <- "https://imgbox.com";
+const BASE_URL = "https://imgbox.com";
 
 function getRequiredData() {
-	nm.doGet(baseUrl);
+	nm.doGet(BASE_URL);
 	local ret = {cookie="",token=""};
 	local sBody = nm.responseBody();
 	if (nm.responseCode() == 200) {
@@ -24,12 +24,13 @@ function UploadFile(FileName, options) {
 		WriteLog("error", "Can not obtain cookie and token valuest, required by uploading process.");
 		return -1; //error, no cookie, no token :(
 	}
-	nm.setUrl(baseUrl+"/ajax/token/generate");
+	nm.setUrl(BASE_URL+"/ajax/token/generate");
+	nm.addQueryHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nm.addQueryHeader("X-CSRF-Token", sCSRFToken);
-	nm.addQueryHeader("Cookie", "request_method=GET; "+sImgboxCookie);
+	//nm.addQueryHeader("Cookie", "request_method=GET; "+sImgboxCookie);
 	nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-	nm.addQueryHeader("Host", "imgbox.com");
-	nm.addQueryHeader("Referer", "https://imgbox.com/");
+	nm.addQueryHeader("Origin", "https://imgbox.com");
+	nm.setReferer("https://imgbox.com/");
 	nm.doPost("");
 	local sBody = nm.responseBody();
 	if (nm.responseCode() != 200) {
@@ -44,11 +45,10 @@ function UploadFile(FileName, options) {
 	if (json.ok) {
 		local sTokenId = json.token_id;
 		local sTokenSecret = json.token_secret;
-		nm.setUrl(baseUrl+"/upload/process");
+		nm.setUrl(BASE_URL+"/upload/process");
 		nm.addQueryHeader("X-CSRF-Token", sCSRFToken);
 		nm.addQueryHeader("Cookie", "request_method=POST; "+sImgboxCookie);
 		nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-		nm.addQueryHeader("Host", "imgbox.com");
 		nm.addQueryHeader("Referer", "https://imgbox.com/");
 		
 		

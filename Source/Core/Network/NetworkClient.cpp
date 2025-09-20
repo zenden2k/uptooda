@@ -44,13 +44,13 @@
 #include <openssl/engine.h>
 #endif
 
-#ifdef _MSC_VER
+/*#ifdef _MSC_VER
     #if defined(USE_OPENSSL) 
         #pragma comment(lib, "libcurl_openssl.lib")
     #else
         #pragma comment(lib, "libcurl.lib")
     #endif
-#endif
+#endif*/
 
 #if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
     #define UTF8_FILENAME(name) name
@@ -369,16 +369,9 @@ bool NetworkClient::doUploadMultipartData()
         {
             if(it->isFile)
             {
-                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, NetworkClientInternal::simple_read_callback);
-                    //curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, NetworkClientInternal::simple_seek_callback);
+                    /*curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, fread);
+                    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, fseek);*/
                                         std::string fileName = it->value;
-                    FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
-                    if(!curFile) 
-                    {
-                        closeFileList(openedFiles);
-                        return false; /* can't continue */
-                    }
-                    openedFiles.push_back(curFile);
                     // FIXME: > 2gb  file size & unicode filenames support on Windows
                     uint64_t  curFileSize = IuCoreUtils::getFileSize(fileName);
 
@@ -721,7 +714,19 @@ void NetworkClient::private_cleanup_after()
     }
     m_OutFileName.clear();
     m_method.clear();
-    curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
+	curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_MIMEPOST, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
+	curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(-1));
+	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
+	curl_easy_setopt(curl_handle, CURLOPT_NOBODY, 0L);
+	curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1L);
+	curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, nullptr);
+	curl_easy_setopt(curl_handle, CURLOPT_READDATA, stdin);
 
     m_uploadData.clear();
     m_uploadingFile = nullptr;

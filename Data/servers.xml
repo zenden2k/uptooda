@@ -21,60 +21,53 @@
                %appdata%\Image Uploader\Servers\    (если вы использовали инсталлятор)
            Создайте там XML файл с такой же структурой, как у текущего файла.
     --> 
-		<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
-		<Actions>
-			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
-			<Action Type="upload" Url="http://radikal.ru/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;Upload=Submit Query" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0" Referer="http://radikal.ru/Content/Clients/FotoFlashApplet3.swf?v=13"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
-	<Server Name="ImageBan.ru"  Authorize="1" Plugin="imageban" NeedPassword="0">
+	<Server Name="ImageBan.ru" Authorize="2" Plugin="imageban" NeedPassword="0" LoginLabel="CLIENT_ID" PasswordLabel="SECRET_KEY">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>	
-	<Server Name="keep4u.ru" MaxFileSize="10000000" Debug="0" Plugin="keep4u">
+	<!--<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
+	</Server>-->
 	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
-	<Server Name="funkyimg.com" Authorize="1" Plugin="funkyimg">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000" DefaultForTypes="image">
-		<Actions>
-			<Action Type="login" Url="https://www.directupload.net/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
-			<Action Type="upload" Url="https://www.directupload.net/index.php?mode=upload" PostParams="bilddatei=%filename%;image_link=Die Bild-URL bitte hier einfügen;image_comment=;image_tags=;image_mail=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
+	<Server Name="directupload.net" Authorize="1" MaxFileSize="67108864" DefaultForTypes="image" Plugin="directupload" SupportsFolders="1" 
+        WebsiteUrl="https://www.directupload.eu" RegistrationUrl="https://www.directupload.eu/index.php?mode=register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="8388608">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
+                </FormatGroup>	 
+                <FormatGroup MaxFileSize="67108864" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
+                    <Format MimeType="application/pdf,application/x-pdf">*.pdf</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
+        <Actions>
+        </Actions>
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
+    </Server>
 	<Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="https://disk.yandex.ru">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-<Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
-	<Result ImageUrlTemplate="stub" />
-	</Server>
-	<Server Name="image2you.ru" Authorize="2" Debug="0" MaxThreads="1">
-		<Actions>
-            <Action Type="get" Url="http://image2you.ru/" />
-			<Action Type="login" Url="http://image2you.ru/index_ajax.php?task=users&amp;sub_task=login&amp;email=$(_LOGIN|urlencode)&amp;pass=$(_PASSWORD|urlencode)&amp;get=t" RegExp="iSuccess&quot;:1" />
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/upload/" RegExp="session&#039;: &#039;(\w+)&#039;" AssignVars="SessionId:0"/>
-			<Action Type="upload" Url="http://image2you.ru/ajax/cabinet/gallery/folder-0/" PostParams="Filename=$(_FILENAME);folder=/uploads;session=$(SessionId);Filedata=%filename%;Upload=Submit Query;" RegExp="\d+"/>
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/" RegExp='__code_link_(\d+)&quot; value=&quot;(\S+?)&quot;([\s\S]*?)__code_preview_(\d+)&quot; value=&quot;(\S+?)&quot;' AssignVars="Image:1;Thumb:4;"/>			
-		</Actions>
-		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
+    <Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
+        <Result ImageUrlTemplate="stub" />
 	</Server>
 	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0" Plugin="fastpic">
 		<Actions>
@@ -89,11 +82,6 @@
 	</Server>
 	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-	<Server Name="rgho.st" Authorize="1" FileHost="1" Debug="0" Plugin="rghost" PasswordLabel="API key">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub"/>
 	</Server>
 	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
 		<Actions>
@@ -120,13 +108,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
-	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1" DefaultForTypes="file"> 
-		<Actions>
-			<Action Type="get" Url="http://www.zippyshare.com/" RegExp="uploadId\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)([\s\S]+)server\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)" AssignVars="UploadId:0;ServerId:2"/>
-			<Action Type="upload" Url="http://$(ServerId).zippyshare.com/upload?uploadId=$(UploadId)" PostParams="uploadId=$(UploadId);username=$(_LOGIN);password=$(_PASSWORD);$(_FILENAME)=%filename%;private=ON;" RegExp="\[url=(.+?)\]" AssignVars="DownloadUrl:0;"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(DownloadUrl)" />
-	</Server>
 	<Server Name="sendfile.su" FileHost="1">
 		<Actions>
 			<Action Type="get" Url="http://sendfile.su/" RegExp="http://s(\d+).sendfile.su/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1"/>
@@ -147,27 +128,11 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>-->
-	<Server Name="dfiles.ru" Debug="0" FileHost="1" Authorize="1">
-		<Actions>
-			<Action Type="login" Url="http://dfiles.ru/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
-			<Action Type="get" Url="http://dfiles.ru/api/get_upload_info.php" RegExp="&lt;http_upload_path&gt;(.+?)&lt;/http_upload_path&gt;"	
-					AssignVars="UploadUrl:0" />
-			<Action Type="upload" Url="$(UploadUrl)" PostParams="go=1;files=%filename%"	 RegExp="parent.ud_download_url = '([^&quot;']+)'"	
-					AssignVars="DownloadUrl:0" />
-		</Actions>
-		<Result DownloadUrlTemplate="$(DownloadUrl)"/>		
-	</Server>
 	<Server Name="ipic.su">
 	<Actions>
 		<Action Type="upload" Url="http://ipic.su/api/index.php" PostParams="link=/;action=loadimg;origin=checked;quality=100;client=KISS075;tnsize=$(ThumbWidth);showall=1;image=%filename%" RegExp="(.+?)\r\n(.+?)\r\n(.+)" AssignVars="Line0:0;Line1:1;Line2:2;"/>
 	</Actions>
 	<Result ImageUrlTemplate="http://ipic.su$(Line2)/fs/$(Line0)" ThumbUrlTemplate="http://ipic.su$(Line2)/tn/$(Line0)"/>
-	</Server>
-	<Server Name="bild.me" Debug="0">
-		<Actions>
-			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
-		</Actions>
-	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
 	<Server Name="datafilehost.com" FileHost="1">
 	<Actions>
@@ -202,11 +167,6 @@
             /> 
         </Actions> 
         <Result DownloadUrlTemplate="http://www.embedupload.com/?d=$(DownloadID)" /> 
-    </Server> 
-	 <Server Name="jheberg.net" FileHost="1" Plugin="jheberg" Authorize="1"> 
-        <Actions> 
-        </Actions> 
-        <Result DownloadUrlTemplate="stub" /> 
     </Server> 
 	<!--<Server Name="multiupload.biz" FileHost="1" Debug="0">
 		<Actions>
@@ -333,12 +293,6 @@
         </Actions>
     <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-    <Server Name="ifotki.info">
-        <Actions>
-            <Action Type="upload" Url="http://ifotki.info/index.php?mode=" PostParams="add=true;foto1=%filename%;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-    </Server>
     <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000">
         <Actions>
             <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
@@ -356,35 +310,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="pastenow.ru" Plugin="pastenow">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-	</Server>
-    <Server3 Name="teknik.io" Plugin="teknik"  Authorize="1" Types="image file urlshortening" NeedPassword="0" >
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-	</Server3>
-    <!--<Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
-    <Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
     <Server Name="ge.tt" Authorize="2" FileHost="1" Plugin="gett" LoginLabel="E-mail">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
-	</Server>
-    <Server Name="lostpic.net" Plugin="lostpic" Authorize="1">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
     <Server Name="imgbb.com" MaxFileSize="16000000" Plugin="imgbb">
 		<Actions>
@@ -396,17 +325,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-    <Server Name="myfile.is"  Authorize="1" Debug="0" FileHost="1" Plugin="myfile.is" NeedPassword="0"> 
-		<Actions>
-		</Actions>
-		<Result DownloadUrlTemplate="stub" />
-	</Server>
     <!--<Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
-    <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
+    <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
+	</Server>
 </Servers>

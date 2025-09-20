@@ -78,13 +78,13 @@ function  UploadFile(FileName, options)
         return anonymousUpload(FileName, options);
     }
     
-    local secretKey = ServerParams.getParam("SecretKey");
-    local clientId = ServerParams.getParam("ClientId");
+    local secretKey = ServerParams.getParam("Password");
+    local clientId = ServerParams.getParam("Login");
     if (clientId == "") {
         clientId = MyClientId;
     }
     if (secretKey == "" ){
-        WriteLog("error", "imageban.ru: SecretKey parameter cannot be empty. \r\nYou must set SecretKey in server settings.");
+        WriteLog("error", "imageban.ru: Login (clientId) and Password (secretKey) parameter cannot be empty.");
         return 0;
     }
     local fName = ExtractFileName(FileName);
@@ -120,10 +120,10 @@ function  UploadFile(FileName, options)
     return 0;
 }
 
-function GetServerParamList()
+/*function GetServerParamList()
 {
     return { 
         ClientId = "ClientId",
         SecretKey = "SecretKey"
     };
-}
+}*/

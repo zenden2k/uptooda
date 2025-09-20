@@ -29,11 +29,14 @@ IMPORTANT! Patch for support utf-8 encoded filenames:
 -- curl_setup.h --
 
 #if defined(_WIN32) && !defined(__MINGW32CE__)
-    #define fopen _wfopen_hack
-    #define open _wopen_hack
-
-    FILE *_wfopen_hack(const char *file, const char *mode);
-    int _wopen_hack(const char *file, int oflags, ...);
+    #define fopen fopen_utf8
+    #define open open_utf8
+    #undef stat
+    #define stat(fname,stp) stat_utf8(fname, stp)
+    #define access(path,mode) access_utf8(path,mode)
+    FILE *fopen_utf8(const char *file, const char *mode);
+    int open_utf8(const char *file, int oflags, ...);
+    int access_utf8(const char *path, int mode);
 #endif
 
 -- curl.h --
@@ -122,6 +125,26 @@ IMPORTANT! Patch for support utf-8 encoded filenames:
         free(wfile);
         return result;
     }
+    
+int VS14Stat(const wchar_t *path, struct _stati64 *buffer)
+{
+	WIN32_FILE_ATTRIBUTE_DATA data;
+	if(!GetFileAttributesExW(path, GetFileExInfoStandard, &data))
+		return -1;
+
+	buffer->st_ino = 0;
+	buffer->st_mode = ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? S_IFDIR : S_IFREG)|
+	                  ((data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? S_IREAD : S_IREAD|S_IWRITE);
+	buffer->st_dev = buffer->st_rdev = 0;
+	buffer->st_nlink = 1;
+	buffer->st_uid = 0;
+	buffer->st_gid = 0;
+	buffer->st_size = data.nFileSizeLow;
+	buffer->st_atime = (*(WORD*)&data.ftLastAccessTime) / 10000000 - 11644473600LL;
+	buffer->st_mtime = (*(WORD*)&data.ftLastWriteTime) / 10000000 - 11644473600LL;
+	buffer->st_ctime = (*(WORD*)&data.ftCreationTime) / 10000000 - 11644473600LL;
+	return 0;
+}
 
     int stat_utf8(
         const char *path,
@@ -143,7 +166,7 @@ IMPORTANT! Patch for support utf-8 encoded filenames:
         if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, wfile, length)) {
             goto cleanup;
         }
-        result = _wstat64(wfile, buffer);
+        result = VS14Stat(wfile, buffer);
 cleanup:
         free(wfile);
         return result;
@@ -172,7 +195,7 @@ cleanup:
         free(wfile);
         return result;
     }
-#endif
+#endif 
 
 Ubuntu:
 

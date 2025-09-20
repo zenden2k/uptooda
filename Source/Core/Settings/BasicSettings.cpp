@@ -19,12 +19,16 @@ limitations under the License.
 */
 
 #include "BasicSettings.h"
-
+/*
 #include <boost/uuid/uuid.hpp>           
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp> 
+#include <boost/uuid/uuid_io.hpp> */
 
 #include "EncodedPassword.h"
+
+#ifndef _WIN32
+#include "Core/Utils/CryptoUtils.h"
+#endif
 
 BasicSettings::BasicSettings()
 {
@@ -45,8 +49,18 @@ BasicSettings::BasicSettings()
     ConnectionSettings.ProxyPort = 0;
     ConnectionSettings.NeedsAuth = false;
     ConnectionSettings.ProxyType = 0;
-    boost::uuids::uuid uuid = boost::uuids::random_generator()();
-    DeviceId = boost::uuids::to_string(uuid);
+#ifdef _WIN32
+	GUID gidReference;
+	HRESULT hCreateGuid = CoCreateGuid(&gidReference);
+	OLECHAR* guidString = nullptr;
+	StringFromCLSID(gidReference, &guidString);
+	if (guidString) {
+		DeviceId = W2U(guidString);
+		::CoTaskMemFree(guidString);
+	}
+#else
+	DeviceId = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(std::to_string(rand()));
+#endif
 }
 
 BasicSettings::~BasicSettings() {

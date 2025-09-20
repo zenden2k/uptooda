@@ -66,7 +66,7 @@
 #include "versioninfo.h"
 
 
-#define IU_CLI_VER "0.2.8"
+#define IU_CLI_VER "0.2.9"
 
 #ifdef _WIN32
 
