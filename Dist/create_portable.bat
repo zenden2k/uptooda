@@ -127,9 +127,9 @@ if ERRORLEVEL 1 (
     echo Deleting %temp_dir%\Image Uploader.exe failed
     goto End
 )
-Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\gui\release\Image Uploader.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release openssl\curl-ca-bundle.crt" %temp_dir%\
+Copy "..\Build\gui\release\curl-ca-bundle.crt" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 
 cd %temp_dir%

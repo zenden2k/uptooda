@@ -4,13 +4,13 @@ import datetime
 import subprocess
 
 if len(sys.argv) < 3:
-    print "You should provide path to file versioninfo.h as first argument and path to exe or dll as second argument."
+    print ("You should provide path to file versioninfo.h as first argument and path to exe or dll as second argument.")
     sys.exit(1)
 filename = sys.argv[1]
 exename = sys.argv[2]
 
 if len(sys.argv) == 4 and sys.argv[3]!= "1" and sys.argv[3] != "Release" and sys.argv[3] != "MinSizeRel":
-    print "set_binary_version.py: command ommitted for non-release build"
+    print ("set_binary_version.py: command ommitted for non-release build")
     sys.exit(0)
     
 with open(filename) as f:
@@ -38,5 +38,5 @@ rcedit_arguments =  [rcedit_path, exename, '--set-file-version', file_version, '
 if "openssl" in exename and ".exe" in exename:
     rcedit_arguments += ["--set-version-string", "FileDescription", "Image Uploader (with OpenSSL)"]
 #print rcedit_arguments
-print subprocess.check_output(rcedit_arguments).strip()
-print "Successfully patched"
+print(subprocess.check_output(rcedit_arguments).strip())
+print ("Successfully patched")
