@@ -80,9 +80,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://multi-up.com/$(File)"/>
 	</Server>
-	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
-		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
 	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
 		<Actions>
 		</Actions>
@@ -309,11 +306,6 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-    <Server Name="ge.tt" Authorize="2" FileHost="1" Plugin="gett" LoginLabel="E-mail">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub"/>
 	</Server>
     <Server Name="imgbb.com" MaxFileSize="16000000" Plugin="imgbb">
 		<Actions>
