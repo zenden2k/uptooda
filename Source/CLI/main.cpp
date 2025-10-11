@@ -193,7 +193,9 @@ void OnUploadSessionFinished(UploadSession* session) {
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
 
     std::cerr<<std::endl<<"Result:"<<std::endl;
-    std::cout<< generator->generate(uploadedList);
+
+    ConsoleUtils::instance()->printUnicode(stdout, generator->generate(uploadedList));
+
     std::cerr<<std::endl;
 
     {
