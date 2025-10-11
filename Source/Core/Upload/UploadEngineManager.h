@@ -4,7 +4,10 @@
 #pragma once
 #include <thread>
 #include <mutex>
+#include <memory>
+#include <unordered_map>
 
+#include "Core/Utils/CoreUtils.h"
 #include "UploadEngine.h"
 
 // Forward class declarations
@@ -58,9 +61,9 @@ public:
     */
     void resetFailedAuthorization();
 protected:
-    CScriptUploadEngine* getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
+    std::shared_ptr<CScriptUploadEngine> getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
     ServerSync* getServerSync(const ServerProfile& serverProfile);
-    std::map<std::thread::id, std::map< std::string, CAbstractUploadEngine*>> m_plugins;
+    std::map<std::thread::id, std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<CAbstractUploadEngine>>> m_plugins;
     std::mutex pluginsMutex_;
     std::string scriptsDirectory_;
     CUploadEngineList* uploadEngineList_;

@@ -1,25 +1,46 @@
 const BASE_HOST = "https://www.directupload.eu";
 
 function Authenticate() {
+    nm.doGet(BASE_HOST + "/mitglieder/");
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[directupload.eu] Failed to load the login page.");
+        return ResultCode.Failure;
+    }
+    local doc = Document(nm.responseBody());
+    local inputElement = doc.find("input[name=\"csrf_token\"]");
+    if (!inputElement.length()) {
+        WriteLog("error", "[directupload.eu] Failed to obtain CSRF token.");
+        return ResultCode.Failure;
+    }
+    local csrfToken = inputElement.attribute("value");
+
     local login = ServerParams.getParam("Login");
     local pass = ServerParams.getParam("Password");
     if (login == "" || pass == "") {
-        return 0;
+        return ResultCode.Failure;
     }
     nm.doGet(BASE_HOST + "/");
 
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/index.php?mode=user");
     nm.addQueryParam("benutzername", login);
+    nm.addQueryParam("csrf_token", csrfToken);
     nm.addQueryParam("passwort", pass);
     nm.addQueryParam("everlasting", "");
     nm.addQueryParam("anmelden", "Einloggen"); 
     nm.doPost("");
 
     if (nm.responseCode() == 200 || nm.responseCode() == 302) {
-        return 1;
+        doc = Document(nm.responseBody());
+        if (doc.find("div.message.error").length()) {
+            WriteLog("error", "[directupload.eu] Failed to authenticate. Invalid login or password.");
+            return ResultCode.Failure;
+        }
+        return ResultCode.Success;
+    } else {
+        WriteLog("error", "[directupload.eu] Failed to authenticate. Response code: " + nm.responseCode());
     }
-    return 0;
+    return ResultCode.Failure;
 }
 
 function _AnonymousUpload(fileName, options) {

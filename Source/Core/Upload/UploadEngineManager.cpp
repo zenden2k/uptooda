@@ -61,13 +61,15 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         LOG(ERROR) << "No such server " << serverProfile.serverName();
         return nullptr;
     }
-    CAbstractUploadEngine* result = nullptr;
+    std::shared_ptr<CAbstractUploadEngine> result = nullptr;
     std::string serverName = serverProfile.serverName();
     std::thread::id threadId = std::this_thread::get_id();
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile, true);
     std::string authDataLogin = serverSettings ? serverSettings->authData.Login : std::string();
+    auto key = std::make_pair(serverName, serverProfile.profileName());
+
     if (ue->UsingPlugin) {
         // Try to load Squirrel (.nut) script
         result = getPlugin(serverProfile, ue->PluginName);
@@ -80,9 +82,9 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         CAbstractUploadEngine* plugin = nullptr;
         auto it = m_plugins.find(threadId);
         if (it != m_plugins.end()) {
-            auto it2 = it->second.find(serverName);
+            auto it2 = it->second.find(key);
             if (it2 != it->second.end()) {
-                plugin = it2->second;
+                plugin = it2->second.get();
             }
         }
 
@@ -96,7 +98,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         if (!ue->Engine.empty()) {
 #ifdef IU_ENABLE_MEGANZ
             if (ue->Engine == "MegaNz") {
-                result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
+                result = std::make_shared<CMegaNzUploadEngine>(serverSync, serverSettings, errorCallback);
             }
 #endif
             if (!result) {
@@ -104,18 +106,18 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
                 return nullptr;
             }
         } else {
-            result = new CDefaultUploadEngine(serverSync, errorCallback);
+            result = std::make_shared<CDefaultUploadEngine>(serverSync, errorCallback);
         }
         result->setServerSettings(serverSettings);
         result->setUploadData(ue);
 
-        m_plugins[threadId][serverName] = result;
+        m_plugins[threadId][key] = result;
     }
 
     result->setServerSettings(serverSettings);
     result->setUploadData(ue);
     result->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage,uploadErrorHandler_.get(),std::placeholders::_1));
-    return result;
+    return result.get();
 }
 
 CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& serverProfile)
@@ -123,7 +125,7 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
     return dynamic_cast<CScriptUploadEngine*>(getUploadEngine(serverProfile));
 }
 
-CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
+ std::shared_ptr<CScriptUploadEngine> UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     std::string serverName = serverProfile.serverName();
 
@@ -131,13 +133,13 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     ServerSettingsStruct* params = basicSettings->getServerSettings(serverProfile, true);
 
     std::thread::id threadId = std::this_thread::get_id();
-    CScriptUploadEngine* plugin = nullptr;
-
+    std::shared_ptr<CScriptUploadEngine> plugin;
+    auto key = std::make_pair(serverName, serverProfile.profileName());
     auto it = m_plugins.find(threadId);
     if (it != m_plugins.end()) {
-        auto it2 = it->second.find(serverName);
+        auto it2 = it->second.find(key);
         if (it2 != it->second.end()) {
-            plugin = dynamic_cast<CScriptUploadEngine*>(it2->second);;
+            plugin = std::dynamic_pointer_cast<CScriptUploadEngine>(it2->second);
         }
     }
 
@@ -155,32 +157,23 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     }
 
     if (plugin) {
-        delete plugin;
-        plugin = 0;
-        m_plugins[threadId][serverName] = nullptr;
+        m_plugins[threadId][key] = nullptr;
     }
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_,
+    auto newPlugin = std::make_shared<CScriptUploadEngine>(fileName, serverSync, params, networkClientFactory_,
         std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
 
     if (newPlugin->isLoaded()) {
-        m_plugins[threadId][serverName] = newPlugin;
+        m_plugins[threadId][key] = newPlugin;
         return newPlugin;
     }
-    else {
-        delete newPlugin;
-    }
+
     return nullptr;
 }
 
 void UploadEngineManager::unloadUploadEngines() {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
-    for (auto it = m_plugins.begin(); it != m_plugins.end(); ++it) {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            delete it2->second;
-        }
-    }
     m_plugins.clear();
 }
 
@@ -188,7 +181,7 @@ void UploadEngineManager::unloadUploadEngines() {
 void UploadEngineManager::unloadUploadEngines(const std::string& serverName, const std::string& profileName) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     for (auto &pr: m_plugins) {
-        pr.second.erase(serverName);
+        pr.second.erase({ serverName, profileName });
     }
 }
 
@@ -202,9 +195,6 @@ void UploadEngineManager::clearThreadData()
     std::thread::id threadId = std::this_thread::get_id();
     auto it = m_plugins.find(threadId);
     if (it != m_plugins.end()) {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            delete it2->second;
-        }
         m_plugins.erase(it);
     }
 }

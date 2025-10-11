@@ -7,26 +7,10 @@
 #include <future>
 
 #include "AbstractServerIconCache.h"
+#include "Core/Utils/CoreUtils.h"
 
 class IconBitmapUtils;
 
-template <typename T>
-inline void hash_combine(std::size_t& seed, const T& val) {
-    std::hash<T> hasher;
-    seed ^= hasher(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
-//  taken from https://stackoverflow.com/a/7222201/916549
-//
-template <typename S, typename T>
-struct std::hash<std::pair<S, T>> {
-    inline size_t operator()(const std::pair<S, T>& val) const {
-        size_t seed = 0;
-        hash_combine(seed, val.first);
-        hash_combine(seed, val.second);
-        return seed;
-    }
-};
 
 /*struct PairHash {
     template <typename T1, typename T2>

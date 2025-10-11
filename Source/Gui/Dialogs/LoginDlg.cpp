@@ -283,7 +283,8 @@ void CLoginDlg::Accept()
 
         if (!accountName_.IsEmpty()) {
             // If user has changed account's name, delete account with old name
-            Settings.ServersSettings[serverName].erase(oldAccountName);
+            uploadEngineManager_->unloadUploadEngines(serverProfile_.serverName(), serverProfile_.profileName());
+            Settings.deleteProfile(serverName, oldAccountName);
         }
     }
 
