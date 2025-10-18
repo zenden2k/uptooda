@@ -531,7 +531,7 @@ function  UploadFile(FileName, options)
 			nm.addQueryHeader("Transfer-Encoding", "");
 			nm.addQueryHeader("Authorization",getAuthorizationString());
 			nm.setMethod("PUT");
-			nm.doGet("");
+			nm.doUpload("", "");
 
 			if ( nm.responseCode() == 200 ) {
 				local viewUrl = "";

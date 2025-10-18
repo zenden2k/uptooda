@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_core" TimeStamp="1553961279" ManualUpdate="1" CoreUpdate="0" Date="30.03.2019 16:54:39" DownloadPage="http://zenden2k.atwebpages.com/imageuploader_downloads" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php" DisplayName="Image Uploader 1.3.2 build 4717>
+<UpdateInfo Name="iu_core" TimeStamp="1553961279" ManualUpdate="1" CoreUpdate="0" Date="30.03.2019 16:54:39" DownloadPage="https://svistunov.dev/imageuploader_downloads" UpdateUrl="https://svistunov.dev/updates/update.php" DisplayName="Image Uploader 1.3.2 build 4717>
   <Info>[f] Fixed crash in About dialog
 [f] Fixed funkyimg.com, jheberg.net
 </Info>

@@ -850,11 +850,12 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
     
-    if ( m_method != "PUT" ) {
+    /*if ( m_method != "PUT" ) {
         addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_currentUploadDataSize));
-    }
+    }*/
     private_initTransfer();
 
+	curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     
     curl_result = curl_easy_perform(curl_handle);
