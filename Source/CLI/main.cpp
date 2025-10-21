@@ -66,7 +66,7 @@
 #include "versioninfo.h"
 
 
-#define IU_CLI_VER "0.2.11"
+#define IU_CLI_VER "0.2.12"
 
 #ifdef _WIN32
 
@@ -655,13 +655,13 @@ char ** convertArgv(int argc, _TCHAR* argvW[]) {
 }
 
 int _tmain(int argc, _TCHAR* argvW[]) {	
+	_setmode(_fileno(stdout), _O_U16TEXT);
 	char **argv = convertArgv(argc, argvW);
 	FLAGS_logtostderr = true;
 #else
 int main(int argc, char *argv[]){
 #endif
     google::InitGoogleLogging(argv[0]);
-
     AppParams::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;

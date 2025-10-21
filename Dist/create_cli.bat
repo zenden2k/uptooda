@@ -1,5 +1,5 @@
 @echo off
-SET CLI_VERSION=0.2.11
+SET CLI_VERSION=0.2.12
 set zipcmd="C:/Program Files/7-Zip/7z.exe"
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
