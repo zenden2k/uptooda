@@ -173,7 +173,7 @@ void CThumbsView::MyDeleteAllItems()
         SimpleDelete(i, false);
     }
     DeleteAllItems();
-    clearImageList();
+    imageList_.SetImageCount(1);
 }
 
 bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
@@ -802,11 +802,6 @@ void CThumbsView::getThumbnail(int itemIndex) {
     }
     //LOG(ERROR) << "thumbnail requested:" << std::endl << tvi->FileName;
     thumbQueueCondition_.notify_one();
-}
-
-void CThumbsView::clearImageList() {
-    // Default thumbnail (index=0) will be regenerated in AddImage()
-    imageList_.RemoveAll();
 }
 
 void CThumbsView::beginAdd() {
