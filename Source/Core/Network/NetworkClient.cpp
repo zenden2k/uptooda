@@ -689,6 +689,7 @@ std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)
 
 void NetworkClient::private_cleanup_before()
 {
+    m_nUploadDataOffset = 0;
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
 
     bool add = true;
@@ -758,7 +759,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
    
     if (m_uploadingFile) {
         int64_t pos = IuCoreUtils::ftell_64(m_uploadingFile);
-        if (pos >= chunkOffset_ + m_currentUploadDataSize) {
+        if (chunkOffset_ != -1 && pos >= chunkOffset_ + m_currentUploadDataSize) {
             return 0;
         }
         retcode = fread(ptr, size, nmemb, m_uploadingFile);
@@ -771,7 +772,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
         int wantsToRead = size * nmemb;
         // dont even try to remove "<>" brackets!!
         int canRead = std::min<>((int)m_uploadData.size()-m_nUploadDataOffset, (int)wantsToRead);
-        memcpy(ptr, m_uploadData.data(), canRead);
+        memcpy(ptr, m_uploadData.data() + m_nUploadDataOffset, canRead);
         m_nUploadDataOffset += canRead;
         retcode = canRead;
     }
