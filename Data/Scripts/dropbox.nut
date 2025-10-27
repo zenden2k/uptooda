@@ -2,7 +2,7 @@
 appSecret <- "wloizpn331cc8zd";
 accessType <- "app_folder";
 
-redirectUri <- "https://oauth.vk.com/blank.html";
+redirectUri <- "https://svistunov.dev/callback";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
 
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
@@ -73,38 +73,6 @@ function signRequest(url, token) {
 	return url;
 }
 
-function OnUrlChangedCallback(data) {
-	local reg = CRegExp("^" +redirectUrlEscaped, "");
-	if ( reg.match(data.url) ) {
-        //DebugMessage(data.url, true);
-		local br = data.browser;
-		local regError = CRegExp("error=([^&]+)", "");
-		if ( regError.match(data.url) ) {
-			WriteLog("warning", regError.getMatch(regMatchOffset+0));
-		} else {
-			local regToken = CRegExp("access_token=([^&]+)", "");
-			if ( regToken.match(data.url) ) {
-				token = regToken.getMatch(regMatchOffset+0);
-			}
-			
-			local regAccountId = CRegExp("account_id=([^&]+)", "");
-			if ( regAccountId.match(data.url) ) {
-				accountId = regAccountId.getMatch(regMatchOffset+0);
-			}
-            
-            local tokenType ="";
-            local regTokenTypeId = CRegExp("token_type=([^&]+)", "");
-			if ( regTokenTypeId.match(data.url) ) {
-				tokenType = regTokenTypeId.getMatch(regMatchOffset+0);
-			}
-			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
-			ServerParams.setParam("token", token);
-			ServerParams.setParam("accountId", accountId);	
-			ServerParams.setParam("tokenTime", time().tostring());	
-		}
-		br.close();
-	}
-}
 function sendOauthRequest(url, token) {
 	nm.setUrl(url);
 	signRequest(url, token);
@@ -125,20 +93,27 @@ function _DoLogin() {
 	if ( token != ""){
 		return 1;
 	}
-    
-    local browser = CWebBrowser();
-	browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
-	browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
 	
 	local url = "https://www.dropbox.com/oauth2/authorize?" + 
 			"client_id=" + appKey  + 
 			"&response_type=token" +
 			"&redirect_uri=" + nm.urlEncode(redirectUri);
 
-	browser.navigateToUrl(url);
-	browser.showModal();
+	ShellOpenUrl(url);		
 	
-    if ( token != ""){
+    local confirmCode = InputDialog(tr("dropbox.confirmation.text", "You need to need to sign in to your Dropbox account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
+       
+    if (confirmCode != ""){
+		local t = ParseJSON(confirmCode);
+		token = t.access_token;
+		accountId = t.account_id;
+		//tokenType = t.token_type;
+
+		ServerParams.setParam("token", token);
+		ServerParams.setParam("accountId", accountId);	
+		ServerParams.setParam("tokenTime", t.timestamp);	
+		ServerParams.setParam("expiresIn", t.expires_in.tointeger());	
+
         /*local url = "https://api.dropboxapi.com/2/users/get_current_account";
         nm.addQueryHeader("Content-Type","")
         sendOauthRequest(url, token);
