@@ -1,14 +1,13 @@
-﻿appKey <- "973quph3jxdgqoe";
-appSecret <- "wloizpn331cc8zd";
-accessType <- "app_folder";
+﻿appKey <- "84rxb5xxbi7gkvo";
+appSecret <- "wwukxwreo6ig30f";
 
 redirectUri <- "https://svistunov.dev/callback";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
 
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
 token <- "";
+authCode <- "";
 accountId <- "";
 
 regMatchOffset <- 0;
@@ -87,38 +86,85 @@ function openUrl(url) {
 	system("start "+ reg_replace(url,"&","^&") );
 }
 
+function RefreshToken() {
+    local expiresIn = 0;
+    try {
+        expiresIn = ServerParams.getParam("expiresIn").tointeger();
+    } catch (e) {
+    }
+    local refreshToken = ServerParams.getParam("refreshToken"); 
+
+    if (time() + 10 > expiresIn && refreshToken != "") {
+        nm.setUrl("https://api.dropboxapi.com/oauth2/token");
+        nm.addQueryParam("grant_type", "refresh_token");
+        nm.addQueryParam("client_id", appKey);
+        nm.addQueryParam("client_secret", appSecret);
+        nm.addQueryParam("refresh_token", refreshToken);
+        nm.doPost("");
+
+        if (nm.responseCode() == 200) {
+            local t = ParseJSON(nm.responseBody());
+            ServerParams.setParam("token", t.access_token);
+            ServerParams.setParam("expiresIn", t.expires_in + time());
+            return 1;
+        } else {
+            WriteLog("error", "[dropbox.nut] Unable to refresh  token, response code: " + nm.responseCode());
+            return 0;
+        }
+    }
+    return 1;
+}
+
+function _ObtainAccessToken()  {
+    if (authCode != ""){
+        local url = "https://api.dropboxapi.com/oauth2/token";
+        nm.setUrl(url);
+        nm.addQueryParam("code", authCode);
+        nm.addQueryParam("grant_type", "authorization_code");
+        nm.addQueryParam("redirect_uri", redirectUri);
+        nm.addQueryParam("client_id", appKey);
+        nm.addQueryParam("client_secret", appSecret);
+        nm.doPost("");
+
+        if (nm.responseCode() == 200) {
+            local t = ParseJSON(nm.responseBody());
+			token = t.access_token;
+            ServerParams.setParam("token", t.access_token);
+            ServerParams.setParam("refreshToken", t.refresh_token);
+            ServerParams.setParam("expiresIn", t.expires_in + time());
+            ServerParams.setParam("accountId", t.account_id);	
+            ServerParams.setParam("tokenTime", time().tostring());	
+            ServerParams.setParam("uid", t.uid);
+            authCode = "";	
+            return 1;
+        } else {
+            WriteLog("error", "[dropbox.nut] Unable to obtain bearer token, response code: " + nm.responseCode());
+        } 
+    } 
+    return 0;
+}
+
 function _DoLogin() {
 	token = ServerParams.getParam("token");
 	
-	if ( token != ""){
-		return 1;
+	if (token != "") {
+		if (RefreshToken() == 1) {
+			return 1;
+		}
 	}
 	
 	local url = "https://www.dropbox.com/oauth2/authorize?" + 
 			"client_id=" + appKey  + 
-			"&response_type=token" +
+			"&response_type=code" +
+			"&token_access_type=offline" +
 			"&redirect_uri=" + nm.urlEncode(redirectUri);
 
 	ShellOpenUrl(url);		
 	
-    local confirmCode = InputDialog(tr("dropbox.confirmation.text", "You need to need to sign in to your Dropbox account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
+    authCode = InputDialog(tr("dropbox.confirmation.text", "You need to need to sign in to your Dropbox account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
        
-    if (confirmCode != ""){
-		local t = ParseJSON(confirmCode);
-		token = t.access_token;
-		accountId = t.account_id;
-		//tokenType = t.token_type;
-
-		ServerParams.setParam("token", token);
-		ServerParams.setParam("accountId", accountId);	
-		ServerParams.setParam("tokenTime", t.timestamp);	
-		ServerParams.setParam("expiresIn", t.expires_in.tointeger());	
-
-        /*local url = "https://api.dropboxapi.com/2/users/get_current_account";
-        nm.addQueryHeader("Content-Type","")
-        sendOauthRequest(url, token);
-        WriteLog("warning", nm.responseBody() );*/
-		return 1;
+    if (authCode != "") {
+		return _ObtainAccessToken();
 	}
     
 	return 0;
@@ -173,10 +219,11 @@ function  UploadFile(FileName, options) {
 		return 0;
 	}
 	local url = null;
-	local userPath = ServerParams.getParam("UploadPath");
-	if ( userPath!="" && userPath[userPath.len()-1] != "/") {
-		userPath+= "/";
-	}
+	local folderId = options.getFolderID();
+    if (folderId == "/") {
+        folderId = ""; 
+    }
+
 	local chunkSize = (50*1024*1024).tofloat();
 	local fileSize = 0;
 	try { 
@@ -189,7 +236,7 @@ function  UploadFile(FileName, options) {
 		_WriteLog("error","fileSize < 0 ");
 		return 0;
 	}
-	local path = "/"+ userPath;
+	local path = folderId == "" ? "/" : folderId;
     local remotePath =path+ExtractFileName(FileName);
     local fileId="";
 	if ( fileSize > 150000000 ) {
@@ -367,6 +414,173 @@ function  UploadFile(FileName, options) {
 	return 0;
 }
 
+function GetFolderList(list) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return -2; // Not authenticated
+    }
+
+    local parentId = list.parentFolder().getId();
+    
+    // Create root folder entry
+    if (parentId == "") {
+        local rootFolder = CFolderItem();
+        rootFolder.setId("/");
+        rootFolder.setTitle("/ (root)");
+        rootFolder.setSummary("");
+        list.AddFolderItem(rootFolder);
+        return 1;
+    }
+
+    // List contents of the current folder
+    local url = "https://api.dropboxapi.com/2/files/list_folder";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = parentId == "/" ? "" : parentId,
+        recursive = false,
+        include_media_info = false,
+        include_deleted = false,
+        include_has_explicit_shared_members = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to list folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+            return -2; // Authentication error
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    
+    // Process entries - only add folders to the list
+    if ("entries" in response) {
+        foreach (entry in response.entries) {
+            if (entry[".tag"] == "folder") {
+                local folder = CFolderItem();
+                folder.setId(entry.path_lower);
+                folder.setTitle(entry.name);
+                folder.setSummary("");
+                folder.setParentId(parentId);
+                list.AddFolderItem(folder);
+            }
+        }
+    }
+    
+    return 1;
+}
+
+function CreateFolder(parentAlbum, album) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local parentId = parentAlbum.getId();
+    
+    local folderName = album.getTitle();
+    if (folderName == "") {
+        return 0;
+    }
+    
+    // Construct the full path for the new folder
+    local path = (parentId == "" || parentId == "/") ? "/" + folderName : parentId + "/" + folderName;
+
+    local url = "https://api.dropboxapi.com/2/files/create_folder_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = path,
+        autorename = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200 && nm.responseCode() != 201) {
+        WriteLog("error", "[dropbox.nut] Failed to create folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 409) {
+            WriteLog("error", "[dropbox.nut] Folder already exists");
+        } else if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        album.setId(response.metadata.path_lower);
+        album.setParentId(parentId);
+    }
+    
+    return 1;
+}
+
+function ModifyFolder(folder) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local oldPath = folder.getId();
+    if (oldPath == "" || oldPath == "/") {
+        WriteLog("error", "[dropbox.nut] Cannot rename root folder");
+        return 0;
+    }
+    
+    local parentId = folder.getParentId();
+    if (parentId == "") {
+        parentId = "/"; // Default to root
+    }
+    
+    local newName = folder.getTitle();
+    if (newName == "") {
+        return 0;
+    }
+    
+    // Construct the new path for the folder
+    local newPath = parentId == "/" ? "/" + newName : parentId + "/" + newName;
+    
+    local url = "https://api.dropboxapi.com/2/files/move_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        from_path = oldPath,
+        to_path = newPath,
+        allow_shared_folder = false,
+        autorename = false,
+        allow_ownership_transfer = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to rename folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        folder.setId(response.metadata.path_lower);
+    }
+    
+    return 1;
+}
 
 function reg_replace(str, pattern, replace_with)
 {
@@ -432,14 +646,4 @@ function unescape_json_string(data) {
 	}
 
     return result;
-}
-
-function GetServerParamList()
-{
-	local a =
-	{
-        token = "token"
-		UploadPath = "Upload Path"
-	}
-	return a;
 }
