@@ -119,7 +119,7 @@
         </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0" WebsiteUrl="https://www.dropbox.com/">
+    <Server Name="Dropbox" FileHost="1" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="1" WebsiteUrl="https://www.dropbox.com/">
         <Info>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>

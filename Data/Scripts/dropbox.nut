@@ -1,6 +1,5 @@
 appKey <- GetEnvDecode("IU_DROPBOX_APP_KEY");
 appSecret <- GetEnvDecode("IU_DROPBOX_APP_SECRET");
-accessType <- "app_folder";
 
 const REDIRECT_URI = "https://svistunov.dev/blank.html";
 const REDIRECT_URI_ESCAPED = "https:\\/\\/svistunov\\.dev\\/blank\\.html";
@@ -203,9 +202,9 @@ function UploadFile(FileName, options) {
     local displayName = task.getDisplayName();
     local token = ServerParams.getParam("token");
     local url = null;
-    local userPath = ServerParams.getParam("UploadPath");
-    if ( userPath!="" && userPath[userPath.len()-1] != "/") {
-        userPath+= "/";
+    local folderId = options.getFolderID();
+    if (folderId == "/") {
+        folderId = ""; 
     }
     const CHUNK_SIZE = 52428800;
     local fileSize = 0;
@@ -219,8 +218,8 @@ function UploadFile(FileName, options) {
         WriteLog("error", "[dropbox.nut] fileSize < 0 ");
         return 0;
     }
-    local path = "/"+ userPath;
-    local remotePath =path + displayName;
+    local path = folderId == "" ? "/" : folderId;
+    local remotePath = path + (path == "/" ? "" : "/") + displayName;
     local fileId="";
     
     if ( fileSize > 150000000 ) {
@@ -407,8 +406,170 @@ function _RegReplace(str, pattern, replace_with) {
     return resultStr;
 }
 
-function GetServerParamList() {
-    return {
-        UploadPath = "Upload Path"
+function GetFolderList(list) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return -2; // Not authenticated
+    }
+
+    local parentId = list.parentFolder().getId();
+    
+    // Create root folder entry
+    if (parentId == "") {
+        local rootFolder = CFolderItem();
+        rootFolder.setId("/");
+        rootFolder.setTitle("/ (root)");
+        rootFolder.setSummary("");
+        list.AddFolderItem(rootFolder);
+        return 1;
+    }
+
+    // List contents of the current folder
+    local url = "https://api.dropboxapi.com/2/files/list_folder";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = parentId == "/" ? "" : parentId,
+        recursive = false,
+        include_media_info = false,
+        include_deleted = false,
+        include_has_explicit_shared_members = false
     };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to list folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+            return -2; // Authentication error
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    
+    // Process entries - only add folders to the list
+    if ("entries" in response) {
+        foreach (entry in response.entries) {
+            if (entry[".tag"] == "folder") {
+                local folder = CFolderItem();
+                folder.setId(entry.path_lower);
+                folder.setTitle(entry.name);
+                folder.setSummary("");
+                folder.setParentId(parentId);
+                list.AddFolderItem(folder);
+            }
+        }
+    }
+    
+    return 1;
+}
+
+function CreateFolder(parentAlbum, album) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local parentId = parentAlbum.getId();
+    
+    local folderName = album.getTitle();
+    if (folderName == "") {
+        return 0;
+    }
+    
+    // Construct the full path for the new folder
+    local path = (parentId == "" || parentId == "/") ? "/" + folderName : parentId + "/" + folderName;
+
+    local url = "https://api.dropboxapi.com/2/files/create_folder_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = path,
+        autorename = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200 && nm.responseCode() != 201) {
+        WriteLog("error", "[dropbox.nut] Failed to create folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 409) {
+            WriteLog("error", "[dropbox.nut] Folder already exists");
+        } else if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        album.setId(response.metadata.path_lower);
+        album.setParentId(parentId);
+    }
+    
+    return 1;
+}
+
+function ModifyFolder(folder) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local oldPath = folder.getId();
+    if (oldPath == "" || oldPath == "/") {
+        WriteLog("error", "[dropbox.nut] Cannot rename root folder");
+        return 0;
+    }
+    
+    local parentId = folder.getParentId();
+    if (parentId == "") {
+        parentId = "/"; // Default to root
+    }
+    
+    local newName = folder.getTitle();
+    if (newName == "") {
+        return 0;
+    }
+    
+    // Construct the new path for the folder
+    local newPath = parentId == "/" ? "/" + newName : parentId + "/" + newName;
+    
+    local url = "https://api.dropboxapi.com/2/files/move_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        from_path = oldPath,
+        to_path = newPath,
+        allow_shared_folder = false,
+        autorename = false,
+        allow_ownership_transfer = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to rename folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        folder.setId(response.metadata.path_lower);
+    }
+    
+    return 1;
 }

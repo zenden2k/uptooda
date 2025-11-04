@@ -367,11 +367,11 @@ begin
   end
   else if (CurStep=ssInstall) then
   begin
-    if (UnInstallOldVersion() = 2) then
-    begin
+    //if (UnInstallOldVersion() = 2) then
+    //begin
       //MsgBox('Error during uninstallation of the old version', mbError, MB_OK);
       //Abort;
-    end;
+    //end;
   end;
 end;
 

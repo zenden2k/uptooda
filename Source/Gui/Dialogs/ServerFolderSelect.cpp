@@ -209,6 +209,7 @@ void CServerFolderSelect::getListTaskFinished(FolderTask* folderTask, bool succe
     if (parentFolderId.empty()) {
         m_FolderTree.DeleteAllItems();
         m_FolderMap.clear();
+        tid = nullptr;
     } else {
         HTREEITEM item = m_FolderTree.GetChildItem(treeViewItem);
         auto* tid2 = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
