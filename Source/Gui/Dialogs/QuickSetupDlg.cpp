@@ -104,7 +104,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA(serverName, ue->Name.c_str());
-            int itemIndex = serverComboBox_.AddItem(Utf8ToWCstring(ue->Name), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
+            int itemIndex = serverComboBox_.AddItem(Utf8ToWCstring(myEngineList->getServerDisplayName(ue)), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
             if (ue->Name == selectedServerName) {
                 selectedIndex = itemIndex;
             }

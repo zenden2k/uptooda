@@ -227,7 +227,7 @@ void BasicSettings::deleteProfile(const std::string& serverName, const std::stri
 }
 
 void BasicSettings::clearServerSettings() {
-    auto builtInScripts = CUploadEngineListBase::builtInScripts();
+    //auto builtInScripts = CUploadEngineListBase::builtInScripts();
 
     std::vector<std::string> deletedServerProfiles;
 

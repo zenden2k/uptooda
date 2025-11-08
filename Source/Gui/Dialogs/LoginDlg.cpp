@@ -113,7 +113,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
         signupLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(signupLink_);
-        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(m_UploadEngine->Name));
+        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(myEngineList->getServerDisplayName(m_UploadEngine)));
         signupLink_.SetLabel(linkText.c_str());
         signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
         signupLink_.ShowWindow(SW_SHOW);

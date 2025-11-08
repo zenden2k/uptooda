@@ -32,6 +32,7 @@
 #include "Gui/Constants.h"
 #include "Gui/Controls/ServerListView.h"
 #include "Core/Upload/UploadEngine.h"
+#include "Gui/Controls/MyImage.h"
 
 // CServerListPopup
 class IconBitmapUtils;
@@ -81,6 +82,9 @@ public:
     BEGIN_DLGRESIZE_MAP(CServerListPopup)
         DLGRESIZE_CONTROL(IDC_SERVERLISTCONTROL, DLSZ_SIZE_X |  DLSZ_SIZE_Y)
         DLGRESIZE_CONTROL(IDC_SEARCHQUERYEDIT, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_SEARCHSTATIC, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_HELPBUTTON, DLSZ_MOVE_X)
+        DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_ADDBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
@@ -91,7 +95,9 @@ public:
         DDX_CONTROL_HANDLE(IDC_FILERADIO, fileTypeRadioButton_)
         DDX_CONTROL_HANDLE(IDC_VIDEORADIO, videoTypeRadioButton_)
         DDX_CONTROL_HANDLE(IDC_SEARCHQUERYEDIT, queryEditControl_)
-        DDX_CONTROL_HANDLE(IDC_ADDBUTTON, addServerButton_)
+        DDX_CONTROL_HANDLE(IDC_ADDBUTTON, optionsButton_)
+        DDX_CONTROL_HANDLE(IDC_HELPBUTTON, helpButton_)
+        DDX_CONTROL(IDC_SEARCHSTATIC, searchIconCtrl_)
     END_DDX_MAP()
 
     DLGTEMPLATE* GetTemplate();
@@ -135,7 +141,6 @@ public:
 
     int serverIndex() const;
 
-
 private:
     ServerProfile serverProfile_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
@@ -148,8 +153,10 @@ private:
     CServerListView listView_;
     CButton allTypesRadioButton_, imageTypeRadioButton_, fileTypeRadioButton_, videoTypeRadioButton_;
     CEdit queryEditControl_;
-    CButton addServerButton_;
-    CIcon addServerButtonIcon_;
+    CButton optionsButton_, helpButton_;
+    CIcon helpButtonIcon_;
+    CToolTipCtrl toolTip_;
+    CMyImage searchIconCtrl_;
     int serversMask_, serverIndex_, selectedServerType_;
     int ret_ = 0;
     CAccelerator hotkeys_;

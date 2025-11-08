@@ -95,6 +95,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_FolderMap[""] = nullptr;
 
     m_FolderOperationType = FolderOperationType::foGetFolders;
+    auto engineList = ServiceLocator::instance()->engineList();
     auto* uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!uploadScript)
@@ -103,7 +104,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     }
     CString title;
-    title.Format(TR("Folder list on server %s for account '%s':"), U2W(m_UploadEngine->Name).GetString(),
+    title.Format(TR("Folder list on server %s for account '%s':"), U2W(engineList->getServerDisplayName(m_UploadEngine)).GetString(),
                  U2W(serverProfile_.profileName()).GetString());
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 

@@ -91,6 +91,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         }
 
         UE.Name = cur.Attribute("Name");
+        UE.DisplayName = cur.Attribute("DisplayName");
 //#ifdef NDEBUG
         std::string serverMinVersion = cur.Attribute("MinVersion");
         if (!serverMinVersion.empty()) {

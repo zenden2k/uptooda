@@ -212,6 +212,7 @@ class CUploadEngineData
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
         inline static constexpr int MAX_FILE_SIZE_UNLIMITED = -1;
         std::string Name;
+        std::string DisplayName;
         std::string PluginName;
         bool SupportsFolders;
         bool UsingPlugin;
@@ -397,7 +398,7 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
-    static std::vector<std::string> builtInScripts();
+    static std::vector<std::string_view> builtInScripts();
     std::string getServerDisplayName(const CUploadEngineData* data) const;
 
     inline static constexpr std::string_view CORE_SCRIPT_FTP = "ftp";
@@ -406,6 +407,7 @@ public:
     inline static constexpr std::string_view CORE_SCRIPT_DIRECTORY = "directory";
 
     inline static constexpr int ALL_SERVERS = 0xffffffff;
+    inline static std::vector<std::string_view> BUILTIN_SCRIPTS = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
 
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;

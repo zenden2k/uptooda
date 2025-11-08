@@ -285,9 +285,8 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
     return {};
 }
 
-std::vector<std::string> CUploadEngineListBase::builtInScripts() {
-    auto keys = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
-    return std::vector<std::string>(keys.begin(), keys.end());
+std::vector<std::string_view> CUploadEngineListBase::builtInScripts() {
+    return BUILTIN_SCRIPTS;
 }
 
 void CUploadEngineListBase::removeServer(const std::string& name) {
@@ -308,10 +307,10 @@ std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData*
     if (!data) {
         return {};
     }
-    std::string serverName = data->Name;
-    auto builtInScriptList = builtInScripts();
 
-    if (std::find(builtInScriptList.begin(), builtInScriptList.end(), data->PluginName) != builtInScriptList.end()) {
+    std::string serverName = data->DisplayName.empty() ? data->Name : data->DisplayName;
+
+    if (std::find(BUILTIN_SCRIPTS.begin(), BUILTIN_SCRIPTS.end(), data->PluginName) != BUILTIN_SCRIPTS.end()) {
         serverName = IuStringUtils::Replace(serverName, "(" + data->PluginName + ")", "[" + IuStringUtils::ToUpper(data->PluginName) + "]");
     }
     return serverName;

@@ -75,7 +75,8 @@ void CServerListPopup::TranslateUI() {
     TRCC(IDC_IMAGERADIO, "serverlist.servertype", "Image");
     TRCC(IDC_FILERADIO, "serverlist.servertype", "File");
     TRCC(IDC_VIDEORADIO, "serverlist.servertype", "Video");
-    TRC(IDC_ADDBUTTON, "Add server");
+    TRC(IDOK, "OK");
+    TRC(IDC_ADDBUTTON, "Options");
 }
 
 LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -87,9 +88,15 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     DoDataExchange(FALSE);
    
     TranslateUI();
-    addServerButton_.SetButtonStyle(BS_SPLITBUTTON);
+    optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+
+    // Creating tooltip control. We will use subclassing of controls to intercept their messages
+    toolTip_.Create(m_hWnd);
+    CString tipText = TR("Help");
+    CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, 0, const_cast<LPWSTR>(tipText.GetString()));
+    toolTip_.AddTool(tip);
 
     if (selectedServerType_ == CUploadEngineData::TypeImageServer) {
         imageTypeRadioButton_.SetCheck(BST_CHECKED);
@@ -106,6 +113,7 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     videoTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeVideoServer);
 
     createResources();
+
 
     /*ACCEL accels[] = {
         { FVIRTKEY, VK_F1, IDC_HELPBUTTON },
@@ -192,12 +200,15 @@ void CServerListPopup::createResources() {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
-    if (addServerButtonIcon_) {
-        addServerButtonIcon_.DestroyIcon();
+    if (helpButtonIcon_) {
+        helpButtonIcon_.DestroyIcon();
     }
 
-    addServerButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONADDITEM), iconWidth, iconHeight);
-    addServerButton_.SetIcon(addServerButtonIcon_);
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
+    helpButton_.SetIcon(helpButtonIcon_);
+
+    searchIconCtrl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
+    searchIconCtrl_.loadImage(0, 0, IDB_ICONSEARCHSMALL, false, GetSysColor(COLOR_BTNFACE));
 }
 
 void CServerListPopup::setOnChangeCallback(std::function<void(CServerListPopup*)> cb) {

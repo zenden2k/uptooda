@@ -23,6 +23,7 @@ public:
 
     BEGIN_MSG_MAP(CScreenRecordingSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
         COMMAND_HANDLER(IDC_OUTFOLDERBROWSEBUTTON, BN_CLICKED, OnBnClickedBrowseButton)
         COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpButton)
         COMMAND_HANDLER(IDC_BACKENDCOMBO, CBN_SELCHANGE, OnBackendChanged)
@@ -32,6 +33,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_BACKENDCOMBO, backendCombobox_)
         DDX_CONTROL_HANDLE(IDC_OUTFOLDEREDIT, outFolderEditControl_)
         DDX_CONTROL_HANDLE(IDC_FRAMERATESPIN, frameRateUpDownControl_)
+        DDX_CONTROL_HANDLE(IDC_HELPBUTTON, helpButton_)
     END_DDX_MAP()
 
     // Handler prototypes:
@@ -41,6 +43,7 @@ public:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnBackendChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnClickedHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     bool apply() override;
 
@@ -48,6 +51,9 @@ public:
     CEdit outFolderEditControl_;
     CComboBox backendCombobox_;
     CUpDownCtrl frameRateUpDownControl_;
+    CButton helpButton_;
+    CIcon helpButtonIcon_;
+    CToolTipCtrl toolTip_;
 
 private:
     std::unique_ptr<CSettingsPage> subPages_[SUBPAGES_COUNT];
@@ -56,7 +62,6 @@ private:
 
     void TranslateUI();
     void showSubPage(SubPage page);
-
-
+    void createResources();
 };
 

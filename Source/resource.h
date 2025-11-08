@@ -212,6 +212,8 @@
 #define IDI_ICONSTARTRECORD             353
 #define IDB_PNGAPPNAME                  355
 #define IDB_APPNAME                     355
+#define IDI_ICON17                      357
+#define IDB_ICONSEARCHSMALL             358
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -870,6 +872,7 @@
 #define IDC_VIDEOSOURCECOMBO2           1376
 #define IDC_AUDIOSOURCECOMBO            1376
 #define IDC_ADAPTERLABEL                1376
+#define IDC_SEARCHSTATIC                1377
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -915,9 +918,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        357
+#define _APS_NEXT_RESOURCE_VALUE        359
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1377
+#define _APS_NEXT_CONTROL_VALUE         1378
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

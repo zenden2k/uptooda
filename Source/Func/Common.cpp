@@ -304,7 +304,7 @@ void OpenDocumentation(HWND parent, const CString& file, const CString& id /*= {
         }*/
    }
 
-    if (file.IsEmpty()) {
+    if (actualFile.IsEmpty()) {
         actualFile = docsFolder + _T("index.html");
     }
 

@@ -8,6 +8,7 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "FFmpegSettingsPage.h"
 #include "DXGISettingsPage.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 CScreenRecordingSettingsPage::CScreenRecordingSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -77,6 +78,19 @@ void CScreenRecordingSettingsPage::showSubPage(SubPage pageId) {
     curPage_ = pageId;
 }
 
+void CScreenRecordingSettingsPage::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (helpButtonIcon_) {
+        helpButtonIcon_.DestroyIcon();
+    }
+
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
+    helpButton_.SetIcon(helpButtonIcon_);
+}
+
 LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     TranslateUI();
     DoDataExchange(FALSE);
@@ -97,6 +111,13 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     frameRateUpDownControl_.SetRange(1, 60);
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
 
+    toolTip_.Create(m_hWnd);
+    CString tipText = TR("Help");
+    CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, 0, const_cast<LPWSTR>(tipText.GetString()));
+    toolTip_.AddTool(tip);
+
+    createResources();
+
     return 1;  // Let the system set the focus
 }
 
@@ -111,6 +132,11 @@ LRESULT CScreenRecordingSettingsPage::OnBackendChanged(WORD wNotifyCode, WORD wI
 
 LRESULT CScreenRecordingSettingsPage::OnBnClickedHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     WinUtils::ShellOpenFileOrUrl(_T("https://svistunov.dev/screen-recording"), m_hWnd);
+    return 0;
+}
+
+LRESULT CScreenRecordingSettingsPage::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
     return 0;
 }
 

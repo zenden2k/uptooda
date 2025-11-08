@@ -83,7 +83,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
     </Server>
-    <Server Name="directupload.net" Authorize="1" MaxFileSize="67108864" DefaultForTypes="image" Plugin="directupload" SupportsFolders="1" 
+    <Server Name="directupload.net" DisplayName="directupload.eu" Authorize="1" MaxFileSize="67108864" DefaultForTypes="image" Plugin="directupload" SupportsFolders="1" 
         WebsiteUrl="https://www.directupload.eu" RegistrationUrl="https://www.directupload.eu/index.php?mode=register">
         <Info>
             <SupportedFormats>
@@ -127,7 +127,7 @@
         </Info>
         <Result ImageUrlTemplate="stub" />
     </Server>
-    <Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
+    <Server Name="fastpic.ru" DisplayName="fastpic.org" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
         <Info>
             <SupportedFormats>
                 <FormatGroup>
