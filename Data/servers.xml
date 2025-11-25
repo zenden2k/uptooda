@@ -682,7 +682,7 @@
         </Actions>
         <Result DownloadUrlTemplate="stub" />
     </Server>
-    <Server Name="upload.ee" Authorize="0" FileHost="1" Plugin="upload.ee" MaxFileSize="104857600" WebsiteUrl="https://www.upload.ee" 
+    <Server Name="upload.ee" Authorize="1" FileHost="1" Plugin="upload.ee" SupportsFolders="1" MaxFileSize="104857600" WebsiteUrl="https://www.upload.ee" 
         RegistrationUrl="https://www.upload.ee/register.html">
         <Info>
             <StorageTimeInfo>

@@ -1,9 +1,53 @@
-baseUrl <- "https://www.upload.ee";
+const BASE_URL = "https://www.upload.ee";
+
+function _GetNonce(url) {
+    nm.doGet(url);
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[upload.ee] Failed to load the main page!");
+        return "";
+    }
+
+    local doc = Document(nm.responseBody());
+    local nonce = doc.find("input[name=\"___nonce\"]").attribute("value");
+
+    if (nonce == "") {
+        WriteLog("error", "[upload.ee] Failed to obtain 'nonce' value!");
+    }
+
+    return nonce;
+}
+function Authenticate() {
+    local nonce = _GetNonce(BASE_URL);
+    if (nonce == "") {
+        return  ResultCode.Failure;
+    }
+    local login = ServerParams.getParam("Login");
+    local password = ServerParams.getParam("Password");
+    nm.setUrl(BASE_URL + "/login.html");
+    nm.addPostField("u[username]", login);
+    nm.addPostField("u[password]", password);
+    nm.addPostField("u[autologin]", "1");
+    nm.addPostField("u[page]", "");
+    nm.addPostField("___nonce", nonce);
+    nm.addPostField("login", "Войти");
+    nm.doPost("");
+
+    if (nm.responseCode() == 200) {
+        return ResultCode.Success;
+    }
+
+    WriteLog("error", "[upload.ee]  Failed to authenticate, response code: " + nm.responseCode());
+    return ResultCode.Failure;
+}
 
 function UploadFile(FileName, options) {
+    local login = ServerParams.getParam("Login");
+    local albumId = options.getFolderID();
+
     const finishUrl = "/?page=finished&upload_id=";
-    nm.setReferer(baseUrl);
-    nm.doGet(baseUrl + "/ubr_link_upload.php?rnd_id=" + time());
+    nm.setReferer(BASE_URL);
+    nm.doGet(BASE_URL + "/ubr_link_upload.php?rnd_id=" + time());
 
     if (nm.responseCode() == 200) {
         local reg = CRegExp("startUpload\\(\"(.+?)\"", "mi");
@@ -11,13 +55,16 @@ function UploadFile(FileName, options) {
         if ( reg.match(nm.responseBody()) ) {
             local uploadId = reg.getMatch(1);
             
-            nm.setReferer(baseUrl);
-            nm.setUrl(baseUrl + "/cgi-bin/ubr_upload.pl?X-Progress-ID=" + nm.urlEncode(uploadId)+ "&upload_id=" + nm.urlEncode(uploadId));
+            nm.setReferer(BASE_URL);
+            nm.setUrl(BASE_URL + "/cgi-bin/ubr_upload.pl?X-Progress-ID=" + nm.urlEncode(uploadId)+ "&upload_id=" + nm.urlEncode(uploadId));
 
             nm.addQueryParamFile("upfile_0", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
             nm.addQueryParam("link", "");
             nm.addQueryParam("email", "");
             nm.addQueryParam("category", "cat_file");
+            if (login != "") {
+                nm.addQueryParam("gallery_id", albumId);
+            }
             nm.addQueryParam("big_resize", "none");
             nm.addQueryParam("small_resize", "120x90");
             
@@ -31,7 +78,7 @@ function UploadFile(FileName, options) {
                     return 0;
                 }
 
-                nm.doGet(baseUrl + finishUrl +  nm.urlEncode(uploadId));
+                nm.doGet(BASE_URL + finishUrl +  nm.urlEncode(uploadId));
 
                 if (nm.responseCode() == 200) {
                     local doc = Document(nm.responseBody());
@@ -60,4 +107,65 @@ function UploadFile(FileName, options) {
     }
 
     return 0;
+}
+
+function CreateFolder(parentAlbum, album) {
+    local nonce = _GetNonce(BASE_URL);
+    if (nonce == "") {
+        return  ResultCode.Failure;
+    }
+
+    nm.setUrl(BASE_URL + "/?page=mygalleries&gid=-1");
+    nm.addPostField("g[name]", album.getTitle());
+    nm.addPostField("g[private]", "1");
+    nm.addPostField("g[pass]", "");
+    nm.addPostField("save_g", "Сохранить");
+    nm.addPostField("___nonce", nonce);
+    nm.doPost("");
+
+    if (nm.responseCode() == 200) {
+        return ResultCode.Success;
+    }
+    WriteLog("error", "[upload.ee] Failed to create the album, response code: " + nm.responseCode());
+    return ResultCode.Failure; 
+}
+
+function GetFolderList(list) {
+    nm.doGet(BASE_URL + "/?page=mygalleries");
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[upload.ee] Failed to obtain folder list, response code: " + nm.responseCode());
+        return ResultCode.Failure;  
+    }
+
+    local doc = Document(nm.responseBody());
+    local table = doc.find("#table");
+
+    if (!table.length()) {
+        WriteLog("error", "[upload.ee] Cannot find the albums table on the page");
+        return ResultCode.Failure;  
+    }
+
+    local albumListRows = doc.find("#table tbody tr");
+
+    albumListRows.each(function(index, elem) {
+        if (index == 0) {
+            return; // Skip header
+        }
+        local cell = elem.find("td").at(1);
+        local linkNode = cell.find("a").at(0);
+        local editUrl = linkNode.attr("href");
+        local reg = CRegExp("/gallery/(\\d+)/", "mi");
+        local albumId = "";            
+        if (reg.match(editUrl) ) {
+            albumId = reg.getMatch(1);
+        }
+        local album = CFolderItem();
+        album.setId(albumId);
+        album.setTitle(linkNode.find("b").ownText());
+
+        // There are no child albums
+        album.setItemCount(0);
+        list.AddFolderItem(album);
+    });
+    return ResultCode.Success;
 }
