@@ -50,14 +50,14 @@ function UploadFile(pathToFile, options) {
     local doc = Document(responseBody);
     
     // Extract direct link to image
-    local directUrlInput = doc.find("p:contains('Direct link to the image:') input");
+    local directUrlInput = doc.find("div.link-container:contains('Direct link') input");
     local directUrl = "";
     if (directUrlInput.length() > 0) {
         directUrl = directUrlInput.attr("value");
     }
     
     // Extract short link (view URL)
-    local viewUrlInput = doc.find("p:contains('Short link:') input");
+    local viewUrlInput = doc.find("div.link-container:contains('Short link:') input");
     local viewUrl = "";
     if (viewUrlInput.length() > 0) {
         viewUrl = viewUrlInput.attr("value");
@@ -65,7 +65,7 @@ function UploadFile(pathToFile, options) {
     
     // Extract thumbnail URL from BB code
     local thumbnailUrl = "";
-    local thumbnailInput = doc.find("p:contains('BB code for image with preview (320x240):') input");
+    local thumbnailInput = doc.find("div.link-container:contains('BB code for image with preview (320x240):') input");
     if (thumbnailInput.length() > 0) {
         local bbCode = thumbnailInput.attr("value");
         local reg = CRegExp("\\[img\\](.+?)\\[/img\\]", "mi");

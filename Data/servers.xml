@@ -985,8 +985,11 @@
     </Server>
     <Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register" MaxThreads="1">
         <Actions>
-            <Action Type="get" Url="https://iimg.su" RegExp="csrf-token&quot;\s+content=&quot;(.+?)&quot;" AssignVars="Token:0"/>
-            <Action Type="upload" Url="https://iimg.su/upload" PostParams="file=%filename%;upload_file=true;_token=$(Token);">
+            <Action Type="get" Url="https://iimg.su" RegExp="csrf-token&quot;\s+content=&quot;(.+?)&quot;">
+                <Call Function="regexp" Arg1="csrf-token&quot;\s+content=&quot;(.+?)&quot;" AssignVars="Token:0" />
+                <Call Function="regexp" Arg1="xdb&quot;\s+value=&quot;(.+?)&quot;" AssignVars="Xdb:0" />
+            </Action>
+            <Action Type="upload" Url="https://iimg.su/upload" CustomHeaders="X-Requested-With:XMLHttpRequest" PostParams="file=%filename%;upload_file=true;_token=$(Token);xdb=$(Xdb)">
                 <Call Function="json" Arg1="data.page_url" AssignVars="ViewUrl:0;"/>
                 <Call Function="json" Arg1="data.file_url" AssignVars="DirectUrl:0;"/>
                 <Call Function="json" Arg1="data.file_thumb_url" AssignVars="ThumbUrl:0;"/>
@@ -1266,41 +1269,15 @@
         </Actions>
         <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-    <Server Name="anonpic.org" Plugin="anonpic.org" MaxFileSize="10485760" WebsiteUrl="https://anonpic.org/">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="10485760">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/vnd.adobe.photoshop">*.psd</Format>
-                </FormatGroup>
-            </SupportedFormats>
-        </Info>
+    <Server Name="anonpic.net" Plugin="anonpic.net" WebsiteUrl="https://anonpic.net/">
         <Actions>
         </Actions>
-        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
+        <Result ImageUrlTemplate="stub" />
     </Server>
     <Server Name="fotozavr.ru" Plugin="fotozavr" WebsiteUrl="https://fotozavr.ru/" MaxThreads="1">
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-    </Server>
-    <Server Name="imgtr.ee" Authorize="1" MaxFileSize="8388608" Plugin="imgtr.ee" WebsiteUrl="https://imgtr.ee/" PasswordLabel="API key">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="8388608">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                </FormatGroup>
-            </SupportedFormats>
-        </Info>
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <Server Name="thumbsnap.com" Types="image video" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
         <Info>

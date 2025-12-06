@@ -10,7 +10,7 @@ function UploadFile(FileName, options) {
     if (apiKey == "") {
         apiKey = "8ca0b57a6bb9c4c33cd9e7ab8e6a7f05";
     }
-    nm.setUrl("http://api.postimage.org/1/upload");
+    nm.setUrl("https://api.postimage.org/1/upload");
     nm.setUserAgent("Mozilla/5.0 (compatible; Postimage/1.0.1; +http://postimage.org/app.php)");
     nm.addQueryParam("key", apiKey);
     nm.addQueryParam("o", md5(GetDeviceName())); // md5("Windows 8 64-bit")
