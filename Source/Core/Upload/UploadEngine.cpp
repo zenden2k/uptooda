@@ -302,7 +302,7 @@ void CUploadEngineListBase::removeServer(const std::string& name) {
 }
 
 
-std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData* data) const
+std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData* data)
 {
     if (!data) {
         return {};

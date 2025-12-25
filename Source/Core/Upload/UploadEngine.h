@@ -399,7 +399,7 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
     static std::vector<std::string_view> builtInScripts();
-    std::string getServerDisplayName(const CUploadEngineData* data) const;
+    static std::string getServerDisplayName(const CUploadEngineData* data);
 
     inline static constexpr std::string_view CORE_SCRIPT_FTP = "ftp";
     inline static constexpr std::string_view CORE_SCRIPT_SFTP = "sftp";
