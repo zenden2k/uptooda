@@ -4,7 +4,7 @@
     },
     "yandexdisk": {
         "confirmation": {
-            "text": "방금 열린 웹 브라우저에서 Yandex.Disk 계정에 로그인한 다음\n아래 텍스트 필드에 확인 코드를 복사해야 합니다.\n\n확인 코드를 입력하세요:"
+            "text": "방금 오픈한 웹 브라우저에서 Yandex.Disk 계정에\n로그인한 다음 아래 텍스트 필드에 확인 코드를 \n복사해야 합니다.\n\n확인 코드를 입력해 주세요:\n"
         },
         "privacy": {
             "public": "공개",
@@ -14,7 +14,7 @@
     "googledrive": {
         "oauth": {
             "success": "승인이 완료되었습니다! 이제 이 페이지를 닫아도 됩니다.",
-            "failed": "확인 코드를 받지 못했습니다.",
+            "failed": "확인 코드를 받지 못했습니다",
             "title": "승인(권한 부여)"
         }
     },
@@ -51,8 +51,8 @@
         "active_connection_port": "활성 연결 포트",
         "remote_dir": "원격 디렉터리",
         "secure_connection_no": "No",
-        "secure_connection_explicit": "Explicit",
-        "secure_connection_implicit": "Implicit"
+        "secure_connection_explicit": "명시적",
+        "secure_connection_implicit": "암묵적"
     },
     "chevereto": {
         "expiration": "만료",
@@ -60,8 +60,8 @@
         "api_key_not_set": "API 키가 설정되지 않았습니다! 인증 대화 상자에서 키를 지정해야 합니다."
     },
     "imgur": {
-        "confirmation" : {
+        "confirmation": {
             "text": "방금 열린 웹 브라우저에서 Imgur 계정에 로그인한 다음 아래 텍스트 필드에 확인 코드를 복사해야 합니다. 확인 코드를 입력하세요:"
-        } 
+        }
     }
 }
