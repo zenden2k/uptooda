@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-23 17:38+0300\n"
-"PO-Revision-Date: 2025-08-09 22:02+0000\n"
+"PO-Revision-Date: 2025-08-23 17:02+0000\n"
 "Last-Translator: Максим Горпиніч <gorpinicmaksim0@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/uk/>\n"
@@ -12,9 +12,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.13\n"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/OpusAudioCodec.h:30
@@ -60,7 +60,7 @@ msgstr "\"%1%\": сервер %2% не підтримує цей тип файл
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:681
 msgctxt "upload_settings_wizard_page.server_button"
 msgid "%1% + %2%"
-msgstr ""
+msgstr "%1% + %2%"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:910
@@ -96,15 +96,13 @@ msgstr[1] "Вибрано %d сервера"
 msgstr[2] "Вибрано %d серверів"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1467
-#, fuzzy, c-format
-#| msgid "%d server selected"
-#| msgid_plural "%d servers selected"
+#, c-format
 msgctxt "upload_settings_wizard_page.more_servers_link"
 msgid "%d server selected in total..."
 msgid_plural "%d servers selected in total..."
-msgstr[0] "Вибрано %d сервер"
-msgstr[1] "Вибрано %d сервера"
-msgstr[2] "Вибрано %d серверів"
+msgstr[0] "Загалом вибрано %d сервер..."
+msgstr[1] "Загалом вибрано %d сервера..."
+msgstr[2] "Загалом вибрані %d серверів..."
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:31
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:33
@@ -128,7 +126,7 @@ msgstr ""
 "%y% – рік, %m% – місяць, %d% – день\n"
 "%h% – години, %n% – хвилини, %s% – секунди\n"
 " %i% – індекс файлу,\n"
-"%cx% – ширина зображення,  %cy% – висота зображення."
+"%cx% – ширина зображення,  %cy% – висота зображення"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:623
 #, c-format
@@ -514,8 +512,8 @@ msgstr "Принаймні одна команда миші не повинна 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:44
 msgid "Attention! Global hotkeys are active only when tray icon is shown."
 msgstr ""
-"Увага! Глобальні cполучення клавіш активні тільки тоді,\n"
-"коли відображається піктограма у треї."
+"Увага! Глобальні cполучення клавіш активні тільки тоді, коли відображається "
+"піктограма у треї."
 
 #: ../Source/Func/MediaInfoHelper.cpp:242
 #: ../Source/Func/MediaInfoHelper.cpp:247
@@ -678,11 +676,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:757
 msgid "Cannot copy file "
-msgstr "Не вдалося скопіювати файл"
+msgstr "Не вдалося скопіювати файл "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:746
 msgid "Cannot copy file: "
-msgstr "Не вдалося скопіювати файл:"
+msgstr "Не вдалося скопіювати файл: "
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:176
 msgid "Cannot create registry key for extension: "
@@ -693,10 +691,8 @@ msgid "Cannot load thumbnail for image."
 msgstr "Не вдається завантажити ескіз зображення."
 
 #: ../Source/Func/Common.cpp:314
-#, fuzzy
-#| msgid "Documentation"
 msgid "Cannot open documentation: "
-msgstr "Документація (російською)"
+msgstr "Не вдається відкрити документацію: "
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:659
 msgid ""
@@ -726,18 +722,18 @@ msgstr "Знімок останньої області"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
 msgid "Capture Rectangular Region"
-msgstr "Знімок прямокутної області"
+msgstr "Знімок Прямокутної Області"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:201
 msgid "Capture Selected Area"
-msgstr "Знімок прямокутної області..."
+msgstr "Знімок прямокутної області"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
-msgstr "Знімок вибраного об'єкта..."
+msgstr "Знімок вибраного об'єкта"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
@@ -756,7 +752,7 @@ msgstr "Захоплення курсора"
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
-msgstr "Знімок активного вікна..."
+msgstr "Знімок активного вікна"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
@@ -1329,11 +1325,11 @@ msgstr "Завантажено %s із %s (%d %%)"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:555
 msgid "Downloaded: "
-msgstr "Завантажено:"
+msgstr "Завантажено: "
 
 #: ../Source/Func/UpdatePackage.cpp:385
 msgid "Downloading file "
-msgstr "Завантаження файлу"
+msgstr "Завантаження файлу "
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
@@ -1341,7 +1337,7 @@ msgstr "Обводити рамкою"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr "Тривалість:"
+msgstr "Тривалість: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:213
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
@@ -1469,7 +1465,7 @@ msgstr "Помилка в полі '%s': значення має бути в м�
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:90
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
-msgstr "Помилка в полі '%s': значення має бути більшим за нуль."
+msgstr "Помилка в полі '%s': значення має бути більшим за нуль"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:207
 msgid "Error log"
@@ -1481,7 +1477,7 @@ msgstr "Помилка під час перевірки формату файл�
 
 #: ../Source/Func/UpdatePackage.cpp:395
 msgid "Error while updating component "
-msgstr "Помилка під час оновлення компонентів"
+msgstr "Помилка під час оновлення компонентів "
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
 msgid "Error:"
@@ -1523,7 +1519,7 @@ msgstr "Видобути кадри"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:198
 msgid "Extracting frame "
-msgstr "Витягнення кадрів"
+msgstr "Витягнення кадрів "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
@@ -1641,7 +1637,7 @@ msgstr "Файл:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
 msgid "File: "
-msgstr "Файл:"
+msgstr "Файл: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
@@ -1656,7 +1652,7 @@ msgstr "Ім'я файлу:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr "Ім'я файлу:"
+msgstr "Ім'я файлу: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:731
 msgid "Files"
@@ -1668,7 +1664,7 @@ msgstr "Усього файлів:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr "Розмір файлу:"
+msgstr "Розмір файлу: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:263
 msgid "Fill background"
@@ -1796,7 +1792,7 @@ msgstr "Макет розташування кадрів"
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
-msgstr "Знімок довільної області..."
+msgstr "Знімок довільної області"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:344 ../Source/Gui/Win7JumpList.cpp:203
 msgid "From Clipboard"
@@ -2095,8 +2091,8 @@ msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
 msgstr ""
-"Просто перетягніть ваші файли до вікна Image Uploader,\n"
-"і програма обробить їх."
+"Просто перетягніть ваші файли до вікна Image Uploader, і програма обробить "
+"їх."
 
 #: ../Source/Func/LangClass.cpp:106
 msgid "LAYOUT_DIRECTION"
@@ -2210,11 +2206,11 @@ msgstr "Ви успішно вийшли зі свого облікового з
 
 #: ../Source/Func/UpdatePackage.cpp:507
 msgid "MD5 check failed for file "
-msgstr "Помилка перевірки MD5 для файлу"
+msgstr "Помилка перевірки MD5 для файлу "
 
 #: ../Source/Func/UpdatePackage.cpp:403
 msgid "MD5 check of the update package failed "
-msgstr "Помилка перевірки MD5 пакету оновлення"
+msgstr "Помилка перевірки MD5 пакету оновлення "
 
 #: ../Source/Gui/Controls/ServerListView.cpp:31
 msgid "Max. file size"
@@ -2448,7 +2444,7 @@ msgstr "Параметри"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr "Загальний бітрейт:"
+msgstr "Загальний бітрейт: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
 msgid "Parameters:"
@@ -2510,7 +2506,7 @@ msgid ""
 "Please note that program needs to be restarted for new language settings to "
 "take affect."
 msgstr ""
-"Зверніть увагу:  Щоб нові налаштування мови набрали чинності, програму "
+"Зверніть увагу: Щоб нові налаштування мови набрали чинності, програму "
 "необхідно перезапустити."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:352
@@ -2884,7 +2880,7 @@ msgstr "Знімок екрана..."
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:52
 msgid "Script: "
-msgstr "Скрипт:"
+msgstr "Скрипт: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:269
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:53
@@ -3026,7 +3022,7 @@ msgstr "Ім'я сервера не може бути порожнім"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
 msgid "Server: "
-msgstr "Сервер:"
+msgstr "Сервер: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:207
 msgctxt "settings.menu"
@@ -3232,7 +3228,7 @@ msgstr "Колір обведення:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr "Субтитри:"
+msgstr "Субтитри: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
@@ -3495,7 +3491,7 @@ msgstr "Оновити компоненти"
 #: ../Source/Func/UpdatePackage.cpp:428
 #, c-format
 msgid "Update finished. Updated %d of %d files "
-msgstr "Оновлення завершено. Оновлено %d із %d файлів"
+msgstr "Оновлення завершено. Оновлено %d із %d файлів "
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:33
 msgid "Upload Buffer Size:"
@@ -3507,7 +3503,7 @@ msgstr "Історія відвантаження"
 
 #: ../Source/Gui/Win7JumpList.cpp:196
 msgid "Upload Images"
-msgstr "Відвантажити зображення"
+msgstr "Відвантажити Зображення"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:73
 msgid "Upload failed! (retry limit reached)"
@@ -3574,7 +3570,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:553
 msgid "Uploaded images: "
-msgstr "Відвантажені зображення:"
+msgstr "Відвантажені зображення: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:215
 msgctxt "settings.menu"
@@ -3691,7 +3687,7 @@ msgstr "Джерело відео:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:163
 msgid "Video: "
-msgstr "Відео:"
+msgstr "Відео: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:203
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:272
@@ -3745,8 +3741,8 @@ msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
 msgstr ""
-"Вас вітає майстер публікації зображень, який допоможе вам розмістити\n"
-"свої світлини, зображення та кадри з відеофайлів у Інтернеті!"
+"Вас вітає майстер публікації зображень, який допоможе вам розмістити свої "
+"світлини, зображення та кадри з відеофайлів у Інтернеті!"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
