@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Servers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="servers.xsd">
 
@@ -694,21 +694,144 @@
         </Actions>
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
     </Server>
-    <Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" NeedPassword="0" WebsiteUrl="https://postimages.org"
-        RegistrationUrl="https://postimages.org/signup">
+    <Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" WebsiteUrl="https://postimages.org"
+        RegistrationUrl="https://postimages.org/signup" LoginLabel="E-mail">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="33554432" UserTypes="anon,reg">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <!-- Изображения -->
                     <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg,*.jpe</Format>
+                    <Format MimeType="image/bmp">*.bmp,*.dib</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/heif">*.heif</Format>
+                    <Format MimeType="image/svg+xml">*.svg</Format>
+                    <Format MimeType="image/x-icon">*.ico,*.cur</Format>
+                    <Format MimeType="image/vnd.microsoft.icon">*.icns</Format>
+                    
+                    <!-- RAW форматы -->
+                    <Format MimeType="image/x-adobe-dng">*.dng</Format>
+                    <Format MimeType="image/x-canon-cr2">*.cr2</Format>
+                    <Format MimeType="image/x-canon-cr3">*.cr3</Format>
+                    <Format MimeType="image/x-nikon-nef">*.nef</Format>
+                    <Format MimeType="image/x-sony-arw">*.arw</Format>
+                    <Format MimeType="image/x-olympus-orf">*.orf</Format>
+                    <Format MimeType="image/x-panasonic-rw2">*.rw2</Format>
+                    <Format MimeType="image/x-fuji-raf">*.raf</Format>
+                    <Format MimeType="image/x-sony-sr2">*.sr2</Format>
+                    <Format MimeType="image/x-raw">*.raw</Format>
+                    
+                    <!-- Специализированные форматы -->
+                    <Format MimeType="image/x-tga">*.tga</Format>
+                    <Format MimeType="image/x-pcx">*.pcx</Format>
+                    <Format MimeType="image/x-portable-bitmap">*.pbm</Format>
+                    <Format MimeType="image/x-portable-graymap">*.pgm</Format>
+                    <Format MimeType="image/x-portable-pixmap">*.ppm</Format>
+                    <Format MimeType="image/x-portable-anymap">*.pnm</Format>
+                    <Format MimeType="image/x-xbitmap">*.xbm</Format>
+                    <Format MimeType="image/x-xpixmap">*.xpm</Format>
+                    <Format MimeType="image/x-photoshop">*.psd,*.psb</Format>
+                    <Format MimeType="image/x-xcf">*.xcf</Format>
+                    <Format MimeType="image/jp2">*.jp2,*.j2k,*.jpf,*.jpm,*.jpx</Format>
+                    <Format MimeType="image/iff">*.iff,*.ilbm</Format>
+                    <Format MimeType="image/x-mng">*.mng</Format>
+                    <Format MimeType="image/x-sgi">*.sgi</Format>
+                    <Format MimeType="image/x-exr">*.exr</Format>
+                    <Format MimeType="image/x-hdr">*.hdr</Format>
+                    <Format MimeType="image/fits">*.fits</Format>
+                    <Format MimeType="image/x-pict">*.pic,*.pict</Format>
+                    <Format MimeType="image/x-emf">*.emf</Format>
+                    <Format MimeType="image/x-wmf">*.wmf</Format>
+                    <Format MimeType="image/x-fpx">*.fpx</Format>
+                    <Format MimeType="image/x-dcm">*.dcm</Format>
+                    <Format MimeType="image/x-dds">*.dds</Format>
+                    <Format MimeType="image/x-vtf">*.vtf</Format>
+                    <Format MimeType="image/x-sid">*.sid</Format>
+                    <Format MimeType="image/x-miff">*.miff</Format>
+                    <Format MimeType="image/x-nrrd">*.nrrd</Format>
+                    <Format MimeType="image/x-qoi">*.qoi</Format>
+                    <Format MimeType="image/x-gimp-gbr">*.gbr</Format>
+                    <Format MimeType="image/x-gimp-gd">*.gd</Format>
+                    <Format MimeType="image/x-fax">*.fax</Format>
+                    <Format MimeType="image/x-cut">*.cut</Format>
+                    <Format MimeType="image/x-figma">*.fig</Format>
+                    <Format MimeType="image/x-mpo">*.mpo</Format>
+                    
+                    <!-- PDF и PostScript -->
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                    <Format MimeType="application/postscript">*.ps</Format>
                 </FormatGroup>
+                
                 <FormatGroup MaxFileSize="67108864" UserTypes="premium">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <!-- Изображения -->
                     <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg,*.jpe</Format>
+                    <Format MimeType="image/bmp">*.bmp,*.dib</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/heif">*.heif</Format>
+                    <Format MimeType="image/svg+xml">*.svg</Format>
+                    <Format MimeType="image/x-icon">*.ico,*.cur</Format>
+                    <Format MimeType="image/vnd.microsoft.icon">*.icns</Format>
+                    
+                    <!-- RAW форматы -->
+                    <Format MimeType="image/x-adobe-dng">*.dng</Format>
+                    <Format MimeType="image/x-canon-cr2">*.cr2</Format>
+                    <Format MimeType="image/x-canon-cr3">*.cr3</Format>
+                    <Format MimeType="image/x-nikon-nef">*.nef</Format>
+                    <Format MimeType="image/x-sony-arw">*.arw</Format>
+                    <Format MimeType="image/x-olympus-orf">*.orf</Format>
+                    <Format MimeType="image/x-panasonic-rw2">*.rw2</Format>
+                    <Format MimeType="image/x-fuji-raf">*.raf</Format>
+                    <Format MimeType="image/x-sony-sr2">*.sr2</Format>
+                    <Format MimeType="image/x-raw">*.raw</Format>
+                    
+                    <!-- Специализированные форматы -->
+                    <Format MimeType="image/x-tga">*.tga</Format>
+                    <Format MimeType="image/x-pcx">*.pcx</Format>
+                    <Format MimeType="image/x-portable-bitmap">*.pbm</Format>
+                    <Format MimeType="image/x-portable-graymap">*.pgm</Format>
+                    <Format MimeType="image/x-portable-pixmap">*.ppm</Format>
+                    <Format MimeType="image/x-portable-anymap">*.pnm</Format>
+                    <Format MimeType="image/x-xbitmap">*.xbm</Format>
+                    <Format MimeType="image/x-xpixmap">*.xpm</Format>
+                    <Format MimeType="image/x-photoshop">*.psd,*.psb</Format>
+                    <Format MimeType="image/x-xcf">*.xcf</Format>
+                    <Format MimeType="image/jp2">*.jp2,*.j2k,*.jpf,*.jpm,*.jpx</Format>
+                    <Format MimeType="image/iff">*.iff,*.ilbm</Format>
+                    <Format MimeType="image/x-mng">*.mng</Format>
+                    <Format MimeType="image/x-sgi">*.sgi</Format>
+                    <Format MimeType="image/x-exr">*.exr</Format>
+                    <Format MimeType="image/x-hdr">*.hdr</Format>
+                    <Format MimeType="image/fits">*.fits</Format>
+                    <Format MimeType="image/x-pict">*.pic,*.pict</Format>
+                    <Format MimeType="image/x-emf">*.emf</Format>
+                    <Format MimeType="image/x-wmf">*.wmf</Format>
+                    <Format MimeType="image/x-fpx">*.fpx</Format>
+                    <Format MimeType="image/x-dcm">*.dcm</Format>
+                    <Format MimeType="image/x-dds">*.dds</Format>
+                    <Format MimeType="image/x-vtf">*.vtf</Format>
+                    <Format MimeType="image/x-sid">*.sid</Format>
+                    <Format MimeType="image/x-miff">*.miff</Format>
+                    <Format MimeType="image/x-nrrd">*.nrrd</Format>
+                    <Format MimeType="image/x-qoi">*.qoi</Format>
+                    <Format MimeType="image/x-gimp-gbr">*.gbr</Format>
+                    <Format MimeType="image/x-gimp-gd">*.gd</Format>
+                    <Format MimeType="image/x-fax">*.fax</Format>
+                    <Format MimeType="image/x-cut">*.cut</Format>
+                    <Format MimeType="image/x-figma">*.fig</Format>
+                    <Format MimeType="image/x-mpo">*.mpo</Format>
+                    
+                    <!-- PDF и PostScript -->
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                    <Format MimeType="application/postscript">*.ps</Format>
                 </FormatGroup>
             </SupportedFormats>
             <StorageTimeInfo>
@@ -843,7 +966,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
     </Server>
-    <Server Name="getapic.me" Debug="0" Authorize="1" WebsiteUrl="https://getapic.me" RegistrationUrl="https://getapic.me/signup/">
+    <Server Name="getapic.me" Debug="0" Authorize="2" WebsiteUrl="https://getapic.me" RegistrationUrl="https://getapic.me/signup/">
         <Info>
             <SupportedFormats>
                 <FormatGroup>
@@ -1279,6 +1402,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
+
     <Server Name="thumbsnap.com" Types="image video" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
