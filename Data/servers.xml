@@ -382,9 +382,6 @@
     <Server Name="vk.cc" Authorize="0" Type="urlshortening" Plugin="vk.cc" NeedPassword="0" WebsiteUrl="https://vk.cc">
         <Result DirectUrlTemplate="stub"/>
     </Server>
-    <Server Name="link.ac" Authorize="1" Type="urlshortening" Plugin="link.ac" NeedPassword="0" LoginLabel="API key" WebsiteUrl="https://link.ac">
-        <Result DirectUrlTemplate="stub"/>
-    </Server>
     <Server Name="bit.ly" Authorize="2" Type="urlshortening" Plugin="bit.ly" NeedPassword="0" WebsiteUrl="https://bitly.com">
         <Result DirectUrlTemplate="stub"/>
     </Server>
@@ -1192,11 +1189,6 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="take-me-to.space" MaxFileSize="52428800" FileHost="1" Authorize="2" Plugin="take-me-to.space" WebsiteUrl="https://take-me-to.space" NeedPassword="0">
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="stub"/>
-    </Server>
     <Server Name="webshare.cz" MaxFileSize="214748364800" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
         <Actions>
         </Actions>
@@ -1333,32 +1325,6 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <!-- Chevereto v4 uploader -->
-    <Server Name="freeimghost.net" Authorize="2" Types="image video" MaxFileSize="52428800" Plugin="freeimghost.net" WebsiteUrl="https://freeimghost.net/" RegistrationUrl="https://freeimghost.net/signup" PasswordLabel="API key">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="52428800" UserTypes="reg">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                    <Format MimeType="video/quicktime">*.mov</Format>
-                    <Format MimeType="video/mp4">*.mp4</Format>
-                    <Format MimeType="video/webm">*.webm</Format>
-                </FormatGroup>
-            </SupportedFormats>
-        </Info>    
-        <Actions>
-            <!--<Action Type="upload" Url="https://freeimghost.net/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
-                <Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
-                <Call Function="json" Arg1="image.url" AssignVars="DirectUrl:0;"/>
-                <Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
-                <Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;"/>
-            </Action>-->
-        </Actions>
-        <!--<Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>-->
-        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
-    </Server>
     <Server Name="radikal.cloud" Authorize="2" MaxFileSize="20971520" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
