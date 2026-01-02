@@ -7,6 +7,7 @@
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/AppParams.h"
+#include "Core/Utils/StringUtils.h"
 
 namespace IuCommonFunctions {
 
@@ -223,6 +224,18 @@ bool IsImage(LPCTSTR szFileName)
     CString find = szExt;
     find.MakeLower();
     return supportedImageExtensions.find(W2U(find)) != supportedImageExtensions.end();
+}
+
+bool IsImage(const std::string fileName) {
+    if (fileName.empty()) {
+        return false;
+    }
+    std::string ext = IuCoreUtils::ExtractFileExt(fileName);
+    if (ext.empty()) {
+        return false;
+    }
+    ext = IuStringUtils::ToLower(ext);
+    return supportedImageExtensions.find(ext) != supportedImageExtensions.end();
 }
 
 const std::unordered_set<std::string>& GetSupportedImageExtensions() {

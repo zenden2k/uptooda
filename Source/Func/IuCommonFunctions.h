@@ -17,6 +17,7 @@ namespace IuCommonFunctions {
     int GetNextImgFile(LPCTSTR folder, CString& szBuffer);
     CString GenerateFileName(const CString &templateStr, int index, const CPoint& size, const CString& originalName = _T(""));
     bool IsImage(LPCTSTR szFileName);
+    bool IsImage(const std::string fileName);
 
     CString FindDataFolder();
 
