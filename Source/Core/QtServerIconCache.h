@@ -20,10 +20,10 @@ public:
     };
     QtServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir);
 
-    NativeIcon getIconForServer(const std::string& name, int dpi) override;
+    NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon = true) override;
 
     [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, int dpi) override;
-    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi) override;
+    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon = true) override;
 
     /**
     * @throws std::logic_error 

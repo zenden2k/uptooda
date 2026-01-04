@@ -11,7 +11,7 @@ QtServerIconCache::QtServerIconCache(CUploadEngineListBase *engineList, std::str
     defaultServerIcon_ = QIcon(":/res/server.png");
 }
 
-NativeIcon QtServerIconCache::getIconForServer(const std::string &name, int dpi) {
+NativeIcon QtServerIconCache::getIconForServer(const std::string &name, int dpi, bool smallIcon) {
     return tryIconLoad(name).icon;
 }
 
@@ -19,7 +19,7 @@ NativeIcon QtServerIconCache::getBigIconForServer(const std::string &name, int d
     return tryIconLoad(name).icon;
 }
 
-NativeBitmap QtServerIconCache::getIconBitmapForServer(const std::string &name, int dpi) {
+NativeBitmap QtServerIconCache::getIconBitmapForServer(const std::string &name, int dpi, bool smallIcon) {
     return tryIconLoad(name).bm;
 }
 
