@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-04 08:50+0300\n"
-"PO-Revision-Date: 2025-08-19 05:19+0000\n"
-"Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
+"PO-Revision-Date: 2025-08-24 20:38+0000\n"
+"Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ko/>\n"
 "Language: ko\n"
@@ -18,11 +18,11 @@ msgstr ""
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/OpusAudioCodec.h:30
 msgid " (highest)"
-msgstr "(최고)"
+msgstr " (최고)"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:33
 msgid " (lowest)"
-msgstr "(최저)"
+msgstr " (최저)"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/OpusAudioCodec.h:28
 msgid " (music, high)"
@@ -59,7 +59,7 @@ msgstr "\"%1%\": %2% 서버가 이 유형의 파일을 지원하지 않음 (%3% 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:681
 msgctxt "upload_settings_wizard_page.server_button"
 msgid "%1% + %2%"
-msgstr ""
+msgstr "%1% + %2%"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:910
@@ -87,13 +87,11 @@ msgid_plural "%d servers selected"
 msgstr[0] "%d 서버 선택됨"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1467
-#, fuzzy, c-format
-#| msgid "%d server selected"
-#| msgid_plural "%d servers selected"
+#, c-format
 msgctxt "upload_settings_wizard_page.more_servers_link"
 msgid "%d server selected in total..."
 msgid_plural "%d servers selected in total..."
-msgstr[0] "%d 서버 선택됨"
+msgstr[0] "전체에서 %d 서버 선택..."
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:31
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:33
@@ -219,7 +217,7 @@ msgstr "계정"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:727
 msgid "Account is not enabled"
-msgstr "계정이 활성화되지 않았습니다."
+msgstr "계정이 활성화되지 않았습니다"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
@@ -491,7 +489,7 @@ msgstr "종료 시 확인"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:105
 msgid "At least one mouse command should not be empty"
-msgstr "적어도 하나의 마우스 명령어는 비워둘 수 없습니다."
+msgstr "적어도 하나의 마우스 명령은 비워둘 수 없습니다"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:44
 msgid "Attention! Global hotkeys are active only when tray icon is shown."
@@ -673,10 +671,8 @@ msgid "Cannot load thumbnail for image."
 msgstr "이미지의 썸네일을 로드할 수 없습니다."
 
 #: ../Source/Func/Common.cpp:314
-#, fuzzy
-#| msgid "Documentation"
 msgid "Cannot open documentation: "
-msgstr "도움말"
+msgstr "문서를 열 수 없습니다: "
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
 msgid ""
@@ -1120,7 +1116,7 @@ msgstr "주어진 텍스트에서 링크를 찾을 수 없습니다!"
 #: ../Source/Func/UpdatePackage.cpp:420
 #, c-format
 msgid "Could not read package %s"
-msgstr "%s 패키지를 읽을 수 없습니다."
+msgstr "%s 패키지를 읽을 수 없습니다"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1039
 msgid "Could not save settings file. See error log for details."
@@ -1486,7 +1482,7 @@ msgstr "종료"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
 msgid "Explicit"
-msgstr "Explicit"
+msgstr "명시적"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:23
 msgid "Extension"
@@ -1989,7 +1985,7 @@ msgstr "즉시 서버에 업로드 시작"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:353
 msgid "Implicit"
-msgstr "Implicit"
+msgstr "암묵적"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
@@ -2051,8 +2047,7 @@ msgstr "언어 선택:"
 msgid ""
 "Invalid source URL: '%s'. Absolute URL is needed, including schema (http,"
 "https,etc)"
-msgstr ""
-"잘못된 소스 URL: '%s'. 스키마(http,https 등)를 포함한 절대 URL이 필요합니다."
+msgstr "잘못된 소스 URL: '%s'. 구성표 (http, https 등)를 포함한 절대 URL이 필요합니다"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:268
 msgid "Invert selection"
@@ -2252,7 +2247,7 @@ msgstr "N"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 msgid "Name cannot be empty"
-msgstr "이름은 비워 둘 수 없습니다."
+msgstr "이름은 비워둘 수 없습니다"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:56
 msgid "Name:"
@@ -2303,7 +2298,7 @@ msgstr "프록시 없음 (직접 연결)"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:209
 #, c-format
 msgid "No updates for %s components are available"
-msgstr "%s 구성 요소의 새로운 업데이트가 없습니다."
+msgstr "%s 구성 요소에 대한 업데이트가 없습니다"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:159
@@ -2479,7 +2474,7 @@ msgstr "기간을 선택하세요:"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
 msgid "Please enter an URL"
-msgstr "URL을 입력하세요."
+msgstr "URL을 입력해 주세요"
 
 #: ../Source/Func/WtlScriptDialogProvider.cpp:16
 msgid "Please enter the text you see in the image:"
@@ -2994,11 +2989,11 @@ msgstr "사용자 이미지를 호스팅할 서버"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
 msgid "Server type:"
-msgstr "서버 유형: "
+msgstr "서버 유형:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:249
 msgid "Server's name cannot be empty"
-msgstr "서버 이름은 비워 둘 수 없습니다."
+msgstr "서버의 이름은 비워둘 수 없습니다"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
 msgid "Server: "
@@ -3444,7 +3439,7 @@ msgstr "URL:"
 #: ../Source/Gui/Controls/MyImage.cpp:176
 #: ../Source/Gui/Controls/ThumbsView.cpp:326
 msgid "Unable to load picture"
-msgstr "사진 로드 불가"
+msgstr "사진을 로드할 수 없습니다"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2482
 msgid "Unable to make screenshot!"
@@ -3457,7 +3452,7 @@ msgstr "링크를 단축할 수 없습니다..."
 #: ../Source/Func/UpdatePackage.cpp:411
 #, c-format
 msgid "Unable to unpack archive %s"
-msgstr "%s 압축 파일을 풀 수 없습니다."
+msgstr "%s 압축 파일을 풀 수 없습니다"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
@@ -3763,7 +3758,7 @@ msgstr "최신 %s 버전을 사용하고 있습니다."
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:160
 #, c-format
 msgid "You have not selected \"%s\""
-msgstr "\"%s\"을(를) 선택하지 않았습니다."
+msgstr "\"%s\"를 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
@@ -3772,20 +3767,20 @@ msgstr "\"%s\"을(를) 선택하지 않았습니다."
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:141
 #, c-format
 msgid "You have not selected account for server \"%s\""
-msgstr "\"%s\" 서버에 대한 계정을 선택하지 않았습니다."
+msgstr "\"%s\" 서버에 대한 계정을 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:343
 msgid "You have not selected an file server"
-msgstr "파일 서버를 선택하지 않았습니다."
+msgstr "파일 서버를 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:324
 msgid "You have not selected an image server"
-msgstr "이미지 서버를 선택하지 않았습니다."
+msgstr "이미지 서버를 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
 msgid "You have not selected server"
-msgstr "서버를 선택하지 않았습니다."
+msgstr "서버를 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 msgid "You have not selected server!"
@@ -3869,7 +3864,7 @@ msgstr "종료날짜:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:94
 msgid "translator_name"
-msgstr "Jaehyung Lee <kolanp@gmail.com> https://kolanp.com"
+msgstr "비너스걸: https://venusgirls.tistory.com/"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
 msgid "unknown server"
