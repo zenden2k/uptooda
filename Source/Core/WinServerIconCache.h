@@ -45,7 +45,7 @@ public:
     WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir);
     ~WinServerIconCache() override;
 
-    NativeIcon getIconForServer(const std::string& name, int dpi) override;
+    NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon = true) override;
 
     /**
     * The caller of this function is responsible for destroying
@@ -53,7 +53,7 @@ public:
     */
     [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, int dpi) override;
 
-    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi) override;
+    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon = true) override;
 
     /**
     * @throws std::logic_error 
@@ -61,7 +61,7 @@ public:
     void preLoadIcons(int dpi) override;
 
     using ImageListWithIndexes = std::pair<HIMAGELIST, std::vector<int>>;
-    ImageListWithIndexes getImageList(int dpi);
+    ImageListWithIndexes getImageList(int dpi, bool smallIcons = true);
 
 private :
     std::unordered_map<std::pair<int, std::string>, WinIcon> serverIcons_;
@@ -69,7 +69,7 @@ private :
     std::mutex cacheMutex_;
     std::future<int> future_;
     bool iconsPreload_ = false;
-    std::unordered_map<int, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::vector<int>>> imageLists_;
-    WinIcon tryIconLoad(const std::string& name, int dpi);
-    void loadIcons(int dpi);
+    std::unordered_map<std::pair<int,bool>, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::vector<int>>> imageLists_;
+    WinIcon tryIconLoad(const std::string& name, int dpi, bool smallIcon = true);
+    void loadIcons(int dpi, bool smallIcons);
 };

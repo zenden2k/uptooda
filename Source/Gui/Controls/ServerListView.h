@@ -29,6 +29,7 @@ public:
     BOOL SubclassWindow(HWND hWnd);
 
     void Init();
+    int SetView(DWORD dwView);
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -49,6 +50,7 @@ protected:
     int FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags);
     int FindItemByPartialString(LPCWSTR searchText, int startIndex);
     int FindItemByParam(LPARAM searchParam, int startIndex);
+    static UINT columns[1];
 };
 
 

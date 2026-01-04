@@ -51,6 +51,7 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
     , selectedServerType_(selectedServerType)
     , serverIndex_(serverIndex)
 {
+    settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto ued = engineList->byIndex(serverIndex);
     if (ued && ((selectedServerType & ued->TypeMask) == 0)) {
         // Fix current server type to ensure that current server is visible
@@ -91,6 +92,7 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+    listView_.SetView(settings_->ServerListPopupViewMode);
 
     // Creating tooltip control. We will use subclassing of controls to intercept their messages
     toolTip_.Create(m_hWnd);
@@ -620,6 +622,14 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
     popupMenu.AppendMenu(MF_STRING, IDM_ADD_DIRECTORY_AS_SERVER, TR("Add folder as new server..."));
     popupMenu.AppendMenu(MF_STRING, IDM_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
 
+    popupMenu.AppendMenu(MF_SEPARATOR);
+
+    CMenu subMenu;
+    subMenu.CreatePopupMenu();
+    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_DETAILS ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_REPORT, TR("Table"));
+    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_ICON ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_ICONS, TR("Icons"));
+    popupMenu.AppendMenu(MF_STRING, subMenu, TR("View Mode"));
+
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
     excludeArea.cbSize = sizeof(excludeArea);
@@ -737,5 +747,17 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 
 LRESULT CServerListPopup::OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     openDocumentation();
+    return 0;
+}
+
+LRESULT CServerListPopup::OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    listView_.SetView(LV_VIEW_DETAILS);
+    settings_->ServerListPopupViewMode = LV_VIEW_DETAILS;
+    return 0;
+}
+
+LRESULT CServerListPopup::OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    listView_.SetView(LV_VIEW_ICON);
+    settings_->ServerListPopupViewMode = LV_VIEW_ICON;
     return 0;
 }

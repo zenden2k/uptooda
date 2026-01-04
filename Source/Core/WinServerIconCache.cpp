@@ -24,9 +24,12 @@ WinServerIconCache::~WinServerIconCache(){
     }
 }
 
-WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name, int dpi) {
+WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name, int dpi, bool smallIcon) {
     std::lock_guard lk(cacheMutex_);
-    auto key = std::make_pair(dpi, name);
+    const int w = DPIHelper::GetSystemMetricsForDpi(smallIcon ? SM_CXSMICON : SM_CXICON, dpi);
+    const int h = DPIHelper::GetSystemMetricsForDpi(smallIcon ? SM_CYSMICON : SM_CYICON, dpi);
+
+    auto key = std::make_pair(w, name);
     const auto iconIt = serverIcons_.find(key);
     if (iconIt != serverIcons_.end()) {
         return iconIt->second;
@@ -42,8 +45,7 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
         return {};
     }*/
 
-    const int w = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-    const int h = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
 
     HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
 
@@ -70,12 +72,12 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
     return item;
 }
 
-NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name, int dpi) {
-     return tryIconLoad(name, dpi).bm;
+NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon) {
+    return tryIconLoad(name, dpi, smallIcon).bm;
 }
 
-NativeIcon WinServerIconCache::getIconForServer(const std::string& name, int dpi) {
-    return tryIconLoad(name, dpi).icon;
+NativeIcon WinServerIconCache::getIconForServer(const std::string& name, int dpi, bool smallIcon) {
+    return tryIconLoad(name, dpi, smallIcon).icon;
 }
 
 NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int dpi) {
@@ -106,20 +108,20 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int 
     return icon;
 }
 
-void WinServerIconCache::loadIcons(int dpi) {
+void WinServerIconCache::loadIcons(int dpi, bool smallIcons) {
     std::unique_ptr<CImageList, ImageListDeleter> imageList(new CImageList, ImageListDeleter {});
-    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(smallIcons ? SM_CXSMICON: SM_CXICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(smallIcons ? SM_CYSMICON : SM_CYICON, dpi);
     imageList->Create(iconWidth, iconHeight, ILC_COLOR32, 3, 3);
     std::vector<int> indexes(engineList_->count(), -1);
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);
-        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi);
+        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi, smallIcons);
         int iconIndex = imageList->AddIcon(icon);
         indexes[i] = iconIndex;
     }
     std::lock_guard lk(cacheMutex_);
-    imageLists_[dpi] = { std::move(imageList), std::move(indexes) };
+    imageLists_[std::make_pair(dpi, smallIcons)] = { std::move(imageList), std::move(indexes) };
 }
 
 void WinServerIconCache::preLoadIcons(int dpi) {
@@ -129,23 +131,24 @@ void WinServerIconCache::preLoadIcons(int dpi) {
     iconsPreload_ = true;
 
     future_ = std::async(std::launch::async, [this, dpi]() -> int {
-        loadIcons(dpi);
+        loadIcons(dpi, true);
+        loadIcons(dpi, false);
         return 0;
     });
 }
 
-WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(int dpi) {
+WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(int dpi, bool smallIcons) {
     {
         std::lock_guard lk(cacheMutex_);
-        auto it = imageLists_.find(dpi);
+        auto it = imageLists_.find({dpi, smallIcons});
         if (it != imageLists_.end()) {
             return std::make_pair(it->second.first->m_hImageList, it->second.second);
         }
     }
-    loadIcons(dpi);
+    loadIcons(dpi, smallIcons);
     {
         std::lock_guard lk(cacheMutex_);
-        auto it = imageLists_.find(dpi);
+        auto it = imageLists_.find({ dpi, smallIcons });
         if (it != imageLists_.end()) {
             return std::make_pair(it->second.first->m_hImageList, it->second.second);
         }

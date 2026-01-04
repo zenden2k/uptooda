@@ -140,6 +140,8 @@ public:
 
     std::string testFileName, testUrl;
 
+    int ServerListPopupViewMode = LV_VIEW_DETAILS;
+
     CString getServerName();
     CString getQuickServerName();
     CString getFileServerName();

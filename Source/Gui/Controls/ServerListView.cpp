@@ -8,6 +8,8 @@
 #include "Core/WinServerIconCache.h"
 #include "Core/i18n/Translator.h"
 
+UINT CServerListView::columns[1] = { ServerListModel::tcMaxFileSize };
+
 CServerListView::CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache)
     : model_(model)
     , serverIconCache_(serverIconCache) {
@@ -33,10 +35,24 @@ void CServerListView::Init() {
     AddColumn(TR("Account"), ServerListModel::tcAccount, -1, LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM, LVCFMT_CENTER);
     AddColumn(TR("File formats"), ServerListModel::tcFileFormats);
 
+    /*LVTILEVIEWINFO tileViewInfo = { 0 };
+
+    tileViewInfo.cbSize = sizeof(tileViewInfo);
+    tileViewInfo.dwMask = LVTVIM_COLUMNS;
+    tileViewInfo.cLines = 2;
+    ListView_SetTileViewInfo(m_hWnd, &tileViewInfo);*/
+
     setColumnWidths();
     createResources();
 
     SetItemCount(model_->getCount());
+}
+
+int CServerListView::SetView(DWORD dwView) {
+    int result = CListViewCtrl::SetView(dwView);
+    createResources();
+    Arrange(LVA_DEFAULT);
+    return result;
 }
 
 LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -54,6 +70,11 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
         if (uedIndex >= 0 && uedIndex < serverIconImageListIndexes_.size()) {
             pItem->iImage = serverIconImageListIndexes_[uedIndex];
         }
+    }
+
+    if (pItem->mask & LVIF_COLUMNS) {
+        pItem->cColumns = 1;
+        pItem->puColumns = columns;
     }
 
     return 0;
@@ -130,11 +151,12 @@ void CServerListView::setColumnWidths() {
 
 void CServerListView::createResources() {
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
-    auto iconsWithIndexes = serverIconCache_->getImageList(dpi);
+    bool smallIcons = GetView() == LV_VIEW_DETAILS;
+    auto iconsWithIndexes = serverIconCache_->getImageList(dpi, smallIcons);
     serverIconImageList_ = iconsWithIndexes.first;
     serverIconImageListIndexes_ = std::move(iconsWithIndexes.second);
     ModifyStyle(0, LVS_SHAREIMAGELISTS, LVS_SHAREIMAGELISTS);
-    SetImageList(serverIconImageList_, LVSIL_SMALL);
+    SetImageList(serverIconImageList_, smallIcons ? LVSIL_SMALL : LVSIL_NORMAL);
 }
 
 int CServerListView::FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags) {

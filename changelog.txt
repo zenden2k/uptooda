@@ -2,6 +2,37 @@
 #
 # https://svistunov.dev/uptooda
 
+1.4.6.5402 (2026-01-02)
+
+Improvements:
+
+* Switched from embedded browser to default system browser for Dropbox authorization
+* Added folder support to Dropbox script
+* Added account and album support for upload.ee
+* Enhanced Server List Popup with OK button, search icon, and help button icon
+* Added help button icon to Screen Recording Settings Page
+* Disabled uninstallation before install to prevent conflicts
+* Performance optimizations
+* Bulgarian translation by @jekovcar
+
+Bug Fixes:
+
+* Fixed thumbnail width setting not being applied correctly
+* Resolved unicode output problems in CLI mode
+* Fixed default thumbnail bug in the file list
+* Fixed upload functionality for directupload.eu accounts 
+* Prevented crash after login changes
+* Fixed Yandex.Disk upload not working in CLI
+* Fixed upload on prntscr.com
+* Corrected issues with postimages.org and getapic.me image hosting services
+* Fixed crash when selecting server folder
+* Fixed installed app version to prevent WinGet issues
+
+Maintenance:
+
+* Removed dead hosting services
+* Changed domain from vk.com to vk.ru
+
 1.4.5.5392 (2025-08-24)
 [+] Added imgchest.com, gofile.io hosting services
 [~] Fixed bug with image conversion settings and selected thumbnail template not being saved

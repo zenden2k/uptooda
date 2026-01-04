@@ -29,11 +29,11 @@ public:
 
     }
     virtual ~AbstractServerIconCache() { }
-    virtual NativeIcon getIconForServer(const std::string& name, int dpi) = 0;
+    virtual NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon = true) = 0;
 
     [[nodiscard]] virtual NativeIcon getBigIconForServer(const std::string& name, int dpi) = 0;
 
-    virtual NativeBitmap getIconBitmapForServer(const std::string& name, int dpi) = 0;
+    virtual NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon = true) = 0;
 
     virtual std::string getIconNameForServer(const std::string& name, bool returnFullPath = false);
     /**
