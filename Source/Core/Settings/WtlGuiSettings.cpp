@@ -792,6 +792,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, FillTextBackground);
     imageEditor.nm_bind(ImageEditorSettings, InvertSelection);
+    imageEditor.nm_bind(ImageEditorSettings, DrawBorder);
 
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     imageEditor.nm_bind(ImageEditorSettings, CloseWindowAfterActionInFullScreen);

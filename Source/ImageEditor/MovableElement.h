@@ -57,6 +57,10 @@ class MovableElement: public DrawingElement {
         virtual bool isEmpty() const;
 
         bool isMoving() const;
+
+        void setDrawBorder(bool enable);
+        bool getDrawBorder() const;
+
     protected:
         bool isSelected_;
         bool drawDashedRectangle_;
@@ -70,6 +74,7 @@ class MovableElement: public DrawingElement {
         bool isPenSizeUsed_;
         bool isColorUsed_;
         bool isBackgroundColorUsed_;
+        bool drawBorder_ = false;
 };
 
 }

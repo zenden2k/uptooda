@@ -268,6 +268,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
             invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
             invertSelectionCheckbox_.SetFont(systemFont_);
 
+            RECT drawBorderCheckboxRect { 0, 0, static_cast<LONG>(170 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+            drawBorderCheckbox_.Create(m_hWnd, drawBorderCheckboxRect, TR("Draw border"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_DRAWBORDERCHECKBOX);
+            drawBorderCheckbox_.SetFont(systemFont_);
+
             RECT arrowTypeComboRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
             arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
@@ -784,6 +789,7 @@ int Toolbar::AutoSize() {
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         invertSelectionCheckbox_.SetWindowPos(0, blurRadiusLabelRect.right + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        drawBorderCheckbox_.SetWindowPos(0, pixelLabelRect_.right + static_cast<int>(15 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
@@ -1233,6 +1239,10 @@ void Toolbar::showInvertSelectionCheckbox(bool show) {
     invertSelectionCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
+void Toolbar::showDrawBorderCheckbox(bool show) {
+    drawBorderCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
 void Toolbar::showArrowTypeCombo(bool show) {
     arrowTypeCombobox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
@@ -1248,6 +1258,11 @@ LRESULT Toolbar::OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*w
 }
 
 
+LRESULT Toolbar::OnDrawBorderCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_DRAWBORDERCHANGE, 0, 0);
+    return 0;
+}
+
 LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ::SendMessage(GetParent(), MTBM_ARROWTYPECHANGE, 0, 0);
     return 0;
@@ -1262,7 +1277,6 @@ LRESULT Toolbar::OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID
     ::SendMessage(GetParent(), MTBM_CANCEL, 0, 0);
     return 0;
 }
-
 
 bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
@@ -1295,6 +1309,14 @@ void Toolbar::setFillBackgroundCheckbox(bool fill) {
 
 void Toolbar::setInvertSelectionCheckbox(bool invert) {
     invertSelectionCheckbox_.SetCheck(invert ? BST_CHECKED : BST_UNCHECKED);
+}
+
+bool Toolbar::isDrawBorderChecked() const {
+    return drawBorderCheckbox_.GetCheck() == BST_CHECKED;
+}
+
+void Toolbar::setDrawBorderCheckbox(bool enable) {
+    drawBorderCheckbox_.SetCheck(enable ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void Toolbar::setShowButtonText(bool show) {

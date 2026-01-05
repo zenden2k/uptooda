@@ -19,6 +19,7 @@ constexpr UINT MTBM_ARROWTYPECHANGE = WM_USER + 404;
 constexpr UINT MTBM_APPLY = WM_USER + 405; // Crop
 constexpr UINT MTBM_CANCEL = WM_USER + 406;
 constexpr UINT MTBM_INVERTSELECTIONCHANGE = WM_USER + 407;
+constexpr UINT MTBM_DRAWBORDERCHANGE = WM_USER + 408;
 
 namespace ImageEditor {
 
@@ -32,7 +33,9 @@ public:
     enum ItemType { itButton, itComboButton, itTinyCombo, itLabel };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 360 };
     enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
-        ID_CANCELOPERATIONBUTTON, ID_INVERTSELECTIONCHECKBOX
+        ID_CANCELOPERATIONBUTTON,
+        ID_INVERTSELECTIONCHECKBOX,
+        ID_DRAWBORDERCHECKBOX
     };
     class ToolbarItemDelegate;
     struct Item {
@@ -93,11 +96,15 @@ public:
     int getStepInitialValue() const;
     void showFillBackgroundCheckbox(bool show);
     void showInvertSelectionCheckbox(bool show);
+    void showDrawBorderCheckbox(bool show);
     void setFillBackgroundCheckbox(bool fill);
     void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
     bool isInvertSelectionChecked() const;
     void setInvertSelectionCheckbox(bool invert);
+
+    bool isDrawBorderChecked() const;
+    void setDrawBorderCheckbox(bool enable);
     int getArrowType() const;
     void setArrowType(int type);
     void setMovable(bool value);
@@ -130,6 +137,7 @@ public:
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
         COMMAND_HANDLER(ID_INVERTSELECTIONCHECKBOX, BN_CLICKED, OnInvertSelectionCheckboxClicked)
+        COMMAND_HANDLER(ID_DRAWBORDERCHECKBOX, BN_CLICKED, OnDrawBorderCheckboxClicked)
         COMMAND_HANDLER(ID_ARROWTYPECOMBOBOX, CBN_SELCHANGE, OnArrowTypeComboChange)
         COMMAND_ID_HANDLER(ID_APPLYBUTTON, OnApplyButtonClicked)
         COMMAND_ID_HANDLER(ID_CANCELOPERATIONBUTTON, OnCancelOperationButtonClicked)
@@ -161,6 +169,7 @@ public:
     LRESULT OnDPICHanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnDrawBorderCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -181,6 +190,7 @@ public:
     CButton testButton_;
     CButton fillBackgroundCheckbox_;
     CButton invertSelectionCheckbox_;
+    CButton drawBorderCheckbox_;
     CComboBox arrowTypeCombobox_;
     CButton applyButton_;
     CButton cancelOperationButton_;

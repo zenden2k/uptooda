@@ -1239,6 +1239,16 @@ bool Canvas::undoItem(UndoHistoryItem& item) {
             dynamic_cast<TextElement*>(item.elements[i].movableElement)->setFillBackground(item.elements[i].penSize);
         }
         result = true;
+    } else if (item.type == UndoHistoryItemType::uitInvertSelectionChanged) {
+        int itemCount = item.elements.size();
+        for (int i = itemCount - 1; i >= 0; i--) {
+            dynamic_cast<BlurringRectangle*>(item.elements[i].movableElement)->setInvertSelection(item.elements[i].penSize);
+        }
+    } else if (item.type == UndoHistoryItemType::uitDrawBorderChanged) {
+        int itemCount = item.elements.size();
+        for (int i = itemCount - 1; i >= 0; i--) {
+            item.elements[i].movableElement->setDrawBorder(item.elements[i].penSize);
+        }
     }
     return result;
 }
@@ -1491,6 +1501,42 @@ void Canvas::setInvertSelection(bool invert) {
 
 bool Canvas::getInvertSelection() const {
     return invertSelection_;
+}
+
+void Canvas::setDrawBorder(bool enable) {
+    drawBorder_ = enable;
+    int count = 0;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitDrawBorderChanged;
+
+    for (auto& el : elementsOnCanvas_) {
+        if (el->isSelected() && (el->getType() == ElementType::etFilledRectangle || el->getType() == ElementType::etFilledRoundedRectangle
+            || el->getType() == ElementType::etEllipse)) {
+            auto* blurEl = dynamic_cast<Rectangle*>(el);
+            if (blurEl) {
+                bool prev = blurEl->getDrawBorder();
+                if (prev == enable) {
+                    continue;
+                }
+                blurEl->setDrawBorder(enable);
+
+                UndoHistoryItemElement uhie;
+                uhie.pos = 0;
+                uhie.movableElement = el;
+                uhie.penSize = prev;
+                uhi->elements.push_back(uhie);
+                count++;
+            }
+        }
+    }
+    if (count) {
+        addUndoHistoryItem(std::move(uhi));
+        updateView();
+    }
+}
+
+bool Canvas::getDrawBorder() const {
+    return drawBorder_;
 }
 
 void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) {

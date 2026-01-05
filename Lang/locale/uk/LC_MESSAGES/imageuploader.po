@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 08:50+0300\n"
+"POT-Creation-Date: 2026-01-05 17:19+0300\n"
 "PO-Revision-Date: 2025-08-23 17:02+0000\n"
 "Last-Translator: Максим Горпиніч <gorpinicmaksim0@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -12,8 +12,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.13\n"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
@@ -337,8 +337,8 @@ msgid "Add to Wizard"
 msgstr "Додати до майстра"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:533
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:974
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:975
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:976
 msgid "Add to the list"
 msgstr "Додати до списку"
 
@@ -405,7 +405,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1565
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1569
 msgid "All files"
 msgstr "Усі файли"
 
@@ -465,7 +465,7 @@ msgstr "Опції зовнішнього вигляду"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:283
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
 msgid "Apply"
 msgstr "Застосувати"
 
@@ -496,7 +496,7 @@ msgstr ""
 "Ви впевнені, що хочете видалити цей обліковий запис із внутрішнього списку "
 "%s?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
 msgid "Arrow"
 msgstr "Стрілка"
 
@@ -601,8 +601,8 @@ msgid "Blur radius"
 msgstr "Радіус розмиття"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:876
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1056
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Blurring rectangle"
 msgstr "Розмивання у прямокутнику"
 
@@ -632,7 +632,7 @@ msgstr "Переносити вікно на передній план при в
 msgid "Browse..."
 msgstr "Огляд..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
 msgid "Brush"
 msgstr "Пензель"
 
@@ -660,7 +660,7 @@ msgstr "Пензель"
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:287
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:292
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -937,7 +937,7 @@ msgstr "Інтерактивні ескізи"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
 msgid "Close"
 msgstr "Закрити"
 
@@ -954,7 +954,7 @@ msgstr "Тип коду:"
 msgid "Collecting files..."
 msgstr "Збір файлів..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
 msgid "Color chooser"
 msgstr "Селектор кольору"
 
@@ -1002,8 +1002,8 @@ msgstr "Користувацькі елементи контекстного м�
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:213
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:979
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:980
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:981
 msgid "Continue"
 msgstr "Продовжити"
 
@@ -1027,7 +1027,7 @@ msgstr "Конвертація..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1005
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr "Копіювати"
@@ -1065,11 +1065,11 @@ msgstr "Копіювати повний шлях"
 msgid "Copy image"
 msgstr "Скопіювати зображення"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
 msgid "Copy in data:URI format"
 msgstr "Копіювати у форматі data:URI"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:901
 msgid "Copy in data:URI format (html)"
 msgstr "Копіювати у форматі data:URI (HTML)"
 
@@ -1098,12 +1098,12 @@ msgstr "Копіювати до буфера обміну"
 msgid "Copy to clipboard"
 msgstr "Копіювати до буфера"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, c-format
 msgid "Copy to clipboard (%s)"
 msgstr "Копіювати в буфер обміну (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr "Скопіювати до буфера обміну і закрити (%s)"
@@ -1200,7 +1200,7 @@ msgstr "Створювати ескізи"
 msgid "Creating new thumbnail preset"
 msgstr "Створення нового шаблона ескізу"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1045
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
 msgid "Crop"
 msgstr "Обрізати"
 
@@ -1330,6 +1330,12 @@ msgstr "Завантажено: "
 msgid "Downloading file "
 msgstr "Завантаження файлу "
 
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:273
+#, fuzzy
+#| msgid "Draw frame"
+msgid "Draw border"
+msgstr "Обводити рамкою"
+
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
 msgstr "Обводити рамкою"
@@ -1366,7 +1372,7 @@ msgid "Edit login credentials..."
 msgstr "Редагувати облікові дані для входу..."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
 msgid "Ellipse"
 msgstr "Еліпс"
 
@@ -1670,13 +1676,13 @@ msgid "Fill background"
 msgstr "Заповнити тло"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:115
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
 msgid "Filled ellipse"
 msgstr "Зафарбований еліпс"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:104
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:862
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
 msgid "Filled rectangle"
 msgstr "Зафарбований прямокутник"
 
@@ -1711,11 +1717,11 @@ msgstr "Спочатку потрібно вибрати елемент у сп�
 msgid "Fit"
 msgstr "Припасувати"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1898
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1902
 msgid "Flip horizontal"
 msgstr "Відобразити горизонтально"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1903
 msgid "Flip vertical"
 msgstr "Відобразити вертикально"
 
@@ -1887,7 +1893,7 @@ msgstr "Довідка"
 msgid "Hide"
 msgstr "Сховати"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
 msgid "Highlight"
 msgstr "Виділення кольором"
 
@@ -1935,7 +1941,7 @@ msgid "Image Downloader"
 msgstr "Завантажувач зображень"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:353
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:628
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:629
 msgid "Image Editor"
 msgstr "Редактор зображень"
 
@@ -1944,11 +1950,11 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Редактор зображень"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1811
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1815
 msgid "Image Editor  (%1%x%2%)"
 msgstr "Редактор зображень  (%1%x%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1817
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1821
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr "Редактор зображень - %1% (%2%x%3%)"
 
@@ -2128,7 +2134,7 @@ msgstr "Одне лівою кнопкою:"
 msgid "Libraries:"
 msgstr "Бібліотеки:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
 msgid "Line"
 msgstr "Лінія"
 
@@ -2256,7 +2262,7 @@ msgstr "Більше кольорів..."
 msgid "Mouse clicks handlers"
 msgstr "Обробка клацань мишею"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1043
 msgid "Move"
 msgstr "Перемістити"
 
@@ -2492,7 +2498,7 @@ msgid "Pause"
 msgstr "Пауза"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:128
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:878
 msgid "Pixelation"
 msgstr "Пікселізація"
 
@@ -2546,11 +2552,11 @@ msgstr "Зберегти метадані (наприклад, EXIF)"
 msgid "Preset:"
 msgstr "Попередньо налаштовано:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will close the window."
 msgstr "Натискання цієї кнопки з утримуванням клавіші Shift закриє вікно."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 "Натискання цієї кнопки з утриманням Shift не призведе до закриття вікна."
@@ -2564,7 +2570,7 @@ msgid "Preview Window"
 msgstr "Вікно попереднього перегляду"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1023
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1024
 msgid "Print..."
 msgstr "Друк..."
 
@@ -2656,13 +2662,13 @@ msgstr "У режимі реального часу (найшвидший)"
 msgid "Reason:"
 msgstr "Причина:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1008
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
 msgid "Record"
 msgstr "Запис"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:89
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:849
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1051
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
 msgid "Rectangle"
 msgstr "Прямокутник"
 
@@ -2737,22 +2743,22 @@ msgstr ""
 msgid "Right button click:"
 msgstr "Правою кнопкою:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1896
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1900
 msgid "Rotate clockwise (90°)"
 msgstr "Повернути за годинниковою стрілкою (90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1897
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1901
 msgid "Rotate counter clockwise (-90°)"
 msgstr "Повернути проти годинникової стрілки (-90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1021
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
 msgid "Rotate or flip"
 msgstr "Повернути або перевернути"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:110
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
 msgid "Rounded rectangle"
 msgstr "Прямокутник із закругленими кутами"
 
@@ -2771,7 +2777,7 @@ msgid "Same format as image"
 msgstr "Такий, як і зображення"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:750
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:993
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:994
 msgid "Save"
 msgstr "Зберегти"
 
@@ -2780,7 +2786,7 @@ msgid "Save Profile"
 msgstr "Зберегти профіль"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:889
 msgid "Save as..."
 msgstr "Зберегти як..."
 
@@ -2788,7 +2794,7 @@ msgstr "Зберегти як..."
 msgid "Save as:"
 msgstr "Зберегти як:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1367
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1371
 msgid "Save changes?"
 msgstr "Зберегти зміни?"
 
@@ -2894,21 +2900,21 @@ msgstr "Скрипт: "
 msgid "Search by image"
 msgstr "Пошук за зображенням"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:919
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:920
 #, c-format
 msgid "Search by image (%s)"
 msgstr "Пошук за зображенням (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 msgid "Search on %1% (%2%)"
 msgstr "Пошук на %1% (%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 msgid "Search on %1% and close (%2%)"
 msgstr "Пошук на %1% та закриття (%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1011
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1280
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1284
 #, c-format
 msgid "Search on %s"
 msgstr "Пошук у %s"
@@ -2940,7 +2946,7 @@ msgstr "Виділити все"
 msgid "Select folder"
 msgstr "Виберіть папку"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1538
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1542
 msgid "Select region"
 msgstr "Виберіть область"
 
@@ -3199,7 +3205,7 @@ msgstr "Початок відвантаження"
 msgid "Status"
 msgstr "Статус"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1055
 msgid "Step"
 msgstr "Крок"
 
@@ -3270,7 +3276,7 @@ msgid "Test failed"
 msgstr "Тест не пройшов"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Text"
 msgstr "Текст"
 
@@ -3444,7 +3450,7 @@ msgstr "Контекстне меню піктограми"
 msgid "Type"
 msgstr "Тип"
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:276
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:281
 msgid "Type of arrow"
 msgstr "Тип стрілки"
 
@@ -3486,7 +3492,7 @@ msgstr "Не вдалося скоротити посилання..."
 msgid "Unable to unpack archive %s"
 msgstr "Не вдалося розпакувати архів %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr "Скасувати"
@@ -3558,13 +3564,13 @@ msgid "Upload speed limit per thread:"
 msgstr "Обмеження швидкості завантаження (на потік):"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:987
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:988
 #, c-format
 msgid "Upload to %s"
 msgstr "Відвантажити на %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:985
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:986
 msgid "Upload to Web"
 msgstr "Відвантажити до Інтернету"
 

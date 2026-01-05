@@ -344,14 +344,14 @@ void MoveAndResizeTool::createElement() {
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
         case ElementType::etFilledRoundedRectangle:
-            currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getDrawBorder());
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
         case ElementType::etEllipse:
             currentElement_ = new Ellipse(canvas_);
             break;
         case ElementType::etFilledEllipse:
-            currentElement_ = new FilledEllipse(canvas_);
+            currentElement_ = new FilledEllipse(canvas_, canvas_->getDrawBorder());
             break;
         case ElementType::etPixelateRectangle:
             currentElement_ = new PixelateRectangle(canvas_, /*float(canvas_->getPixelateBlockSize())*/canvas_->getBlurRadius(), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getInvertSelection());
@@ -360,7 +360,7 @@ void MoveAndResizeTool::createElement() {
             currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, false, canvas_->getInvertSelection());
             break;
         case ElementType::etFilledRectangle:
-            currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getDrawBorder());
             break;
         case ElementType::etStepNumber:
             currentElement_ = new StepNumber(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getNextNumber(), canvas_->getStepFontSize());

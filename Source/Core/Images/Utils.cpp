@@ -152,7 +152,9 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
     if ( br ) {
         gr->FillPath(br, &gp);
     }
-    gr->DrawPath(p, &gp);
+    if (p) {
+        gr->DrawPath(p, &gp);
+    }
 
 }
 

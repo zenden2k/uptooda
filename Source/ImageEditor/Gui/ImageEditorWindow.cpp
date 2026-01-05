@@ -498,6 +498,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setInvertSelection(configurationProvider_->invertSelection());
         canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
         canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(configurationProvider_->getArrowMode()));
+        canvas_->setDrawBorder(configurationProvider_->getDrawBorder());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
@@ -1079,6 +1080,7 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
         horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
         horizontalToolbar_.setInvertSelectionCheckbox(canvas_->getInvertSelection());
+        horizontalToolbar_.setDrawBorderCheckbox(canvas_->getDrawBorder());
     }
 }
 
@@ -1261,6 +1263,11 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     bool showFillBackgound = currentDrawingTool_ == DrawingToolType::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
 
+    bool showDrawBorder = currentDrawingTool_ == DrawingToolType::dtFilledRectangle
+        || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle
+        || currentDrawingTool_ == DrawingToolType::dtFilledEllipse;
+
+    horizontalToolbar_.showDrawBorderCheckbox(showDrawBorder);
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 
@@ -1611,7 +1618,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setStepForegroundColor(canvas_->getStepForegroundColor());
         configurationProvider_->setStepBackgroundColor(canvas_->getStepBackgroundColor());
         configurationProvider_->setArrowMode(static_cast<int>(canvas_->getArrowMode()));
-
+        configurationProvider_->setDrawBorder(canvas_->getDrawBorder());
         configurationProvider_->saveConfiguration();
     }
 }
@@ -2002,6 +2009,12 @@ LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/,
     //resultingBitmap_ = canvas_->getBitmapForExport();
 
     EndDialog(drContinue);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->setDrawBorder(horizontalToolbar_.isDrawBorderChecked());
     return 0;
 }
 

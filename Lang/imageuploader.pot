@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 08:50+0300\n"
+"POT-Creation-Date: 2026-01-05 17:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -320,8 +320,8 @@ msgid "Add to Wizard"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:533
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:974
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:975
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:976
 msgid "Add to the list"
 msgstr ""
 
@@ -386,7 +386,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1565
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1569
 msgid "All files"
 msgstr ""
 
@@ -445,7 +445,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:283
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
 msgid "Apply"
 msgstr ""
 
@@ -472,7 +472,7 @@ msgstr ""
 msgid "Are you sure you want to delete this account from %s's internal list?"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
 msgid "Arrow"
 msgstr ""
 
@@ -575,8 +575,8 @@ msgid "Blur radius"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:876
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1056
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Blurring rectangle"
 msgstr ""
 
@@ -606,7 +606,7 @@ msgstr ""
 msgid "Browse..."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
 msgid "Brush"
 msgstr ""
 
@@ -634,7 +634,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:287
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:292
 msgid "Cancel"
 msgstr ""
 
@@ -902,7 +902,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
 msgid "Close"
 msgstr ""
 
@@ -918,7 +918,7 @@ msgstr ""
 msgid "Collecting files..."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
 msgid "Color chooser"
 msgstr ""
 
@@ -966,8 +966,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:213
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:979
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:980
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:981
 msgid "Continue"
 msgstr ""
 
@@ -991,7 +991,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1005
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr ""
@@ -1029,11 +1029,11 @@ msgstr ""
 msgid "Copy image"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
 msgid "Copy in data:URI format"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:901
 msgid "Copy in data:URI format (html)"
 msgstr ""
 
@@ -1062,12 +1062,12 @@ msgstr ""
 msgid "Copy to clipboard"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, c-format
 msgid "Copy to clipboard (%s)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr ""
@@ -1157,7 +1157,7 @@ msgstr ""
 msgid "Creating new thumbnail preset"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1045
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
 msgid "Crop"
 msgstr ""
 
@@ -1287,6 +1287,10 @@ msgstr ""
 msgid "Downloading file "
 msgstr ""
 
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:273
+msgid "Draw border"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
 msgstr ""
@@ -1323,7 +1327,7 @@ msgid "Edit login credentials..."
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
 msgid "Ellipse"
 msgstr ""
 
@@ -1620,13 +1624,13 @@ msgid "Fill background"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:115
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
 msgid "Filled ellipse"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:104
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:862
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
 msgid "Filled rectangle"
 msgstr ""
 
@@ -1661,11 +1665,11 @@ msgstr ""
 msgid "Fit"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1898
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1902
 msgid "Flip horizontal"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1903
 msgid "Flip vertical"
 msgstr ""
 
@@ -1837,7 +1841,7 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
 msgid "Highlight"
 msgstr ""
 
@@ -1885,7 +1889,7 @@ msgid "Image Downloader"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:353
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:628
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:629
 msgid "Image Editor"
 msgstr ""
 
@@ -1894,11 +1898,11 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1811
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1815
 msgid "Image Editor  (%1%x%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1817
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1821
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr ""
 
@@ -2072,7 +2076,7 @@ msgstr ""
 msgid "Libraries:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
 msgid "Line"
 msgstr ""
 
@@ -2198,7 +2202,7 @@ msgstr ""
 msgid "Mouse clicks handlers"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1043
 msgid "Move"
 msgstr ""
 
@@ -2434,7 +2438,7 @@ msgid "Pause"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:128
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:878
 msgid "Pixelation"
 msgstr ""
 
@@ -2486,11 +2490,11 @@ msgstr ""
 msgid "Preset:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will close the window."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 
@@ -2503,7 +2507,7 @@ msgid "Preview Window"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1023
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1024
 msgid "Print..."
 msgstr ""
 
@@ -2592,13 +2596,13 @@ msgstr ""
 msgid "Reason:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1008
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
 msgid "Record"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:89
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:849
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1051
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
 msgid "Rectangle"
 msgstr ""
 
@@ -2672,22 +2676,22 @@ msgstr ""
 msgid "Right button click:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1896
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1900
 msgid "Rotate clockwise (90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1897
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1901
 msgid "Rotate counter clockwise (-90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1021
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
 msgid "Rotate or flip"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:110
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
 msgid "Rounded rectangle"
 msgstr ""
 
@@ -2706,7 +2710,7 @@ msgid "Same format as image"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:750
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:993
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:994
 msgid "Save"
 msgstr ""
 
@@ -2715,7 +2719,7 @@ msgid "Save Profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:889
 msgid "Save as..."
 msgstr ""
 
@@ -2723,7 +2727,7 @@ msgstr ""
 msgid "Save as:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1367
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1371
 msgid "Save changes?"
 msgstr ""
 
@@ -2829,21 +2833,21 @@ msgstr ""
 msgid "Search by image"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:919
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:920
 #, c-format
 msgid "Search by image (%s)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 msgid "Search on %1% (%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 msgid "Search on %1% and close (%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1011
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1280
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1284
 #, c-format
 msgid "Search on %s"
 msgstr ""
@@ -2875,7 +2879,7 @@ msgstr ""
 msgid "Select folder"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1538
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1542
 msgid "Select region"
 msgstr ""
 
@@ -3134,7 +3138,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1055
 msgid "Step"
 msgstr ""
 
@@ -3205,7 +3209,7 @@ msgid "Test failed"
 msgstr ""
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Text"
 msgstr ""
 
@@ -3379,7 +3383,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:276
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:281
 msgid "Type of arrow"
 msgstr ""
 
@@ -3421,7 +3425,7 @@ msgstr ""
 msgid "Unable to unpack archive %s"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr ""
@@ -3493,13 +3497,13 @@ msgid "Upload speed limit per thread:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:987
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:988
 #, c-format
 msgid "Upload to %s"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:985
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:986
 msgid "Upload to Web"
 msgstr ""
 

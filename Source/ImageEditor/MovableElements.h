@@ -109,7 +109,7 @@ protected:
 
 class Rectangle: public MovableElement {
 public:
-    Rectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );
+    Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled = false, bool drawBorder = true);
     void render(Painter* gr) override;
     void getAffectedSegments(AffectedSegments* segments) override;
     bool isItemAtPos(int x, int y) override;
@@ -124,14 +124,14 @@ protected:
 
 class FilledRectangle: public Rectangle {
 public:
-    FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
+    FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY, bool drawBorder );
     ElementType getType() const override;
     DISALLOW_COPY_AND_ASSIGN(FilledRectangle);
 };
 
 class RoundedRectangle: public Rectangle {
 public:
-    RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );
+    RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false, bool drawBorder = true);
     void render(Painter* gr) override;
     ElementType getType() const override;
     DISALLOW_COPY_AND_ASSIGN(RoundedRectangle);
@@ -139,7 +139,7 @@ public:
 
 class FilledRoundedRectangle: public RoundedRectangle {
 public:
-    FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
+    FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool drawBorder);
     ElementType getType() const override;
     DISALLOW_COPY_AND_ASSIGN(FilledRoundedRectangle);
 };
@@ -160,11 +160,12 @@ protected:
 
 class Ellipse: public MovableElement {
 public:
-    explicit Ellipse(Canvas* canvas, bool filled = false );
+    explicit Ellipse(Canvas* canvas, bool filled = false, bool drawBorder = true );
     void render(Painter* gr) override;
     bool isItemAtPos(int x, int y) override;
     ElementType getType() const override;
     RECT getPaintBoundingRect() override;
+
 protected:
     bool filled_;
     bool containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
@@ -174,7 +175,7 @@ protected:
 
 class FilledEllipse: public Ellipse {
 public:
-    explicit FilledEllipse(Canvas* canvas );
+    explicit FilledEllipse(Canvas* canvas, bool drawBorder);
     ElementType getType() const override;
     DISALLOW_COPY_AND_ASSIGN(FilledEllipse);
 };

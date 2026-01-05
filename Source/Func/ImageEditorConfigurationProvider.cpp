@@ -19,6 +19,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     arrowMode_ = settings->ImageEditorSettings.ArrowType;
     invertSelection_ = settings->ImageEditorSettings.InvertSelection;
     closeWindowAfterActionInFullScreen_ = settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen;
+    drawBorder_ = settings->ImageEditorSettings.DrawBorder;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -38,5 +39,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.ArrowType = arrowMode_;
     settings->ImageEditorSettings.InvertSelection = invertSelection_;
     settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen = closeWindowAfterActionInFullScreen_;
+    settings->ImageEditorSettings.DrawBorder = drawBorder_;
 }
 

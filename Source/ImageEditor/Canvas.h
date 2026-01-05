@@ -41,7 +41,7 @@ class Canvas {
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges
+            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges, uitDrawBorderChanged
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kMaxBlurRadius = 10, kDefaultStepFontSize = 14 };
 
@@ -174,6 +174,9 @@ class Canvas {
         void setInvertSelection(bool invert);
         bool getInvertSelection() const;
 
+        void setDrawBorder(bool enable);
+        bool getDrawBorder() const;
+
         void setArrowMode(Arrow::ArrowMode arrowMode);
         Arrow::ArrowMode getArrowMode() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
@@ -261,6 +264,7 @@ private:
         int stepFontSize_;
         bool fillTextBackground_;
         bool invertSelection_;
+        bool drawBorder_;
         Arrow::ArrowMode arrowMode_;
         
         Gdiplus::Rect updatedRect_;

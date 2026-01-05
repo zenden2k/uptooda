@@ -322,4 +322,12 @@ POINT* MovableElement::getMinPoint(Axis axis)
     }
 }
 
+void MovableElement::setDrawBorder(bool enable) {
+    drawBorder_ = enable;
+}
+
+bool MovableElement::getDrawBorder() const {
+    return drawBorder_;
+}
+
 }

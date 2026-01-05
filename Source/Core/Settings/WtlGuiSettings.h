@@ -33,6 +33,7 @@ struct ImageEditorSettingsStruct {
     bool AllowEditingInFullscreen;
     bool FillTextBackground = false;
     bool InvertSelection = false;
+    bool DrawBorder = true;
     int ArrowType;
     bool CloseWindowAfterActionInFullScreen = false; // Close after copying or searching
 };

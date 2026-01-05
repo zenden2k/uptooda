@@ -535,13 +535,15 @@ void CropOverlay::render(Painter* gr)
 
 // Rectangle
 //
-Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled):MovableElement(canvas) {
+Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled, bool drawBorder)
+    : MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x   = endX;
     endPoint_.y   = endY;
     drawDashedRectangle_   = false;
     filled_ = filled;
+    drawBorder_ = drawBorder;
     isBackgroundColorUsed_ = filled;
 }
 
@@ -561,7 +563,9 @@ void Rectangle::render(Painter* gr) {
         SolidBrush br(backgroundColor_);
         gr->FillRectangle(&br, x, y, width, height);
     }
-    gr->DrawRectangle( &pen, x, y, width, height );
+    if (drawBorder_) {
+        gr->DrawRectangle(&pen, x, y, width, height);
+    }
     gr->SetSmoothingMode(prevSmoothingMode);
 }
 
@@ -712,8 +716,8 @@ void Selection::createGrips()
     throw std::logic_error("The method or operation is not implemented.");
 }
 
-FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY):Rectangle(canvas, startX, startY, endX, endY, true)
-{
+FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool drawBorder)
+    : Rectangle(canvas, startX, startY, endX, endY, true, drawBorder) {
 }
 
 ElementType FilledRectangle::getType() const
@@ -818,8 +822,8 @@ ElementType PixelateRectangle::getType() const
 }
 
 
-RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */)
-                : Rectangle(canvas, startX, startY, endX,endY, filled)
+RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled /*= false */, bool drawBorder)
+                : Rectangle(canvas, startX, startY, endX,endY, filled, drawBorder)
 {
     isBackgroundColorUsed_ = filled;
 }
@@ -837,7 +841,7 @@ void RoundedRectangle::render(Painter* gr)
     Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
 
     gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle, setting the clip
-    ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
+    ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , drawBorder_ ? &pen: nullptr, filled_ ? &br : 0);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
@@ -846,7 +850,8 @@ ImageEditor::ElementType RoundedRectangle::getType() const
     return ElementType::etRoundedRectangle;
 }
 
-FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
+FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY, bool drawBorder)
+    : RoundedRectangle(canvas, startX, startY, endX,endY, true, drawBorder)
 {
 
 }
@@ -856,9 +861,10 @@ ImageEditor::ElementType FilledRoundedRectangle::getType() const
     return ElementType::etFilledRoundedRectangle;
 }
 
-Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
-{
+Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */, bool drawBorder)
+    : MovableElement(canvas) {
     filled_ = filled;
+    setDrawBorder(drawBorder);
     isBackgroundColorUsed_ = filled;
 }
 
@@ -877,7 +883,9 @@ void Ellipse::render(Painter* gr)
     if ( filled_ ) {
         gr->FillEllipse(&br, x,y,width,height);
     }
-    gr->DrawEllipse(&pen, x,y,width,height);
+    if (getDrawBorder()) {
+        gr->DrawEllipse(&pen, x, y, width, height);
+    }
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
@@ -953,7 +961,7 @@ bool Ellipse::isItemAtPos(int x, int y)
     }
 }
 
-FilledEllipse::FilledEllipse(Canvas* canvas) : Ellipse(canvas, true)
+FilledEllipse::FilledEllipse(Canvas* canvas, bool drawBorder) : Ellipse(canvas, true, drawBorder)
 {
 
 }

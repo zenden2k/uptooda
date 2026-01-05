@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 08:50+0300\n"
+"POT-Creation-Date: 2026-01-05 17:19+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
@@ -342,8 +342,8 @@ msgid "Add to Wizard"
 msgstr "Adauga in wizard"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:533
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:974
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:975
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:976
 msgid "Add to the list"
 msgstr "Adaugă la lista"
 
@@ -408,7 +408,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1565
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1569
 msgid "All files"
 msgstr "Toate fişierele"
 
@@ -467,7 +467,7 @@ msgstr "Setările aspectului exterior"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:283
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
 msgid "Apply"
 msgstr "Aplică"
 
@@ -501,7 +501,7 @@ msgstr ""
 "Sunteți sigur că doriți să ștergeți acest cont din lista internă Image "
 "Uploader?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
 msgid "Arrow"
 msgstr "Săgeată"
 
@@ -608,8 +608,8 @@ msgid "Blur radius"
 msgstr "Raza de estompare"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:876
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1056
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Blurring rectangle"
 msgstr "Dreptunghi estompat"
 
@@ -639,7 +639,7 @@ msgstr "Aduce fereastra alesa cu mouse in prim-plan"
 msgid "Browse..."
 msgstr "Alege..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
 msgid "Brush"
 msgstr "Pensulă"
 
@@ -667,7 +667,7 @@ msgstr "Pensulă"
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:287
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:292
 msgid "Cancel"
 msgstr "Anulare"
 
@@ -950,7 +950,7 @@ msgstr "Schiţe cu marire prin click"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
 msgid "Close"
 msgstr "Închide"
 
@@ -966,7 +966,7 @@ msgstr "Codul:"
 msgid "Collecting files..."
 msgstr "Căutarea fişierelor..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
 msgid "Color chooser"
 msgstr "Selector de culori"
 
@@ -1016,8 +1016,8 @@ msgstr "Elemente personalizate din meniul contextual:"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:213
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:979
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:980
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:981
 msgid "Continue"
 msgstr "Continuă"
 
@@ -1043,7 +1043,7 @@ msgstr "Parametri..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1005
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr "Copiază"
@@ -1081,11 +1081,11 @@ msgstr "Copiați calea completă"
 msgid "Copy image"
 msgstr "Copiaza imaginea"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
 msgid "Copy in data:URI format"
 msgstr "Copiază în data:URI format"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:901
 msgid "Copy in data:URI format (html)"
 msgstr "Copiază în data:URI format (html)"
 
@@ -1114,13 +1114,13 @@ msgstr "Salveaza in Clipboard"
 msgid "Copy to clipboard"
 msgstr "Copiere în Clipboard"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, fuzzy, c-format
 #| msgid "Copy to clipboard"
 msgid "Copy to clipboard (%s)"
 msgstr "Copiere în Clipboard"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr "Copiază în clipboard și închide (%s)"
@@ -1219,7 +1219,7 @@ msgstr "Creaza miniature"
 msgid "Creating new thumbnail preset"
 msgstr "Crearea unei noi presetări de miniatură"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1045
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
 msgid "Crop"
 msgstr "Decupa"
 
@@ -1349,6 +1349,12 @@ msgstr "Descărcat: "
 msgid "Downloading file "
 msgstr "Descărcarea fișierului "
 
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:273
+#, fuzzy
+#| msgid "Draw frame"
+msgid "Draw border"
+msgstr "Ramă"
+
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
 msgstr "Ramă"
@@ -1387,7 +1393,7 @@ msgid "Edit login credentials..."
 msgstr "Vizualizați jurnalul pentru detalii."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
 msgid "Ellipse"
 msgstr "Elipsă"
 
@@ -1697,13 +1703,13 @@ msgid "Fill background"
 msgstr "Completa fundalul"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:115
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
 msgid "Filled ellipse"
 msgstr "Elipsă umplută"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:104
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:862
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
 msgid "Filled rectangle"
 msgstr "Dreptunghi umplut"
 
@@ -1740,11 +1746,11 @@ msgstr "Mai întâi trebuie să selectați un element din listă."
 msgid "Fit"
 msgstr "Ajustare"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1898
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1902
 msgid "Flip horizontal"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1899
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1903
 msgid "Flip vertical"
 msgstr ""
 
@@ -1922,7 +1928,7 @@ msgstr "Ajutor"
 msgid "Hide"
 msgstr "Ascunde"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
 msgid "Highlight"
 msgstr "Marker"
 
@@ -1972,7 +1978,7 @@ msgid "Image Downloader"
 msgstr "Descarcatorul imaginilor"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:353
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:628
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:629
 msgid "Image Editor"
 msgstr "Editor de imagini"
 
@@ -1981,11 +1987,11 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Editor de imagini"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1811
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1815
 msgid "Image Editor  (%1%x%2%)"
 msgstr "Editor de imagini (%1%x%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1817
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1821
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr "Editor de imagini - %1% (%2%x%3%)"
 
@@ -2165,7 +2171,7 @@ msgstr "Clicul butonului sting:"
 msgid "Libraries:"
 msgstr "Biblioteci:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
 msgid "Line"
 msgstr "Linie"
 
@@ -2297,7 +2303,7 @@ msgstr "More colors..."
 msgid "Mouse clicks handlers"
 msgstr "Reactiile iconitei la clicuri"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1043
 msgid "Move"
 msgstr "Mutare"
 
@@ -2538,7 +2544,7 @@ msgid "Pause"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:128
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:878
 msgid "Pixelation"
 msgstr "Pixelare"
 
@@ -2592,11 +2598,11 @@ msgstr ""
 msgid "Preset:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will close the window."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:997
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 
@@ -2609,7 +2615,7 @@ msgid "Preview Window"
 msgstr "Fereastra de previzualizare"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1023
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1024
 msgid "Print..."
 msgstr "Imprimă..."
 
@@ -2703,13 +2709,13 @@ msgstr ""
 msgid "Reason:"
 msgstr "Motivul:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1008
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
 msgid "Record"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:89
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:849
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1051
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
 msgid "Rectangle"
 msgstr "Dreptunghi"
 
@@ -2783,22 +2789,22 @@ msgstr "Reîncărcarea imaginilor în text cu păstrarea marcajului original"
 msgid "Right button click:"
 msgstr "Clicul cu butonului drept:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1896
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1900
 msgid "Rotate clockwise (90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1897
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1901
 msgid "Rotate counter clockwise (-90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1021
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
 msgid "Rotate or flip"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:110
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
 msgid "Rounded rectangle"
 msgstr "Dreptunghi rotunjit"
 
@@ -2817,7 +2823,7 @@ msgid "Same format as image"
 msgstr "Aceeasi ca si a imaginei"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:750
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:993
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:994
 msgid "Save"
 msgstr "Salveaza"
 
@@ -2826,7 +2832,7 @@ msgid "Save Profile"
 msgstr "Salveaza profil"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:889
 msgid "Save as..."
 msgstr "Salvează ca..."
 
@@ -2834,7 +2840,7 @@ msgstr "Salvează ca..."
 msgid "Save as:"
 msgstr "Salvează ca:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1367
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1371
 msgid "Save changes?"
 msgstr "Salvați modificările?"
 
@@ -2957,25 +2963,25 @@ msgstr ""
 msgid "Search by image"
 msgstr "Căutare după imaginea"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:919
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:920
 #, c-format
 msgid "Search by image (%s)"
 msgstr "Căutare după imaginea (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 #, fuzzy
 #| msgid "Search on %s"
 msgid "Search on %1% (%2%)"
 msgstr "Cauta in %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 #, fuzzy
 #| msgid "Search by image (%s)"
 msgid "Search on %1% and close (%2%)"
 msgstr "Căutare după imaginea (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1011
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1280
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1284
 #, c-format
 msgid "Search on %s"
 msgstr "Cauta in %s"
@@ -3009,7 +3015,7 @@ msgstr "Selectarea toatelor"
 msgid "Select folder"
 msgstr "Alegerea dosarului"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1538
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1542
 msgid "Select region"
 msgstr "Selecta regiunea"
 
@@ -3274,7 +3280,7 @@ msgstr "Pornirea încărcării"
 msgid "Status"
 msgstr "Statut"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1055
 msgid "Step"
 msgstr "Pas"
 
@@ -3345,7 +3351,7 @@ msgid "Test failed"
 msgstr "Testul a eșuat"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Text"
 msgstr "Text"
 
@@ -3519,7 +3525,7 @@ msgstr "Meniu contextual a iconitei"
 msgid "Type"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:276
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:281
 msgid "Type of arrow"
 msgstr ""
 
@@ -3561,7 +3567,7 @@ msgstr "Nu s-a reusit scurtarea link-ului..."
 msgid "Unable to unpack archive %s"
 msgstr "Nu s-a reusit despachetarea arhivei %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr ""
@@ -3633,13 +3639,13 @@ msgid "Upload speed limit per thread:"
 msgstr "Limita de viteză de încărcare pe fir:"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:987
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:988
 #, c-format
 msgid "Upload to %s"
 msgstr "Încărca pe %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:985
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:986
 msgid "Upload to Web"
 msgstr "Incarca la server"
 

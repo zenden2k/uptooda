@@ -123,6 +123,7 @@ public:
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
         MESSAGE_HANDLER(MTBM_INVERTSELECTIONCHANGE, OnInvertSelectionChange)
+        MESSAGE_HANDLER(MTBM_DRAWBORDERCHANGE, OnDrawBorderChange)
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
@@ -222,6 +223,7 @@ public:
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -373,6 +375,9 @@ public:
         return closeWindowAfterActionInFullScreen_;
     }
 
+	bool getDrawBorder() const { return drawBorder_; }
+    void setDrawBorder(bool val) { drawBorder_ = val; }
+
 protected:
     Gdiplus::Color foregroundColor_, backgroundColor_,
         stepForegroundColor_, stepBackgroundColor_;
@@ -386,6 +391,7 @@ protected:
     ServerProfile searchEngine_;
     bool fillTextBackground_;
     bool invertSelection_;
+    bool drawBorder_ = true;
 };
 
 }
