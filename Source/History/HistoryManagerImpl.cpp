@@ -56,7 +56,6 @@ CHistoryManager::~CHistoryManager()
     if (db_) {
         sqlite3_close(db_);
     }
-    sqlite3_shutdown();
 }
 
 bool CHistoryManager::openDatabase() {
@@ -190,14 +189,31 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
 std::shared_ptr<CHistorySession> CHistoryManager::newSession()
 {
     time_t t = time(nullptr);
-    tm * timeinfo = localtime ( &t );
-    std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + std::to_string(1900+timeinfo->tm_year)+"_" + std::to_string(timeinfo->tm_mon+1) + ".xml";
-    std::uniform_int_distribution<int> dist1(256 * 256);
-    std::uniform_int_distribution<int> dist2(256);
-	std::string str = std::to_string(dist1(mt_)) + std::to_string(int(t));
-    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + std::to_string(dist2(mt_))).substr(0, 16);
+
+    // Используем потокобезопасную версию localtime
+    tm timeinfo;
+#ifdef _WIN32
+    localtime_s(&timeinfo, &t);
+#else
+    localtime_r(&t, &timeinfo);
+#endif
+
+    std::string fileName = m_historyFilePath + m_historyFileNamePrefix + "_"
+        + std::to_string(1900 + timeinfo.tm_year) + "_"
+        + std::to_string(timeinfo.tm_mon + 1) + ".xml";
+    std::lock_guard<std::mutex> lock(sessionMutex_);
+
+    std::uniform_int_distribution<int> dist1(0, 256 * 256 - 1);
+    std::uniform_int_distribution<int> dist2(0, 256 - 1);
+
+    std::string str = std::to_string(dist1(mt_)) + std::to_string(static_cast<int>(t));
+    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(
+        str + std::to_string(dist2(mt_)))
+                         .substr(0, 16);
+
     auto res = std::make_shared<CHistorySession>(fileName, id);
     res->setTimeStamp(t);
+
     return res;
 }
 

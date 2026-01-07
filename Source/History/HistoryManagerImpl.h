@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <mutex>
 #include <random>
 
 #include "Core/HistoryManager.h"
@@ -60,6 +61,7 @@ class CHistoryManager: public IHistoryManager
         sqlite3* db_;
         std::random_device rd_;
         std::mt19937 mt_;
+        std::mutex sessionMutex_;
         bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
         friend class CHistoryReader;
 };
