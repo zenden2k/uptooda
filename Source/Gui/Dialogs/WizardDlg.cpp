@@ -2385,12 +2385,9 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
     {
         ImageEditorConfigurationProvider configProvider;
-        ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
+        ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider, uploadEngineManager_);
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(fromTray);
-        if ( fromTray ) {
-            imageEditor.setServerDisplayName(Utf8ToWCstring(enginelist_->getServerDisplayName(Settings.quickScreenshotServer.getByIndex(0).uploadEngineData())));
-        }
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {

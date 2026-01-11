@@ -610,7 +610,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     return 0;
 }
 
-int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
+int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect, bool topMost) {
     // Code from \Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
     isChildWindow_ = false;
     if (Create(parent) == NULL) {
@@ -683,8 +683,8 @@ int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
         }
     }
 
-    SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
-    ShowWindow(SW_SHOWNOACTIVATE);
+    SetWindowPos(topMost ? HWND_TOPMOST : 0, x, y, 0, 0, SWP_NOACTIVATE | (topMost ? 0 : SWP_NOZORDER) | SWP_NOSIZE);
+    ShowWindow(topMost ? SW_SHOWNORMAL : SW_SHOWNOACTIVATE);
 
     //BOOL bMenuDestroyed(FALSE);
     HWND hwndOwner = GetWindow(GW_OWNER);

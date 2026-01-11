@@ -251,7 +251,7 @@ LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, H
     if (!res) {
         return 0;
     }
-    ImageEditorWindow imageEditor(res, false, &configProvider, true);
+    ImageEditorWindow imageEditor(res, false, &configProvider, nullptr, true);
     imageEditor.setInitialDrawingTool(ImageEditor::DrawingToolType::dtCrop);
 
     auto dialogResult = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmFullscreen);

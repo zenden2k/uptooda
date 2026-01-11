@@ -17,6 +17,8 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/SearchByImage.h"
 
+class UploadEngineManager;
+
 namespace ImageEditor {
 
 class ColorsDelegate;
@@ -87,7 +89,7 @@ public:
 
     CImageEditorView m_view;
 
-    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/, bool onlySelectRegion = false);
+    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider /* = 0*/, UploadEngineManager* uploadEngineManager, bool onlySelectRegion = false);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
     ~ImageEditorWindow() override;
     void setInitialDrawingTool(DrawingToolType dt);
@@ -97,10 +99,6 @@ public:
     std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap() const;
     Gdiplus::Rect lastAppliedCrop() const;
     CRect getSelectedRect() const;
-    /**
-     * Set server name which is being displayed on upload button
-     */
-    void setServerDisplayName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
     DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto, bool forceShowParent = false);
@@ -118,7 +116,8 @@ public:
         //MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER( WM_ACTIVATEAPP, OnActivateApp )
         MESSAGE_HANDLER( WM_GETMINMAXINFO, OnGetMinMaxInfo )
-        MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
+        MESSAGE_HANDLER( MTBM_DROPDOWNMOUSEDOWN, OnDropDownMouseDown )
+        MESSAGE_HANDLER(MTBM_DROPDOWNCLICKED, OnDropDownClicked)
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
@@ -186,6 +185,7 @@ public:
         LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnActivateApp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnDPICHanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnDropDownMouseDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnMenuItemClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -232,6 +232,7 @@ public:
         std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;
         std::unordered_map<DrawingToolHotkey, int> drawingToolsHotkeys_;
+        UploadEngineManager* uploadEngineManager_;
         DialogResult dialogResult_;
         WindowDisplayMode displayMode_;
         DrawingToolType initialDrawingTool_;
@@ -240,7 +241,7 @@ public:
         bool showAddToWizardButton_;
         bool askBeforeClose_;
         CString suggestedFileName_;
-        CString serverDisplayName_;
+        std::string serverDisplayName_;
         int prevPenSize_;
         int prevRoundingRadius_;
         float prevBlurRadius_;
@@ -304,6 +305,8 @@ public:
 
         bool checkCloseWindowAfterAction();
         bool canCloseAfterAction();
+
+        std::string getUploadButtonText();
 };
 
 class ConfigurationProvider {

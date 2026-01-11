@@ -106,7 +106,7 @@ public:
     void notifyServerListChanged();
     void updateServerButton();
     bool isAccountChosen() const;
-    int showPopup(HWND parent, const RECT& anchorRect);
+    int showPopup(HWND parent, const RECT& anchorRect, bool topMost = false);
     bool exitPopup(int nCommandId);
 
     ServerProfile serverProfile() const;

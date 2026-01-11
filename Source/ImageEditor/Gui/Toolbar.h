@@ -11,7 +11,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
 
-constexpr UINT MTBM_DROPDOWNCLICKED = WM_USER + 400;
+constexpr UINT MTBM_DROPDOWNMOUSEDOWN = WM_USER + 400;
 constexpr UINT MTBM_FONTSIZECHANGE = WM_USER + 401;
 constexpr UINT MTBM_STEPINITIALVALUECHANGE = WM_USER + 402;
 constexpr UINT MTBM_FILLBACKGROUNDCHANGE = WM_USER + 403;
@@ -20,7 +20,7 @@ constexpr UINT MTBM_APPLY = WM_USER + 405; // Crop
 constexpr UINT MTBM_CANCEL = WM_USER + 406;
 constexpr UINT MTBM_INVERTSELECTIONCHANGE = WM_USER + 407;
 constexpr UINT MTBM_DRAWBORDERCHANGE = WM_USER + 408;
-
+constexpr UINT MTBM_DROPDOWNCLICKED = WM_USER + 409;
 namespace ImageEditor {
 
 constexpr float BLUR_RADIUS_PRECISION = 4.0f;

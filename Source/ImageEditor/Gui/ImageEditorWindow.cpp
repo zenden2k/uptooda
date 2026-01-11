@@ -18,24 +18,32 @@
 #include "Core/AbstractServerIconCache.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 
 namespace ImageEditor {
 
-ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider, bool onlySelectRegion)
+const auto UPLOAD_BUTTON_MAX_LENGTH = 35;
+
+ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider,
+    UploadEngineManager* uploadEngineManager, bool onlySelectRegion)
     : horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion)
-    , verticalToolbar_(Toolbar::orVertical)
-{
+    , verticalToolbar_(Toolbar::orVertical),
+    uploadEngineManager_(uploadEngineManager) {
     currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
     onlySelectRegion_ = onlySelectRegion;
 
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(settings->quickScreenshotServer.getByIndex(0).uploadEngineData());
+
     init();
 }
 
-ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical)
-{
+ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):
+    horizontalToolbar_(Toolbar::orHorizontal), verticalToolbar_(Toolbar::orVertical)
+    , uploadEngineManager_(nullptr) {
     currentDoc_ = std::make_unique<ImageEditor::Document>(imageFileName);
 
     sourceFileName_ = imageFileName;
@@ -324,11 +332,6 @@ Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
 
 CRect ImageEditorWindow::getSelectedRect() const {
     return selectedRect_;
-}
-
-void ImageEditorWindow::setServerDisplayName(const CString & serverName)
-{
-    serverDisplayName_ = serverName;
 }
 
 void ImageEditorWindow::setAskBeforeClose(bool ask)
@@ -838,7 +841,7 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
@@ -943,7 +946,29 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     } else if (item->command == ID_MOREACTIONS) {
         showMoreActionsDropdownMenu(item);
+    } else if (item->command == ID_UPLOAD) {
+        auto serviceLocator = ServiceLocator::instance();
+        auto* settings = serviceLocator->settings<WtlGuiSettings>();
+        CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
+        serverSelectorControl.setServersMask(CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer);
+        serverSelectorControl.setTitle(TR("Server for quick screenshot uploading"));
+        serverSelectorControl.setServerProfile(settings->quickScreenshotServer.getByIndex(0));
+        RECT rc = item->rect;
+        horizontalToolbar_.ClientToScreen(&rc);
+        serverSelectorControl.showPopup(m_hWnd, rc, true);
+        settings->quickScreenshotServer.getByIndex(0) = serverSelectorControl.serverProfile();
+        serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(serverSelectorControl.serverProfile().uploadEngineData());
+        item->title = U2WC(getUploadButtonText());
+        item->hint = WinUtils::TrimStringEnd(item->title, UPLOAD_BUTTON_MAX_LENGTH);
+        horizontalToolbar_.update();
     }
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
+    
     return 0;
 }
 
@@ -981,14 +1006,9 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONOK), ID_CONTINUE, buttonHint));
     } else {
         if (showUploadButton_) {
-            CString fullUploadButtonText, uploadButtonText;
-            if (serverDisplayName_.IsEmpty()) {
-                fullUploadButtonText = uploadButtonText = TR("Upload to Web");
-            } else {
-                fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverDisplayName_));
-                uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
-            }
-            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
+            CString fullUploadButtonText = U2WC(getUploadButtonText());
+            CString uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, UPLOAD_BUTTON_MAX_LENGTH);
+            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itComboButton));
         }
         //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
         horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")), sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
@@ -1958,6 +1978,14 @@ bool ImageEditorWindow::checkCloseWindowAfterAction() {
 
 bool ImageEditorWindow::canCloseAfterAction() {
     return displayMode_ == wdmFullscreen && sourceFileName_.IsEmpty();
+}
+
+std::string ImageEditorWindow::getUploadButtonText() {
+    if (serverDisplayName_.empty()) {
+        return _("Upload to Web");
+    } 
+
+    return str(IuStringUtils::FormatNoExcept(_("Upload to %s")) % serverDisplayName_);   
 }
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

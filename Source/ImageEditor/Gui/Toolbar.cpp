@@ -494,7 +494,7 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
             if (item.state == isDropDown && (item.type == Toolbar::itComboButton || item.type == Toolbar::itTinyCombo)) {
                 // Showing a popup menu in the parent class
-                ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                ::SendMessage(parent, MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item, (LPARAM)m_hWnd);
                 // Restoring button state
                 item.state = isNormal;
                 InvalidateRect(&item.rect, false);
@@ -515,7 +515,7 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
     if (wParam == kTinyComboDropdownTimer && selectedItemIndex_ != -1) {
         Item& item = buttons_[selectedItemIndex_];
         if (item.type == Toolbar::itTinyCombo) {
-            ::PostMessage(GetParent(), MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+            ::PostMessage(GetParent(), MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item,(LPARAM)m_hWnd);
         }
     }
     KillTimer(kTinyComboDropdownTimer);
@@ -543,19 +543,22 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
                 item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
             } else {
                 HWND parent = GetParent();
-                bool shouldSendCommand = true;
+                
+                bool isDropDownArea = false;
 
                 if (item.type == Toolbar::itComboButton) {
-                    shouldSendCommand = !isPointInComboButtonDropdownArea(xPos, yPos, item);
+                    isDropDownArea = isPointInComboButtonDropdownArea(xPos, yPos, item);
                 } else if (item.type == Toolbar::itTinyCombo) {
-                    shouldSendCommand = !isPointInTinyComboButtonDropdownArea(xPos, yPos, item);
+                    isDropDownArea = isPointInTinyComboButtonDropdownArea(xPos, yPos, item);
                 }
-
-                if (shouldSendCommand) {
+                
+                if (isDropDownArea) {
+                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                } else {
                     ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(item.command, BN_CLICKED), (LPARAM)m_hWnd);
                     selectedItemIndex_ = -1;
-                    OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
-                }
+                    OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);      
+                }               
             }
         } else {
             selectedItemIndex_ = -1;
@@ -580,7 +583,7 @@ LRESULT Toolbar::OnRButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
         item.state = isDropDown;
         InvalidateRect(&item.rect, false);
         HWND parent = GetParent();
-        ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+        ::SendMessage(parent, MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item, (LPARAM)m_hWnd);
 
         item.state = isNormal;
         selectedItemIndex_ = -1;
