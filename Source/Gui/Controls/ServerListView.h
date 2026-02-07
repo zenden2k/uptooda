@@ -2,6 +2,8 @@
 #define IU_SERVERLISTTOOL_SERVERLISTVIEW_H
 
 #pragma once
+#include <unordered_map>
+
 #include "atlheaders.h"
 
 class ServerListModel;
@@ -45,7 +47,7 @@ protected:
     void setColumnWidths();
     void createResources();
     CImageList serverIconImageList_;
-    std::vector<int> serverIconImageListIndexes_;
+    std::unordered_map<std::string,int> serverIconImageListIndexes_;
     WinServerIconCache* serverIconCache_;
     int FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags);
     int FindItemByPartialString(LPCWSTR searchText, int startIndex);

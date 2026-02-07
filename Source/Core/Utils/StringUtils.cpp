@@ -142,23 +142,76 @@ int stricmp(const char* s1, const char* s2)
 #endif
 }
 
-std::string ToLower(const std::string& str)
-{
-    std::string s1 = str;
-    for (size_t i = 0; i < s1.length(); i++)
-        s1[i] = static_cast<char>(::tolower(s1[i]));
-    // std::string s1;
-    // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
-    return s1;
+std::string ToLower(const std::string& str) {
+#ifdef _WIN32
+    if (str.empty())
+        return str;
+
+    // Determine the required buffer size for wide characters
+    int wideSize = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    if (wideSize == 0)
+        return str; // Conversion error
+
+    // Convert UTF-8 to UTF-16
+    std::wstring wideStr(wideSize - 1, 0); // -1 to remove null-terminator
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wideStr[0], wideSize);
+
+    // Convert to lower case
+    CharLowerBuffW(&wideStr[0], static_cast<DWORD>(wideStr.length()));
+
+    // Determine the size for UTF-8
+    int utf8Size = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (utf8Size == 0)
+        return str; // Conversion error
+
+    // Convert back to UTF-8
+    std::string result(utf8Size - 1, 0); // -1 to remove null-terminator
+    WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &result[0], utf8Size, nullptr, nullptr);
+
+    return result;
+#else
+    // Linux fallback - ASCII only
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return result;
+#endif
 }
 
 std::string ToUpper(const std::string& str) {
-    std::string s1 = str;
-    for (size_t i = 0; i < s1.length(); i++)
-        s1[i] = static_cast<char>(::toupper(s1[i]));
-    // std::string s1;
-    // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
-    return s1;
+#ifdef _WIN32
+    if (str.empty())
+        return str;
+
+    // Determine the required buffer size for wide characters
+    int wideSize = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    if (wideSize == 0)
+        return str; // Conversion error
+
+    // Convert UTF-8 to UTF-16
+    std::wstring wideStr(wideSize - 1, 0); // -1 to remove null-terminator
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wideStr[0], wideSize);
+
+    // Convert to upper case
+    CharUpperBuffW(&wideStr[0], static_cast<DWORD>(wideStr.length()));
+
+    // Determine the size for UTF-8
+    int utf8Size = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (utf8Size == 0)
+        return str; // Conversion error
+
+    // Convert back to UTF-8
+    std::string result(utf8Size - 1, 0); // -1 to remove null-terminator
+    WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &result[0], utf8Size, nullptr, nullptr);
+
+    return result;
+#else
+    // Linux fallback - ASCII only
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(),
+        [](unsigned char c) { return std::toupper(c); });
+    return result;
+#endif
 }
 
 std::string Tail(std::string const& source, size_t length) {

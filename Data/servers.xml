@@ -119,7 +119,15 @@
         </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="Dropbox" FileHost="1" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="1" WebsiteUrl="https://www.dropbox.com/">
+    <Server Name="Dropbox" FileHost="1" NeedPassword="0" Authorize="2" Plugin="dropbox.old" WebsiteUrl="https://www.dropbox.com/">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Result ImageUrlTemplate="stub" />
+    </Server>
+    <Server Name="Dropbox New" FileHost="1" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="1" WebsiteUrl="https://www.dropbox.com/">
         <Info>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
@@ -691,8 +699,8 @@
         </Actions>
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
     </Server>
-    <Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" WebsiteUrl="https://postimages.org"
-        RegistrationUrl="https://postimages.org/signup" LoginLabel="E-mail">
+    <Server Name="postimages.org" Authorize="1" Type="image"  NeedPassword="0" Plugin="postimages.org" WebsiteUrl="https://postimages.org"
+        RegistrationUrl="https://postimages.org/signup">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="33554432" UserTypes="anon,reg">

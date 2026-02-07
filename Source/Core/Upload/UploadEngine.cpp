@@ -209,12 +209,13 @@ int CUploadEngineListBase::count() const
 
 CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
 {
-    for (size_t i = 0; i < m_list.size(); i++)
-    {
-        if (!IuStringUtils::stricmp(m_list[i]->Name.c_str(), name.c_str()))
-            return m_list[i].get();
+    auto index = getUploadEngineIndex(name);
+
+    if (index == -1) {
+        return nullptr;
     }
-    return nullptr;
+
+    return m_list[index].get();
 }
 
 CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) {
@@ -262,11 +263,11 @@ int CUploadEngineListBase::getRandomFileServer()
 
 int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const
 {
-    for (size_t i = 0; i < m_list.size(); i++)
-    {
-        if (m_list[i]->Name == Name)
-            return i;
+    auto it = serverNameToIndex_.find(IuStringUtils::ToLower(Name));
+    if (it != serverNameToIndex_.end()) {
+        return it->second;
     }
+    
     return -1;
 }
 

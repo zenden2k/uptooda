@@ -290,7 +290,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         m_list.push_back(std::move(uploadEngineData));
     }
 
-    std::sort(m_list.begin(), m_list.end(), compareEngines);
+    sort();
     return true;
 }
 
@@ -397,6 +397,15 @@ void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineDa
     });
 }
 
+void CUploadEngineList::sort() {
+    std::sort(m_list.begin(), m_list.end(), compareEngines);
+
+    serverNameToIndex_.clear();
+    for (size_t i = 0; i < m_list.size(); i++) {
+        serverNameToIndex_[IuStringUtils::ToLower(m_list[i]->Name)] = i;
+    }
+}
+
 void CUploadEngineList::setNumOfRetries(int Engine, int Action)
 {
     m_EngineNumOfRetries = Engine;
@@ -407,6 +416,6 @@ bool CUploadEngineList::addServer(const CUploadEngineData& data)
 {
     auto uploadEngineData = std::make_unique<CUploadEngineData>(data);
     m_list.push_back(std::move(uploadEngineData));
-    std::sort(m_list.begin(), m_list.end(), compareEngines);
+    sort();
     return true;
 }

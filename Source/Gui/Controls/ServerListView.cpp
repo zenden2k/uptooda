@@ -13,9 +13,13 @@ UINT CServerListView::columns[1] = { ServerListModel::tcMaxFileSize };
 CServerListView::CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache)
     : model_(model)
     , serverIconCache_(serverIconCache) {
-    model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
-    model_->setOnItemCountChangedCallback([this](size_t size) {
+    model_->setRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
+    model_->setItemCountChangedCallback([this](size_t size) {
         SetItemCount(size);
+    });
+
+    model_->setIconsChangedCallback([this] {
+        createResources();
     });
 }
 
@@ -66,10 +70,11 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     }
 
     if (pItem->mask & LVIF_IMAGE) {
-        int uedIndex = model_->getDataByIndex(pItem->iItem).uedIndex;
-        if (uedIndex >= 0 && uedIndex < serverIconImageListIndexes_.size()) {
-            pItem->iImage = serverIconImageListIndexes_[uedIndex];
-        }
+        const auto& serverName = model_->getDataByIndex(pItem->iItem).ued->Name;
+        auto it = serverIconImageListIndexes_.find(serverName);
+
+         pItem->iImage = serverIconImageListIndexes_[serverName];
+        
     }
 
     if (pItem->mask & LVIF_COLUMNS) {

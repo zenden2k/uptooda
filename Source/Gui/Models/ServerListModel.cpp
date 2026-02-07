@@ -42,6 +42,9 @@ void ServerListModel::updateEngineList() {
 
         items_.push_back(std::move(sd));
     }
+    if (iconsChangedCallback_) {
+        iconsChangedCallback_();
+    }
 }
 
 std::string ServerListModel::getItemText(int row, int column) const {
@@ -89,12 +92,16 @@ const ServerData& ServerListModel::getDataByIndex(size_t row) const {
     return items_[row];
 }
 
-void ServerListModel::setOnRowChangedCallback(std::function<void(size_t)> callback) {
+void ServerListModel::setRowChangedCallback(std::function<void(size_t)> callback) {
     rowChangedCallback_ = std::move(callback);
 }
 
-void ServerListModel::setOnItemCountChangedCallback(std::function<void(size_t)> callback) {
+void ServerListModel::setItemCountChangedCallback(std::function<void(size_t)> callback) {
     itemCountChangedCallback_ = std::move(callback);
+}
+
+void ServerListModel::setIconsChangedCallback(std::function<void()> callback) {
+    iconsChangedCallback_ = callback;
 }
 
 void ServerListModel::resetData() {

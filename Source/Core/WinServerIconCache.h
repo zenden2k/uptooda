@@ -5,6 +5,8 @@
 #include <mutex>
 #include <string>
 #include <future>
+#include <vector>
+#include <optional>
 
 #include "AbstractServerIconCache.h"
 #include "Core/Utils/CoreUtils.h"
@@ -60,7 +62,7 @@ public:
     */
     void preLoadIcons(int dpi) override;
 
-    using ImageListWithIndexes = std::pair<HIMAGELIST, std::vector<int>>;
+    using ImageListWithIndexes = std::pair<HIMAGELIST, std::unordered_map<std::string,int>>;
     ImageListWithIndexes getImageList(int dpi, bool smallIcons = true);
 
 private :
@@ -69,7 +71,10 @@ private :
     std::mutex cacheMutex_;
     std::future<int> future_;
     bool iconsPreload_ = false;
-    std::unordered_map<std::pair<int,bool>, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::vector<int>>> imageLists_;
+    std::mutex imageListsMutex_;
+    std::unordered_map<std::pair<int,bool>, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::unordered_map<std::string, int>>> imageLists_;
     WinIcon tryIconLoad(const std::string& name, int dpi, bool smallIcon = true);
     void loadIcons(int dpi, bool smallIcons);
+    void onServerAdded(const std::string& name);
+    std::optional<ImageListWithIndexes> getCachedImageList(int dpi, bool smallIcons = true);
 };

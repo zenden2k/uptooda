@@ -43,6 +43,7 @@ class CUploadEngineList : public CUploadEngineListBase {
         bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);
         void loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out);
         void loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<StorageTime>& out);
+        void sort();
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

@@ -69,8 +69,9 @@ public:
     void notifyRowChanged(size_t row);
     void notifyCountChanged(size_t row);
     const ServerData& getDataByIndex(size_t row) const;
-    void setOnRowChangedCallback(std::function<void(size_t)> callback);
-    void setOnItemCountChangedCallback(std::function<void(size_t)> callback);
+    void setRowChangedCallback(std::function<void(size_t)> callback);
+    void setItemCountChangedCallback(std::function<void(size_t)> callback);
+    void setIconsChangedCallback(std::function<void()> callback);
     void resetData();
     void applyFilter(const ServerFilter& filter);
 
@@ -80,6 +81,7 @@ protected:
     std::vector<size_t> filteredItemsIndexes_;
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;
+    std::function<void()> iconsChangedCallback_;
     ServerFilter filter_;
     DISALLOW_COPY_AND_ASSIGN(ServerListModel);
 };

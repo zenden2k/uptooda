@@ -122,8 +122,11 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
     ss.authData.DoAuth = !login.empty();
 
 
-    if (!temporary && !uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
-        throw std::runtime_error("Unable to load file " + outFile);
+    if (!temporary) {
+        if (!uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
+            throw std::runtime_error("Unable to load file " + outFile);
+        }
+        uploadEngineList_->onServerAdded(uploadEngineList_, newName);
     }
     return newName;
 }
@@ -173,5 +176,8 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     if (!uploadEngineList_->loadFromFile(outFile,serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }
+
+    uploadEngineList_->onServerAdded(uploadEngineList_, name);
+
     return name;
 }

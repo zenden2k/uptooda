@@ -28,7 +28,10 @@
 #include <map>
 #include <random>
 #include <unordered_set>
+#include <unordered_map>
 #include <set>
+
+#include <boost/signals2.hpp>
 
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
@@ -398,6 +401,9 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
+
+    boost::signals2::signal<void(CUploadEngineListBase*, const std::string&)> onServerAdded;
+
     static std::vector<std::string_view> builtInScripts();
     static std::string getServerDisplayName(const CUploadEngineData* data);
 
@@ -413,6 +419,8 @@ protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;
     std::mt19937 mt_;
+    std::unordered_map<std::string, size_t> serverNameToIndex_;
+
 private:
     DISALLOW_COPY_AND_ASSIGN(CUploadEngineListBase);
 };
