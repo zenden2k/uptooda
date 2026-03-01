@@ -843,6 +843,8 @@ bool NetworkClient::private_apply_method()
 {
     curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,NULL);
     curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
+    curl_easy_setopt(curl_handle, CURLOPT_POST, 0L);
+
     if(m_method == "POST")
         curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     else     if(m_method == "GET")
@@ -859,7 +861,6 @@ bool NetworkClient::private_apply_method()
         return false;
     }
     return true;
-
 }
 
 void NetworkClient::setReferer(const std::string &str)

@@ -213,6 +213,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             UA.Referer = actionNode.Attribute("Referer");
 
             UA.PostParams = actionNode.Attribute("PostParams");
+            UA.Body = actionNode.Text();
             UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
             UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 

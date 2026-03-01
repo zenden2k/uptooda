@@ -74,7 +74,7 @@
 <li><strong>Определите тип</strong> сервера (изображения/файлы/URL)</li>
 <li><strong>Создайте действия</strong> для загрузки</li>
 <li><strong>Настройте обработку</strong> ответов</li>
-<li><strong>Протестируйте</strong> с параметром <code>Debug=&quot;1&quot;</code></li>
+<li><strong>Протестируйте</strong> с параметром <code>Debug=&quot;1&quot;</code> или с использованием отладочного прокси-сервера.</li>
 </ol>
 <hr>
 <h2 id="структура-xml-файла">Структура XML файла</h2>
@@ -306,7 +306,8 @@
 <th>Использование</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><code>get</code></td>
 <td>HTTP GET запрос</td>
 <td>Получение токенов, страниц</td>
@@ -317,26 +318,48 @@
 <td>Отправка данных</td>
 </tr>
 <tr>
+<td><code>put</code></td>
+<td>HTTP PUT / FTP</td>
+<td>Прямая загрузка</td>
+</tr>
+<tr>
+<td><code>patch</code></td>
+<td>HTTP PATCH запрос</td>
+<td>Частичное обновление ресурса</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>HTTP DELETE запрос</td>
+<td>Удаление ресурса</td>
+</tr>
+<tr>
+<td><code>head</code></td>
+<td>HTTP HEAD запрос</td>
+<td>Получение заголовков без тела ответа</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td>HTTP OPTIONS запрос</td>
+<td>Проверка доступных методов (CORS preflight)</td>
+</tr>
+<tr>
 <td><code>login</code></td>
 <td>POST для авторизации</td>
 <td>Вход в систему</td>
 </tr>
 <tr>
 <td><code>upload</code></td>
-<td>Multipart форма</td>
+<td>POST запрос (multipart/form-data)</td>
 <td>Загрузка файлов</td>
-</tr>
-<tr>
-<td><code>put</code></td>
-<td>HTTP PUT / FTP</td>
-<td>Прямая загрузка</td>
 </tr>
 <tr>
 <td><code>openurl</code></td>
 <td>Открыть URL</td>
 <td>Переход на страницу в браузере по-умолчанию</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+<p>Опциональное тело узла <code>Action</code> содержит тело запроса. Тело может содержать <a href="#система-переменных">переменные</a>.</p>
 <h3 id="полный-список-атрибутов-action">Полный список атрибутов Action</h3>
 <table>
 <thead>

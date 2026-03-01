@@ -112,6 +112,7 @@ struct UploadAction
     std::string PostParams;
     std::string CustomHeaders;
     std::string Type;
+    std::string Body;
    // std::string RegExp;
 
     //std::vector<ActionRegExp> Regexes;

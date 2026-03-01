@@ -20,6 +20,7 @@
 
 #include "DefaultUploadEngine.h"
 
+#include <unordered_set>
 #include <boost/format.hpp>
 #include <json/json.h>
 
@@ -33,6 +34,10 @@
 #include "Core/Utils/TextUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/i18n/Translator.h"
+
+namespace {
+    const std::unordered_set<std::string_view> ALLOWED_ACTION_TYPES = { "get", "post", "put", "patch", "delete", "head", "options", "openurl", "login", "upload" };
+}
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
 {
@@ -230,12 +235,13 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         if ( bUpload ) {
             if (Action.Type == "put") {
                 m_NetworkClient->setMethod( "PUT" );
-                m_NetworkClient->doUpload( m_FileName, "" );
+                m_NetworkClient->doUpload(Action.Body.empty() ? m_FileName : "", Action.Body);
             } else {
                 bool res = m_NetworkClient->doUploadMultipartData();
             }
         } else {
-            m_NetworkClient->doPost("");
+            m_NetworkClient->setMethod(IuStringUtils::ToUpper(Action.Type));
+            m_NetworkClient->doPost(ReplaceVars(Action.Body));
         }
 
         return ReadServerResponse(Action);
@@ -448,17 +454,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     }
     AddCustomHeaders(Current);
 
-    if (Action.Type == "upload")
+    if (Action.Type == "upload" || Action.Type == "put") {
         Result = DoUploadAction(Current, true);
-    else
-    if (Action.Type == "put")
-        Result = DoUploadAction(Current, true);
-    else
-    if (Action.Type == "post")
+    } else if (Action.Type == "post") {
         Result = DoUploadAction(Current, false);
-    else
-    if (Action.Type == "login")
-    {
+    } else if (Action.Type == "login") {
         if (m_UploadData->NeedAuthorization && li.DoAuth) {
             serverSync_->beginAuth();
             if (!serverSync_->isAuthPerformed()) {
@@ -477,7 +477,13 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         Result = DoGetAction(Current);
     else if (Action.Type == "openurl") {
         Result = DesktopUtils::ShellOpenUrl(Current.Url);
+    } else if (ALLOWED_ACTION_TYPES.find(Action.Type) != ALLOWED_ACTION_TYPES.end()) {
+        Result = DoUploadAction(Current, false);
+    } else {
+        UploadError(true, "Unknown action type: " + Action.Type, &Action);
+        Result = false;
     }
+
     if (Action.OnlyOnce)
     {
         if (Result)
