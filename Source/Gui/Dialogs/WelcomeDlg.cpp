@@ -19,7 +19,6 @@
 */
 #include "WelcomeDlg.h"
 
-#include "HistoryWindow.h"
 #include "SettingsDlg.h"
 #include "Func/MyUtils.h"
 #ifdef IU_ENABLE_MEDIAINFO
@@ -167,12 +166,6 @@ bool CWelcomeDlg::OnShow()
     return 0;
 }
 
-LRESULT CWelcomeDlg::OnBnClickedSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    WizardDlg->executeFunc(_T("settings"));
-    return 0;
-}
-
 LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CString func;
@@ -246,13 +239,6 @@ LRESULT CWelcomeDlg::OnBnClickedAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 LRESULT CWelcomeDlg::OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("downloadimages"));
-    return 0;
-}
-
-LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    CHistoryWindow dlg(WizardDlg);
-    dlg.DoModal(m_hWnd);
     return 0;
 }
 
@@ -344,8 +330,6 @@ void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
     ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD), true);
 
     ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
-    ListBox.AddString(TR("Shorten a Link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
-
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
@@ -353,10 +337,11 @@ void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
     ListBox.AddString(TR("Start Recording"), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONSTARTRECORD));
 
     ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
+
 #ifdef IU_ENABLE_MEDIAINFO
     if (MediaInfoHelper::IsMediaInfoAvailable())
         ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
 #endif
-    ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
-    ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
+    ListBox.AddString(TR("Shorten a Link"), TR("for easier link sharing"), IDC_SHORTENURL, loadBigIcon(IDI_ICONLINK) );
+
 }

@@ -72,6 +72,8 @@ class CFloatingWindow;
 class WinServerIconCache;
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
 class CNetworkDebugDlg;
+class IconBitmapUtils;
+
 #endif
 
 class CWizardDlg :
@@ -83,7 +85,7 @@ class CWizardDlg :
 {
 public:
     enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER, IDM_NETWORKDEBUGGER };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER, IDM_NETWORKDEBUGGER, IDM_VIEWHISTORY };
     enum { kNewFilesTimer = 1 };
     static constexpr WPARAM kWmMyExitParam = 5;
 
@@ -141,6 +143,8 @@ public:
         NOTIFY_HANDLER(IDC_HELPBUTTON, BCN_DROPDOWN, OnBnDropdownHelpButton)
         COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentation)
         COMMAND_ID_HANDLER(IDC_SHOWLOG, OnShowLog)
+        COMMAND_ID_HANDLER(IDC_SETTINGS, OnShowSettings)
+        COMMAND_ID_HANDLER(IDM_VIEWHISTORY, OnShowHistory)
         REFLECT_NOTIFICATIONS()
 
     END_MSG_MAP()
@@ -176,6 +180,8 @@ public:
     LRESULT OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 #endif
     LRESULT OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnShowSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
@@ -232,6 +238,7 @@ public:
     bool funcAddFolder();
     //bool funcPaste();
     bool funcSettings();
+    bool funcHistory();
 #ifdef IU_ENABLE_MEDIAINFO
     bool funcMediaInfo();
 #endif
@@ -371,6 +378,8 @@ protected:
     ScreenRecordingRuntimeParams screenRecordingParams_;
     boost::weak_ptr<ScreenRecorderWindow> screenRecorderWindow_;
     std::unique_ptr<CHistoryManager> historyManager_;
+    CBitmap settingsBitmap_, historyBitmap_, helpBitmap_;
+    std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
 };
 
 

@@ -554,8 +554,8 @@ IDD_WELCOMEDLG DIALOGEX 0, 0, 386, 269
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "#welcome message",IDC_WELCOMEMSG,125,26,245,28
-    LISTBOX         IDC_LISTBOX,151,54,219,185,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "#welcome message",IDC_WELCOMEMSG,125,27,245,30
+    LISTBOX         IDC_LISTBOX,151,60,219,179,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
     LTEXT           "#just drag and drop",IDC_SOVET2,177,243,193,22
     LTEXT           "#advice",IDC_SOVET,125,243,49,8
     LTEXT           "#title",IDC_TITLE,196,6,165,18
@@ -1463,7 +1463,7 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 370
         VERTGUIDE, 125
-        HORZGUIDE, 54
+        HORZGUIDE, 60
         HORZGUIDE, 239
     END
 
@@ -2023,6 +2023,8 @@ IDI_SCREENSHOT          ICON                    "res\\screen.ico"
 IDI_IMAGES              ICON                    "res\\images.ico"
 
 IDI_ICONSETTINGS        ICON                    "res\\icon-settings.ico"
+
+IDI_ICONSETTINGSBLUE    ICON                    "res\\icon-settings-blue.ico"
 
 IDI_ICONINFO            ICON                    "res\\icon-info.ico"
 

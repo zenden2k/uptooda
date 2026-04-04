@@ -205,7 +205,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
         itemRect.top = BottomY;
 
         if (BottomY && m_bHyperLinks) {
-            itemRect.top += scaleY(15);
+            itemRect.top += scaleY(20);
         }
 
         itemRect.right = scaleX(10) + itemRect.left + iconBigWidth + TitleWidth + 1 /*ClientRect.right*/;

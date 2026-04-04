@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-05 17:19+0300\n"
+"POT-Creation-Date: 2026-04-04 19:33+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
@@ -134,7 +134,7 @@ msgstr "Destinatia pozelor facute"
 msgid "%s - Quick Setup"
 msgstr "%s - Configurare rapidă"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:976
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:979
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - actualizări disponibile"
@@ -186,16 +186,16 @@ msgstr "Încarcă"
 msgid "(edited)"
 msgstr "(editat)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1018
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1025
 msgid "(the code has been copied to the clipboard)"
 msgstr "(link-ul a fost copiat în clipboard)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:942
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:995
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:949
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1002
 msgid "(the link has been copied to the clipboard)"
 msgstr "(link-ul a fost copiat în clipboard)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:524
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:527
 msgid "< Back"
 msgstr "< Înapoi"
 
@@ -214,7 +214,7 @@ msgstr "O nouă versiune este disponibilă:"
 msgid "About %s"
 msgstr "Despre program..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2804
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2866
 msgid "About..."
 msgstr "Despre program..."
 
@@ -222,7 +222,7 @@ msgstr "Despre program..."
 msgid "Access:"
 msgstr "Acces:"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:35
+#: ../Source/Gui/Controls/ServerListView.cpp:39
 #, fuzzy
 #| msgid "Account..."
 msgid "Account"
@@ -268,15 +268,15 @@ msgstr "Adăugă un server FTP..."
 msgid "Add Files"
 msgstr "Adaugă fisiere"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:338
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:324
 msgid "Add Files..."
 msgstr "Adauga fisiere.."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:342
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:328
 msgid "Add Folder..."
 msgstr "Adaugă mapă..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:322
 msgid "Add Images"
 msgstr "Adaugă imagini"
 
@@ -337,13 +337,13 @@ msgstr "Adauga text pe miniatura"
 msgid "Add text to image"
 msgstr "Adaugă text"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:636
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
 msgid "Add to Wizard"
 msgstr "Adauga in wizard"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:533
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:975
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:976
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:536
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1000
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1001
 msgid "Add to the list"
 msgstr "Adaugă la lista"
 
@@ -375,7 +375,7 @@ msgstr "Setarile adaugatoare"
 msgid "Address:"
 msgstr "Adresa:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:60
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:59
 msgid "Advice:"
 msgstr "Sfat:"
 
@@ -406,9 +406,9 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1569
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1793
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2084
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1592
 msgid "All files"
 msgstr "Toate fişierele"
 
@@ -416,7 +416,7 @@ msgstr "Toate fişierele"
 msgid "All files have been successfully uploaded."
 msgstr "Toate fișierele au fost încărcate cu succes."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:587
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:593
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:178
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:80
 msgid "All monitors"
@@ -456,8 +456,8 @@ msgid ""
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1550
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2101
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1553
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2112
 msgid "Any file"
 msgstr "Orice fisier"
 
@@ -476,7 +476,7 @@ msgid "Are you sure to place text and logo in the same position on image?"
 msgstr ""
 "Sunteţi siguri să plasaţi textul şi logotipul în aceeaşi poziţie pe imagine?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1981
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1986
 msgid "Are you sure to quit?"
 msgstr "Sunteţi siguri că doriţi să ieşiţi?"
 
@@ -501,7 +501,7 @@ msgstr ""
 "Sunteți sigur că doriți să ștergeți acest cont din lista internă Image "
 "Uploader?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1070
 msgid "Arrow"
 msgstr "Săgeată"
 
@@ -531,7 +531,7 @@ msgstr "Audio"
 msgid "Audio codec:"
 msgstr "Fişiere audio"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2072
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2083
 msgid "Audio files"
 msgstr "Fişiere audio"
 
@@ -607,9 +607,9 @@ msgstr ""
 msgid "Blur radius"
 msgstr "Raza de estompare"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:131
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:880
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1077
 msgid "Blurring rectangle"
 msgstr "Dreptunghi estompat"
 
@@ -639,7 +639,7 @@ msgstr "Aduce fereastra alesa cu mouse in prim-plan"
 msgid "Browse..."
 msgstr "Alege..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
 msgid "Brush"
 msgstr "Pensulă"
 
@@ -710,7 +710,7 @@ msgid ""
 "%2%"
 msgstr "Nu pot copia fișierul "
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:752
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
 #, c-format
 msgid ""
@@ -722,7 +722,7 @@ msgstr ""
 "%s.\n"
 " Posibil ca ea este folosita de alta programa."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:572
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:207
 msgid "Capture Last Region"
@@ -732,18 +732,18 @@ msgstr "Captura ultimii regiuni"
 msgid "Capture Rectangular Region"
 msgstr "Captura regiunii dreptunghiulare"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:201
 msgid "Capture Selected Area"
 msgstr "Captura regiunii dreptunghiulare"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
 msgstr "Captura elementului selectat"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:203
 msgid "Capture Selected Window"
@@ -757,14 +757,14 @@ msgstr "Captura fereastra selectată"
 msgid "Capture cursor"
 msgstr "Captura ultimii regiuni"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:581
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Captura ferestrei active"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:199
 #: ../Source/Gui/Win7JumpList.cpp:243
@@ -804,7 +804,7 @@ msgstr "Schimbarea lăţimei:"
 msgid "Check file types before upload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2806
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2863
 msgid "Check for Updates"
 msgstr "Verifică actualizări"
 
@@ -821,12 +821,12 @@ msgstr "Verificarea actualizărilor..."
 msgid "Choose executable file"
 msgstr "Alege fișierul executabil"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2103
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2114
 msgid "Choose files"
 msgstr "Alege fișiere"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1912
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1917
 msgid "Choose folder"
 msgstr "Selectaţi mapa"
 
@@ -834,11 +834,11 @@ msgstr "Selectaţi mapa"
 msgid "Choose folder..."
 msgstr "Selectaţi mapa..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2076
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2087
 msgid "Choose media file"
 msgstr "Alege fișierul media"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:608
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
 msgid "Choose monitor"
 msgstr "Alege un server"
 
@@ -875,7 +875,7 @@ msgid "Choose servers"
 msgstr "Alege servere"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1796
 msgid "Choose video file"
 msgstr "Alege fișierul video"
 
@@ -931,7 +931,7 @@ msgstr ""
 "Apasă butonul \"Încarcă\" pentru a începe procesul de încărcare a imaginilor "
 "pe server."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1024
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1031
 msgid "Click on this message to view details..."
 msgstr "Apasati pe acest mesaj pentru a vedea detalii ..."
 
@@ -950,7 +950,7 @@ msgstr "Schiţe cu marire prin click"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
 msgid "Close"
 msgstr "Închide"
 
@@ -966,7 +966,7 @@ msgstr "Codul:"
 msgid "Collecting files..."
 msgstr "Căutarea fişierelor..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1080
 msgid "Color chooser"
 msgstr "Selector de culori"
 
@@ -1016,8 +1016,8 @@ msgstr "Elemente personalizate din meniul contextual:"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:213
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:980
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:981
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1005
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
 msgid "Continue"
 msgstr "Continuă"
 
@@ -1029,7 +1029,7 @@ msgstr "Contribuitori:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "Convertiți calea UNC \"\\\\\" în \"file://\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:496
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:499
 msgid "Converting history"
 msgstr "Conversia istoricului"
 
@@ -1043,7 +1043,7 @@ msgstr "Parametri..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr "Copiază"
@@ -1081,11 +1081,11 @@ msgstr "Copiați calea completă"
 msgid "Copy image"
 msgstr "Copiaza imaginea"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:903
 msgid "Copy in data:URI format"
 msgstr "Copiază în data:URI format"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:901
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:904
 msgid "Copy in data:URI format (html)"
 msgstr "Copiază în data:URI format (html)"
 
@@ -1104,7 +1104,7 @@ msgstr ""
 msgid "Copy link to view page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:634
 msgid "Copy to Clipboard"
 msgstr "Salveaza in Clipboard"
 
@@ -1114,13 +1114,13 @@ msgstr "Salveaza in Clipboard"
 msgid "Copy to clipboard"
 msgstr "Copiere în Clipboard"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1019
 #, fuzzy, c-format
 #| msgid "Copy to clipboard"
 msgid "Copy to clipboard (%s)"
 msgstr "Copiere în Clipboard"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:999
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1019
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr "Copiază în clipboard și închide (%s)"
@@ -1157,17 +1157,17 @@ msgstr "Could not find links in given text!"
 msgid "Could not read package %s"
 msgstr "Nu s-a putut citi pachetul %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1039
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1042
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "Nu s-a putut salva fișierul de setări. Consultați jurnalul de erori pentru "
 "detalii."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:967
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:974
 msgid "Could not upload screenshot :("
 msgstr "N-am putut sa incarc imaginea :("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:432
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:435
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1219,11 +1219,11 @@ msgstr "Creaza miniature"
 msgid "Creating new thumbnail preset"
 msgstr "Crearea unei noi presetări de miniatură"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1066
 msgid "Crop"
 msgstr "Decupa"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:589
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:595
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:169
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 msgid "Current monitor"
@@ -1305,8 +1305,8 @@ msgstr "Dezactiveaza localizarea"
 msgid "Display video file information on resulting picture"
 msgstr "Afiseaza informatie despre fisier pe imagine"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1979
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:349
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1984
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:352
 msgid "Do not ask again"
 msgstr "Nu întreba din nou"
 
@@ -1318,7 +1318,7 @@ msgstr "Nu executa copiile noi a programei din tray"
 msgid "Do nothing"
 msgstr "Fara actiune"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2805
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2865
 msgid "Documentation"
 msgstr "Documentație"
 
@@ -1392,8 +1392,8 @@ msgstr "Editeaza..."
 msgid "Edit login credentials..."
 msgstr "Vizualizați jurnalul pentru detalii."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:107
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:855
 msgid "Ellipse"
 msgstr "Elipsă"
 
@@ -1524,11 +1524,11 @@ msgstr "Fişiere executabile"
 msgid "Execute Squirrel script for each task (file)"
 msgstr "Executa script Squirrel pentru fiecare sarcină (fișier)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:278
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:665
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:284
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:672
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:226
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:519
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1925
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:522
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
 msgid "Exit"
 msgstr "Ieşire"
 
@@ -1604,7 +1604,7 @@ msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "Fişierul"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:875
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:882
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "Se incarca \"%s\" la server %s."
@@ -1634,7 +1634,7 @@ msgstr ""
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "Fişierul depăşeşte mărimea maximală admisă pe serverul %s (%s)."
 
-#: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/Gui/Controls/ServerListView.cpp:40
 #, fuzzy
 #| msgid "Filename format:"
 msgid "File formats"
@@ -1702,14 +1702,14 @@ msgstr "Mărimea fişierului: "
 msgid "Fill background"
 msgstr "Completa fundalul"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:115
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:868
 msgid "Filled ellipse"
 msgstr "Elipsă umplută"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:104
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:112
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:866
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1073
 msgid "Filled rectangle"
 msgstr "Dreptunghi umplut"
 
@@ -1727,7 +1727,7 @@ msgstr "Finisheaza"
 msgid "Finish >"
 msgstr "Finisează >"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:545
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Finish Screen Recording"
@@ -1746,11 +1746,11 @@ msgstr "Mai întâi trebuie să selectați un element din listă."
 msgid "Fit"
 msgstr "Ajustare"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1902
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1925
 msgid "Flip horizontal"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1903
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1926
 msgid "Flip vertical"
 msgstr ""
 
@@ -1824,17 +1824,17 @@ msgstr "Culoarea ramei:"
 msgid "Frames layout"
 msgstr "Setari de amplasarea cadrelor"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:585
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
 msgstr "Captura freehand"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:344 ../Source/Gui/Win7JumpList.cpp:203
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:330 ../Source/Gui/Win7JumpList.cpp:203
 msgid "From Clipboard"
 msgstr "Din clipboard"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:340
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:326
 msgid "From Web"
 msgstr "Din internet"
 
@@ -1918,21 +1918,22 @@ msgstr "Înălţimea:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:115
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:411
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
 msgstr "Ajutor"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:521
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1927
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:524
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1932
 msgid "Hide"
 msgstr "Ascunde"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1048
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1068
 msgid "Highlight"
 msgstr "Marker"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:361
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2848
 msgid "History"
 msgstr "Istorie"
 
@@ -1977,8 +1978,8 @@ msgstr "Imagini"
 msgid "Image Downloader"
 msgstr "Descarcatorul imaginilor"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:353
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:629
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:356
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:632
 msgid "Image Editor"
 msgstr "Editor de imagini"
 
@@ -1987,15 +1988,15 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Editor de imagini"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1815
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1838
 msgid "Image Editor  (%1%x%2%)"
 msgstr "Editor de imagini (%1%x%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1821
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1844
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr "Editor de imagini - %1% (%2%x%3%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:351
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:354
 msgid ""
 "Image Editor cannot deal with animated images. If you edit this file, "
 "animation will be lost. Do you wish to continue?"
@@ -2003,7 +2004,7 @@ msgstr ""
 "Editorul de imagini nu poate face față imaginilor animate. Dacă editați "
 "acest fișier, animația se va pierde. Doriți să continuați?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1020
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1023
 msgid "Image Settings and Server Selection"
 msgstr "Parametrii imaginilor şi selectarea serverului"
 
@@ -2024,8 +2025,8 @@ msgstr "Parametrii imaginilor"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:137
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:123
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1548
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2099
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1551
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2110
 msgid "Images"
 msgstr "Imagini"
 
@@ -2055,11 +2056,11 @@ msgid "Implicit"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:534 ../Source/Gui/Win7JumpList.cpp:291
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:537 ../Source/Gui/Win7JumpList.cpp:291
 msgid "Import Video File"
 msgstr "Importă video"
 
@@ -2068,7 +2069,7 @@ msgstr "Importă video"
 msgid "In queue"
 msgstr "În coadă"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1913
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1918
 msgid "Including subdirectories"
 msgstr "Inclusiv subdirs"
 
@@ -2122,7 +2123,7 @@ msgstr ""
 msgid "Invert selection"
 msgstr "Inversează selecția"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:322
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr "JPEG, PNG, GIF, BMP sau orice fisier"
 
@@ -2136,7 +2137,7 @@ msgstr "Toate fişierele"
 msgid "Just URL"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:60
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
@@ -2146,7 +2147,7 @@ msgstr "Trageţi fişierul în fereastra programului pentru a fi prelucrat."
 msgid "LAYOUT_DIRECTION"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:351
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:335
 msgid "Last Region"
 msgstr "Ultima regiune"
 
@@ -2171,7 +2172,7 @@ msgstr "Clicul butonului sting:"
 msgid "Libraries:"
 msgstr "Biblioteci:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1049
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1069
 msgid "Line"
 msgstr "Linie"
 
@@ -2260,13 +2261,13 @@ msgstr "Verificarea MD5 a eșuat pentru fișier "
 msgid "MD5 check of the update package failed "
 msgstr "Verificarea MD5 a pachetului de actualizare a eșuat "
 
-#: ../Source/Gui/Controls/ServerListView.cpp:33
+#: ../Source/Gui/Controls/ServerListView.cpp:37
 #, fuzzy
 #| msgid "file size"
 msgid "Max. file size"
 msgstr "mărimea fişierului"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:515
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:518
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2282,7 +2283,7 @@ msgstr "Apasarea butonul din mijloc:"
 msgid "Mime-type"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:593
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:599
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:97
 msgid "Monitor"
 msgstr "Monitor"
@@ -2303,7 +2304,7 @@ msgstr "More colors..."
 msgid "Mouse clicks handlers"
 msgstr "Reactiile iconitei la clicuri"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1043
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1063
 msgid "Move"
 msgstr "Mutare"
 
@@ -2329,7 +2330,7 @@ msgid "Name:"
 msgstr "Numele:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2811
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2854
 msgid "Network Debugger"
 msgstr ""
 
@@ -2346,7 +2347,7 @@ msgid "New profile"
 msgstr "Profil nou"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:811
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:814
 msgid "Next >"
 msgstr "Înainte >"
 
@@ -2440,7 +2441,7 @@ msgstr "Deschide pagina de descărcare"
 msgid "Open in Web Browser"
 msgstr "Deschide în navigatorul"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:632
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:638
 msgid "Open in Wizard"
 msgstr "Deschide in wizard"
 
@@ -2453,7 +2454,7 @@ msgstr "Deschideți în editorul extern"
 msgid "Open in folder"
 msgstr "Deschide folder"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:620
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:626
 msgid "Open in the editor"
 msgstr "Deschideți în editor"
 
@@ -2461,9 +2462,9 @@ msgstr "Deschideți în editor"
 msgid "Open screenshot in the editor"
 msgstr "Deschide captura de ecran în editor"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:664
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2808
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2850
 msgid "Open screenshots folder"
 msgstr "Deschideți folderul capturi de ecran"
 
@@ -2487,7 +2488,7 @@ msgstr ""
 msgid "Open with..."
 msgstr "Deschide cu..."
 
-#: ../Source/Core/Upload/DefaultUploadEngine.cpp:70
+#: ../Source/Core/Upload/DefaultUploadEngine.cpp:75
 #: ../Source/Core/Upload/ScriptUploadEngine.cpp:398
 #: ../Source/Core/Upload/ScriptUploadEngine.cpp:423
 #, fuzzy
@@ -2518,7 +2519,7 @@ msgstr "Parametrii:"
 msgid "Password:"
 msgstr "Parola:"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:561
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:219
 #: ../Source/Gui/Dialogs/MainDlg.cpp:174
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
@@ -2543,8 +2544,8 @@ msgstr "Lipiți un link pentru a-l scurta:"
 msgid "Pause"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:128
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:878
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:136
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:881
 msgid "Pixelation"
 msgstr "Pixelare"
 
@@ -2573,7 +2574,7 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Nu ati setat parametrile de logare la server '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:496
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:499
 msgid "Please wait while your history is being converted..."
 msgstr "Vă rugăm să așteptați în timp ce istoricul dvs. este convertit..."
 
@@ -2598,11 +2599,11 @@ msgstr ""
 msgid "Preset:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1018
 msgid "Pressing this button while holding Shift will close the window."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1018
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 
@@ -2615,7 +2616,7 @@ msgid "Preview Window"
 msgstr "Fereastra de previzualizare"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1024
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1044
 msgid "Print..."
 msgstr "Imprimă..."
 
@@ -2642,7 +2643,7 @@ msgstr "Converteaza imagini"
 msgid "Processing folder:"
 msgstr "Se prelucreaza catalogul:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:639
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:642
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2691,7 +2692,7 @@ msgstr "Сalitate:"
 msgid "Queued"
 msgstr "In rand"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:564
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:222
 msgid "Quick upload image from clipboard"
 msgstr "Încărca rapid imaginea din clipboard"
@@ -2709,13 +2710,13 @@ msgstr ""
 msgid "Reason:"
 msgstr "Motivul:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
 msgid "Record"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:89
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1052
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:97
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:853
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1072
 msgid "Rectangle"
 msgstr "Dreptunghi"
 
@@ -2773,7 +2774,7 @@ msgid "Retry"
 msgstr "Reîncercarea"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:76
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:346 ../Source/Gui/Win7JumpList.cpp:211
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:332 ../Source/Gui/Win7JumpList.cpp:211
 msgid "Reupload"
 msgstr "Re-încărcare"
 
@@ -2789,22 +2790,22 @@ msgstr "Reîncărcarea imaginilor în text cu păstrarea marcajului original"
 msgid "Right button click:"
 msgstr "Clicul cu butonului drept:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1900
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1923
 msgid "Rotate clockwise (90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1901
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1924
 msgid "Rotate counter clockwise (-90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
 msgid "Rotate or flip"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:110
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:102
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:118
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:854
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:867
 msgid "Rounded rectangle"
 msgstr "Dreptunghi rotunjit"
 
@@ -2823,7 +2824,7 @@ msgid "Same format as image"
 msgstr "Aceeasi ca si a imaginei"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:750
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:994
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1014
 msgid "Save"
 msgstr "Salveaza"
 
@@ -2832,7 +2833,7 @@ msgid "Save Profile"
 msgstr "Salveaza profil"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:889
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:892
 msgid "Save as..."
 msgstr "Salvează ca..."
 
@@ -2840,7 +2841,7 @@ msgstr "Salvează ca..."
 msgid "Save as:"
 msgstr "Salvează ca:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1371
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1394
 msgid "Save changes?"
 msgstr "Salvați modificările?"
 
@@ -2865,7 +2866,7 @@ msgid "Scaling:"
 msgstr "Scaling:"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:50
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:349
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:333
 msgid "Screen Capture"
 msgstr "Captura de ecran"
 
@@ -2917,8 +2918,8 @@ msgstr "Destinatia pozelor facute"
 msgid "Screen Recording Window"
 msgstr "Destinatia pozelor facute"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:651
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:352 ../Source/Gui/Win7JumpList.cpp:267
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:657
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336 ../Source/Gui/Win7JumpList.cpp:267
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording..."
@@ -2930,23 +2931,23 @@ msgstr "Destinatia pozelor facute"
 msgid "Screen recording backend: %s"
 msgstr "Destinatia pozelor facute"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:569
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 #: ../Source/Gui/Dialogs/MainDlg.cpp:75
 msgid "Screenshot"
 msgstr "Captură ecran"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:644
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:650
 msgid "Screenshot Action"
 msgstr "Destinatia pozelor facute"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1032
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2516
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1039
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2524
 msgid "Screenshot has been copied to clipboard."
 msgstr "Poza a fost salvata in clipboard."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1025
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1026
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1032
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1033
 msgid "Screenshot was uploaded"
 msgstr "Poza a fost incarcata"
 
@@ -2963,25 +2964,25 @@ msgstr ""
 msgid "Search by image"
 msgstr "Căutare după imaginea"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:920
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:923
 #, c-format
 msgid "Search by image (%s)"
 msgstr "Căutare după imaginea (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1033
 #, fuzzy
 #| msgid "Search on %s"
 msgid "Search on %1% (%2%)"
 msgstr "Cauta in %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1033
 #, fuzzy
 #| msgid "Search by image (%s)"
 msgid "Search on %1% and close (%2%)"
 msgstr "Căutare după imaginea (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1284
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1032
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1307
 #, c-format
 msgid "Search on %s"
 msgstr "Cauta in %s"
@@ -2994,7 +2995,7 @@ msgstr "Cautarea imaginilor..."
 msgid "Secured connection:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:350
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:334
 msgid "Select Region..."
 msgstr "Selecta regiunea..."
 
@@ -3015,7 +3016,7 @@ msgstr "Selectarea toatelor"
 msgid "Select folder"
 msgstr "Alegerea dosarului"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1542
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1565
 msgid "Select region"
 msgstr "Selecta regiunea"
 
@@ -3042,7 +3043,7 @@ msgid "Selected server: %s"
 msgstr "Server selectat: %s"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
-#: ../Source/Gui/Controls/ServerListView.cpp:32
+#: ../Source/Gui/Controls/ServerListView.cpp:36
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
@@ -3061,6 +3062,7 @@ msgid "Server for other file types"
 msgstr "Serverul pentru alte fisiere"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:954
 msgid "Server for quick screenshot uploading"
 msgstr "Server pentru încărcarea rapidă a capturilor de ecran"
 
@@ -3120,10 +3122,10 @@ msgid "Session total:"
 msgstr "Sesiuni in total:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:669
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:360
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2847
 msgid "Settings"
 msgstr "Setări"
 
@@ -3143,7 +3145,7 @@ msgstr "Parametri..."
 msgid "Shell context menu integration"
 msgstr "Integrare in meniu contextual Explorer'ului"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:943
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:950
 msgid "Short URL"
 msgstr "URL scurt"
 
@@ -3165,9 +3167,9 @@ msgstr "Scurtarea adresei URL utilizând %s"
 msgid "Shorten URLs"
 msgstr "Scurtarea adreselor URL"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:223
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:347
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
 msgid "Shorten a Link"
 msgstr "Scurtarea unei adrese URL"
 
@@ -3175,7 +3177,7 @@ msgstr "Scurtarea unei adrese URL"
 msgid "Shorten a link from the clipboard"
 msgstr "Scurtați un link din clipboard"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:461
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:467
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr "Scurtarea adresei URL\"%s\" folosind %s"
@@ -3190,7 +3192,7 @@ msgstr "Fotografierea unei părţi a ecranului..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2817
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2859
 msgid "Show Error Log"
 msgstr "Arata log"
 
@@ -3210,12 +3212,12 @@ msgstr "Arata jurnalul pentru acest fișier"
 msgid "Show preview for video files in file list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:657
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
 msgid "Show program window"
 msgstr "Arata fereastra programei"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:660
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:666
 msgid "Show results of last upload"
 msgstr "Afișează rezultatele ultimei încărcări"
 
@@ -3264,8 +3266,8 @@ msgstr "Setati utilizator..."
 msgid "Start"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:652
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:353 ../Source/Gui/Win7JumpList.cpp:275
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:337 ../Source/Gui/Win7JumpList.cpp:275
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Start Recording"
@@ -3280,7 +3282,7 @@ msgstr "Pornirea încărcării"
 msgid "Status"
 msgstr "Statut"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1055
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1075
 msgid "Step"
 msgstr "Pas"
 
@@ -3292,7 +3294,7 @@ msgstr "Pas"
 msgid "Stop"
 msgstr "Stop"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
 msgid "Stop uploading"
 msgstr "Intrerupe incarcare"
 
@@ -3300,7 +3302,7 @@ msgstr "Intrerupe incarcare"
 msgid "Stopped"
 msgstr "Oprit"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:34
+#: ../Source/Gui/Controls/ServerListView.cpp:38
 msgid "Storage time (days)"
 msgstr ""
 
@@ -3351,7 +3353,7 @@ msgid "Test failed"
 msgstr "Testul a eșuat"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1074
 msgid "Text"
 msgstr "Text"
 
@@ -3554,11 +3556,11 @@ msgstr "URL:"
 msgid "Unable to load picture"
 msgstr "Nu pot deschide imagine"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2482
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2490
 msgid "Unable to make screenshot!"
 msgstr "Nu s-a reusit captură de ecran!"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:946
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:953
 msgid "Unable to shorten the link..."
 msgstr "Nu s-a reusit scurtarea link-ului..."
 
@@ -3567,7 +3569,7 @@ msgstr "Nu s-a reusit scurtarea link-ului..."
 msgid "Unable to unpack archive %s"
 msgstr "Nu s-a reusit despachetarea arhivei %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1082
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr ""
@@ -3607,12 +3609,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr "Incarcarea n-a avut succes. Repet (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:543
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:549
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 msgid "Upload files"
 msgstr "Încarcă fisiere"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:544
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 msgid "Upload folder"
 msgstr "Încarca mapa"
@@ -3639,13 +3641,13 @@ msgid "Upload speed limit per thread:"
 msgstr "Limita de viteză de încărcare pe fir:"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:988
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1988
 #, c-format
 msgid "Upload to %s"
 msgstr "Încărca pe %s"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:986
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:630
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1985
 msgid "Upload to Web"
 msgstr "Incarca la server"
 
@@ -3670,7 +3672,7 @@ msgctxt "settings.menu"
 msgid "Uploading"
 msgstr "Incarcare"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1022
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1025
 msgid "Uploading Files to Server"
 msgstr "Încărcarea fişierelor pe server"
 
@@ -3694,7 +3696,7 @@ msgstr ""
 msgid "Uploading module"
 msgstr "Incarcarea"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:880
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:887
 msgid "Uploading screenshot"
 msgstr "Incarcarea pozei"
 
@@ -3769,9 +3771,9 @@ msgid "Video codec:"
 msgstr "Video: "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1787
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2071
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2100
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1792
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2111
 msgid "Video files"
 msgstr "Fişiere video"
 
@@ -3801,7 +3803,7 @@ msgid "View BBCode/HTML codes"
 msgstr "BBCode/HTML"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:221
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:358
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:343
 msgid "View Media File Information"
 msgstr "Datele tehnice a fişierului..."
 
@@ -3811,8 +3813,8 @@ msgstr "Datele tehnice a fişierului..."
 msgid "View Mode"
 msgstr "Vizualizează"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:947
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:968
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:954
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:975
 msgid "View log for details."
 msgstr "Vizualizați jurnalul pentru detalii."
 
@@ -3846,7 +3848,7 @@ msgstr ""
 msgid "Website:"
 msgstr "Site web:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:62
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
@@ -3869,7 +3871,7 @@ msgstr "Fereastra de previzualizare"
 msgid "Windows Explorer integration"
 msgstr "Integrare cu Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2694
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2702
 msgid "Work in progress"
 msgstr "Progresul încărcării"
 
@@ -3915,20 +3917,16 @@ msgstr "Nu ați selectat serverul"
 msgid "You have not selected server!"
 msgstr "Nu ați selectat serverul!"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:349
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:333
 msgid "a pic of the whole screen or selected region"
 msgstr "ecranului intreg sa a partii"
-
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:360
-msgid "a tool for advanced users"
-msgstr "Pentru utilizatori avansaţi"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:48
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:188
 msgid "and/or height:"
 msgstr "şi/sau înălţimi:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 msgid "extracting frames from video"
 msgstr "extragerea cadrelor"
 
@@ -3940,6 +3938,10 @@ msgstr "mărimea fişierului"
 #, c-format
 msgid "folder \"%s\""
 msgstr "dosar \"%s\""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
+msgid "for easier link sharing"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:20
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:23
@@ -3972,7 +3974,7 @@ msgstr "mai multe fişiere"
 msgid "not selected"
 msgstr "nu a fost selectat"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:239
+#: ../Source/Gui/Models/ServerListModel.cpp:246
 msgctxt "serverlist.account"
 msgid "required"
 msgstr ""
@@ -3998,6 +4000,9 @@ msgstr "Mishunika, Adrianis, Sergey Svistunov"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
 msgid "unknown server"
 msgstr "server necunoscut"
+
+#~ msgid "a tool for advanced users"
+#~ msgstr "Pentru utilizatori avansaţi"
 
 #~ msgid "Add FTP/SFTP server"
 #~ msgstr "Adăugă un server FTP/SFTP"

@@ -129,7 +129,6 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     MenuItem.hbmpItem = bm;
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
     MenuItem.cch = lstrlen(szTitle);
-
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 

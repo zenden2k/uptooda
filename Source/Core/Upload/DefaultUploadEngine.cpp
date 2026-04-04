@@ -684,6 +684,8 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
                 } else if (modifier == "htmldecode")
                 {
                     value = IuTextUtils::DecodeHtmlEntities(value);
+                } else if (modifier == "jsonescape") {
+                    value = Json::valueToQuotedString(value.c_str());
                 }
             }
 

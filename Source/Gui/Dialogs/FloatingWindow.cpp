@@ -113,6 +113,7 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     regionScreenshotBitmap_ = loadSmallIconBitmap(IDI_ICONREGION);
     addFilesBitmap_ = loadSmallIconBitmap(IDI_ICONADD);
     settingsBitmap_ = loadSmallIconBitmap(IDI_ICONSETTINGS);
+    historyBitmap_ = loadSmallIconBitmap(IDI_ICONHISTORY);
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -268,6 +269,11 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
     HWND hParent  = wizardDlg_->m_hWnd; // wizardDlg_->IsWindowEnabled()?  : 0;
     CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_);
     dlg.DoModal(hParent);
+    return 0;
+}
+
+LRESULT CFloatingWindow::OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("history"));
     return 0;
 }
 
@@ -661,6 +667,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings", TR("Settings") + CString(_T("..."))), settingsBitmap_);
+        MyInsertMenu(TrayMenu, i++, IDM_HISTORY, HotkeyToString("history", TR("History")), historyBitmap_);
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         TrayMenu.EnableMenuItem(IDM_EXIT, MF_BYCOMMAND | (canExitApp() ? MF_ENABLED : MF_DISABLED));

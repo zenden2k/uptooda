@@ -297,7 +297,8 @@
 <hr>
 <h2 id="узел-actions">Узел Actions</h2>
 <p>Содержит последовательность действий для загрузки файла.</p>
-<h3 id="типы-действий">Типы действий</h3>
+<h3 id="узел-action">Узел Action</h3>
+<h4 id="типы-действий">Типы действий</h3>
 <table>
 <thead>
 <tr>
@@ -377,7 +378,7 @@
 <tr>
 <td><code>Type</code></td>
 <td><strong>Обязательный</strong></td>
-<td>Тип запроса (<code>get</code>, <code>post</code>, <code>login</code>, <code>upload</code>, <code>put</code>, <code>openurl</code>)</td>
+<td>Тип запроса или действия (<code>get</code>, <code>post</code>, <code>login</code>, <code>upload</code>, <code>put</code>, <code>openurl</code>)</td>
 </tr>
 <tr>
 <td><code>PostParams</code></td>
@@ -664,6 +665,11 @@
 <td>Декодирование HTML сущностей (версия ≥ 1.3.2)</td>
 <td>$(ImageUrl|htmldecode)</td>
 </tr>
+<tr>
+<td><code>jsonescape</code></td>
+<td>Экранирование строки для json (версия ≥ 1.4.7)"</td>
+<td>$(FileName|jsonescape)</td>
+</tr>
 </tbody></table>
 <pre class="prettyprint">&lt;!-- URL кодирование --&gt;
 &lt;Action Url=&quot;https://api.example.com/search?q=$(_FILENAME|urlencode)&quot;/&gt;
@@ -869,32 +875,33 @@ AssignVars=&quot;Title:0&quot;
 </tr>
 </thead>
 <tbody><tr>
-<td>&quot;RegExp не найден&quot;</td>
+<td>RegExp не найден</td>
 <td>Неверное регулярное выражение</td>
 <td>Проверьте паттерн на тестовых данных</td>
 </tr>
 <tr>
-<td>&quot;Переменная пуста&quot;</td>
+<td>Переменная пуста</td>
 <td>Неверный номер группы</td>
 <td>Проверьте номера в AssignVars</td>
 </tr>
 <tr>
-<td>&quot;Файл не загружен&quot;</td>
+<td>Файл не загружен</td>
 <td>Неверные параметры POST</td>
 <td>Изучите документацию API</td>
 </tr>
 <tr>
-<td>&quot;Ошибка авторизации&quot;</td>
+<td>Ошибка авторизации</td>
 <td>Неверный URL или параметры</td>
 <td>Проверьте процесс авторизации</td>
 </tr>
 </tbody></table>
 <h3 id="инструменты-для-отладки">Инструменты для отладки</h3>
 <ul>
-<li><strong>RegExr.com</strong> - тестирование регулярных выражений</li>
+<li><strong><a href="https://regexr.com/" target="_blank">RegExr.com</a></strong> - тестирование регулярных выражений (на сайте выберите "PCRE" в выпадающем списке)</li>
 <li><strong>Browser DevTools</strong> - анализ сетевого трафика в браузере</li>
-<li><strong>Fiddler Classic</strong> - анализ сетевого трафика с помощью прокси</li>
-<li><strong>Postman</strong> - тестирование API запросов</li>
+<li><strong><a href="https://www.telerik.com/fiddler/fiddler-classic" target="_blank">Fiddler Classic</a></strong> - анализ сетевого трафика с помощью прокси-сервера</li>
+<li><strong><a href="https://httptoolkit.com/" target="_blank">HTTP Toolkit</a></strong> - анализ сетевого трафика с помощью прокси-сервера</li>
+<li><strong><a href="https://www.postman.com/downloads/" target="_blank">Postman</a></strong> - тестирование API запросов</li>
 </ul>
 <h3 id="scripts">Создание скриптов (плагинов)</h3> 
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">

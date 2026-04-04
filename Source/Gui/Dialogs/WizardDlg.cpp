@@ -83,6 +83,8 @@
 #include "ScreenCapture/WindowsHider.h"
 #include "Gui/Helpers/DPIHelper.h"
 #include "History/HistoryManagerImpl.h"
+#include "Gui/IconBitmapUtils.h"
+#include "HistoryWindow.h"
 
 using namespace Gdiplus;
 namespace
@@ -278,6 +280,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     lastScreenshotMonitor_ = nullptr;
     m_bShowWindow = true;
     using namespace std::placeholders;
+    iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
 }
 
@@ -399,7 +402,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGSBLUE), iconWidth, iconHeight);
 
     helpButton_ = GetDlgItem(IDC_HELPBUTTON);
     helpButton_.SetIcon(helpButtonIcon_);
@@ -1754,6 +1757,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcFromClipboard(fromCmdLine);
     else if (funcName == _T("settings"))
         return funcSettings();
+    else if (funcName == _T("history"))
+        return funcHistory();
     else if (funcName == _T("reuploadimages"))
         return funcReuploadImages();
     else if (funcName == _T("shortenurl"))
@@ -2056,6 +2061,12 @@ bool CWizardDlg::funcSettings()
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
     return true;
+}
+
+bool CWizardDlg::funcHistory() {
+    CHistoryWindow dlg(this);
+    dlg.DoModal(m_hWnd);
+    return 0;
 }
 
 bool CWizardDlg::funcDownloadImages()
@@ -2716,6 +2727,16 @@ LRESULT CWizardDlg::OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHand
     return 0;
 }
 
+LRESULT CWizardDlg::OnShowSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL &bHandled) {
+    funcSettings();
+    return 0;
+}
+
+LRESULT CWizardDlg::OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL &bHandled) {
+    funcHistory();
+    return 0;
+}
+
 #ifdef IU_ENABLE_SERVERS_CHECKER
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
@@ -2796,22 +2817,53 @@ void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin = { rc.left, rc.bottom };
 
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    auto loadSmallIconBitmap = [&](int resourceId) -> HBITMAP {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        if (!icon) {
+            return nullptr;
+        }
+        return iconBitmapUtils_->HIconToBitmapPARGB32(icon, dpi);
+    };
+
+    if (!settingsBitmap_) {
+        settingsBitmap_ = loadSmallIconBitmap(IDI_ICONSETTINGS);
+    }
+
+    if (!historyBitmap_) {
+        historyBitmap_ = loadSmallIconBitmap(IDI_ICONHISTORY);
+    }
+
+    if (!helpBitmap_) {
+        helpBitmap_ = loadSmallIconBitmap(IDI_ICON_HELP_DROPDOWN);
+    }
+
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
-    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
-    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")));
-    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
-    popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
+    GuiTools::InsertMenu(popupMenu, 0, IDC_SETTINGS, TR("Settings") + CString(_T("...")), settingsBitmap_);
+    GuiTools::InsertMenu(popupMenu, 1, IDM_VIEWHISTORY, TR("History"), historyBitmap_);
+
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, TR("Network Debugger"));
 #endif
-
 #if defined(IU_ENABLE_SERVERS_CHECKER) && !defined(NDEBUG)
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
 #endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
+
+    popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
+
+    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
+
+    GuiTools::InsertMenu(popupMenu, popupMenu.GetMenuItemCount(), IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")), helpBitmap_);
+    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -2852,4 +2904,15 @@ void CWizardDlg::createIcons() {
     smallWindowIcon_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME, dpi);
     SetIcon(smallWindowIcon_, FALSE);
 
+    if (settingsBitmap_) {
+        settingsBitmap_.DeleteObject();
+    }
+
+    if (historyBitmap_) {
+        historyBitmap_.DeleteObject();
+    }
+
+    if (helpBitmap_) {
+        helpBitmap_.DeleteObject();
+    }
 }

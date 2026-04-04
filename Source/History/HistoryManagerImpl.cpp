@@ -39,7 +39,7 @@ class CHistoryReader_impl
         SimpleXml m_xml;
         std::vector<std::unique_ptr<CHistorySession>> m_sessions;
         std::map<std::string, int> keyToIndex_;
-        CHistoryManager* mgr_;
+        CHistoryManager* mgr_{};
 };
 
 const char CHistoryManager::globalMutexName[] = "IuHistoryFileSessionMutex";
@@ -265,7 +265,7 @@ bool CHistoryManager::convertHistory() {
     std::string historyFolder = m_historyFilePath;
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
     std::uniform_int_distribution<int> dist(1000000);
-    pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
+    pcrepp::Pcre regexp(R"(^history_(\d+)_(\d+)\.xml$)");
     try {
 
         for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
@@ -345,11 +345,11 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
     std::vector<SimpleXmlNode> allSessions;
     root.GetChilds("Session", allSessions);
 
-    for(size_t i = 0; i<allSessions.size(); i++)
+    for(auto & allSession : allSessions)
     {
         std::string fName = filename;
         auto session = std::make_unique<CHistorySession>(fName, "0");
-        loadSessionFromXml(session.get(), allSessions[i]);
+        loadSessionFromXml(session.get(), allSession);
         d_ptr->m_sessions.push_back(std::move(session));
     }
     return true;
