@@ -49,6 +49,34 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
+    <Server Name="imageban_api" DisplayName="ImageBan.ru (API)" Types="image video" Authorize="2" Plugin="imageban-api" LoginLabel="Profile name" NeedPassword="0" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760" UserTypes="anon,reg">
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="20971520" UserTypes="gold">
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Actions>
+        </Actions>
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+    </Server>
     <!--<Server Name="imgur.com" Type="image" Types="image file video" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
         RegistrationUrl="https://imgur.com/register" MaxThreads="1">
         <Info>
