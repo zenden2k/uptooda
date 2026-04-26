@@ -166,14 +166,13 @@ int main(int argc, char *argv[]){
         if (testScriptsDir.empty()) {
             testScriptsDir = (p.parent_path() / "../Core/Scripting/API/Tests/").string();
         }
-        #ifdef _WIN32
+
         std::string dir = (p.parent_path() / "../../Data").string();
         char* cacheDir = strdup(dir.c_str());
         const char* dirs[2]
             = { cacheDir, nullptr };
         xdg_mime_set_dirs(dirs);
         free(cacheDir);
-        #endif
 
     } catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;

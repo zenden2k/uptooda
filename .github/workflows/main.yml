@@ -51,11 +51,13 @@ jobs:
           VAR_IU_APP_VER_CLEAN: ${{ vars.IU_APP_VER_CLEAN }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             build_number="$CURRENT_BUILD_NUMBER"
+            echo "Pull request build: using IU_BUILD_NUMBER=$build_number without increment."
           else
             build_number=$((CURRENT_BUILD_NUMBER + 1))
             gh variable set IU_BUILD_NUMBER --body "$build_number"
+            echo "Updated IU_BUILD_NUMBER to $build_number."
           fi
 
           build_date="$(date +'%d.%m.%Y')"
