@@ -174,7 +174,13 @@ def _run_check(args):
         return False
 
 def _wsl_command(args):
-    return ["wsl", "-e", "bash", "-lc", 'export PATH="$HOME/.local/bin:$PATH"; exec "$@"', "bash"] + args
+    return [
+        "wsl", "-e", "bash", "-lc",
+        'export PATH="$HOME/.local/bin:$PATH"; '
+        'if [ -n "${UPTOODA_BUILD_WSL_CONAN_HOME:-}" ]; then export CONAN_HOME="$UPTOODA_BUILD_WSL_CONAN_HOME"; fi; '
+        'exec "$@"',
+        "bash"
+    ] + args
 
 def _run_wsl_check(args):
     return _run_check(_wsl_command(args))

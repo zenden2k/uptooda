@@ -73,10 +73,16 @@ jobs:
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X86: windows_vs2022_x86_release
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X64: windows_vs2022_x64
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_ARM64: windows_vs2022_arm64_release
+      WSLENV: UPTOODA_BUILD_WSL_CONAN_HOME/p
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set WSL Conan cache path
+        run: |
+          $env:UPTOODA_BUILD_WSL_CONAN_HOME = Join-Path $env:GITHUB_WORKSPACE ".conan2-wsl"
+          "UPTOODA_BUILD_WSL_CONAN_HOME=$env:UPTOODA_BUILD_WSL_CONAN_HOME" >> $env:GITHUB_ENV
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -94,6 +100,24 @@ jobs:
           distribution: Ubuntu-24.04
           use-cache: true
 
+      - name: Cache Windows Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2
+          key: conan2-windows-${{ runner.os }}-${{ matrix.artifact }}-${{ hashFiles('Source/conanfile.py', 'Conan/Profiles/**', 'Conan/Toolchains/**') }}
+          restore-keys: |
+            conan2-windows-${{ runner.os }}-${{ matrix.artifact }}-
+            conan2-windows-${{ runner.os }}-
+
+      - name: Cache WSL Conan packages
+        uses: actions/cache@v4
+        with:
+          path: .conan2-wsl
+          key: conan2-wsl-${{ runner.os }}-${{ matrix.artifact }}-${{ hashFiles('Source/conanfile.py', 'Conan/Profiles/**', 'Conan/Toolchains/**') }}
+          restore-keys: |
+            conan2-wsl-${{ runner.os }}-${{ matrix.artifact }}-
+            conan2-wsl-${{ runner.os }}-
+
       - name: Install Python dependencies
         working-directory: Dist
         run: python -m pip install --upgrade pip; python -m pip install -r requirements.txt conan
@@ -107,17 +131,17 @@ jobs:
 
       - name: Install WSL dependencies
         run: |
-          $env:WSLENV = "CI/u:GITHUB_ACTIONS/u"
+          $env:WSLENV = "CI/u:GITHUB_ACTIONS/u:UPTOODA_BUILD_WSL_CONAN_HOME/p"
           $workspace = $env:GITHUB_WORKSPACE
           $wslWorkspace = "/mnt/" + $workspace.Substring(0, 1).ToLowerInvariant() + "/" + $workspace.Substring(3).Replace('\', '/')
           wsl -- bash "$wslWorkspace/Dist/bootstrap-wsl.sh"
 
       - name: Configure WSL Conan remote
         run: |
-          $env:WSLENV = "CONAN_REMOTE_NAME/u:CONAN_REMOTE_URL/u:CONAN_LOGIN_USERNAME_ZENDEN2K/u:CONAN_PASSWORD_ZENDEN2K/u"
-          wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; conan remote add "$CONAN_REMOTE_NAME" "$CONAN_REMOTE_URL" --index 0 --force'
+          $env:WSLENV = "CONAN_REMOTE_NAME/u:CONAN_REMOTE_URL/u:CONAN_LOGIN_USERNAME_ZENDEN2K/u:CONAN_PASSWORD_ZENDEN2K/u:UPTOODA_BUILD_WSL_CONAN_HOME/p"
+          wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; export CONAN_HOME="$UPTOODA_BUILD_WSL_CONAN_HOME"; conan remote add "$CONAN_REMOTE_NAME" "$CONAN_REMOTE_URL" --index 0 --force'
           if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
-            wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"'
+            wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; export CONAN_HOME="$UPTOODA_BUILD_WSL_CONAN_HOME"; conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"'
           }
 
       - name: Build package
