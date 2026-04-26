@@ -2,117 +2,161 @@ name: Build Uptooda
 
 on:
   pull_request:
-    paths:
-      - .github/workflows/main.yml
-      - Source/**
-      - Contrib/Include/**
+    branches:
+      - master
   push:
     branches:
-      - 'master'
-    paths:
-      - .github/workflows/main.yml
-      - Source/**
-      - Contrib/Include/**
+      - master
+  release:
+    types:
+      - published
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
+  CONAN_REMOTE_NAME: zenden2k
+  CONAN_REMOTE_URL: https://conan.svistunov.dev
   CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
   CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
 
 jobs:
-  windows:
-    name: run on windows
-    runs-on: windows-2022
+  build:
+    name: ${{ matrix.name }}
+    runs-on: windows-2025
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Release]
+        include:
+          - name: Windows x86
+            platform: windows
+            arch: x86
+            artifact: windows-x86
+            conan_build_profile: windows_vs2022_x64
+          - name: Windows x64
+            platform: windows
+            arch: x86_64
+            artifact: windows-x64
+            conan_build_profile: windows_vs2022_x64
+          - name: Windows ARM64
+            platform: windows
+            arch: armv8
+            artifact: windows-arm64
+            conan_build_profile: windows_vs2022_x64
+          - name: Linux amd64
+            platform: linux
+            arch: x86_64
+            artifact: linux-amd64
+            conan_build_profile: default
+          - name: Linux arm64
+            platform: linux
+            arch: aarch64
+            artifact: linux-arm64
+            conan_build_profile: default
+
+    defaults:
+      run:
+        shell: pwsh
+
     env:
-      BUILD_TYPE: ${{ matrix.build_type }}
+      UPTOODA_BUILD_RELEASE: ${{ github.event_name == 'release' && '1' || '0' }}
+      UPTOODA_BUILD_BRANCH: ${{ github.head_ref || github.ref_name }}
+      UPTOODA_BUILD_COMMIT: ${{ github.event_name != 'release' && github.sha || '' }}
+      UPTOODA_BUILD_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}.git
+      UPTOODA_BUILD_PARALLEL_JOBS: 4
+      UPTOODA_BUILD_UPLOAD_TO_DRDUMP: 0
+      UPTOODA_BUILD_WINDOWS_CMAKE_GENERATOR: Visual Studio 17 2022
+      UPTOODA_BUILD_DEFAULT_BUILD_PROFILE: ${{ matrix.conan_build_profile }}
+      UPTOODA_BUILD_CONAN_PROFILES_PATH: ../Conan/Profiles
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X86: windows_vs2022_x86_release
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X64: windows_vs2022_x64
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_ARM64: windows_vs2022_arm64_release
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Prepare sources
-      shell: bash
-      working-directory: ${{github.workspace}}/Source
-      run: cp versioninfo.h.dist versioninfo.h
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.31.6'
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 2.11.0
-    - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev --index 0
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/Build
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x86_release -DCONAN_BUILD_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x64_release_dynamic -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
-    - name: Build
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-    - name: Tests
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: ./Tests/Release/Tests.exe --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      if: "env.BUILD_TYPE == 'Release'"
-      with:
-        name: windows_artifacts
-        path: |
-          ${{github.workspace}}/Build/GUI/Release/uptooda.exe
-          ${{github.workspace}}/Build/CLI/Release/uptooda-cli.exe
-          ${{github.workspace}}/Build/Tests/Release/Tests.exe
-  ubuntu:
-    name: run on ubuntu
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        build_type: [Release]
-    env:
-      BUILD_TYPE: ${{ matrix.build_type }}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup newer CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.0'
+
+      - name: Setup WSL Ubuntu
+        uses: Vampire/setup-wsl@v6
+        with:
+          distribution: Ubuntu-24.04
+          use-cache: true
+
+      - name: Install Python dependencies
+        working-directory: Dist
+        run: python -m pip install --upgrade pip; python -m pip install -r requirements.txt conan
+
+      - name: Configure Windows Conan remote
+        run: |
+          conan remote add $env:CONAN_REMOTE_NAME $env:CONAN_REMOTE_URL --index 0 --force
+          if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
+            conan remote login $env:CONAN_REMOTE_NAME $env:CONAN_LOGIN_USERNAME_ZENDEN2K -p $env:CONAN_PASSWORD_ZENDEN2K
+          }
+
+      - name: Install WSL dependencies
+        run: |
+          $env:WSLENV = "CI/u:GITHUB_ACTIONS/u"
+          $workspace = $env:GITHUB_WORKSPACE
+          $wslWorkspace = "/mnt/" + $workspace.Substring(0, 1).ToLowerInvariant() + "/" + $workspace.Substring(3).Replace('\', '/')
+          wsl -- bash "$wslWorkspace/Dist/bootstrap-wsl.sh"
+
+      - name: Configure WSL Conan remote
+        run: |
+          $env:WSLENV = "CONAN_REMOTE_NAME/u:CONAN_REMOTE_URL/u:CONAN_LOGIN_USERNAME_ZENDEN2K/u:CONAN_PASSWORD_ZENDEN2K/u"
+          wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; conan remote add "$CONAN_REMOTE_NAME" "$CONAN_REMOTE_URL" --index 0 --force'
+          if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
+            wsl -- bash -lc 'export PATH="$HOME/.local/bin:$PATH"; conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"'
+          }
+
+      - name: Build package
+        working-directory: Dist
+        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH
+
+      - name: Upload package artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.artifact }}
+          path: Dist/Packages/**
+          if-no-files-found: error
+
+  upload-release-assets:
+    name: Upload release assets
+    runs-on: ubuntu-24.04
+    needs: build
+    if: github.event_name == 'release'
     steps:
-    - uses: actions/checkout@v2
-    - uses: seanmiddleditch/gha-setup-ninja@master
-    - name: Prepare sources
-      shell: bash
-      working-directory: ${{github.workspace}}/Source
-      run: cp versioninfo.h.dist versioninfo.h
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.31.6'
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 2.11.0
-    - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev --index 0     
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/Build
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Ninja Multi-Config" -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
-    - name: Build
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-    - name: Tests
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: ./Tests/Release/Tests --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      if: "env.BUILD_TYPE == 'Release'"
-      with:
-        name: ubuntu_artifacts
-        path: |
-          ${{github.workspace}}/Build/CLI/Release/uptooda-cli
-          ${{github.workspace}}/Build/Tests/Release/Tests
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: packages-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Upload assets to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          mapfile -t files < <(find release-assets -type f \
+            ! -name 'build_info.json' \
+            ! -name 'builds.json' \
+            ! -name 'iu_core*.xml' \
+            ! -name 'iu_serversinfo*.xml')
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No release files found."
+            exit 1
+          fi
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber

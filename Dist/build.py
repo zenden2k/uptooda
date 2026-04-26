@@ -26,8 +26,9 @@ BUILD_DOCS = True
 PDB_DIR = "PDB"
 OUTDIR = "Releases" if IS_RELEASE else "Packages"
 APP_NAME = "Uptooda"
-IU_GIT_REPOSITORY = "https://github.com/zenden2k/uptooda.git"
+IU_GIT_REPOSITORY = os.getenv("UPTOODA_BUILD_REPOSITORY", "https://github.com/zenden2k/uptooda.git")
 GIT_BRANCH = os.getenv("UPTOODA_BUILD_BRANCH", "master")
+GIT_COMMIT = os.getenv("UPTOODA_BUILD_COMMIT", "")
 PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 DRDUMP_APP_GUID = "7b4202e6-8294-4be5-a18d-69c097167b46"
@@ -749,6 +750,12 @@ def main():
         proc = subprocess.run(["git", "clone", "-b", git_branch, IU_GIT_REPOSITORY, repo_dir])
         if proc.returncode != 0:
             print("Git clone failed to directory " + repo_dir)
+            exit(1)
+    if GIT_COMMIT:
+        proc = subprocess.run(["git", "checkout", GIT_COMMIT], cwd=repo_dir)
+        if proc.returncode != 0:
+            print("Git checkout failed for commit " + GIT_COMMIT)
+            exit(1)
 
     if DOWNLOAD_CA_BUNDLE:
         proc = subprocess.run(["wsl", "-e", "./mk-ca-bundle.pl", "curl-ca-bundle.crt"])
