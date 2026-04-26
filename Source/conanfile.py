@@ -63,7 +63,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")
         self.requires("zlib/1.3.1")
-        self.requires("minizip/1.3.1")
+        self.requires("minizip/1.3.1@zenden2k/stable")
         self.requires("jsoncpp/1.9.6")
         self.requires("sqlite3/3.49.1")
         self.requires("base64/0.5.2")
