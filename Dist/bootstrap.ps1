@@ -158,7 +158,7 @@ function Get-WindowsPathSuggestions {
 function Write-WindowsPathSuggestions {
     if ($SkipWindows) { return }
 
-    $suggestions = Get-WindowsPathSuggestions
+    $suggestions = @(Get-WindowsPathSuggestions)
     Write-Host ""
     Write-Host "Windows PATH additions:" -ForegroundColor Cyan
     if ($suggestions.Count -eq 0) {

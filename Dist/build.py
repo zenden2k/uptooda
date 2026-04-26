@@ -44,6 +44,7 @@ DEFAULT_BUILD_PROFILE = os.getenv("UPTOODA_BUILD_DEFAULT_BUILD_PROFILE", "defaul
 CONAN_PROFILES_PATH = os.getenv("UPTOODA_BUILD_CONAN_PROFILES_PATH", "").strip()
 if CONAN_PROFILES_PATH:
     CONAN_PROFILES_PATH = os.path.expandvars(os.path.expanduser(CONAN_PROFILES_PATH))
+SHELLEXT_PLATFORM_TOOLSET = os.getenv("UPTOODA_BUILD_SHELLEXT_PLATFORM_TOOLSET", "").strip()
 WINDOWS_HOST_PROFILE_X86 = os.getenv("UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X86", "windows_vs2019_x86_release")
 WINDOWS_HOST_PROFILE_X64 = os.getenv("UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X64", "windows_vs2019_x64_release")
 WINDOWS_HOST_PROFILE_ARM64 = os.getenv("UPTOODA_BUILD_WINDOWS_HOST_PROFILE_ARM64", "windows_vs2019_arm64_release")
@@ -345,6 +346,27 @@ def normalize_shell_script_line_endings(root_dir):
             if normalized != content:
                 with open(file_path, "wb") as file:
                     file.write(normalized)
+
+def patch_shellext_platform_toolset(repo_dir):
+    if not SHELLEXT_PLATFORM_TOOLSET:
+        return
+
+    project_file = os.path.join(repo_dir, "Source", "ShellExt", "ExplorerIntegration.vcxproj")
+    if not os.path.isfile(project_file):
+        print("Shell extension project not found:", project_file)
+        return
+
+    with open(project_file, "r", encoding="utf-8-sig") as file:
+        text = file.read()
+    patched = re.sub(
+        r"<PlatformToolset>[^<]+</PlatformToolset>",
+        f"<PlatformToolset>{SHELLEXT_PLATFORM_TOOLSET}</PlatformToolset>",
+        text
+    )
+    if patched != text:
+        with open(project_file, "w", encoding="utf-8", newline="") as file:
+            file.write(patched)
+        print("Shell extension PlatformToolset:", SHELLEXT_PLATFORM_TOOLSET)
 
 # ---------------------------------------------------------------------------
 # Original helpers (unchanged)
@@ -812,6 +834,7 @@ def main():
     generate_version_header(VERSION_HEADER_FILE, True)
     repo_dir_abs = os.path.abspath(repo_dir)
     normalize_shell_script_line_endings(repo_dir_abs)
+    patch_shellext_platform_toolset(repo_dir_abs)
     shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/versioninfo.h")
     shutil.copyfile(curl_ca_bundle, repo_dir + "/Dist/curl-ca-bundle.crt")
     shutil.copyfile("../Data/" + ENV_FILE, repo_dir + "/Data/" + ENV_FILE)

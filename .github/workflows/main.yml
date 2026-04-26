@@ -63,6 +63,7 @@ jobs:
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X86: windows_vs2022_x86_release
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X64: windows_vs2022_x64
       UPTOODA_BUILD_WINDOWS_HOST_PROFILE_ARM64: windows_vs2022_arm64_release
+      UPTOODA_BUILD_SHELLEXT_PLATFORM_TOOLSET: v143
 
     steps:
       - name: Checkout
@@ -204,18 +205,29 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            autoconf \
+            automake \
             binutils \
             binutils-aarch64-linux-gnu \
+            cmake \
             doxygen \
+            fakeroot \
             g++ \
             g++-aarch64-linux-gnu \
             gcc \
             gcc-aarch64-linux-gnu \
             gettext \
+            git \
             graphviz \
+            libtool \
             make \
             ninja-build \
-            perl
+            perl \
+            python3-pip \
+            qt5-qmake \
+            qtbase5-dev \
+            qtbase5-dev-tools \
+            qtchooser
 
       - name: Install Python dependencies
         working-directory: Dist

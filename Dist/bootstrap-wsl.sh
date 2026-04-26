@@ -44,18 +44,28 @@ check_command() {
 
 APT_PACKAGES=(
     git
+    autoconf
+    automake
     cmake
     ninja-build
     gcc
     g++
+    gcc-aarch64-linux-gnu
+    g++-aarch64-linux-gnu
     make
     doxygen
+    fakeroot
     gettext
     binutils
     binutils-aarch64-linux-gnu
+    libtool
     perl
     python3-pip
     python3-venv
+    qt5-qmake
+    qtbase5-dev
+    qtbase5-dev-tools
+    qtchooser
 )
 
 if [[ "$CHECK_ONLY" -eq 0 ]]; then
@@ -100,7 +110,15 @@ check_command "git" "git" git --version
 check_command "cmake" "cmake" cmake --version
 check_command "ninja" "ninja" ninja --version
 check_command "gcc" "gcc" gcc --version
+check_command "g++" "g++" g++ --version
+check_command "aarch64-linux-gnu-gcc" "aarch64-linux-gnu-gcc" aarch64-linux-gnu-gcc --version
+check_command "aarch64-linux-gnu-g++" "aarch64-linux-gnu-g++" aarch64-linux-gnu-g++ --version
 check_command "make" "make" make --version
+check_command "autoconf" "autoconf" autoconf --version
+check_command "automake" "automake" automake --version
+check_command "libtool" "libtoolize" libtoolize --version
+check_command "fakeroot" "fakeroot" fakeroot --version
+check_command "qmake" "qmake" qmake --version
 check_command "perl" "perl" perl --version
 check_command "doxygen" "doxygen" doxygen --version
 check_command "msgfmt" "msgfmt" msgfmt --version
