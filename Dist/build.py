@@ -292,12 +292,12 @@ def check_dependencies(platform: str) -> bool:
     all_ok = True
     for r in checks:
         status = "OK" if r.ok else "FAIL"
-        print(f"  [{status}] {r.name}" + (f"  →  {r.hint}" if not r.ok else ""))
+        print(f"  [{status}] {r.name}" + (f"  ->  {r.hint}" if not r.ok else ""))
         if not r.ok:
             all_ok = False
 
     if not conan_ver_ok:
-        print("  [FAIL] conan version  →  требуется Conan 2.x (pip install --upgrade conan)")
+        print("  [FAIL] conan version  ->  Conan 2.x required (pip install --upgrade conan)")
         all_ok = False
 
     if all_ok:
