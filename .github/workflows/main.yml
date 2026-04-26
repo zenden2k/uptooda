@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 env:
   CONAN_REMOTE_NAME: zenden2k
@@ -25,8 +26,70 @@ env:
   PYTHONIOENCODING: utf-8
 
 jobs:
+  prepare-version:
+    name: Prepare versioninfo
+    runs-on: ubuntu-24.04
+    outputs:
+      build_number: ${{ steps.version.outputs.build_number }}
+      build_date: ${{ steps.version.outputs.build_date }}
+      app_ver: ${{ steps.version.outputs.app_ver }}
+      app_ver_clean: ${{ steps.version.outputs.app_ver_clean }}
+      commit_hash: ${{ steps.version.outputs.commit_hash }}
+      commit_hash_short: ${{ steps.version.outputs.commit_hash_short }}
+      branch_name: ${{ steps.version.outputs.branch_name }}
+      version_file: ${{ steps.version.outputs.version_file }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Calculate versioninfo
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_BUILD_NUMBER: ${{ vars.IU_BUILD_NUMBER || '0' }}
+          VAR_IU_APP_VER: ${{ vars.IU_APP_VER }}
+          VAR_IU_APP_VER_CLEAN: ${{ vars.IU_APP_VER_CLEAN }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            build_number="$CURRENT_BUILD_NUMBER"
+          else
+            build_number=$((CURRENT_BUILD_NUMBER + 1))
+            gh variable set IU_BUILD_NUMBER --body "$build_number"
+          fi
+
+          build_date="$(date +'%d.%m.%Y')"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            app_ver="${VAR_IU_APP_VER:-${{ github.event.release.tag_name }}}"
+            app_ver="${app_ver#v}"
+            version_file="versioninfo-release.h"
+          else
+            app_ver="${VAR_IU_APP_VER:-$(date +'%Y%m%d')-nightly}"
+            version_file="versioninfo-nightly.h"
+          fi
+          app_ver_clean="${VAR_IU_APP_VER_CLEAN:-${app_ver%-nightly}}"
+          commit_hash="${{ github.event.pull_request.head.sha || github.sha }}"
+          commit_hash_short="${commit_hash:0:8}"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            branch_name="${{ github.event.release.target_commitish || github.ref_name }}"
+          else
+            branch_name="${{ github.head_ref || github.ref_name }}"
+          fi
+
+          {
+            echo "build_number=$build_number"
+            echo "build_date=$build_date"
+            echo "app_ver=$app_ver"
+            echo "app_ver_clean=$app_ver_clean"
+            echo "commit_hash=$commit_hash"
+            echo "commit_hash_short=$commit_hash_short"
+            echo "branch_name=$branch_name"
+            echo "version_file=$version_file"
+          } >> "$GITHUB_OUTPUT"
+
   build-windows:
     name: ${{ matrix.name }}
+    needs: prepare-version
     runs-on: windows-2025
     timeout-minutes: 180
     strategy:
@@ -57,6 +120,8 @@ jobs:
       UPTOODA_BUILD_REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
       UPTOODA_BUILD_PARALLEL_JOBS: 4
       UPTOODA_BUILD_UPLOAD_TO_DRDUMP: 0
+      UPTOODA_BUILD_LOCK_VERSION_HEADER: 1
+      UPTOODA_BUILD_SYMUPLOAD_EXE: SYMUPLOAD.exe
       UPTOODA_BUILD_WINDOWS_CMAKE_GENERATOR: Visual Studio 17 2022
       UPTOODA_BUILD_DEFAULT_BUILD_PROFILE: windows_vs2022_x64
       UPTOODA_BUILD_CONAN_PROFILES_PATH: ${{ github.workspace }}/Conan/Profiles
@@ -69,10 +134,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate versioninfo.h
+        shell: pwsh
+        run: |
+          $content = @(
+            '#pragma once'
+            '#define IU_BUILD_NUMBER "${{ needs.prepare-version.outputs.build_number }}"'
+            '#define IU_BUILD_DATE "${{ needs.prepare-version.outputs.build_date }}"'
+            '#define IU_APP_VER "${{ needs.prepare-version.outputs.app_ver }}"'
+            '#define IU_APP_VER_CLEAN "${{ needs.prepare-version.outputs.app_ver_clean }}"'
+            '#define IU_COMMIT_HASH "${{ needs.prepare-version.outputs.commit_hash }}"'
+            '#define IU_COMMIT_HASH_SHORT "${{ needs.prepare-version.outputs.commit_hash_short }}"'
+            '#define IU_BRANCH_NAME "${{ needs.prepare-version.outputs.branch_name }}"'
+          ) -join "`n"
+          Set-Content -Path Source\versioninfo.h -Value $content -Encoding utf8
+          Set-Content -Path (Join-Path "Dist" "${{ needs.prepare-version.outputs.version_file }}") -Value $content -Encoding utf8
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Clear host pkg-config variables
+        run: |
+          "PKG_CONFIG_PATH=" >> $env:GITHUB_ENV
+          "PKG_CONFIG_LIBDIR=" >> $env:GITHUB_ENV
+          Remove-Item Env:PKG_CONFIG_PATH -ErrorAction SilentlyContinue
+          Remove-Item Env:PKG_CONFIG_LIBDIR -ErrorAction SilentlyContinue
 
       - name: Setup newer CMake
         uses: jwlawson/actions-setup-cmake@v2
@@ -139,6 +227,22 @@ jobs:
           $bytes = [Convert]::FromBase64String($env:UPTOODA_DATA_ENV_B64)
           [System.IO.File]::WriteAllBytes($path, $bytes)
 
+      - name: Install SYMUPLOAD for DrDump
+        if: github.event_name == 'release'
+        run: |
+          $toolsDir = Join-Path $env:GITHUB_WORKSPACE "Tools\DrDump"
+          New-Item -ItemType Directory -Force -Path $toolsDir | Out-Null
+          $symuploadPath = Join-Path $toolsDir "SYMUPLOAD.exe"
+          Invoke-WebRequest -Uri "https://svistunov.dev/files/SymUpload.exe" -OutFile $symuploadPath
+          $expectedHash = "c6ddd7e93fde28d73e4176bd5731a2c909afee25eef17b8d3bc9e0891fe6e98f"
+          $actualHash = (Get-FileHash -Algorithm SHA256 -Path $symuploadPath).Hash.ToLowerInvariant()
+          if ($actualHash -ne $expectedHash) {
+            throw "SYMUPLOAD.exe SHA256 mismatch. Expected $expectedHash, got $actualHash."
+          }
+          $toolsDir >> $env:GITHUB_PATH
+          "UPTOODA_BUILD_UPLOAD_TO_DRDUMP=1" >> $env:GITHUB_ENV
+          "UPTOODA_BUILD_SYMUPLOAD_EXE=$symuploadPath" >> $env:GITHUB_ENV
+
       - name: Build package
         working-directory: Dist
         run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH
@@ -153,6 +257,7 @@ jobs:
 
   build-linux:
     name: ${{ matrix.name }}
+    needs: prepare-version
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     strategy:
@@ -175,12 +280,27 @@ jobs:
       UPTOODA_BUILD_REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
       UPTOODA_BUILD_PARALLEL_JOBS: 4
       UPTOODA_BUILD_UPLOAD_TO_DRDUMP: 0
+      UPTOODA_BUILD_LOCK_VERSION_HEADER: 1
       UPTOODA_BUILD_DEFAULT_BUILD_PROFILE: default
       UPTOODA_BUILD_CONAN_PROFILES_PATH: ${{ github.workspace }}/Conan/Profiles
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Generate versioninfo.h
+        run: |
+          printf '%s\n' \
+            '#pragma once' \
+            '#define IU_BUILD_NUMBER "${{ needs.prepare-version.outputs.build_number }}"' \
+            '#define IU_BUILD_DATE "${{ needs.prepare-version.outputs.build_date }}"' \
+            '#define IU_APP_VER "${{ needs.prepare-version.outputs.app_ver }}"' \
+            '#define IU_APP_VER_CLEAN "${{ needs.prepare-version.outputs.app_ver_clean }}"' \
+            '#define IU_COMMIT_HASH "${{ needs.prepare-version.outputs.commit_hash }}"' \
+            '#define IU_COMMIT_HASH_SHORT "${{ needs.prepare-version.outputs.commit_hash_short }}"' \
+            '#define IU_BRANCH_NAME "${{ needs.prepare-version.outputs.branch_name }}"' \
+            > Source/versioninfo.h
+          cp Source/versioninfo.h "Dist/${{ needs.prepare-version.outputs.version_file }}"
 
       - name: Setup Python
         uses: actions/setup-python@v5

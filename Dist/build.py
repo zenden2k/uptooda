@@ -33,7 +33,9 @@ PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 DRDUMP_APP_GUID = "7b4202e6-8294-4be5-a18d-69c097167b46"
 UPLOAD_TO_DRDUMP = get_bool_env("UPTOODA_BUILD_UPLOAD_TO_DRDUMP", True)
+SYMUPLOAD_EXE = os.getenv("UPTOODA_BUILD_SYMUPLOAD_EXE", "SYMUPLOAD")
 IS_WINDOWS_HOST = os.name == "nt"
+LOCK_VERSION_HEADER = get_bool_env("UPTOODA_BUILD_LOCK_VERSION_HEADER", False)
 
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019"
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022"
@@ -189,6 +191,15 @@ def _run_wsl_check(args):
 
 def _linux_command(args):
     return _wsl_command(args) if IS_WINDOWS_HOST else args
+
+def _windows_conan_env():
+    env = os.environ.copy()
+    if IS_WINDOWS_HOST:
+        # GitHub Actions/setup-python exports pkg-config paths that can leak
+        # into Conan recipes executed under Windows bash, breaking ffmpeg.
+        env.pop("PKG_CONFIG_PATH", None)
+        env.pop("PKG_CONFIG_LIBDIR", None)
+    return env
 
 def _run_linux_check(args):
     return _run_check(_linux_command(args))
@@ -565,6 +576,13 @@ def generate_version_header(filename, inc_version):
     with open(filename) as f:
         content = f.readlines()
     content = [x.strip() for x in content]
+    if LOCK_VERSION_HEADER:
+        reg = re.compile("#define ([a-zA-Z0-9_]+) \"(.*?)\"")
+        for line in content:
+            res = reg.match(line)
+            if res:
+                result[res.group(1)] = str(res.group(2))
+        return result
     reg = re.compile("#define ([a-zA-Z0-9_]+) \"(.*?)\"")
     out_text = ""
     for line in content:
@@ -926,7 +944,8 @@ def main():
                 command += target.get("cmake_args")
 
             print("Running command:", " ".join(command))
-            proc = subprocess.run(command)
+            proc_env = _windows_conan_env() if target.get("os") == "Windows" else None
+            proc = subprocess.run(command, env=proc_env)
             if proc.returncode != 0:
                 print("Generate failed")
                 exit(1)
@@ -1034,13 +1053,17 @@ def main():
                 shutil.copyfile("GUI\\Release\\Uptooda.pdb", pdb_os_dir + "/Uptooda.pdb")
 
                 if UPLOAD_TO_DRDUMP and target.get("upload_pdb"):
-                    command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.pdb"]
+                    if not shutil.which(SYMUPLOAD_EXE):
+                        print("SYMUPLOAD executable not found. Set UPTOODA_BUILD_SYMUPLOAD_EXE or add SYMUPLOAD.exe to PATH.")
+                        exit(1)
+
+                    command = [SYMUPLOAD_EXE, DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.pdb"]
                     proc = subprocess.run(command)
                     if proc.returncode != 0:
                         print("Failed to upload PDB files to DrDump server")
                         exit(1)
 
-                    command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.exe"]
+                    command = [SYMUPLOAD_EXE, DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.exe"]
                     proc = subprocess.run(command)
                     if proc.returncode != 0:
                         print("Failed to upload EXE files to DrDump server")
