@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_SKIP_RPATH 1)   
-project(Uptooda)	
+project(Uptooda)
 
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL ON CACHE BOOL "Use OpenSSL library for secured connections")
