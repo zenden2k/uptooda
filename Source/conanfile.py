@@ -68,7 +68,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("base64/0.5.2")
         self.requires("glog/0.7.1")
         #self.requires("glog/0.6.0@zenden2k/stable")
-        self.requires("libwebp/1.6.0@zenden2k/stable", force=True)
+        self.requires("libwebp/1.6.0", force=True)
         self.requires("gtest/1.10.0")
         self.requires("gumbo-parser/0.10.1@zenden2k/stable")
         self.requires("squirrel/3.0.0")

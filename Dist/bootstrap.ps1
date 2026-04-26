@@ -119,6 +119,10 @@ function Get-WindowsPathSuggestions {
         Add-PathSuggestion $suggestions (Join-Path $env:ProgramFiles "7-Zip")
         Add-PathSuggestion $suggestions (Join-Path ${env:ProgramFiles(x86)} "7-Zip")
     }
+    if (-not (Test-Command "perl")) {
+        Add-PathSuggestion $suggestions (Join-Path $env:SystemDrive "Strawberry\perl\bin")
+        Add-PathSuggestion $suggestions (Join-Path $env:SystemDrive "Strawberry\c\bin")
+    }
     if (-not (Test-Command "iscc")) {
         Add-PathSuggestion $suggestions (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6")
         Add-PathSuggestion $suggestions (Join-Path $env:ProgramFiles "Inno Setup 6")
@@ -235,6 +239,20 @@ function Check-Cmake-Windows {
     Refresh-Path
     if (Test-Command "cmake") { Write-Ok "cmake  (installed)"; return $true }
     Write-Fail "cmake -- installation may require a terminal restart"
+    return $false
+}
+
+function Check-Perl-Windows {
+    if (Test-Command "perl") {
+        $ver = (perl --version 2>&1 | Select-String -Pattern "perl" | Select-Object -First 1).ToString().Trim()
+        Write-Ok "perl  ($ver)"
+        return $true
+    }
+    if ($CheckOnly) { Write-Fail "perl not found"; return $false }
+    Invoke-Winget "StrawberryPerl.StrawberryPerl" "Strawberry Perl"
+    Refresh-Path
+    if (Test-Command "perl") { Write-Ok "perl  (installed)"; return $true }
+    Write-Fail "perl -- installation may require a terminal restart"
     return $false
 }
 
@@ -477,6 +495,7 @@ if (-not $SkipWindows) {
     [void](Check-Git)
     [void](Check-Python)
     [void](Check-Cmake-Windows)
+    [void](Check-Perl-Windows)
 
     if ($wingetOk -or (Test-Command "pip")) {
         [void](Check-Conan-Windows)

@@ -53,6 +53,7 @@ APT_PACKAGES=(
     gettext
     binutils
     binutils-aarch64-linux-gnu
+    perl
     python3-pip
     python3-venv
 )
@@ -100,6 +101,7 @@ check_command "cmake" "cmake" cmake --version
 check_command "ninja" "ninja" ninja --version
 check_command "gcc" "gcc" gcc --version
 check_command "make" "make" make --version
+check_command "perl" "perl" perl --version
 check_command "doxygen" "doxygen" doxygen --version
 check_command "msgfmt" "msgfmt" msgfmt --version
 check_command "objcopy" "objcopy" objcopy --version
