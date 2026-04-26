@@ -33,6 +33,7 @@ PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 DRDUMP_APP_GUID = "7b4202e6-8294-4be5-a18d-69c097167b46"
 UPLOAD_TO_DRDUMP = get_bool_env("UPTOODA_BUILD_UPLOAD_TO_DRDUMP", True)
+IS_WINDOWS_HOST = os.name == "nt"
 
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019"
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022"
@@ -185,10 +186,16 @@ def _wsl_command(args):
 def _run_wsl_check(args):
     return _run_check(_wsl_command(args))
 
+def _linux_command(args):
+    return _wsl_command(args) if IS_WINDOWS_HOST else args
+
+def _run_linux_check(args):
+    return _run_check(_linux_command(args))
+
 def _check_wsl_conan_version() -> bool:
     for args in (["conan", "--version"], ["python3", "-m", "conan", "--version"]):
         try:
-            out = subprocess.check_output(_wsl_command(args)).decode("utf-8").strip()
+            out = subprocess.check_output(_linux_command(args)).decode("utf-8").strip()
             m = re.match(r"Conan version (\d+)\.", out, re.IGNORECASE)
             if m:
                 return int(m.group(1)) >= 2
@@ -243,6 +250,30 @@ def check_dependencies(platform: str) -> bool:
         linux_deps.append(
             DepCheckResult("WSL doxygen", _run_wsl_check(["doxygen", "--version"]),
                            "В WSL: sudo apt install doxygen")
+        )
+
+    linux_prefix = "WSL " if IS_WINDOWS_HOST else ""
+    linux_hint_prefix = "В WSL: " if IS_WINDOWS_HOST else ""
+    linux_deps = []
+    if IS_WINDOWS_HOST:
+        linux_deps.append(
+            DepCheckResult("WSL", _run_check(["wsl", "--status"]),
+                           "https://learn.microsoft.com/windows/wsl/install")
+        )
+    linux_deps += [
+        DepCheckResult(linux_prefix + "cmake", _run_linux_check(["cmake", "--version"]),
+                       linux_hint_prefix + "sudo apt install cmake"),
+        DepCheckResult(linux_prefix + "git", _run_linux_check(["git", "--version"]),
+                       linux_hint_prefix + "sudo apt install git"),
+        DepCheckResult(linux_prefix + "conan", _run_linux_check(["conan", "--version"]) or _run_linux_check(["python3", "-m", "conan", "--version"]),
+                       linux_hint_prefix + "запусти Dist/bootstrap.ps1" if IS_WINDOWS_HOST else "pip install conan"),
+        DepCheckResult(linux_prefix + "ninja", _run_linux_check(["ninja", "--version"]),
+                       linux_hint_prefix + "sudo apt install ninja-build"),
+    ]
+    if BUILD_DOCS:
+        linux_deps.append(
+            DepCheckResult(linux_prefix + "doxygen", _run_linux_check(["doxygen", "--version"]),
+                           linux_hint_prefix + "sudo apt install doxygen")
         )
 
     checks = list(common_deps)
@@ -764,7 +795,7 @@ def main():
             exit(1)
 
     if DOWNLOAD_CA_BUNDLE:
-        proc = subprocess.run(["wsl", "-e", "./mk-ca-bundle.pl", "curl-ca-bundle.crt"])
+        proc = subprocess.run(_linux_command(["perl", "mk-ca-bundle.pl", "curl-ca-bundle.crt"]))
         if proc.returncode != 0:
             print("Failed to download curl-ca-bundle")
             exit(1)
@@ -790,12 +821,12 @@ def main():
     app_ver = version_header_defines["IU_APP_VER"]
     build_number = version_header_defines["IU_BUILD_NUMBER"]
 
-    proc = subprocess.run(_wsl_command(["/bin/bash", "generate_mo.sh"]), cwd=repo_dir_abs + "/Lang/")
+    proc = subprocess.run(_linux_command(["/bin/bash", "generate_mo.sh"]), cwd=repo_dir_abs + "/Lang/")
     if proc.returncode != 0:
         print("Cannot generate language files")
 
     if BUILD_DOCS:
-        proc = subprocess.run(_wsl_command(["/bin/bash", "generate.sh"]), cwd=repo_dir_abs + "/Dist/DocGen/")
+        proc = subprocess.run(_linux_command(["/bin/bash", "generate.sh"]), cwd=repo_dir_abs + "/Dist/DocGen/")
         if proc.returncode != 0:
             print("Cannot generate documentation")
 
@@ -863,7 +894,7 @@ def main():
             if target.get("cmake_platform"):
                 command += ["-A", target.get("cmake_platform")]
             if target.get("os") == "Linux":
-                command = _wsl_command(command)
+                command = _linux_command(command)
             if target.get('ffmpeg_standalone'):
                 command += ["-DIU_FFMPEG_STANDALONE=On"]
             if target.get("enable_webview2"):
@@ -879,7 +910,7 @@ def main():
 
             command = ["cmake", "--build", ".", "-j", PARALLEL_JOBS, "--config", target.get("build_type")]
             if target.get("os") == "Linux":
-                command = _wsl_command(command)
+                command = _linux_command(command)
 
             print("Running command:", " ".join(command))
             proc = subprocess.run(command)
@@ -891,7 +922,7 @@ def main():
             if run_tests:
                 command = ["Tests/Release/Tests"]
                 if target.get("os") == "Linux":
-                    command = _wsl_command(command)
+                    command = _linux_command(command)
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
                 if proc.returncode != 0:
@@ -993,7 +1024,7 @@ def main():
                         exit(1)
 
             elif target["os"] == "Linux":
-                args_pkg = _wsl_command(["/bin/bash", "create-package.sh", target.get("deb_package_arch"), target.get("objcopy")])
+                args_pkg = _linux_command(["/bin/bash", "create-package.sh", target.get("deb_package_arch"), target.get("objcopy")])
                 working_dir = repo_dir_abs + used_dist_dir + "Linux/"
                 print("Running command:", " ".join(args_pkg), "; working_dir=" + working_dir)
                 proc = subprocess.run(args_pkg, cwd=working_dir)
@@ -1005,8 +1036,9 @@ def main():
                 package_os_dir = new_build_dir + relative_path
                 mkdir_if_not_exists(package_os_dir)
 
-                file_from = r"Linux\\uptooda-cli_{version_clean}.{build_number}_{arch}.deb".format(
+                file_from = os.path.join("Linux", "uptooda-cli_{version_clean}.{build_number}_{arch}.deb".format(
                     version_clean=version_header_defines["IU_APP_VER_CLEAN"], build_number=build_number, arch=target.get("deb_package_arch"))
+                )
                 filename = "uptooda-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") + ".deb"
                 file_to = package_os_dir + filename
                 print("Copy file from:", file_from)
@@ -1014,8 +1046,9 @@ def main():
                 shutil.copyfile(file_from, file_to)
                 json_data = add_output_file(json_data, target, json_file_path, "Debian package", file_to, relative_path + filename, APP_NAME + " (CLI)")
 
-                file_from = r"Linux\\uptooda-cli-{version_clean}.{build_number}-{arch}.tar.xz".format(
+                file_from = os.path.join("Linux", "uptooda-cli-{version_clean}.{build_number}-{arch}.tar.xz".format(
                     version_clean=version_header_defines["IU_APP_VER_CLEAN"], build_number=build_number, arch=target.get("deb_package_arch"))
+                )
                 filename = "uptooda-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") + ".tar.xz"
                 file_to = package_os_dir + filename
                 print("Copy file from:", file_from)
@@ -1024,7 +1057,7 @@ def main():
                 json_data = add_output_file(json_data, target, json_file_path, ".tar.xz archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
 
                 if target.get("build_qt_gui"):
-                    args_gui = _wsl_command(["/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch"), target.get("objcopy")])
+                    args_gui = _linux_command(["/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch"), target.get("objcopy")])
                     working_dir = repo_dir_abs + used_dist_dir + "Linux/"
                     print("Running command:", " ".join(args_gui), "; working_dir=" + working_dir)
                     proc = subprocess.run(args_gui, cwd=working_dir)
@@ -1032,8 +1065,9 @@ def main():
                         print("Failed to create debian package for Qt GUI")
                         exit(1)
 
-                    file_from = r"Linux\\uptooda_{version_clean}.{build_number}_{arch}.deb".format(
+                    file_from = os.path.join("Linux", "uptooda_{version_clean}.{build_number}_{arch}.deb".format(
                         version_clean=version_header_defines["IU_APP_VER_CLEAN"], build_number=build_number, arch=target.get("deb_package_arch"))
+                    )
                     filename = "uptooda_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") + ".deb"
                     file_to = package_os_dir + filename
                     print("Copy file from:", file_from)
