@@ -2,117 +2,410 @@ name: Build Uptooda
 
 on:
   pull_request:
-    paths:
-      - .github/workflows/main.yml
-      - Source/**
-      - Contrib/Include/**
+    branches:
+      - master
   push:
     branches:
-      - 'master'
-    paths:
-      - .github/workflows/main.yml
-      - Source/**
-      - Contrib/Include/**
+      - master
+  release:
+    types:
+      - published
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: write
+
 env:
+  CONAN_REMOTE_NAME: zenden2k
+  CONAN_REMOTE_URL: https://conan.svistunov.dev
   CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
   CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
+  UPTOODA_DATA_ENV_B64: ${{ secrets.UPTOODA_DATA_ENV_B64 }}
+  PYTHONUTF8: '1'
+  PYTHONIOENCODING: utf-8
 
 jobs:
-  windows:
-    name: run on windows
-    runs-on: windows-2022
+  prepare-version:
+    name: Prepare versioninfo
+    runs-on: ubuntu-24.04
+    outputs:
+      build_number: ${{ steps.version.outputs.build_number }}
+      build_date: ${{ steps.version.outputs.build_date }}
+      app_ver: ${{ steps.version.outputs.app_ver }}
+      app_ver_clean: ${{ steps.version.outputs.app_ver_clean }}
+      commit_hash: ${{ steps.version.outputs.commit_hash }}
+      commit_hash_short: ${{ steps.version.outputs.commit_hash_short }}
+      branch_name: ${{ steps.version.outputs.branch_name }}
+      version_file: ${{ steps.version.outputs.version_file }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Calculate versioninfo
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_BUILD_NUMBER: ${{ vars.IU_BUILD_NUMBER || '0' }}
+          VAR_IU_APP_VER: ${{ vars.IU_APP_VER }}
+          VAR_IU_APP_VER_CLEAN: ${{ vars.IU_APP_VER_CLEAN }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            build_number="$CURRENT_BUILD_NUMBER"
+            echo "Pull request build: using IU_BUILD_NUMBER=$build_number without increment."
+          else
+            build_number=$((CURRENT_BUILD_NUMBER + 1))
+            gh variable set IU_BUILD_NUMBER --body "$build_number"
+            echo "Updated IU_BUILD_NUMBER to $build_number."
+          fi
+
+          build_date="$(date +'%d.%m.%Y')"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            app_ver="${VAR_IU_APP_VER:-${{ github.event.release.tag_name }}}"
+            app_ver="${app_ver#v}"
+            version_file="versioninfo-release.h"
+          else
+            app_ver="$(date +'%Y%m%d')-nightly"
+            version_file="versioninfo-nightly.h"
+          fi
+          app_ver_clean="${VAR_IU_APP_VER_CLEAN}"
+          commit_hash="${{ github.event.pull_request.head.sha || github.sha }}"
+          commit_hash_short="${commit_hash:0:8}"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            branch_name="${{ github.event.release.target_commitish || github.ref_name }}"
+          else
+            branch_name="${{ github.head_ref || github.ref_name }}"
+          fi
+
+          {
+            echo "build_number=$build_number"
+            echo "build_date=$build_date"
+            echo "app_ver=$app_ver"
+            echo "app_ver_clean=$app_ver_clean"
+            echo "commit_hash=$commit_hash"
+            echo "commit_hash_short=$commit_hash_short"
+            echo "branch_name=$branch_name"
+            echo "version_file=$version_file"
+          } >> "$GITHUB_OUTPUT"
+
+  build-windows:
+    name: ${{ matrix.name }}
+    needs: prepare-version
+    runs-on: windows-2025
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Release]
+        include:
+          - name: Windows x86
+            platform: windows
+            arch: x86
+            artifact: windows-x86
+          - name: Windows x64
+            platform: windows
+            arch: x86_64
+            artifact: windows-x64
+          - name: Windows ARM64
+            platform: windows
+            arch: armv8
+            artifact: windows-arm64
+
+    defaults:
+      run:
+        shell: pwsh
+
     env:
-      BUILD_TYPE: ${{ matrix.build_type }}
+      UPTOODA_BUILD_RELEASE: ${{ github.event_name == 'release' && '1' || '0' }}
+      UPTOODA_BUILD_BRANCH: ${{ github.head_ref || github.ref_name }}
+      UPTOODA_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      UPTOODA_BUILD_REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
+      UPTOODA_BUILD_PARALLEL_JOBS: 4
+      UPTOODA_BUILD_UPLOAD_TO_DRDUMP: 0
+      UPTOODA_BUILD_LOCK_VERSION_HEADER: 1
+      UPTOODA_BUILD_SYMUPLOAD_EXE: SYMUPLOAD.exe
+      UPTOODA_BUILD_WINDOWS_CMAKE_GENERATOR: Visual Studio 17 2022
+      UPTOODA_BUILD_DEFAULT_BUILD_PROFILE: windows_vs2022_x64
+      UPTOODA_BUILD_CONAN_PROFILES_PATH: ${{ github.workspace }}/Conan/Profiles
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X86: windows_vs2022_x86_release
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_X64: windows_vs2022_x64
+      UPTOODA_BUILD_WINDOWS_HOST_PROFILE_ARM64: windows_vs2022_arm64_release
+      UPTOODA_BUILD_SHELLEXT_PLATFORM_TOOLSET: v143
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Prepare sources
-      shell: bash
-      working-directory: ${{github.workspace}}/Source
-      run: cp versioninfo.h.dist versioninfo.h
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.31.6'
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 2.11.0
-    - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev --index 0
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/Build
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x86_release -DCONAN_BUILD_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x64_release_dynamic -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
-    - name: Build
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-    - name: Tests
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: ./Tests/Release/Tests.exe --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      if: "env.BUILD_TYPE == 'Release'"
-      with:
-        name: windows_artifacts
-        path: |
-          ${{github.workspace}}/Build/GUI/Release/uptooda.exe
-          ${{github.workspace}}/Build/CLI/Release/uptooda-cli.exe
-          ${{github.workspace}}/Build/Tests/Release/Tests.exe
-  ubuntu:
-    name: run on ubuntu
-    runs-on: ubuntu-22.04
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate versioninfo.h
+        shell: pwsh
+        run: |
+          $content = @(
+            '#pragma once'
+            '#define IU_BUILD_NUMBER "${{ needs.prepare-version.outputs.build_number }}"'
+            '#define IU_BUILD_DATE "${{ needs.prepare-version.outputs.build_date }}"'
+            '#define IU_APP_VER "${{ needs.prepare-version.outputs.app_ver }}"'
+            '#define IU_APP_VER_CLEAN "${{ needs.prepare-version.outputs.app_ver_clean }}"'
+            '#define IU_COMMIT_HASH "${{ needs.prepare-version.outputs.commit_hash }}"'
+            '#define IU_COMMIT_HASH_SHORT "${{ needs.prepare-version.outputs.commit_hash_short }}"'
+            '#define IU_BRANCH_NAME "${{ needs.prepare-version.outputs.branch_name }}"'
+          ) -join "`n"
+          Set-Content -Path Source\versioninfo.h -Value $content -Encoding utf8
+          Set-Content -Path (Join-Path "Dist" "${{ needs.prepare-version.outputs.version_file }}") -Value $content -Encoding utf8
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Clear host pkg-config variables
+        run: |
+          "PKG_CONFIG_PATH=" >> $env:GITHUB_ENV
+          "PKG_CONFIG_LIBDIR=" >> $env:GITHUB_ENV
+          Remove-Item Env:PKG_CONFIG_PATH -ErrorAction SilentlyContinue
+          Remove-Item Env:PKG_CONFIG_LIBDIR -ErrorAction SilentlyContinue
+
+      - name: Setup newer CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.0'
+
+      - name: Add MSBuild to PATH
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $vsPath) {
+            throw "Visual Studio with MSBuild was not found."
+          }
+          $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin"
+          if (-not (Test-Path (Join-Path $msbuildPath "MSBuild.exe"))) {
+            throw "MSBuild.exe was not found at $msbuildPath."
+          }
+          $msbuildPath >> $env:GITHUB_PATH
+
+      - name: Setup WSL Ubuntu
+        uses: Vampire/setup-wsl@v6
+        with:
+          distribution: Ubuntu-24.04
+          use-cache: true
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2
+          key: conan2-windows-${{ matrix.artifact }}-${{ hashFiles('Source/conanfile.py', 'Conan/Profiles/**', 'Conan/Toolchains/**') }}
+          restore-keys: |
+            conan2-windows-${{ matrix.artifact }}-
+            conan2-windows-
+
+      - name: Normalize WSL bootstrap line endings
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE "Dist\bootstrap-wsl.sh"
+          $text = [System.IO.File]::ReadAllText($path)
+          $text = $text -replace "`r`n", "`n" -replace "`r", "`n"
+          [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
+
+      - name: Install WSL dependencies
+        run: |
+          $env:WSLENV = "CI/u:GITHUB_ACTIONS/u"
+          $workspace = $env:GITHUB_WORKSPACE
+          $wslWorkspace = "/mnt/" + $workspace.Substring(0, 1).ToLowerInvariant() + "/" + $workspace.Substring(3).Replace('\', '/')
+          wsl -- bash "$wslWorkspace/Dist/bootstrap-wsl.sh"
+
+      - name: Install Python dependencies
+        working-directory: Dist
+        run: python -m pip install --upgrade pip; python -m pip install -r requirements.txt conan
+
+      - name: Configure Conan remote
+        run: |
+          conan remote add $env:CONAN_REMOTE_NAME $env:CONAN_REMOTE_URL --index 0 --force
+          if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
+            conan remote login $env:CONAN_REMOTE_NAME $env:CONAN_LOGIN_USERNAME_ZENDEN2K -p $env:CONAN_PASSWORD_ZENDEN2K
+          }
+
+      - name: Create Data .env
+        if: env.UPTOODA_DATA_ENV_B64 != ''
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE "Data\.env"
+          $bytes = [Convert]::FromBase64String($env:UPTOODA_DATA_ENV_B64)
+          [System.IO.File]::WriteAllBytes($path, $bytes)
+
+      - name: Install SYMUPLOAD for DrDump
+        if: github.event_name == 'release'
+        run: |
+          $toolsDir = Join-Path $env:GITHUB_WORKSPACE "Tools\DrDump"
+          New-Item -ItemType Directory -Force -Path $toolsDir | Out-Null
+          $symuploadPath = Join-Path $toolsDir "SYMUPLOAD.exe"
+          Invoke-WebRequest -Uri "https://svistunov.dev/files/SymUpload.exe" -OutFile $symuploadPath
+          $expectedHash = "c6ddd7e93fde28d73e4176bd5731a2c909afee25eef17b8d3bc9e0891fe6e98f"
+          $actualHash = (Get-FileHash -Algorithm SHA256 -Path $symuploadPath).Hash.ToLowerInvariant()
+          if ($actualHash -ne $expectedHash) {
+            throw "SYMUPLOAD.exe SHA256 mismatch. Expected $expectedHash, got $actualHash."
+          }
+          $toolsDir >> $env:GITHUB_PATH
+          "UPTOODA_BUILD_UPLOAD_TO_DRDUMP=1" >> $env:GITHUB_ENV
+          "UPTOODA_BUILD_SYMUPLOAD_EXE=$symuploadPath" >> $env:GITHUB_ENV
+
+      - name: Build package
+        working-directory: Dist
+        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH
+
+      - name: Upload package artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.artifact }}
+          path: Dist/Packages/**
+          if-no-files-found: error
+
+  build-linux:
+    name: ${{ matrix.name }}
+    needs: prepare-version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Release]
+        include:
+          - name: Linux amd64
+            platform: linux
+            arch: x86_64
+            artifact: linux-amd64
+          - name: Linux arm64
+            platform: linux
+            arch: aarch64
+            artifact: linux-arm64
+
     env:
-      BUILD_TYPE: ${{ matrix.build_type }}
+      UPTOODA_BUILD_RELEASE: ${{ github.event_name == 'release' && '1' || '0' }}
+      UPTOODA_BUILD_BRANCH: ${{ github.head_ref || github.ref_name }}
+      UPTOODA_BUILD_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      UPTOODA_BUILD_REPOSITORY: ${{ github.event.pull_request.head.repo.clone_url || format('{0}/{1}.git', github.server_url, github.repository) }}
+      UPTOODA_BUILD_PARALLEL_JOBS: 4
+      UPTOODA_BUILD_UPLOAD_TO_DRDUMP: 0
+      UPTOODA_BUILD_LOCK_VERSION_HEADER: 1
+      UPTOODA_BUILD_DEFAULT_BUILD_PROFILE: default
+      UPTOODA_BUILD_CONAN_PROFILES_PATH: ${{ github.workspace }}/Conan/Profiles
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: seanmiddleditch/gha-setup-ninja@master
-    - name: Prepare sources
-      shell: bash
-      working-directory: ${{github.workspace}}/Source
-      run: cp versioninfo.h.dist versioninfo.h
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v2
-      with:
-        cmake-version: '3.31.6'
-    - name: Get Conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 2.11.0
-    - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev --index 0     
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/Build
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Ninja Multi-Config" -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
-    - name: Build
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-    - name: Tests
-      working-directory: ${{github.workspace}}/Build
-      shell: bash
-      run: ./Tests/Release/Tests --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      if: "env.BUILD_TYPE == 'Release'"
-      with:
-        name: ubuntu_artifacts
-        path: |
-          ${{github.workspace}}/Build/CLI/Release/uptooda-cli
-          ${{github.workspace}}/Build/Tests/Release/Tests
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate versioninfo.h
+        run: |
+          printf '%s\n' \
+            '#pragma once' \
+            '#define IU_BUILD_NUMBER "${{ needs.prepare-version.outputs.build_number }}"' \
+            '#define IU_BUILD_DATE "${{ needs.prepare-version.outputs.build_date }}"' \
+            '#define IU_APP_VER "${{ needs.prepare-version.outputs.app_ver }}"' \
+            '#define IU_APP_VER_CLEAN "${{ needs.prepare-version.outputs.app_ver_clean }}"' \
+            '#define IU_COMMIT_HASH "${{ needs.prepare-version.outputs.commit_hash }}"' \
+            '#define IU_COMMIT_HASH_SHORT "${{ needs.prepare-version.outputs.commit_hash_short }}"' \
+            '#define IU_BRANCH_NAME "${{ needs.prepare-version.outputs.branch_name }}"' \
+            > Source/versioninfo.h
+          cp Source/versioninfo.h "Dist/${{ needs.prepare-version.outputs.version_file }}"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup newer CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.2.0'
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2
+          key: conan2-linux-${{ matrix.artifact }}-${{ hashFiles('Source/conanfile.py', 'Conan/Profiles/**', 'Conan/Toolchains/**') }}
+          restore-keys: |
+            conan2-linux-${{ matrix.artifact }}-
+            conan2-linux-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf \
+            automake \
+            binutils \
+            binutils-aarch64-linux-gnu \
+            cmake \
+            doxygen \
+            fakeroot \
+            g++ \
+            g++-aarch64-linux-gnu \
+            gcc \
+            gcc-aarch64-linux-gnu \
+            gettext \
+            git \
+            graphviz \
+            libtool \
+            make \
+            ninja-build \
+            perl \
+            python3-pip \
+            qt5-qmake \
+            qtbase5-dev \
+            qtbase5-dev-tools \
+            qtchooser
+
+      - name: Install Python dependencies
+        working-directory: Dist
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt conan
+
+      - name: Configure Conan remote
+        run: |
+          conan remote add "$CONAN_REMOTE_NAME" "$CONAN_REMOTE_URL" --index 0 --force
+          if [ -n "$CONAN_LOGIN_USERNAME_ZENDEN2K" ] && [ -n "$CONAN_PASSWORD_ZENDEN2K" ]; then
+            conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"
+          fi
+
+      - name: Create Data .env
+        if: env.UPTOODA_DATA_ENV_B64 != ''
+        run: |
+          echo "$UPTOODA_DATA_ENV_B64" | base64 -d > Data/.env
+
+      - name: Build package
+        working-directory: Dist
+        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch "$UPTOODA_BUILD_BRANCH"
+
+      - name: Upload package artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.artifact }}
+          path: Dist/Packages/**
+          if-no-files-found: error
+
+  upload-release-assets:
+    name: Upload release assets
+    runs-on: ubuntu-24.04
+    needs:
+      - build-windows
+      - build-linux
+    if: github.event_name == 'release'
+    steps:
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: packages-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Upload assets to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          mapfile -t files < <(find release-assets -type f \
+            ! -name 'build_info.json' \
+            ! -name 'builds.json' \
+            ! -name 'iu_core*.xml' \
+            ! -name 'iu_serversinfo*.xml')
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No release files found."
+            exit 1
+          fi
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber

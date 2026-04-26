@@ -43,6 +43,7 @@ class ImageUploaderRecipe(ConanFile):
             
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
             self.options["libheif/*"].with_dav1d = False
+            self.options["ffmpeg/*"].with_asm = False
             self.options["ffmpeg/*"].with_libdav1d = False
             self.options["ffmpeg/*"].with_libsvtav1 = False
             self.options["megaio/*"].with_mediainfo = False
@@ -62,13 +63,13 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")
         self.requires("zlib/1.3.1")
-        self.requires("minizip/1.3.1")
+        self.requires("minizip/1.3.1@zenden2k/stable")
         self.requires("jsoncpp/1.9.6")
         self.requires("sqlite3/3.49.1")
         self.requires("base64/0.5.2")
         self.requires("glog/0.7.1")
         #self.requires("glog/0.6.0@zenden2k/stable")
-        self.requires("libwebp/1.6.0@zenden2k/stable", force=True)
+        self.requires("libwebp/1.6.0", force=True)
         self.requires("gtest/1.10.0")
         self.requires("gumbo-parser/0.10.1@zenden2k/stable")
         self.requires("squirrel/3.0.0")
@@ -85,7 +86,7 @@ class ImageUploaderRecipe(ConanFile):
             #self.requires("openssl/3.3.2")
             self.requires("libmediainfo/22.03")
             self.requires("dav1d/1.4.3", force=True)
-        # self.requires("xz_utils/5.4.2")
+            self.requires("xz_utils/5.8.3", force=True)
 
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0")
