@@ -66,7 +66,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("jsoncpp/1.9.6")
         self.requires("sqlite3/3.49.1")
         self.requires("base64/0.5.2")
-        self.requires("glog/0.7.1@zenden2k/stable")
+        self.requires("glog/0.7.1")
         #self.requires("glog/0.6.0@zenden2k/stable")
         self.requires("libwebp/1.6.0@zenden2k/stable", force=True)
         self.requires("gtest/1.10.0")
