@@ -45,7 +45,7 @@ jobs:
       - name: Calculate versioninfo
         id: version
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_VARIABLES_TOKEN }}
           CURRENT_BUILD_NUMBER: ${{ vars.IU_BUILD_NUMBER || '0' }}
           VAR_IU_APP_VER: ${{ vars.IU_APP_VER }}
           VAR_IU_APP_VER_CLEAN: ${{ vars.IU_APP_VER_CLEAN }}
@@ -56,8 +56,12 @@ jobs:
             echo "Pull request build: using IU_BUILD_NUMBER=$build_number without increment."
           else
             build_number=$((CURRENT_BUILD_NUMBER + 1))
-            gh variable set IU_BUILD_NUMBER --body "$build_number"
-            echo "Updated IU_BUILD_NUMBER to $build_number."
+            if [ -n "${GH_TOKEN:-}" ]; then
+              gh variable set IU_BUILD_NUMBER --body "$build_number"
+              echo "Updated IU_BUILD_NUMBER to $build_number."
+            else
+              echo "::warning::GH_VARIABLES_TOKEN is not set; using IU_BUILD_NUMBER=$build_number for this run without saving it."
+            fi
           fi
 
           build_date="$(date +'%d.%m.%Y')"
