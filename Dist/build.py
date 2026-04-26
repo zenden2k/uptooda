@@ -802,7 +802,7 @@ def main():
 
     curl_ca_bundle = os.path.abspath("curl-ca-bundle.crt")
 
-    git_commit_message = subprocess.check_output("git log -1 --pretty=%B").decode("utf-8").strip()
+    git_commit_message = subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).decode("utf-8").strip()
     if not os.path.exists(VERSION_HEADER_FILE):
         shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
 
