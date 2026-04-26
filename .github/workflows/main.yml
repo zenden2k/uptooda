@@ -91,6 +91,12 @@ jobs:
           }
           $msbuildPath >> $env:GITHUB_PATH
 
+      - name: Setup WSL Ubuntu
+        uses: Vampire/setup-wsl@v6
+        with:
+          distribution: Ubuntu-24.04
+          use-cache: true
+
       - name: Cache Conan packages
         uses: actions/cache@v4
         with:
@@ -99,6 +105,13 @@ jobs:
           restore-keys: |
             conan2-windows-${{ matrix.artifact }}-
             conan2-windows-
+
+      - name: Install WSL dependencies
+        run: |
+          $env:WSLENV = "CI/u:GITHUB_ACTIONS/u"
+          $workspace = $env:GITHUB_WORKSPACE
+          $wslWorkspace = "/mnt/" + $workspace.Substring(0, 1).ToLowerInvariant() + "/" + $workspace.Substring(3).Replace('\', '/')
+          wsl -- bash "$wslWorkspace/Dist/bootstrap-wsl.sh"
 
       - name: Install Python dependencies
         working-directory: Dist

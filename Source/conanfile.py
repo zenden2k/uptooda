@@ -85,7 +85,7 @@ class ImageUploaderRecipe(ConanFile):
             #self.requires("openssl/3.3.2")
             self.requires("libmediainfo/22.03")
             self.requires("dav1d/1.4.3", force=True)
-        # self.requires("xz_utils/5.4.2")
+            self.requires("xz_utils/5.8.3", force=True)
 
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0")
