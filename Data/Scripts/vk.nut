@@ -1,9 +1,114 @@
 clientId <- "4851603";
 redirectUri <- "https://oauth.vk.ru/blank.html";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.ru\\/blank\\.html";
-apiVersion <- "5.131";
+apiVersion <- "5.199";
 expiresIn <- 0;
 testMode <- "1"; // not used
+authCode <- "";
+authDeviceId <- "";
+authState <- "";
+codeVerifier <- "";
+
+function _ClearAuthData() {
+    ServerParams.setParam("token", "");
+    ServerParams.setParam("refreshToken", "");
+    ServerParams.setParam("userId", "");
+    ServerParams.setParam("deviceId", "");
+    ServerParams.setParam("expiresIn", "");
+    ServerParams.setParam("tokenTime", "");
+}
+
+function _UrlParam(url, name) {
+    local reg = CRegExp("[\\?&#]" + name + "=([^&#]+)", "");
+    if ( reg.match(url) ) {
+        return reg.getMatch(1);
+    }
+    return "";
+}
+
+function _HexDigit(ch) {
+    if ( ch >= '0' && ch <= '9' ) {
+        return ch - '0';
+    } else if ( ch >= 'a' && ch <= 'f' ) {
+        return ch - 'a' + 10;
+    } else if ( ch >= 'A' && ch <= 'F' ) {
+        return ch - 'A' + 10;
+    }
+    return 0;
+}
+
+function _HexToRaw(hex) {
+    local res = "";
+    for ( local i = 0; i + 1 < hex.len(); i += 2 ) {
+        local b = _HexDigit(hex[i]) * 16 + _HexDigit(hex[i + 1]);
+        res += format("%c", b);
+    }
+    return res;
+}
+
+function _Base64UrlEncode(data) {
+    local b64 = Base64Encode(data);
+    local res = "";
+    for ( local i = 0; i < b64.len(); i++ ) {
+        if ( b64[i] == '+' ) {
+            res += "-";
+        } else if ( b64[i] == '/' ) {
+            res += "_";
+        } else if ( b64[i] != '=' ) {
+            res += b64.slice(i, i + 1);
+        }
+    }
+    return res;
+}
+
+function _CodeChallenge(verifier) {
+    return _Base64UrlEncode(_HexToRaw(Sha256(verifier)));
+}
+
+function _TokenStillValid() {
+    local token = ServerParams.getParam("token");
+    if ( token == "" ) {
+        return false;
+    }
+
+    local tokenTime  = 0;
+    local expiresIn = 0;
+    try {
+        tokenTime = ServerParams.getParam("tokenTime").tointeger();
+        expiresIn = ServerParams.getParam("expiresIn").tointeger();
+    } catch ( ex ) {
+    }
+
+    if ( expiresIn == 0 ) {
+        return ResultCode.Success;
+    }
+    return time() + 10 < tokenTime + expiresIn;
+}
+
+function _SaveTokenResponse(t) {
+    if ( !("access_token" in t) || t.access_token == "" ) {
+        return ResultCode.Failure;
+    }
+
+    ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
+    ServerParams.setParam("token", t.access_token);
+    if ( "refresh_token" in t ) {
+        ServerParams.setParam("refreshToken", t.refresh_token);
+    }
+    if ( "user_id" in t ) {
+        ServerParams.setParam("userId", t.user_id.tostring());
+    }
+    if ( "expires_in" in t ) {
+        ServerParams.setParam("expiresIn", t.expires_in.tostring());
+    } else {
+        ServerParams.setParam("expiresIn", "3600");
+    }
+    if ( authDeviceId != "" ) {
+        ServerParams.setParam("deviceId", authDeviceId);
+    }
+    ServerParams.setParam("tokenTime", time().tostring());
+    return ResultCode.Success;
+}
 
 function StringPrivacyToAccessType(s) {
     if ( s == "nobody" ) {
@@ -32,32 +137,13 @@ function OnUrlChangedCallback(data) {
     if ( reg.match(data.url) ) {
         local br = data.browser;
 
-        local regError = CRegExp("error=([^&]+)", "");
-        if ( regError.match(data.url) ) {
-            WriteLog("warning", regError.getMatch(1));
+        local error = _UrlParam(data.url, "error");
+        if ( error != "" ) {
+            WriteLog("warning", error);
         } else {
-            local regToken = CRegExp("access_token=([^&]+)", "");
-            local token = "";
-            if ( regToken.match(data.url) ) {
-                token = regToken.getMatch(1);
-            }
-            
-            local regExpires = CRegExp("expires_in=([^&]+)", "");
-            if ( regExpires.match(data.url) ) {
-                expiresIn = regExpires.getMatch(1);
-            }
-
-            local regUserId = CRegExp("user_id=([^&]+)", "");
-            local userId = "";
-            if ( regUserId.match(data.url) ) {
-                userId = regUserId.getMatch(1);
-            }
-
-            ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
-            ServerParams.setParam("token", token);
-            ServerParams.setParam("userId", userId);
-            ServerParams.setParam("expiresIn", expiresIn.tostring());
-            ServerParams.setParam("tokenTime", time().tostring());
+            authCode = _UrlParam(data.url, "code");
+            authDeviceId = _UrlParam(data.url, "device_id");
+            authState = _UrlParam(data.url, "state");
         }
         br.close();
     }
@@ -69,52 +155,113 @@ function OnNavigateError(data) {
 function checkResponse(json) {
     try {
         WriteLog("error", "vk.ru error: " + json.error.error_msg);
-        return 0;
+        return ResultCode.Failure;
     } catch ( ex ) {
 
     }
-    return 1;
+    return ResultCode.Success;
+}
+
+function RefreshToken() {
+    if ( _TokenStillValid() ) {
+        return ResultCode.Success;
+    }
+
+    local refreshToken = ServerParams.getParam("refreshToken");
+    if ( refreshToken == "" ) {
+        return ResultCode.Failure;
+    }
+
+    nm.setUrl("https://id.vk.ru/oauth2/auth");
+    nm.addQueryParam("grant_type", "refresh_token");
+    nm.addQueryParam("refresh_token", refreshToken);
+    nm.addQueryParam("client_id", clientId);
+
+    local deviceId = ServerParams.getParam("deviceId");
+    if ( deviceId != "" ) {
+        nm.addQueryParam("device_id", deviceId);
+    }
+
+    nm.doPost("");
+    if ( nm.responseCode() != 200 ) {
+        WriteLog("error", "vk.ru: unable to refresh token, response code: " + nm.responseCode());
+        _ClearAuthData();
+        return ResultCode.Failure;
+    }
+
+    local t = ParseJSON(nm.responseBody());
+    if ( t == null || "error" in t ) {
+        WriteLog("error", "vk.ru: unable to refresh token. " + nm.responseBody());
+        _ClearAuthData();
+        return ResultCode.Failure;
+    }
+
+    return _SaveTokenResponse(t);
 }
 
 function Authenticate() {
-    local token = ServerParams.getParam("token");
-    local userId = ServerParams.getParam("userId");
-
-    if ( token != "") { 
-        local tokenTime  = 0;
-        local expiresIn = 0;
-        try {
-            tokenTime = ServerParams.getParam("tokenTime").tointeger();
-            expiresIn = ServerParams.getParam("expiresIn").tointeger();
-        } catch ( ex ) {
-        }
-
-        if (time() + 10 < tokenTime + expiresIn) { 
-            return 1;
-        }
+    if ( RefreshToken() ) {
+        return ResultCode.Success;
     }
 
-    ServerParams.setParam("token", "");
-    ServerParams.setParam("userId", "");
-    ServerParams.setParam("expiresIn", "");
-    ServerParams.setParam("tokenTime", "");
+    _ClearAuthData();
+    authCode = "";
+    authDeviceId = "";
+    authState = "";
+    local state = md5(RandomString(32) + time().tostring());
+    codeVerifier = RandomString(64);
+
     local browser = CWebBrowser();
     browser.setTitle(tr("vk.browser.title", "vk.ru authorization"))
     browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
     //browser.setOnNavigateErrorCallback(OnNavigateError, null);
     //browser.setOnLoadFinishedCallback(OnLoadFinished, null);
 
-    local url = "https://oauth.vk.ru/authorize?" +
+    local url = "https://id.vk.ru/authorize?" +
             "client_id=" + clientId  +
             "&scope=photos" +
             "&redirect_uri=" + nm.urlEncode(redirectUri) +
-            "&display=popup" +
-            "&v=" + apiVersion  +
-            "&response_type=token";
+            "&response_type=code" +
+            "&state=" + state +
+            "&code_challenge=" + nm.urlEncode(_CodeChallenge(codeVerifier)) +
+            "&code_challenge_method=S256";
 
     browser.navigateToUrl(url);
     browser.showModal();
-    return ServerParams.getParam("token") != "" ? 1: 0;
+
+    if ( authCode == "" ) {
+        WriteLog("error", "vk.ru: cannot authenticate without confirmation code.");
+        return ResultCode.Failure;
+    }
+    if ( authState != state ) {
+        WriteLog("error", "vk.ru: authorization state mismatch.");
+        return ResultCode.Failure;
+    }
+
+    nm.setUrl("https://id.vk.ru/oauth2/auth");
+    nm.addQueryParam("grant_type", "authorization_code");
+    nm.addQueryParam("code", authCode);
+    nm.addQueryParam("code_verifier", codeVerifier);
+    nm.addQueryParam("client_id", clientId);
+    nm.addQueryParam("redirect_uri", redirectUri);
+    nm.addQueryParam("state", authState);
+    if ( authDeviceId != "" ) {
+        nm.addQueryParam("device_id", authDeviceId);
+    }
+    nm.doPost("");
+
+    if ( nm.responseCode() != 200 ) {
+        WriteLog("error", "vk.ru: unable to obtain bearer token, response code: " + nm.responseCode() + "\r\n" + nm.responseBody());
+        return ResultCode.Failure;
+    }
+
+    local t = ParseJSON(nm.responseBody());
+    if ( t == null || "error" in t ) {
+        WriteLog("error", "vk.ru: authentication failed. " + nm.responseBody());
+        return ResultCode.Failure;
+    }
+
+    return _SaveTokenResponse(t);
 }
 
 function IsAuthenticated() {
@@ -131,19 +278,16 @@ function IsAuthenticated() {
         }
 
         if ( time() + 10 > tokenTime + expiresIn) {
-            return 0;
+            return ResultCode.Failure;
         }
-        return 1;
+        return ResultCode.Success;
     }
-    return 0;
+    return ResultCode.Failure;
 }
 
 function DoLogout() {
-    ServerParams.setParam("token", "");
-    ServerParams.setParam("userId", "");
-    ServerParams.setParam("tokenTime", "");
-    ServerParams.setParam("expiresIn", "");
-    return 1;
+    _ClearAuthData();
+    return ResultCode.Success;
 }
 
 function GetFolderList(list) {
@@ -151,11 +295,11 @@ function GetFolderList(list) {
     local token = ServerParams.getParam("token");
     nm.doGet("https://api.vk.ru/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
     if (nm.responseCode() != 200) {
-        return 0;
+        return ResultCode.Failure;
     }
     local t = ParseJSON(nm.responseBody());
     if (!checkResponse(t)) {
-        return 0;
+        return ResultCode.Failure;
     }
 
     for (local i = 0; i < t.response.count; i++) {
@@ -168,7 +312,7 @@ function GetFolderList(list) {
         album.setViewUrl("https://vk.ru/album" + userId + "_" + item.id);
         list.AddFolderItem(album);
     }
-    return 1;
+    return ResultCode.Success;
 }
 
 function GetFirstAlbumId() {
@@ -176,11 +320,11 @@ function GetFirstAlbumId() {
     local token = ServerParams.getParam("token");
     nm.doGet("https://api.vk.ru/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
     if ( nm.responseCode() != 200 ) {
-        return 0;
+        return "";
     }
     local t = ParseJSON(nm.responseBody());
     if (!checkResponse(t)) {
-        return 0;
+        return "";
     }
 
     for (local i = 0; i < t.response.count; i++ ) {
@@ -208,12 +352,12 @@ function CreateFolder(parentAlbum, album) {
 
     nm.doPost("");
     if ( nm.responseCode() != 200 && nm.responseCode() != 201 ) {
-        return 0;
+        return ResultCode.Failure;
     }
 
     local t = ParseJSON( nm.responseBody());
     if ( !checkResponse(t) ) {
-        return 0;
+        return ResultCode.Failure;
     }
     album.setId(t.response.id.tostring());
     album.setTitle(t.response.title);
@@ -222,7 +366,7 @@ function CreateFolder(parentAlbum, album) {
     album.setTitle(t.response.title);
     album.setViewUrl("https://vk.ru/album" + userId + "_" + t.response.id);
 
-    return 1;
+    return ResultCode.Success;
 }
 
 function ModifyFolder(album) {
@@ -246,11 +390,11 @@ function ModifyFolder(album) {
     if ( nm.responseCode() == 200 ) {
         local t = ParseJSON( nm.responseBody());
         if ( !checkResponse(t) ) {
-            return 0;
+            return ResultCode.Failure;
         }
-        return 1; // OK
+        return ResultCode.Success; // OK
     }
-    return 0; // failure
+    return ResultCode.Failure; // failure
 }
 
 function UploadFile(FileName, options) {
@@ -266,7 +410,7 @@ function UploadFile(FileName, options) {
             newAlbum.setSummary(tr("vk.default_album_desc", "Images uploaded by Image Uploader") +"\r\nhttps://svistunov.dev/imageuploader");
 
             if ( !CreateFolder(CFolderItem(), newAlbum) ) {
-                return 0;
+                return ResultCode.Failure;
             }
             albumId = newAlbum.getId();
         }
@@ -275,11 +419,11 @@ function UploadFile(FileName, options) {
     thumbWidth = thumbWidth.tointeger();
     nm.doGet("https://api.vk.ru/method/photos.getUploadServer?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token+"&album_id="+albumId);
     if ( nm.responseCode() != 200 ) {
-        return 0;
+        return ResultCode.Failure;
     }
     local t = ParseJSON( nm.responseBody());
     if ( !checkResponse(t) ) {
-        return 0;
+        return ResultCode.Failure;
     }
 
     local uploadUrl = t.response.upload_url;
@@ -304,7 +448,7 @@ function UploadFile(FileName, options) {
         if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {
             local t = ParseJSON(nm.responseBody());
             if ( !checkResponse(t) ) {
-                return 0;
+                return ResultCode.Failure;
             }
 
             local foundThumbDist = 99999;
@@ -329,10 +473,10 @@ function UploadFile(FileName, options) {
             options.setThumbUrl(thumbUrl);
             options.setViewUrl("https://vk.ru/photo" + userId  + "_" + item.id);
 
-            return 1;
+            return ResultCode.Success;
         }
     }
-    return 0;
+    return ResultCode.Failure;
 }
 
 function GetFolderAccessTypeList() {
