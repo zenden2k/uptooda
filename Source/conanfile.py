@@ -43,6 +43,7 @@ class ImageUploaderRecipe(ConanFile):
             
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
             self.options["libheif/*"].with_dav1d = False
+            self.options["ffmpeg/*"].with_asm = False
             self.options["ffmpeg/*"].with_libdav1d = False
             self.options["ffmpeg/*"].with_libsvtav1 = False
             self.options["megaio/*"].with_mediainfo = False

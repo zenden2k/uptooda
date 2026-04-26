@@ -64,10 +64,10 @@ jobs:
             app_ver="${app_ver#v}"
             version_file="versioninfo-release.h"
           else
-            app_ver="${VAR_IU_APP_VER:-$(date +'%Y%m%d')-nightly}"
+            app_ver="$(date +'%Y%m%d')-nightly"
             version_file="versioninfo-nightly.h"
           fi
-          app_ver_clean="${VAR_IU_APP_VER_CLEAN:-${app_ver%-nightly}}"
+          app_ver_clean="${VAR_IU_APP_VER_CLEAN}"
           commit_hash="${{ github.event.pull_request.head.sha || github.sha }}"
           commit_hash_short="${commit_hash:0:8}"
           if [ "${{ github.event_name }}" = "release" ]; then
