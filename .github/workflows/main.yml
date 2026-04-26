@@ -77,6 +77,19 @@ jobs:
         with:
           cmake-version: '4.2.0'
 
+      - name: Add MSBuild to PATH
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $vsPath) {
+            throw "Visual Studio with MSBuild was not found."
+          }
+          $msbuildPath = Join-Path $vsPath "MSBuild\Current\Bin"
+          if (-not (Test-Path (Join-Path $msbuildPath "MSBuild.exe"))) {
+            throw "MSBuild.exe was not found at $msbuildPath."
+          }
+          $msbuildPath >> $env:GITHUB_PATH
+
       - name: Cache Conan packages
         uses: actions/cache@v4
         with:
