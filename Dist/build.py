@@ -795,7 +795,7 @@ def main():
             exit(1)
 
     if DOWNLOAD_CA_BUNDLE:
-        proc = subprocess.run(_linux_command(["perl", "mk-ca-bundle.pl", "curl-ca-bundle.crt"]))
+        proc = subprocess.run(["perl", "mk-ca-bundle.pl", "curl-ca-bundle.crt"])
         if proc.returncode != 0:
             print("Failed to download curl-ca-bundle")
             exit(1)

@@ -20,6 +20,7 @@ env:
   CONAN_REMOTE_URL: https://conan.svistunov.dev
   CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
   CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
+  UPTOODA_DATA_ENV_B64: ${{ secrets.UPTOODA_DATA_ENV_B64 }}
   PYTHONUTF8: '1'
   PYTHONIOENCODING: utf-8
 
@@ -110,6 +111,13 @@ jobs:
             conan remote login $env:CONAN_REMOTE_NAME $env:CONAN_LOGIN_USERNAME_ZENDEN2K -p $env:CONAN_PASSWORD_ZENDEN2K
           }
 
+      - name: Create Data .env
+        if: env.UPTOODA_DATA_ENV_B64 != ''
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE "Data\.env"
+          $bytes = [Convert]::FromBase64String($env:UPTOODA_DATA_ENV_B64)
+          [System.IO.File]::WriteAllBytes($path, $bytes)
+
       - name: Build package
         working-directory: Dist
         run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH
@@ -199,6 +207,11 @@ jobs:
           if [ -n "$CONAN_LOGIN_USERNAME_ZENDEN2K" ] && [ -n "$CONAN_PASSWORD_ZENDEN2K" ]; then
             conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"
           fi
+
+      - name: Create Data .env
+        if: env.UPTOODA_DATA_ENV_B64 != ''
+        run: |
+          echo "$UPTOODA_DATA_ENV_B64" | base64 -d > Data/.env
 
       - name: Build package
         working-directory: Dist
