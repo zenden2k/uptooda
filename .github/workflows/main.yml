@@ -106,6 +106,13 @@ jobs:
             conan2-windows-${{ matrix.artifact }}-
             conan2-windows-
 
+      - name: Normalize WSL bootstrap line endings
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE "Dist\bootstrap-wsl.sh"
+          $text = [System.IO.File]::ReadAllText($path)
+          $text = $text -replace "`r`n", "`n" -replace "`r", "`n"
+          [System.IO.File]::WriteAllText($path, $text, [System.Text.UTF8Encoding]::new($false))
+
       - name: Install WSL dependencies
         run: |
           $env:WSLENV = "CI/u:GITHUB_ACTIONS/u"
