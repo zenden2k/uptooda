@@ -127,12 +127,6 @@ void ServerProfile::bind(SettingsNode& serverNode)
 
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
-#ifdef _WIN32
-    auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-    if (useDefaultSettings_ && settings) {
-        return settings->DefaultImageUploadParams;
-    }
-#endif
     return imageUploadParams;
 }
 

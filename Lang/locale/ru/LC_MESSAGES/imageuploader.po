@@ -3870,7 +3870,7 @@ msgstr "папка \"%s\""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
 msgid "for easier link sharing"
-msgstr "чтобы проще было делиться"
+msgstr "чтобы удобнее было делиться"
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:20
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:23

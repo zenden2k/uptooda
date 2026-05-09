@@ -23,7 +23,6 @@
 
 #include <QDialog>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QMouseEvent>
 #include <QPainter>
 

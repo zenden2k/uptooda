@@ -406,6 +406,7 @@ jobs:
           mapfile -t files < <(find release-assets -type f \
             ! -name 'build_info.json' \
             ! -name 'builds.json' \
+            ! -name '*.sha256' \
             ! -name 'iu_core*.xml' \
             ! -name 'iu_serversinfo*.xml')
           if [ "${#files[@]}" -eq 0 ]; then

@@ -20,6 +20,24 @@
 
 #include "RegionSelect.h"
 
+#include <QGuiApplication>
+#include <QScreen>
+
+namespace {
+
+QRect desktopGeometry()
+{
+    QRect geometry;
+    const auto screens = QGuiApplication::screens();
+    for (QScreen* screen : screens) {
+        geometry = geometry.united(screen->geometry());
+    }
+
+    return geometry;
+}
+
+}
+
 RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
     :QDialog(parent)
 {    
@@ -29,13 +47,14 @@ RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
     setWindowState(Qt::WindowFullScreen);
     setCursor(Qt::CrossCursor);
 
-    sizeDesktop = QApplication::desktop()->size();
+    const QRect desktopRect = desktopGeometry();
+    sizeDesktop = desktopRect.size();
     resize(sizeDesktop);
 
-	 desktopPixmapBkg = *src;//QPixmap::grabWindow(QApplication::desktop()->winId());
+	 desktopPixmapBkg = *src;
     desktopPixmapClr = desktopPixmapBkg;
 
-    move(0, 0);
+    move(desktopRect.topLeft());
     drawBackGround();
 }
 
@@ -93,9 +112,11 @@ void RegionSelect::drawBackGround()
     painter.setBrush(QBrush(QColor(0, 0, 0, 85), Qt::SolidPattern));
 
     // draw rect of desktop size in poainter
-    painter.drawRect(QApplication::desktop()->rect());
+    painter.drawRect(desktopPixmapBkg.rect());
         
-    QRect txtRect = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
+    QScreen* primaryScreen = QGuiApplication::primaryScreen();
+    QRect txtRect = primaryScreen ? primaryScreen->geometry() : desktopPixmapBkg.rect();
+    txtRect.translate(-desktopGeometry().topLeft());
     QString txtTip = QApplication::tr("Use your mouse to draw a rectangle to screenshot or  exit pressing\nany key or using the right or middle mouse buttons.");
 
     txtRect.setHeight(qRound((double)txtRect.height() / 10)); // rounded val of text rect height
@@ -116,7 +137,7 @@ void RegionSelect::drawBackGround()
     painter.setPen(QPen(Qt::black)); // black color pen
     painter.drawText(txtBgRect, Qt::AlignCenter, txtTip);
 
-    palBackground = (qApp->desktop()->numScreens() > 1);
+    palBackground = (QGuiApplication::screens().size() > 1);
 
     // set bkg to pallette widget
     if (palBackground)

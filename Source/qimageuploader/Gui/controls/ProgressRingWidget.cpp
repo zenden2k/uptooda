@@ -13,15 +13,14 @@ ProgressRingWidget::ProgressRingWidget(QWidget* parent):
 
 void ProgressRingWidget::paintEvent(QPaintEvent *) {
     QPainter p(this);
-    //p.fillRect(rect(), palette().color(QPalette::Background));
-    p.fillRect(rect(), palette().color(QPalette::Background));
+    p.fillRect(rect(), palette().color(QPalette::Window));
 
     QPen pen;
     pen.setWidth(3);
     pen.setColor(QColor(0, 191, 255));  // DeepSkyBlue
     p.setPen(pen);
 
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
+    p.setRenderHint(QPainter::Antialiasing);
 
     QRectF rectangle(2, 2, width()-4, height()-4);
 

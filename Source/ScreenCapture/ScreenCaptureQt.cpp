@@ -7,9 +7,10 @@
 #include <QPoint>
 #include <QPainter>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDebug>
 #include <QEventLoop>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QTimer> 
 
 #ifdef _WIN32
@@ -139,6 +140,31 @@ bool GetScreenBounds(RECT &rect)
 }*/
 
 #endif
+
+namespace {
+
+QRect desktopGeometry()
+{
+    QRect geometry;
+    const auto screens = QGuiApplication::screens();
+    for (QScreen* screen : screens) {
+        geometry = geometry.united(screen->geometry());
+    }
+
+    return geometry;
+}
+
+QPixmap grabDesktopRect(const QRect& rect)
+{
+    QScreen* screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        return {};
+    }
+
+    return screen->grabWindow(0, rect.x(), rect.y(), rect.width(), rect.height());
+}
+
+}
 
 namespace DesktopTools
 {
@@ -561,7 +587,7 @@ bool CScreenCaptureEngine::captureScreen()
     //int screenWidth = GetScreenWidth();//GetSystemMetrics(SM_CXSCREEN);
     //int screenHeight = GetScreenWidth();//GetSystemMetrics(SM_CYSCREEN);
     */
-    QRect screenBounds = QApplication::desktop()->rect();
+    QRect screenBounds = desktopGeometry();
     CRectRegion capturingRegion(screenBounds.left(), screenBounds.top(), screenBounds.width(), screenBounds.height());
     return captureRegion(&capturingRegion);
 }
@@ -596,7 +622,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
         {
             TimerWait(m_captureDelay);
         }
-        QPixmap screenCapture = QPixmap::grabWindow(QApplication::desktop()->winId(), grabRect.x(), grabRect.y(), grabRect.width(), grabRect.height());
+        QPixmap screenCapture = grabDesktopRect(grabRect);
          result =  region->GetImage(&screenCapture, &m_capturedBitmap);
     }
     else

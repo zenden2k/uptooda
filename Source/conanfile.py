@@ -75,6 +75,8 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("squirrel/3.0.0")
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
+        self.requires("libavif/1.4.1")
+        self.requires("libaom-av1/3.6.1", force=True)
         self.requires("libidn2/2.3.8", force=True)
 
         self.requires("openssl/1.1.1w", force=True)
@@ -85,7 +87,7 @@ class ImageUploaderRecipe(ConanFile):
             self.requires("megaio/9.2.0")
             #self.requires("openssl/3.3.2")
             self.requires("libmediainfo/26.01@zenden2k/stable",force=True)
-            self.requires("dav1d/1.4.3", force=True)
+            self.requires("dav1d/1.5.3", force=True)
             self.requires("xz_utils/5.8.3", force=True)
 
         if self.settings.os == "Windows":

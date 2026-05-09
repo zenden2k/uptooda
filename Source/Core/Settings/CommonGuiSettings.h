@@ -20,7 +20,7 @@
     #define SettingsStringToUtf8(s) s.toStdString()
 
 #else
-    #include "atlheaders.h"
+    //#include "atlheaders.h"
     typedef CString SettingsString;
     #define Utf8ToSettingsString(s) Utf8ToWCstring(s)
     #define SettingsStringToUtf8(s) WCstringToUtf8(s)

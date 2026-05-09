@@ -24,6 +24,7 @@
 
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/BasicConstants.h"
+#include "Core/ServiceLocator.h"
 
 CUploader::CUploader(const std::shared_ptr<INetworkClientFactory>& networkClientFactory)
 {
@@ -149,7 +150,10 @@ bool CUploader::Upload(const std::shared_ptr<UploadTask>& task, int maxRetries)
 
     UploadParams uparams;
 
-    ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
+    ImageUploadParams imageUploadParams;
+    auto& serverProfile = task->serverProfile();
+    imageUploadParams = serverProfile.getImageUploadParams();
+
     ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
 
     if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByWidth) {

@@ -77,7 +77,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     connect(copyDirectLinkAction_, &QAction::triggered, this, &MainWindow::onCopyDirectLinkTriggered);
 
     copyFilePathAction_ = new QAction(tr("Copy file path to clipboard"), this);
-    copyFilePathAction_->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+    copyFilePathAction_->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C));
     connect(copyFilePathAction_, &QAction::triggered, this, &MainWindow::onCopyFilePathTriggered);
 
     ui->treeView->addAction(copyDirectLinkAction_);
@@ -258,6 +258,11 @@ bool MainWindow::addMultipleFilesToList(QStringList fileNames) {
     for (const auto& fileName : fileNames) {
         auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
         ServerProfile serverProfile = imageServerWidget_->serverProfile();
+        if (serverProfile.getUseDefaultSettings())
+        {
+            auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+            serverProfile.setImageUploadParams(settings->DefaultImageUploadParams);
+        }
         task->setServerProfile(serverProfile);
         uploadSession->addTask(task);
     }
@@ -460,4 +465,3 @@ QModelIndex MainWindow::getUploadTreeViewSelectedIndex() {
     QModelIndex index = indexes.first();
     return index;
 }
-

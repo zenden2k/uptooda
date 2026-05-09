@@ -20,6 +20,8 @@
 
 #include "UploadEngine.h"
 
+#include <utility>
+
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/Upload/FileUploadTask.h"
@@ -48,7 +50,7 @@ int CUploadEngineData::addUserType(const std::string_view& name) {
         userTypes.emplace_back(name);
         it = userTypes.end() - 1;
     }
-    return std::distance(userTypes.begin(), it);
+    return static_cast<int>(std::distance(userTypes.begin(), it));
 }
 
 bool CUploadEngineData::hasType(ServerType type) const
@@ -385,7 +387,7 @@ CAbstractUploadEngine::CAbstractUploadEngine(std::shared_ptr<ServerSync> serverS
     currUploader_ = nullptr;
     serverSync_ = std::move(serverSync);
     m_ServersSettings = nullptr;
-    onErrorMessage_ = errorCallback;
+    onErrorMessage_ = std::move(errorCallback);
 }
 
 
@@ -395,23 +397,23 @@ const CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 }
 
 void CAbstractUploadEngine::setOnNeedStopCallback(std::function<bool()> cb) {
-    onNeedStop_ = cb;
+    onNeedStop_ = std::move(cb);
 }
 
 void CAbstractUploadEngine::setOnProgressCallback(std::function<void(InfoProgress)> cb) {
-    onProgress_ = cb;
+    onProgress_ = std::move(cb);
 }
 
 void CAbstractUploadEngine::setOnStatusChangedCallback(std::function<void(StatusType, int, const std::string&)> cb) {
-    onStatusChanged_ = cb;
+    onStatusChanged_ = std::move(cb);
 }
 
 void CAbstractUploadEngine::setOnDebugMessageCallback(std::function<void(const std::string&, bool)> cb) {
-    onDebugMessage_ = cb;
+    onDebugMessage_ = std::move(cb);
 }
 
 void CAbstractUploadEngine::setOnErrorMessageCallback(ErrorMessageCallback cb) {
-    onErrorMessage_ = cb;
+    onErrorMessage_ = std::move(cb);
 }
 
 void CAbstractUploadEngine::setServerSync(std::shared_ptr<ServerSync> sync)
