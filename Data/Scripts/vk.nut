@@ -2,6 +2,7 @@ clientId <- "4851603";
 redirectUri <- "https://oauth.vk.ru/blank.html";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.ru\\/blank\\.html";
 apiVersion <- "5.199";
+scope <- "photos offline";
 expiresIn <- 0;
 testMode <- "1"; // not used
 authCode <- "";
@@ -14,6 +15,9 @@ function _ClearAuthData() {
     ServerParams.setParam("refreshToken", "");
     ServerParams.setParam("userId", "");
     ServerParams.setParam("deviceId", "");
+    ServerParams.setParam("state", "");
+    ServerParams.setParam("scope", "");
+    ServerParams.setParam("idToken", "");
     ServerParams.setParam("expiresIn", "");
     ServerParams.setParam("tokenTime", "");
 }
@@ -94,6 +98,16 @@ function _SaveTokenResponse(t) {
     ServerParams.setParam("token", t.access_token);
     if ( "refresh_token" in t ) {
         ServerParams.setParam("refreshToken", t.refresh_token);
+    } else {
+        WriteLog("warning", "vk.ru: token response does not contain refresh_token; reauthorization will be required after access token expires.");
+    }
+    if ( "id_token" in t ) {
+        ServerParams.setParam("idToken", t.id_token);
+    }
+    if ( "scope" in t ) {
+        ServerParams.setParam("scope", t.scope);
+    } else {
+        ServerParams.setParam("scope", scope);
     }
     if ( "user_id" in t ) {
         ServerParams.setParam("userId", t.user_id.tostring());
@@ -105,6 +119,13 @@ function _SaveTokenResponse(t) {
     }
     if ( authDeviceId != "" ) {
         ServerParams.setParam("deviceId", authDeviceId);
+    } else if ( "device_id" in t ) {
+        ServerParams.setParam("deviceId", t.device_id);
+    }
+    if ( authState != "" ) {
+        ServerParams.setParam("state", authState);
+    } else if ( "state" in t ) {
+        ServerParams.setParam("state", t.state);
     }
     ServerParams.setParam("tokenTime", time().tostring());
     return ResultCode.Success;
@@ -177,9 +198,26 @@ function RefreshToken() {
     nm.addQueryParam("refresh_token", refreshToken);
     nm.addQueryParam("client_id", clientId);
 
+    local state = ServerParams.getParam("state");
+    if ( state == "" ) {
+        state = md5(RandomString(32) + time().tostring());
+        ServerParams.setParam("state", state);
+    }
+    nm.addQueryParam("state", state);
+
+    local savedScope = ServerParams.getParam("scope");
+    if ( savedScope == "" ) {
+        savedScope = scope;
+    }
+    nm.addQueryParam("scope", savedScope);
+
     local deviceId = ServerParams.getParam("deviceId");
     if ( deviceId != "" ) {
         nm.addQueryParam("device_id", deviceId);
+    } else {
+        WriteLog("error", "vk.ru: unable to refresh token without device_id.");
+        _ClearAuthData();
+        return ResultCode.Failure;
     }
 
     nm.doPost("");
@@ -214,12 +252,10 @@ function Authenticate() {
     local browser = CWebBrowser();
     browser.setTitle(tr("vk.browser.title", "vk.ru authorization"))
     browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
-    //browser.setOnNavigateErrorCallback(OnNavigateError, null);
-    //browser.setOnLoadFinishedCallback(OnLoadFinished, null);
 
     local url = "https://id.vk.ru/authorize?" +
             "client_id=" + clientId  +
-            "&scope=photos" +
+            "&scope=" + nm.urlEncode(scope) +
             "&redirect_uri=" + nm.urlEncode(redirectUri) +
             "&response_type=code" +
             "&state=" + state +
@@ -405,11 +441,11 @@ function UploadFile(FileName, options) {
         albumId = GetFirstAlbumId().tostring();
         if ( albumId == "" ) {
             local newAlbum = CFolderItem();
-            newAlbum.setTitle("Image Uploader");
+            newAlbum.setTitle("Uptooda");
             newAlbum.setAccessType(3);
-            newAlbum.setSummary(tr("vk.default_album_desc", "Images uploaded by Image Uploader") +"\r\nhttps://svistunov.dev/imageuploader");
+            newAlbum.setSummary(tr("vk.default_album_desc", "Images uploaded by Uptooda") +"\r\nhttps://svistunov.dev/imageuploader");
 
-            if ( !CreateFolder(CFolderItem(), newAlbum) ) {
+            if (!CreateFolder(CFolderItem(), newAlbum)) {
                 return ResultCode.Failure;
             }
             albumId = newAlbum.getId();
