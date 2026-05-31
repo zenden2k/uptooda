@@ -1,16 +1,23 @@
-function UploadFile(FileName, options) {
-    local name = ExtractFileName(FileName);
-    local mime = GetFileMimeType(name);
-    nm.setUrl("https://up1.fileditch.com/upload.php");
-    nm.addQueryParamFile("files[]", FileName, name, mime);
-    nm.doUploadMultipartData();
+const BASE_HOST = "https://new.fileditch.com";
+
+function UploadFile(filePath, options) {
+    local task = options.getTask().getFileTask();
+    nm.setUrl(BASE_HOST + "/upload.php?filename=" + nm.urlEncode(task.getDisplayName()));
+    nm.addQueryHeader("Origin", BASE_HOST);
+    nm.addQueryHeader("Referer", BASE_HOST + "/");
+
+    local startTime = clock();
+    nm.doUpload(filePath, "");
+    local duration = clock() - startTime;
 
     if (nm.responseCode() == 200) {
         local sJSON = nm.responseBody();
         local t = ParseJSON(sJSON);
         if (t != null) {
             if ("success" in t && t.success == true) {
-                options.setViewUrl(t.files[0].url);
+                nm.setUrl(BASE_HOST + "/upload.php?action=notify&size=" + t.size + "&dur=" + format("%.3f", duration));
+                nm.doPost("");
+                options.setViewUrl(t.url);
                 return 1;
             } 
         }

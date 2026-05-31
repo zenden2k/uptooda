@@ -307,18 +307,6 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
     </Server>
-    <Server Name="sendfile.su" FileHost="1" MaxFileSize="629145600" WebsiteUrl="http://sendfile.su" RegistrationUrl="http://sendfile.su/user.php?register" MaxThreads="3">
-         <Info>
-            <StorageTimeInfo>
-                <StorageTime>25</StorageTime>
-            </StorageTimeInfo>
-        </Info>
-        <Actions>
-            <Action Type="get" Url="http://sendfile.su/" RegExp="http://s(\d+).sendfile.su/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1"/>
-            <Action Type="upload" Url="http://s$(_ServerId).sendfile.su/upload.php" PostParams="user_id=0;f0=%filename%;category_id=0;private=1;" RegExp="http://sendfile.su/(\d+)" AssignVars="FileId:0;"/>
-        </Actions>
-        <Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
-    </Server>
     <Server Name="flickr.com" Types="image video" NeedPassword="0" Authorize="2" Debug="0" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
         RegistrationUrl="https://identity.flickr.com/sign-up">
         <Info>
@@ -379,17 +367,17 @@
         <Result DownloadUrlTemplate="$(DownloadUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
         <!-- /Thanks to Alex_Qwerty -->
-    <Server Name="u.to" Authorize="0" Type="urlshortening" WebsiteUrl="https://u.to" RegistrationUrl="https://guid.uid.me/register/">
+    <Server Name="u.to" Authorize="0" Type="urlshortening" WebsiteUrl="https://u.to">
         <Actions>
             <Action
                 Type="post"
-                Url="https://u.to"
-                PostParams="url=$(_ORIGINALURL);a=add"
-                RegExp="\('#shurlout'\)\.val\('(.+)'\)\.show"
+                Url="https://u.to/api/shorten/"
                 AssignVars="surl:0"
-            />
+            ><![CDATA[{"url": $(_ORIGINALURL|jsonescape)}]]>
+                <Call Function="json" Arg1="shortUrl" AssignVars="ShortUrl:0;" Required="1"/>
+            </Action>
         </Actions>
-        <Result DirectUrlTemplate="$(surl)" />
+        <Result DirectUrlTemplate="$(ShortUrl)" />
     </Server>
     <Server Name="tinyurl.com" Authorize="0" Type="urlshortening" WebsiteUrl="https://tinyurl.com/" RegistrationUrl="https://tinyurl.com/app/register">
         <Actions>
@@ -927,10 +915,10 @@
         </Actions>
         <Result ImageUrlTemplate="$(UploadedUrl)" />
     </Server>
-    <Server Name="fileditch.com" MaxFileSize="10737418240" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
+    <Server Name="fileditch.com" MaxFileSize="107374182400" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="10737418240" UserTypes="anon,reg">
+                <FormatGroup MaxFileSize="107374182400" UserTypes="anon,reg">
                     <Format>*</Format>
                 </FormatGroup>  
             </SupportedFormats>

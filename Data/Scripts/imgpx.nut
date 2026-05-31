@@ -75,7 +75,13 @@ function UploadFile(pathToFile, options) {
     }
     
     if (directUrl == "") {
-        WriteLog("error", "[imgpx.com] Upload failed. Cannot obtain the direct URL!");
+        local error = doc.find(".error-container p").text();
+        if (error != "") {
+            WriteLog("error", "[imgpx.com] " + error);
+        } else {
+            WriteLog("error", "[imgpx.com] Upload failed. Cannot obtain the direct URL!");
+        }
+
         return ResultCode.Failure;
     }
     
