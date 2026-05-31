@@ -9,6 +9,8 @@ import stat
 import json
 import hashlib
 import xml.etree.ElementTree
+import urllib.error
+import urllib.request
 import git
 
 from contextlib import contextmanager
@@ -36,6 +38,8 @@ UPLOAD_TO_DRDUMP = get_bool_env("UPTOODA_BUILD_UPLOAD_TO_DRDUMP", True)
 SYMUPLOAD_EXE = os.getenv("UPTOODA_BUILD_SYMUPLOAD_EXE", "SYMUPLOAD")
 IS_WINDOWS_HOST = os.name == "nt"
 LOCK_VERSION_HEADER = get_bool_env("UPTOODA_BUILD_LOCK_VERSION_HEADER", False)
+GITHUB_REPOSITORY = os.getenv("UPTOODA_BUILD_GITHUB_REPOSITORY", "zenden2k/uptooda")
+GITHUB_VARIABLES_TOKEN = os.getenv("GH_VARIABLES_TOKEN", os.getenv("GH_TOKEN", ""))
 
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019"
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022"
@@ -571,7 +575,40 @@ def check_conan_version(args):
     else:
         print("Warning: Unknown Conan version")
 
-def generate_version_header(filename, inc_version):
+def update_github_build_number():
+    if not GITHUB_VARIABLES_TOKEN:
+        raise RuntimeError("GH_VARIABLES_TOKEN is not set. Add it to Dist/.env or use --no-update-github-build-number.")
+
+    variable_name = "IU_BUILD_NUMBER"
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/actions/variables/{variable_name}"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GITHUB_VARIABLES_TOKEN}",
+        "User-Agent": "uptooda-build-script",
+        "X-GitHub-Api-Version": "2026-03-10",
+    }
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
+            current_build_number = int(json.load(response)["value"])
+
+        build_number = current_build_number + 1
+        data = json.dumps({"name": variable_name, "value": str(build_number)}).encode("utf-8")
+        request = urllib.request.Request(url, data=data, headers=headers, method="PATCH")
+        with urllib.request.urlopen(request):
+            pass
+    except urllib.error.HTTPError as error:
+        if error.code == 401:
+            raise RuntimeError("GitHub rejected GH_VARIABLES_TOKEN: bad credentials. Create a new token and update Dist/.env.") from error
+        raise RuntimeError(f"GitHub API request failed with HTTP {error.code}: {error.reason}") from error
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError(f"GitHub variable {variable_name} does not contain a valid build number.") from error
+    except urllib.error.URLError as error:
+        raise RuntimeError(f"GitHub API request failed: {error.reason}") from error
+
+    print(f"Updated GitHub variable {variable_name} to {build_number}.")
+    return build_number
+
+def generate_version_header(filename, inc_version, build_number_override=None):
     result = {}
     with open(filename) as f:
         content = f.readlines()
@@ -591,7 +628,10 @@ def generate_version_header(filename, inc_version):
             define_name = res.group(1)
             result[define_name] = str(res.group(2))
             if define_name == "IU_BUILD_NUMBER":
-                if inc_version:
+                if build_number_override is not None:
+                    build_number = build_number_override
+                    print("New IU build: {}".format(build_number))
+                elif inc_version:
                     build_number = int(res.group(2)) + 1
                     print("New IU build: {}".format(build_number))
                 else:
@@ -711,6 +751,12 @@ Examples:
         "--jobs", "-j",
         default=None,
         help=f"Number of parallel build jobs (default: {PARALLEL_JOBS})"
+    )
+    parser.add_argument(
+        "--update-github-build-number",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Read, increment and save the IU_BUILD_NUMBER GitHub variable (default: enabled)"
     )
 
     return parser.parse_args()
@@ -849,7 +895,15 @@ def main():
     version_file_abs_path = os.path.abspath(VERSION_HEADER_FILE)
     env_file_abs_path = os.path.abspath(ENV_FILE)
 
-    generate_version_header(VERSION_HEADER_FILE, True)
+    github_build_number = None
+    if args.update_github_build_number:
+        try:
+            github_build_number = update_github_build_number()
+        except RuntimeError as error:
+            print(f"[ERROR] {error}")
+            sys.exit(1)
+
+    generate_version_header(VERSION_HEADER_FILE, True, github_build_number)
     repo_dir_abs = os.path.abspath(repo_dir)
     normalize_shell_script_line_endings(repo_dir_abs)
     patch_shellext_platform_toolset(repo_dir_abs)

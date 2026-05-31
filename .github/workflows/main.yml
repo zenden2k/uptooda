@@ -251,7 +251,7 @@ jobs:
 
       - name: Build package
         working-directory: Dist
-        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH
+        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch $env:UPTOODA_BUILD_BRANCH --no-update-github-build-number
 
       - name: Upload package artifact
         if: github.event_name != 'pull_request'
@@ -373,7 +373,7 @@ jobs:
 
       - name: Build package
         working-directory: Dist
-        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch "$UPTOODA_BUILD_BRANCH"
+        run: python build.py --platform ${{ matrix.platform }} --arch ${{ matrix.arch }} --branch "$UPTOODA_BUILD_BRANCH" --no-update-github-build-number
 
       - name: Upload package artifact
         if: github.event_name != 'pull_request'
