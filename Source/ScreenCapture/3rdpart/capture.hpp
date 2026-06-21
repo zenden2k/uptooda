@@ -373,7 +373,6 @@ public:
 
 };
 
-
 inline HRESULT MFTrs(DWORD, DWORD iid, DWORD ood, CComPtr<IMFTransform> trs, CComPtr<IMFSample> s, IMFSample** sx)
 {
     if (!trs)
@@ -440,8 +439,8 @@ struct VISTAMIXER
     std::wstring id; // id
     std::wstring name; // friendly
     DWORD st = 0; // state
-    bool CanCapture = 0;
-    bool CanPlay = 0;
+    bool CanCapture = false;
+    bool CanPlay = false;
     int Mode = 0; // 0 none, 1 shared, 2 exclusive
 
     std::map<AUDCLNT_SHAREMODE, std::map<int, WAVEFORMATEXTENSIBLE>> maps;
@@ -455,12 +454,11 @@ struct VISTAMIXER
             return 0;
         return mo->second.begin()->second.Format.nChannels;
     }
-    void test(CComPtr<IAudioClient> ac, bool AllShared)
-    {
-        if (ac == 0)
-        {
-            CComPtr<IMMDeviceEnumerator> deviceEnumerator = 0;
-            auto hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+
+    void test(CComPtr<IAudioClient> ac, bool AllShared) {
+        if (ac == nullptr) {
+            CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+            auto hr = deviceEnumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER);
             if (!deviceEnumerator)
                 return;
 
@@ -468,28 +466,29 @@ struct VISTAMIXER
             deviceEnumerator->GetDevice(id.c_str(), &d);
             if (!d)
                 return;
-            hr = d->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&ac);
+            hr = d->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, nullptr, (LPVOID*)&ac);
             if (!ac)
                 return;
         }
 
         // Mix format
-        WAVEFORMATEXTENSIBLE* ext = 0;
-        ac->GetMixFormat((WAVEFORMATEX**)&ext);
+        WAVEFORMATEX* ext = nullptr;
+        ac->GetMixFormat(&ext);
         if (!ext)
             return;
 
-        maps[AUDCLNT_SHAREMODE_SHARED][ext->Format.nSamplesPerSec] = *ext;
-        WAVEFORMATEXTENSIBLE wfx = *ext;
-        CoTaskMemFree(ext);
+        WAVEFORMATEXTENSIBLE wfx{};
 
-        if (AllShared)
-        {
-            for (DWORD sr : { 22050, 44100, 48000, 88200, 96000, 192000 })
-            {
-                if (ext->Format.nSamplesPerSec != sr)
-                {
-                    auto wfx2 = *ext;
+        if (ext->cbSize + sizeof(WAVEFORMATEX) >= sizeof(WAVEFORMATEXTENSIBLE)) {
+            wfx = *reinterpret_cast<WAVEFORMATEXTENSIBLE*>(ext);
+        } else {
+            wfx.Format = *ext;
+        }
+
+        if (AllShared) {
+            for (DWORD sr : {22050, 44100, 48000, 88200, 96000, 192000}) {
+                if (ext->nSamplesPerSec != sr) {
+                    WAVEFORMATEXTENSIBLE wfx2 = wfx;
                     wfx2.Format.nSamplesPerSec = sr;
                     wfx2.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
                     maps[AUDCLNT_SHAREMODE_SHARED][sr] = wfx2;
@@ -502,14 +501,17 @@ struct VISTAMIXER
         wfx.Format.cbSize = 0;
         wfx.Format.wBitsPerSample = 16;
         wfx.Format.nBlockAlign = wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8;
-        for (auto sr : { 22050,44100,48000,88200,96000,192000 })
-        {
+        for (auto sr : {22050, 44100, 48000, 88200, 96000, 192000}) {
             wfx.Format.nSamplesPerSec = sr;
             wfx.Format.nAvgBytesPerSec = wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
             auto hr = ac->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, (WAVEFORMATEX*)&wfx, 0);
             if (hr == S_OK)
                 maps[AUDCLNT_SHAREMODE_EXCLUSIVE][wfx.Format.nSamplesPerSec] = wfx;
         }
+
+        maps[AUDCLNT_SHAREMODE_SHARED][ext->nSamplesPerSec] = wfx;
+
+        CoTaskMemFree(ext);
     }
 
     bool CanSR(AUDCLNT_SHAREMODE sm, std::vector<std::tuple<int, bool, int>>& sampleRates)
@@ -539,9 +541,7 @@ struct VISTAMIXER
         }
         return true;
     }
-
 };
-
 
 DEFINE_PROPERTYKEY(PKEY_Device_FriendlyName, 0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0, 14);    // DEVPROP_TYPE_STRING
 inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
@@ -549,11 +549,11 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
     vistamixers.clear();
 
     // Windows Vista+ Mixers as well
-    CComPtr<IMMDeviceEnumerator> deviceEnumerator = 0;
-    CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+    CComPtr<IMMDeviceEnumerator> deviceEnumerator;
+    deviceEnumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER);
     if (deviceEnumerator)
     {
-        CComPtr <IMMDeviceCollection> e = 0;
+        CComPtr<IMMDeviceCollection> e;
 
         // Capture
         deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATEMASK_ALL, &e);
@@ -563,12 +563,12 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
             e->GetCount(&c);
             for (unsigned int i = 0; i < c; i++)
             {
-                CComPtr<IMMDevice> d = 0;
+                CComPtr<IMMDevice> d;
                 e->Item(i, &d);
                 if (d)
                 {
                     VISTAMIXER vm;
-                    LPWSTR id = 0;
+                    LPWSTR id = nullptr;
                     d->GetId(&id);
                     if (id)
                     {
@@ -577,7 +577,7 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
                     }
                     d->GetState(&vm.st);
 
-                    CComPtr <IPropertyStore> st = 0;
+                    CComPtr <IPropertyStore> st;
                     d->OpenPropertyStore(STGM_READ, &st);
                     if (st)
                     {
@@ -593,11 +593,11 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
 
                     vm.CanCapture = true;
                     vm.CanPlay = false;
-                    CComPtr<IAudioClient> ac = 0;
+                    CComPtr<IAudioClient> ac;
                     d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, 0, (void**)&ac);
                     if (ac)
                     {
-                        vm.test(ac, 0);
+                        vm.test(ac, false);
                         ac.Release();
                         vm.Mode = 0;
                         vistamixers.push_back(vm);
@@ -615,12 +615,12 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
             e->GetCount(&c);
             for (unsigned int i = 0; i < c; i++)
             {
-                CComPtr<IMMDevice> d = 0;
+                CComPtr<IMMDevice> d;
                 e->Item(i, &d);
                 if (d)
                 {
                     VISTAMIXER vm;
-                    LPWSTR id = 0;
+                    LPWSTR id = nullptr;
                     d->GetId(&id);
                     if (id)
                     {
@@ -629,7 +629,7 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
                     }
                     d->GetState(&vm.st);
 
-                    CComPtr <IPropertyStore> st = 0;
+                    CComPtr <IPropertyStore> st;
                     d->OpenPropertyStore(STGM_READ, &st);
                     if (st)
                     {
@@ -645,11 +645,11 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
 
                     vm.CanCapture = false;
                     vm.CanPlay = true;
-                    CComPtr<IAudioClient> ac = 0;
-                    d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, 0, (void**)&ac);
+                    CComPtr<IAudioClient> ac;
+                    d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, (void**)&ac);
                     if (ac)
                     {
-                        vm.test(ac, 0);
+                        vm.test(ac, false);
                         ac.Release();
                         vm.Mode = 0;
                         vistamixers.push_back(vm);
@@ -660,16 +660,7 @@ inline void EnumVistaMixers(std::vector<VISTAMIXER>& vistamixers)
         }
 
     }
-
-
-
-
 }
-
-
-
-
-
 #endif
 
 class CAPTURE
