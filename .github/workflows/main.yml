@@ -96,7 +96,7 @@ jobs:
   build-windows:
     name: ${{ matrix.name }}
     needs: prepare-version
-    runs-on: windows-2025
+    runs-on: windows-2022
     timeout-minutes: 180
     strategy:
       fail-fast: false
