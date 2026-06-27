@@ -19,6 +19,7 @@ void CScreenRecordingSettingsPage::TranslateUI() {
     TRC(IDC_OUTFOLDERLABEL, "Video recordings folder:");
     TRC(IDC_OUTFOLDERBROWSEBUTTON, "Browse...");
     TRC(IDC_FRAMERATELABEL, "Frame rate:");
+    TRC(IDC_FILENAMEFORMATLABEL, "Filename format:");
 }
 
 template <typename T, typename... Args>
@@ -89,6 +90,12 @@ void CScreenRecordingSettingsPage::createResources() {
 
     helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
     helpButton_.SetIcon(helpButtonIcon_);
+
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
+    }
+    iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+    fileNameMacrosesButton_.SetIcon(iconInfo_);
 }
 
 LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -107,6 +114,7 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
+    fileNameFormatEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FileNameTemplate));
 
     frameRateUpDownControl_.SetRange(1, 60);
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
@@ -190,11 +198,12 @@ bool CScreenRecordingSettingsPage::apply() {
 
         auto& recodingSettings = settings_->ScreenRecordingSettings;
         int backendComboIndex_ = backendCombobox_.GetCurSel();
-        if (backendComboIndex_ >= 0 && backendComboIndex_ < settings_->ScreenRecordingBackends.size()) {
-            recodingSettings.Backend = settings_->ScreenRecordingBackends[backendComboIndex_];
+        if (backendComboIndex_ >= 0 && backendComboIndex_ < CommonGuiSettings::ScreenRecordingBackends.size()) {
+            recodingSettings.Backend = CommonGuiSettings::ScreenRecordingBackends[backendComboIndex_];
         }
 
         recodingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
+        recodingSettings.FileNameTemplate = W2U(GuiTools::GetWindowText(fileNameFormatEditControl_));
 
         recodingSettings.FrameRate = frameRateUpDownControl_.GetPos();
        
@@ -217,5 +226,46 @@ LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode
         return true;
     }
     
+    return 0;
+}
+
+LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+    const std::vector<std::pair<CString, CString>> items {
+            { _T("%y"), TR("year")},
+            { _T("%m"), TR("month")},
+            { _T("%d"), TR("day")},
+            { _T("%h"), TR("hour")},
+            { _T("%n"), TR("minute")},
+            { _T("%s"), TR("second")},
+            { _T("%i"), TR("counter")},
+            { _T("%width%"), TR("video width")},
+            { _T("%height%"), TR("video height") },
+            { _T("%size%"), TR("file size") },
+        };
+    RECT rc {};
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu macrosMenu;
+
+    int id = 1;
+    macrosMenu.CreatePopupMenu();
+
+    for (const auto& item : items) {
+        CString title = item.first + _T(" - ") + item.second;
+        macrosMenu.AppendMenu(MF_STRING, id++, title);
+    }
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    if (result && (result - 1 < items.size())) {
+        fileNameFormatEditControl_.ReplaceSel(items[result - 1].first, TRUE);
+    }
+
     return 0;
 }

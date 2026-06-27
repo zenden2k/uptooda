@@ -87,8 +87,8 @@ public:
         bool m_CatchFormChanges;
         CColorButton ThumbBackground;
         CComboBox thumbsCombo_;
-        CButton thumbTextMacrosesButton_;
-        CIcon iconDropdown_;
+        CButton thumbTextMacrosButton_;
+        CIcon iconInfo_;
         CEdit thumbTextEdit_;
 };
 

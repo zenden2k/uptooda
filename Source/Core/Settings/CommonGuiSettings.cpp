@@ -200,6 +200,7 @@ void CommonGuiSettings::BindToManager() {
     SettingsNode& screenRecording = mgr_["ScreenRecording"];
     screenRecording.nm_bind(ScreenRecordingSettings, Backend);
     screenRecording.nm_bind(ScreenRecordingSettings, OutDirectory);
+    screenRecording.nm_bind(ScreenRecordingSettings, FileNameTemplate);
     screenRecording.nm_bind(ScreenRecordingSettings, FrameRate);
     screenRecording.nm_bind(ScreenRecordingSettings, CaptureCursor);
     screenRecording.nm_bind(ScreenRecordingSettings, Delay);

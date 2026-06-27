@@ -81,7 +81,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     }
 
 
-    thumbTextMacrosesButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
+    thumbTextMacrosButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
     thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
 
     createResources();
@@ -373,11 +373,11 @@ void CThumbSettingsPage::createResources() {
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
-    if (iconDropdown_) {
-        iconDropdown_.DestroyIcon();
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
     }
-    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
-    thumbTextMacrosesButton_.SetIcon(iconDropdown_);
+    iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+    thumbTextMacrosButton_.SetIcon(iconInfo_);
 }
 
 LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -391,7 +391,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 {
     bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     ::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
-    thumbTextMacrosesButton_.EnableWindow(bChecked);
+    thumbTextMacrosButton_.EnableWindow(bChecked);
     params_.AddImageSize = bChecked;
     params_.AddImageSize = bChecked;
 

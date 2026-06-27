@@ -815,6 +815,7 @@
 #define IDC_EDIT3                       1331
 #define IDC_PRIVATEKEYEDIT              1331
 #define IDC_UPLOADSPEEDLIMITEDIT        1331
+#define IDC_FILENAMEFORMATEDIT          1331
 #define IDC_UPLOADSPEEDLIMITLABEL       1332
 #define IDC_UPLOADSPEEDLIMITKBPSLABEL   1333
 #define IDC_CONNECTIONSTATUSLABEL       1334
@@ -874,6 +875,8 @@
 #define IDC_AUDIOSOURCECOMBO            1376
 #define IDC_ADAPTERLABEL                1376
 #define IDC_SEARCHSTATIC                1377
+#define IDC_FILENAMEFORMATLABEL         1378
+#define IDC_FILENAMEMACROS              1379
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -921,7 +924,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        360
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1378
+#define _APS_NEXT_CONTROL_VALUE         1380
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

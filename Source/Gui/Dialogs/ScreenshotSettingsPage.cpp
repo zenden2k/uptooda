@@ -60,7 +60,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
 
-    if (ServiceLocator::instance()->translator()->isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {\
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND screenshotFolderEditHwnd = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
         LONG styleEx = ::GetWindowLong(screenshotFolderEditHwnd, GWL_EXSTYLE);

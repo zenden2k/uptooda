@@ -1,6 +1,7 @@
 #include "ScreenRecorderWindow.h"
 
 #include <ctime>
+#include <filesystem>
 
 #include "Core/Logging.h"
 #include "Core/i18n/Translator.h"
@@ -18,6 +19,7 @@
 #include "Gui/Dialogs/HotkeyEditor.h"
 #include "ScreenCapture/ScreenRecorder/ScreenRecorderUtils.h"
 #include "Func/Common.h"
+#include "Func/IuCommonFunctions.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -36,10 +38,6 @@ ScreenRecorderWindow::ScreenRecorderWindow():
     memset(&trayIconGuid_, 0, sizeof(GUID));
     hotkeys_ = std::make_unique<CHotkeyList>();
     taskBarCreatedMsg_ = RegisterWindowMessage(_T("TaskbarCreated"));
-}
-
-ScreenRecorderWindow::~ScreenRecorderWindow() {
-    
 }
 
 LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -96,40 +94,6 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     createTrayIcon();
 
-    CString folder = U2W(settings->ScreenRecordingSettings.OutDirectory);
-
-    if (folder.IsEmpty()) {
-        folder = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
-    }
-
-    if (!WinUtils::IsDirectory(folder)) {
-        LOG(INFO) << "Creating folder " << folder;
-        if (!WinUtils::CreateFolder(folder)) {
-            std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Failed to create the directory '%s'.")) % folder);
-            GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
-        }
-    }
-
-    if (!folder.IsEmpty() && folder[folder.GetLength() - 1] != '\\' && folder[folder.GetLength() - 1] != '/') {
-        folder += "\\";
-    }
-
-    time_t now = time(nullptr);
-    tm timeStruct;
-    localtime_s(&timeStruct, &now);
-
-    CString fileName;
-    fileName.Format(
-        _T("%scapture %04d-%02d-%02d %02d-%02d-%02d"),
-        folder.GetString(),
-        timeStruct.tm_year + 1900, 
-        timeStruct.tm_mon + 1, 
-        timeStruct.tm_mday,
-        timeStruct.tm_hour, 
-        timeStruct.tm_min, 
-        timeStruct.tm_sec
-     );
-
      CRect rect = captureRect_;
      bool isPrimaryMonitor = true;
      MONITORINFO monitorInfo;
@@ -184,8 +148,11 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
                 }
                 options.outputIdx = outputIndex;
             }
-               
-            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), rect, std::move(options));
+
+
+            std::string fileName = prepareFileName(rect.right - rect.left, rect.bottom - rect.top);
+
+            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, fileName, rect, std::move(options));
         } else {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
         }
@@ -204,7 +171,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioBitrate = dxgiSettings.AudioBitrate;
             options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
 
-            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), /*screenRecordingParams_.selectedWindow*/nullptr, rect, screenRecordingParams_.monitor(), std::move(options));
+            std::string fileName = prepareFileName(rect.right - rect.left, rect.bottom - rect.top);
+            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(fileName, /*screenRecordingParams_.selectedWindow*/nullptr, rect, screenRecordingParams_.monitor(), std::move(options));
     }
     if (!screenRecorder_) {
         return -1;
@@ -212,7 +180,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     screenRecorder_->addStatusChangeCallback(
         ScreenRecorder::StatusChangeSignal::slot_type(
-            std::bind(&ScreenRecorderWindow::statusChangeCallback, this, std::placeholders::_1)
+            [this](auto && PH1) { statusChangeCallback(std::forward<decltype(PH1)>(PH1)); }
         )
         .track(shared_from_this())
     );
@@ -224,6 +192,36 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     }
     SetTimer(kStartTimer, std::max(windowHidingDelay, settings->ScreenRecordingSettings.Delay * 1000));
     return 0;
+}
+
+
+std::string ScreenRecorderWindow::prepareFileName(int width, int height) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    namespace fs = std::filesystem;
+    fs::path basePath = settings->ScreenRecordingSettings.OutDirectory.empty() ?
+        W2U(WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO)):
+        settings->ScreenRecordingSettings.OutDirectory;
+
+    fs::path relPath = W2U(IuCommonFunctions::GenerateFileName(
+        U2WC(settings->ScreenRecordingSettings.FileNameTemplate),
+        fileNameCounter_++, CPoint(width, height))
+    );
+
+    fs::path fullPath = basePath / relPath;
+    fs::path parentPath = fullPath.parent_path();
+    bool folderExists = fs::exists(parentPath);
+    if (folderExists && !fs::is_directory(parentPath)) {
+        LOG(ERROR) << parentPath << " is not a folder";
+        return {};
+    }
+
+    if (!folderExists &&  !fs::create_directories(fullPath)){
+        std::string msg = str(IuStringUtils::FormatNoExcept(_("Failed to create the directory '%s'.")) % parentPath.string());
+        GuiTools::LocalizedMessageBox(m_hWnd, U2WC(msg), TR("Error"), MB_ICONERROR);
+        return {};
+    }
+
+    return fullPath.string();
 }
 
 LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -325,6 +323,7 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
 
     return dialogResult_;
 }
+
 
 void ScreenRecorderWindow::createToolbar() {
 

@@ -95,6 +95,7 @@ struct ScreenRecordingStruct {
     int MonitorMode = -1; // kAllMonitors
     //std::string Preset;
     std::string OutDirectory;
+    std::string FileNameTemplate = "capture %y-%m-%d %h-%n-%s";
     FFMpegSettingsStruct FFmpegSettings;
     DXGISettingsStruct DXGISettings;
 };
