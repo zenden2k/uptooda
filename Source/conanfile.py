@@ -84,7 +84,7 @@ class ImageUploaderRecipe(ConanFile):
         else:
             self.requires("megaio/9.2.0")
             #self.requires("openssl/3.3.2")
-            self.requires("libmediainfo/22.03")
+            self.requires("libmediainfo/26.01@zenden2k/stable",force=True)
             self.requires("dav1d/1.4.3", force=True)
             self.requires("xz_utils/5.8.3", force=True)
 

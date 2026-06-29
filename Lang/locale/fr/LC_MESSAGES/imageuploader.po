@@ -2,12 +2,12 @@
 # Copyright (C) YEAR Sergey Svistunov <zenden2k@gmail.com>
 # This file is distributed under the same license as the imageuploader package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-04 19:33+0300\n"
+"POT-Creation-Date: 2026-06-29 15:30+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/image-uploader/"
@@ -130,7 +130,7 @@ msgstr ""
 "%i% - compteur de fichiers,\n"
 "%cx% - largeur,  %cy% - hauteur"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:623
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "%s (screen recording)"
@@ -461,7 +461,7 @@ msgstr ""
 "Une erreur est survenue lors de la réception des infos de mise à jour du "
 "serveur."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
@@ -666,7 +666,7 @@ msgstr "Brosse"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:487
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -722,7 +722,7 @@ msgstr ""
 "%2%"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -994,7 +994,7 @@ msgstr "Nom du composant"
 msgid "Components:"
 msgstr "Composants :"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:547
 #, fuzzy
 #| msgid "Documentation"
 msgid "Concatenation..."
@@ -1041,7 +1041,7 @@ msgstr "Convertir le chemin UNC \"\\\\\" en \"fichier://\""
 msgid "Converting history"
 msgstr "Conversion de l'historique"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:549
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1150,7 +1150,7 @@ msgstr "Impossible de s'authentifier. Veuillez réessayer."
 msgid "Could not find a video stream."
 msgstr "Impossible de trouver un flux vidéo."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1459,11 +1459,12 @@ msgstr "Entrez votre texte :"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:109
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:180
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
@@ -1576,7 +1577,7 @@ msgstr ""
 msgid "FTP"
 msgstr "FTP"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:221
 #, fuzzy, c-format
 #| msgid "Failed to open video file '%s'."
 msgid "Failed to create the directory '%s'."
@@ -1659,10 +1660,6 @@ msgstr ""
 "Url : %s\n"
 "Type MIME : %s"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
-msgid "File name cannot contains forbidden characters!"
-msgstr "Le nom du fichier ne peut pas contenir de caractères interdits !"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:48
 msgid "File size exceeding"
 msgstr "Taille du fichier dépassant"
@@ -1680,6 +1677,17 @@ msgid "File: "
 msgstr "Fichier : "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename (or path) template:"
+msgstr "Format du nom de fichier :"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename and path template:"
+msgstr "Format du nom de fichier :"
+
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
 msgid "Filename format:"
 msgstr "Format du nom de fichier :"
@@ -1726,7 +1734,7 @@ msgid "Filters"
 msgstr "Filtres"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:469
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
 msgid "Finish"
 msgstr "Terminer"
@@ -1924,7 +1932,7 @@ msgstr "Fichiers texte"
 msgid "Height:"
 msgstr "Hauteur :"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:115
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
@@ -2547,8 +2555,8 @@ msgid "Paste a link to shorten it:"
 msgstr "Collez un lien pour le raccourcir :"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:70
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:470
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Pause"
 msgstr ""
 
@@ -2769,8 +2777,8 @@ msgstr "Retirez ce compte de la liste (pas du serveur distant)"
 msgid "Resize mode:"
 msgstr "Mode redimensionnement :"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:479
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:475
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Resume"
 msgstr ""
 
@@ -3020,7 +3028,7 @@ msgid "Select all"
 msgstr "Sélectionner toutes"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:378
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:211
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:232
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
@@ -3423,6 +3431,19 @@ msgstr "Le nom du fichier ne peut être vide."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:871
 msgid "The file name contains forbidden characters."
+msgstr "Le nom du fichier contient des caractères interdits."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#, fuzzy
+#| msgid "The file name cannot be empty."
+msgid "The filename template cannot be empty!"
+msgstr "Le nom du fichier ne peut être vide."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
+#, fuzzy
+#| msgid "The file name contains forbidden characters."
+msgid "The filename template contains forbidden characters!"
 msgstr "Le nom du fichier contient des caractères interdits."
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
@@ -3833,7 +3854,7 @@ msgstr "Voir le journal pour plus de détails."
 msgid "Waiting for child tasks"
 msgstr "En attente des tâches enfants"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:219
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:189
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -3937,6 +3958,16 @@ msgstr "une photo de tout l'écran ou de la région sélectionnée"
 msgid "and/or height:"
 msgstr "et/ou hauteur :"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#, fuzzy
+#| msgid "Account..."
+msgid "counter"
+msgstr "Compte..."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+msgid "day"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 msgid "extracting frames from video"
 msgstr "extraire des images d'une vidéo"
@@ -3959,6 +3990,10 @@ msgstr ""
 msgid "high quality (100)"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+msgid "hour"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 msgid "image height"
 msgstr "hauteur de l'image"
@@ -3970,6 +4005,14 @@ msgstr "largeur de l'image"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
 msgid "low quality (0)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+msgid "minute"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+msgid "month"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
@@ -3996,6 +4039,10 @@ msgstr ""
 msgid "sec"
 msgstr "sec"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+msgid "second"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 msgid "single file (mosaic)"
 msgstr "fichier unique (mosaïque)"
@@ -4011,6 +4058,25 @@ msgstr "largo"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
 msgid "unknown server"
 msgstr "serveur inconnu"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#, fuzzy
+#| msgid "image height"
+msgid "video height"
+msgstr "hauteur de l'image"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#, fuzzy
+#| msgid "image width"
+msgid "video width"
+msgstr "largeur de l'image"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
+msgid "year"
+msgstr ""
+
+#~ msgid "File name cannot contains forbidden characters!"
+#~ msgstr "Le nom du fichier ne peut pas contenir de caractères interdits !"
 
 #~ msgid "a tool for advanced users"
 #~ msgstr "un outil pour utilisateurs avancés"

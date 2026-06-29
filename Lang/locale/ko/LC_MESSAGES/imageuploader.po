@@ -1,9 +1,9 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-04 19:33+0300\n"
+"POT-Creation-Date: 2026-06-29 15:30+0300\n"
 "PO-Revision-Date: 2025-08-24 20:38+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -117,7 +117,7 @@ msgstr ""
 " %i% - 파일 카운터,\n"
 "%cx% - 너비, %cy% - 높이"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:623
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, c-format
 msgid "%s (screen recording)"
 msgstr "%s (화면 녹화)"
@@ -434,7 +434,7 @@ msgstr "스크립트를 로드하는 동안 오류가 발생했습니다."
 msgid "An error occured while receiving update information from server."
 msgstr "서버에서 업데이트 정보를 받는 동안 오류가 발생했습니다."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
@@ -630,7 +630,7 @@ msgstr "브러시"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:487
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -683,7 +683,7 @@ msgstr ""
 "%2%"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -954,7 +954,7 @@ msgstr "구성 요소 이름"
 msgid "Components:"
 msgstr "구성 요소:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:547
 msgid "Concatenation..."
 msgstr "결합..."
 
@@ -999,7 +999,7 @@ msgstr "UNC 경로 변환 \"\\\\\" -> \"file://\""
 msgid "Converting history"
 msgstr "기록 변환"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:549
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
 msgid "Converting..."
 msgstr "변환 중..."
 
@@ -1105,7 +1105,7 @@ msgstr "인증할 수 없습니다. 다시 시도해 주세요."
 msgid "Could not find a video stream."
 msgstr "비디오 스트림을 찾을 수 없습니다."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
 msgid "Could not find ffmpeg executable!"
 msgstr "ffmpeg 실행 파일을 찾을 수 없습니다!"
 
@@ -1406,11 +1406,12 @@ msgstr "텍스트 입력:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:109
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:180
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
@@ -1522,7 +1523,7 @@ msgstr "FFmpeg 실행 파일 경로:"
 msgid "FTP"
 msgstr "FTP"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:221
 #, c-format
 msgid "Failed to create the directory '%s'."
 msgstr "'%s' 디렉터리를 생성하지 못했습니다."
@@ -1600,10 +1601,6 @@ msgstr ""
 "URL: %s\n"
 "마임 타입: %s"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
-msgid "File name cannot contains forbidden characters!"
-msgstr "파일 이름에 금지된 문자를 포함할 수 없습니다!"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:48
 msgid "File size exceeding"
 msgstr "파일 크기 초과"
@@ -1621,6 +1618,17 @@ msgid "File: "
 msgstr "파일: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename (or path) template:"
+msgstr "파일 이름 형식:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename and path template:"
+msgstr "파일 이름 형식:"
+
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
 msgid "Filename format:"
 msgstr "파일 이름 형식:"
@@ -1667,7 +1675,7 @@ msgid "Filters"
 msgstr "필터링"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:469
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
 msgid "Finish"
 msgstr "완료"
@@ -1857,7 +1865,7 @@ msgstr "HTML 파일"
 msgid "Height:"
 msgstr "높이:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:115
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
@@ -2466,8 +2474,8 @@ msgid "Paste a link to shorten it:"
 msgstr "단축할 링크 붙여넣기:"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:70
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:470
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Pause"
 msgstr "일시 중지"
 
@@ -2683,8 +2691,8 @@ msgstr "목록에서 이 계정 제거 (원격 서버가 아님)"
 msgid "Resize mode:"
 msgstr "크기 조정 모드:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:479
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:475
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Resume"
 msgstr "다시 시작"
 
@@ -2910,7 +2918,7 @@ msgid "Select all"
 msgstr "모두 선택"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:378
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:211
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:232
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
@@ -3306,6 +3314,19 @@ msgstr "파일 이름은 비워둘 수 없습니다."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:871
 msgid "The file name contains forbidden characters."
+msgstr "파일 이름에 금지된 문자가 포함되어 있습니다."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#, fuzzy
+#| msgid "The file name cannot be empty."
+msgid "The filename template cannot be empty!"
+msgstr "파일 이름은 비워둘 수 없습니다."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
+#, fuzzy
+#| msgid "The file name contains forbidden characters."
+msgid "The filename template contains forbidden characters!"
 msgstr "파일 이름에 금지된 문자가 포함되어 있습니다."
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
@@ -3705,7 +3726,7 @@ msgstr "상세 로그를 봅니다."
 msgid "Waiting for child tasks"
 msgstr "자식 작업 대기 중"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:219
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:189
 msgid "Waiting..."
 msgstr "대기 중..."
 
@@ -3804,6 +3825,16 @@ msgstr "전체 화면 또는 선택된 영역의 사진"
 msgid "and/or height:"
 msgstr "및/또는 높이:"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#, fuzzy
+#| msgid "Account"
+msgid "counter"
+msgstr "계정"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+msgid "day"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 msgid "extracting frames from video"
 msgstr "비디오에서 프레임 추출하기"
@@ -3826,6 +3857,10 @@ msgstr ""
 msgid "high quality (100)"
 msgstr "고품질 (100)"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+msgid "hour"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 msgid "image height"
 msgstr "이미지 높이"
@@ -3838,6 +3873,14 @@ msgstr "이미지 너비"
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
 msgid "low quality (0)"
 msgstr "저품질 (0)"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+msgid "minute"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+msgid "month"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "msec"
@@ -3863,6 +3906,10 @@ msgstr "필수"
 msgid "sec"
 msgstr "초"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+msgid "second"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 msgid "single file (mosaic)"
 msgstr "단일 파일 (모자이크)"
@@ -3878,6 +3925,25 @@ msgstr "비너스걸: https://venusgirls.tistory.com/"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
 msgid "unknown server"
 msgstr "알 수 없는 서버"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#, fuzzy
+#| msgid "image height"
+msgid "video height"
+msgstr "이미지 높이"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#, fuzzy
+#| msgid "image width"
+msgid "video width"
+msgstr "이미지 너비"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
+msgid "year"
+msgstr ""
+
+#~ msgid "File name cannot contains forbidden characters!"
+#~ msgstr "파일 이름에 금지된 문자를 포함할 수 없습니다!"
 
 #~ msgid "a tool for advanced users"
 #~ msgstr "고급 사용자용 도구"

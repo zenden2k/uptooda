@@ -46,7 +46,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_MSECLABEL, "msec");
     TRC(IDC_SCREENSHOTSFOLDERSELECT, "Browse...");
     TRC(IDC_SCREENSHOTFOLDERLABEL, "Directory to save screenshots:");
-    TRC(IDC_SCREENSHOTFILENAMELABEL, "Filename format:");
+    TRC(IDC_SCREENSHOTFILENAMELABEL, "Filename and path template:");
     TRC(IDC_DELAYLABEL2, "Delay when hiding window:");
     TRC(IDC_ALWAYSCOPYTOCLIPBOARD, "Always copy captured image to clipboard");
     TRC(IDC_SCREENSHOTSAVINGPARAMS, "Saving parameters");
@@ -60,7 +60,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
 
-    if (ServiceLocator::instance()->translator()->isRTL()) {\
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND screenshotFolderEditHwnd = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
         LONG styleEx = ::GetWindowLong(screenshotFolderEditHwnd, GWL_EXSTYLE);
@@ -114,7 +114,7 @@ bool CScreenshotSettingsPage::apply()
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
 
     if (fileName.FindOneOf(_T(":*?\"<>|")) != -1) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("File name cannot contains forbidden characters!"));
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template contains forbidden characters!"));
         ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
         return false;
     }

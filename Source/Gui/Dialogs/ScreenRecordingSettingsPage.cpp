@@ -19,7 +19,7 @@ void CScreenRecordingSettingsPage::TranslateUI() {
     TRC(IDC_OUTFOLDERLABEL, "Video recordings folder:");
     TRC(IDC_OUTFOLDERBROWSEBUTTON, "Browse...");
     TRC(IDC_FRAMERATELABEL, "Frame rate:");
-    TRC(IDC_FILENAMEFORMATLABEL, "Filename format:");
+    TRC(IDC_FILENAMETEMPLATELABEL, "Filename and path template:");
 }
 
 template <typename T, typename... Args>
@@ -95,7 +95,7 @@ void CScreenRecordingSettingsPage::createResources() {
         iconInfo_.DestroyIcon();
     }
     iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
-    fileNameMacrosesButton_.SetIcon(iconInfo_);
+    fileNameMacrosButton_.SetIcon(iconInfo_);
 }
 
 LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -103,7 +103,7 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     DoDataExchange(FALSE);
 
     int backendComboIndex = -1;
-    for (const auto& backendName : settings_->ScreenRecordingBackends) {
+    for (const auto& backendName : WtlGuiSettings::ScreenRecordingBackends) {
         int index = backendCombobox_.AddString(U2WC(backendName));
         if (backendName == settings_->ScreenRecordingSettings.Backend) {
             backendComboIndex = index;
@@ -114,7 +114,7 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
-    fileNameFormatEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FileNameTemplate));
+    fileNameTemplateEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FileNameTemplate));
 
     frameRateUpDownControl_.SetRange(1, 60);
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
@@ -150,6 +150,19 @@ LRESULT CScreenRecordingSettingsPage::OnMyDpiChanged(UINT uMsg, WPARAM wParam, L
 
 bool CScreenRecordingSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
+        CString fileNameTemplate = GuiTools::GetWindowText(fileNameTemplateEditControl_);
+
+        if (fileNameTemplate.IsEmpty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template cannot be empty!"), TR("Error"), MB_ICONERROR);
+            fileNameTemplateEditControl_.SetFocus();
+            return false;
+        }
+
+        if (fileNameTemplate.FindOneOf(_T(":*?\"<>|")) != -1) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template contains forbidden characters!"));
+            fileNameTemplateEditControl_.SetFocus();
+            return false;
+        }
 
         for (int i = 0; i < std::size(subPages_); i++) {
             const auto& page = subPages_[i];
@@ -203,7 +216,7 @@ bool CScreenRecordingSettingsPage::apply() {
         }
 
         recodingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
-        recodingSettings.FileNameTemplate = W2U(GuiTools::GetWindowText(fileNameFormatEditControl_));
+        recodingSettings.FileNameTemplate = W2U(fileNameTemplate);
 
         recodingSettings.FrameRate = frameRateUpDownControl_.GetPos();
        
@@ -214,7 +227,6 @@ bool CScreenRecordingSettingsPage::apply() {
 }
 
 LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    HWND editControl = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
     CString folder;
     outFolderEditControl_.GetWindowText(folder);
     CNewStyleFolderDialog fd(m_hWnd, folder, TR("Select folder"));
@@ -240,8 +252,7 @@ LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotify
             { _T("%s"), TR("second")},
             { _T("%i"), TR("counter")},
             { _T("%width%"), TR("video width")},
-            { _T("%height%"), TR("video height") },
-            { _T("%size%"), TR("file size") },
+            { _T("%height%"), TR("video height") }
         };
     RECT rc {};
     ::GetWindowRect(hWndCtl, &rc);
@@ -264,7 +275,7 @@ LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotify
 
     int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
     if (result && (result - 1 < items.size())) {
-        fileNameFormatEditControl_.ReplaceSel(items[result - 1].first, TRUE);
+        fileNameTemplateEditControl_.ReplaceSel(items[result - 1].first, TRUE);
     }
 
     return 0;

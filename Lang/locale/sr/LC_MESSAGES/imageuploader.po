@@ -1,9 +1,9 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-04 19:33+0300\n"
+"POT-Creation-Date: 2026-06-29 15:30+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/image-uploader/"
@@ -12,8 +12,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.13-dev\n"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
@@ -123,7 +123,7 @@ msgid ""
 "%cx% - width,  %cy% - height"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:623
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "%s (screen recording)"
@@ -455,7 +455,7 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr "Грешка при примање информације са сервера."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
@@ -652,7 +652,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:487
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -701,7 +701,7 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -978,7 +978,7 @@ msgstr "Име компонента"
 msgid "Components:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:547
 #, fuzzy
 #| msgid "Connection settings"
 msgid "Concatenation..."
@@ -1027,7 +1027,7 @@ msgstr ""
 msgid "Converting history"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:549
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1142,7 +1142,7 @@ msgstr "Could not authenticate. PLease try again."
 msgid "Could not find a video stream."
 msgstr "Could not find links in given text!"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1445,11 +1445,12 @@ msgstr "Унос текста:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:109
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:180
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
@@ -1561,7 +1562,7 @@ msgstr ""
 msgid "FTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:221
 #, fuzzy, c-format
 #| msgid "Failed to load folder list."
 msgid "Failed to create the directory '%s'."
@@ -1640,10 +1641,6 @@ msgid ""
 "Mime-Type: %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
-msgid "File name cannot contains forbidden characters!"
-msgstr ""
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:48
 msgid "File size exceeding"
 msgstr "Датотека прелази"
@@ -1661,6 +1658,17 @@ msgid "File: "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename (or path) template:"
+msgstr "Формат имена:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename and path template:"
+msgstr "Формат имена:"
+
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
 msgid "Filename format:"
 msgstr "Формат имена:"
@@ -1707,7 +1715,7 @@ msgid "Filters"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:469
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
 msgid "Finish"
 msgstr "Заврши"
@@ -1904,7 +1912,7 @@ msgstr "Видео датотеке"
 msgid "Height:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:115
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
@@ -2534,8 +2542,8 @@ msgid "Paste a link to shorten it:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:70
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:470
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Pause"
 msgstr ""
 
@@ -2750,8 +2758,8 @@ msgstr ""
 msgid "Resize mode:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:479
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:475
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Resume"
 msgstr ""
 
@@ -3002,7 +3010,7 @@ msgid "Select all"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:378
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:211
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:232
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
@@ -3410,6 +3418,15 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:871
 msgid "The file name contains forbidden characters."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+msgid "The filename template cannot be empty!"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
+msgid "The filename template contains forbidden characters!"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
@@ -3829,7 +3846,7 @@ msgstr ""
 msgid "Waiting for child tasks"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:219
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:189
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -3930,6 +3947,16 @@ msgstr "слика целог екрана или одабране зоне"
 msgid "and/or height:"
 msgstr "и/или висину:"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#, fuzzy
+#| msgid "Specify account..."
+msgid "counter"
+msgstr "Унети налог..."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+msgid "day"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 #, fuzzy
 #| msgid "Extracting frames from video"
@@ -3956,6 +3983,10 @@ msgstr ""
 msgid "high quality (100)"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+msgid "hour"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 #, fuzzy
 #| msgid "Highlight"
@@ -3971,6 +4002,14 @@ msgstr "Промени ширину:"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
 msgid "low quality (0)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+msgid "minute"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+msgid "month"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
@@ -3999,6 +4038,10 @@ msgstr ""
 msgid "sec"
 msgstr "сек"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+msgid "second"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 #, fuzzy
 #| msgid "Single file"
@@ -4015,6 +4058,22 @@ msgstr ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
 msgid "unknown server"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#, fuzzy
+#| msgid "Highlight"
+msgid "video height"
+msgstr "Marker"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#, fuzzy
+#| msgid "Change width:"
+msgid "video width"
+msgstr "Промени ширину:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
+msgid "year"
 msgstr ""
 
 #~ msgid "a tool for advanced users"

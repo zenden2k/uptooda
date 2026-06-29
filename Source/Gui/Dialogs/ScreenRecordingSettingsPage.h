@@ -19,7 +19,8 @@ public:
     virtual ~CScreenRecordingSettingsPage() = default;
     enum { IDD = IDD_SCREENRECORDINGSETTINGSPAGE };
     enum SubPage { spNone = -1, spDirectXSettings = 0, spFFmpegSettings };
-    inline static constexpr auto SUBPAGES_COUNT = 2;
+
+    static constexpr auto SUBPAGES_COUNT = 2;
 
     BEGIN_MSG_MAP(CScreenRecordingSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -27,16 +28,16 @@ public:
         COMMAND_HANDLER(IDC_OUTFOLDERBROWSEBUTTON, BN_CLICKED, OnBnClickedBrowseButton)
         COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpButton)
         COMMAND_HANDLER(IDC_BACKENDCOMBO, CBN_SELCHANGE, OnBackendChanged)
-        COMMAND_HANDLER_EX(IDC_FILENAMEMACROS, BN_CLICKED, OnFilenameMacrosButtonClicked)
+        COMMAND_HANDLER_EX(IDC_FILENAMEMACROSBUTTON, BN_CLICKED, OnFilenameMacrosButtonClicked)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CScreenRecordingSettingsPage)
         DDX_CONTROL_HANDLE(IDC_BACKENDCOMBO, backendCombobox_)
         DDX_CONTROL_HANDLE(IDC_OUTFOLDEREDIT, outFolderEditControl_)
-        DDX_CONTROL_HANDLE(IDC_FILENAMEFORMATEDIT, fileNameFormatEditControl_)
+        DDX_CONTROL_HANDLE(IDC_FILENAMETEMPLATEEDIT, fileNameTemplateEditControl_)
         DDX_CONTROL_HANDLE(IDC_FRAMERATESPIN, frameRateUpDownControl_)
         DDX_CONTROL_HANDLE(IDC_HELPBUTTON, helpButton_)
-        DDX_CONTROL_HANDLE(IDC_FILENAMEMACROS, fileNameMacrosesButton_)
+        DDX_CONTROL_HANDLE(IDC_FILENAMEMACROSBUTTON, fileNameMacrosButton_)
     END_DDX_MAP()
 
     // Handler prototypes:
@@ -52,11 +53,11 @@ public:
 
     LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnFilenameMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    CEdit outFolderEditControl_, fileNameFormatEditControl_;
+    CEdit outFolderEditControl_, fileNameTemplateEditControl_;
     CComboBox backendCombobox_;
     CUpDownCtrl frameRateUpDownControl_;
     CButton helpButton_;
-    CButton fileNameMacrosesButton_;
+    CButton fileNameMacrosButton_;
     CIcon helpButtonIcon_, iconInfo_;
     CToolTipCtrl toolTip_;
 

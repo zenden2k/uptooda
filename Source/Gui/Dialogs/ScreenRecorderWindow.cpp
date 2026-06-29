@@ -32,6 +32,8 @@ namespace {
 constexpr COLORREF WINDOW_TRANSPARENT_COLOR = RGB(255, 0, 255); // Magenta
 }
 
+int ScreenRecorderWindow::fileNameCounter_ = 1;
+
 ScreenRecorderWindow::ScreenRecorderWindow():
         dialogResult_(drCancel),
         toolbar_(ImageEditor::Toolbar::orHorizontal, false) {
@@ -226,7 +228,7 @@ std::string ScreenRecorderWindow::prepareFileName(int width, int height) {
 
 LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     GuiTools::ClearWindowPointer(m_hWnd);
-    unRegisterHotkeys();
+    unregisterHotkeys();
     return 0;
 }
 
@@ -322,11 +324,6 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
     loop.RemoveMessageFilter(this);
 
     return dialogResult_;
-}
-
-
-void ScreenRecorderWindow::createToolbar() {
-
 }
 
 void ScreenRecorderWindow::endDialog(DialogResult dr) {
@@ -588,7 +585,7 @@ void ScreenRecorderWindow::registerHotkeys() {
     }
 }
 
-void ScreenRecorderWindow::unRegisterHotkeys() {
+void ScreenRecorderWindow::unregisterHotkeys() {
     for (size_t i = 0; i < hotkeys_->size(); i++) {
         const auto& hotkey = (*hotkeys_)[i];
         if (hotkey.groupId == HOTKEY_GROUP_SCREEN_RECORDER_WINDOW && hotkey.globalKey.keyCode) {
@@ -641,7 +638,7 @@ void ScreenRecorderWindow::createTrayIcon() {
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
-LRESULT ScreenRecorderWindow::OnHotKey(int hotKeyID, UINT flags, UINT vk) {
+LRESULT ScreenRecorderWindow::onHotKey(int hotKeyID, UINT flags, UINT vk) {
     if (hotKeyID < 0 || hotKeyID >= hotkeys_->size()) {
         return 0;
     }

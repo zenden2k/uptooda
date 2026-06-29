@@ -1,9 +1,9 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-04 19:33+0300\n"
+"POT-Creation-Date: 2026-06-29 15:30+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/image-uploader/"
@@ -125,7 +125,7 @@ msgstr ""
 " %i% - fájlszámláló,\n"
 "%cx% - szélesség,  %cy% - magasság"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:623
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "%s (screen recording)"
@@ -465,7 +465,7 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr "Hiba történt,  a frissítési információk fogadásakor a szerverről."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
@@ -670,7 +670,7 @@ msgstr "Ecset"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:487
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -723,7 +723,7 @@ msgid ""
 msgstr "Nem lehet másolni a fájlt "
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -1005,7 +1005,7 @@ msgstr "Összetevő neve"
 msgid "Components:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:547
 #, fuzzy
 #| msgid "Documentation"
 msgid "Concatenation..."
@@ -1056,7 +1056,7 @@ msgstr "UNC elérési út konvertálása \"\\\\ to \"\"file://///\"\"\""
 msgid "Converting history"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:549
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1177,7 +1177,7 @@ msgstr "Nem sikerült hitelesíteni. Próbálja újra."
 msgid "Could not find a video stream."
 msgstr "Nem sikerült hozzáadni a kiszolgálót."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1490,11 +1490,12 @@ msgstr "A szöveg:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:109
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:525
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:180
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
@@ -1606,7 +1607,7 @@ msgstr ""
 msgid "FTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:221
 #, fuzzy, c-format
 #| msgid "Failed to load folder list."
 msgid "Failed to create the directory '%s'."
@@ -1685,10 +1686,6 @@ msgid ""
 "Mime-Type: %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
-msgid "File name cannot contains forbidden characters!"
-msgstr "A fájlnév nem tartalmazhat tiltott karaktereket!"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:48
 msgid "File size exceeding"
 msgstr "A fájl mérete meghaladja a..."
@@ -1706,6 +1703,17 @@ msgid "File: "
 msgstr "Fájl: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename (or path) template:"
+msgstr "Fájlnév formátum:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#, fuzzy
+#| msgid "Filename format:"
+msgid "Filename and path template:"
+msgstr "Fájlnév formátum:"
+
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
 msgid "Filename format:"
 msgstr "Fájlnév formátum:"
@@ -1752,7 +1760,7 @@ msgid "Filters"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:469
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
 msgid "Finish"
 msgstr "Kész"
@@ -1953,7 +1961,7 @@ msgstr "Videó fájlok"
 msgid "Height:"
 msgstr "Magasság:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:115
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
@@ -2591,8 +2599,8 @@ msgid "Paste a link to shorten it:"
 msgstr "Illesszen be egy linket, hogy lerövidítse:"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:70
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:470
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Pause"
 msgstr ""
 
@@ -2809,8 +2817,8 @@ msgstr "Távolítsa el ezt a fiókot a listáról (nem a távoli kiszolgálóró
 msgid "Resize mode:"
 msgstr "Átméretezés:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:479
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:535
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:475
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 msgid "Resume"
 msgstr ""
 
@@ -3063,7 +3071,7 @@ msgid "Select all"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:378
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:211
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:232
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
@@ -3478,6 +3486,19 @@ msgstr "A szerver neve nem lehet üres"
 #, fuzzy
 #| msgid "File name cannot contains forbidden characters!"
 msgid "The file name contains forbidden characters."
+msgstr "A fájlnév nem tartalmazhat tiltott karaktereket!"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:156
+#, fuzzy
+#| msgid "Server's name cannot be empty"
+msgid "The filename template cannot be empty!"
+msgstr "A szerver neve nem lehet üres"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:162
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:117
+#, fuzzy
+#| msgid "File name cannot contains forbidden characters!"
+msgid "The filename template contains forbidden characters!"
 msgstr "A fájlnév nem tartalmazhat tiltott karaktereket!"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
@@ -3895,7 +3916,7 @@ msgstr "Részletek megtekintése a naplófájlból."
 msgid "Waiting for child tasks"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:219
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:189
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -4000,6 +4021,16 @@ msgstr "Teljes képernyő vagy kijelölt terület mentése"
 msgid "and/or height:"
 msgstr "és/vagy magasság:"
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#, fuzzy
+#| msgid "Account..."
+msgid "counter"
+msgstr "Fiók..."
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+msgid "day"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 #, fuzzy
 #| msgid "Extracting frames from video"
@@ -4026,6 +4057,10 @@ msgstr ""
 msgid "high quality (100)"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+msgid "hour"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 #, fuzzy
 #| msgid "By height"
@@ -4041,6 +4076,14 @@ msgstr "Szélesség módosítása:"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
 msgid "low quality (0)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+msgid "minute"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+msgid "month"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
@@ -4069,6 +4112,10 @@ msgstr ""
 msgid "sec"
 msgstr "mp."
 
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+msgid "second"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 #, fuzzy
 #| msgid "Single file"
@@ -4088,6 +4135,25 @@ msgstr "LaMoLa"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "Véletlen szerver"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#, fuzzy
+#| msgid "By height"
+msgid "video height"
+msgstr "magasság szerint"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#, fuzzy
+#| msgid "Change width:"
+msgid "video width"
+msgstr "Szélesség módosítása:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
+msgid "year"
+msgstr ""
+
+#~ msgid "File name cannot contains forbidden characters!"
+#~ msgstr "A fájlnév nem tartalmazhat tiltott karaktereket!"
 
 #~ msgid "a tool for advanced users"
 #~ msgstr "Részletes beállítások hozzáértők számára"
