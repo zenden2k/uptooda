@@ -2,7 +2,9 @@
 
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Utils/StringUtils.h"
+#include "Gui/Interfaces/IFavoriteServers.h"
 
 namespace {
 
@@ -21,7 +23,7 @@ size_t StringSearch(const std::string& str1, const std::string& str2) {
 
 }
 
-ServerListModel::ServerListModel(CMyEngineList* engineList) : engineList_(engineList) {
+ServerListModel::ServerListModel(CMyEngineList* engineList, IFavoriteServers* favoriteServers) : engineList_(engineList), favoriteServers_(favoriteServers) {
     updateEngineList();
 }
 
@@ -69,7 +71,12 @@ std::string ServerListModel::getItemText(int row, int column) const {
 
 uint32_t ServerListModel::getItemColor(int row) const {
     const ServerData& serverData = getDataByIndex(row);
-    return serverData.color;
+    std::string name = serverData.ued->Name;
+    if (favoriteServers_->isServerFavorite(name)) {
+        return RGB(56,176, 0); // Green
+    }
+
+    return GetSysColor(COLOR_WINDOWTEXT);
 }
 
 size_t ServerListModel::getCount() const {

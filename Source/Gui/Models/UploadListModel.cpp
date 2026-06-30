@@ -6,17 +6,17 @@
 #include "Core/i18n/Translator.h"
 #include "Core/Upload/UrlShorteningTask.h"
 
-UploadListModel::UploadListModel(std::shared_ptr<UploadSession> session) {
+UploadListModel::UploadListModel(const std::shared_ptr<UploadSession>& session) {
     int n = session->taskCount();
     for (int i = 0; i < n; i++) {
         auto task = session->getTask(i);
         auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task);
         using namespace std::placeholders;
-        task->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
-        task->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
-        task->addTaskFinishedCallback(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
-        task->addChildTaskAddedCallback(std::bind(&UploadListModel::onChildTaskAdded, this, _1));
-        UploadListItem *sd = new UploadListItem();
+        task->setOnUploadProgressCallback([this](auto && PH1) { onTaskUploadProgress(std::forward<decltype(PH1)>(PH1)); });
+        task->setOnStatusChangedCallback([this](auto && PH1) { onTaskStatusChanged(std::forward<decltype(PH1)>(PH1)); });
+        task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+        task->addChildTaskAddedCallback([this](auto && PH1) { onChildTaskAdded(std::forward<decltype(PH1)>(PH1)); });
+        auto *sd = new UploadListItem();
         sd->tableRow = i;
         sd->setStatusText(TR("In queue"));
         sd->setFileName(U2W(fileTask->getFileName()));
@@ -37,7 +37,7 @@ CString UploadListModel::getItemText(int row, int column) const {
     if (row < 0 || row >= static_cast<int>(items_.size())) {
         return {};
     }
-    UploadListItem* serverData = items_[row];
+    const UploadListItem* serverData = items_[row];
     if (column == 0) {
         return serverData->displayName() + _T(" [") + serverData->serverName() + _T("]");
     } 
@@ -54,9 +54,8 @@ COLORREF UploadListModel::getItemTextColor(size_t row, int column) const {
     if (column == 1 && row < items_.size()) {
         const UploadListItem& serverData = *items_[row];
         return serverData.color();
-    } else {
-        return GetSysColor(COLOR_WINDOWTEXT);
     }
+    return GetSysColor(COLOR_WINDOWTEXT);
 }
 
 size_t UploadListModel::getCount() const {
@@ -69,7 +68,7 @@ void UploadListModel::notifyRowChanged(size_t row) {
     }
 }
 
-UploadListItem* UploadListModel::getDataByIndex(size_t row) {
+UploadListItem* UploadListModel::getDataByIndex(size_t row) const {
     if (row >= items_.size()) {
         return nullptr;
     }
@@ -116,12 +115,12 @@ void UploadListModel::onTaskUploadProgress(UploadTask* task) {
 
 void UploadListModel::onTaskStatusChanged(UploadTask* task) {
     UploadProgress* progress = task->progress();
-    UploadListItem* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+    auto* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
     if (!fps) {
         return;
     }
 
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
         CString statusText = IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
 
@@ -134,7 +133,7 @@ void UploadListModel::onTaskStatusChanged(UploadTask* task) {
         notifyRowChanged(fps->tableRow);
     }
 
-    UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
+    auto* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     if (urlTask) {
         UploadTask* parentTask = urlTask->parentTask();
         if (urlTask->isFinished() && parentTask && parentTask->isFinished()) {
@@ -148,20 +147,20 @@ void UploadListModel::onTaskStatusChanged(UploadTask* task) {
 
 // This callback is being executed in worker thread
 void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask) {
         return;
     }
 
     if (fileTask->role() == UploadTask::ThumbRole) {
-        UploadListItem* fps = static_cast<UploadListItem*>(task->parentTask()->userData());
+        auto* fps = static_cast<UploadListItem*>(task->parentTask()->userData());
         if (!fps) {
             return;
         }
         fps->setThumbStatusText(TR("Finished"));
         notifyRowChanged(fps->tableRow);
     } else if (fileTask->role() == UploadTask::DefaultRole ){
-        UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
+        auto* fps = static_cast<UploadListItem*>(task->userData());
         if (fileTask->status() == UploadTask::StatusFinished) {
             fps->setColor(RGB(34, 150, 16));// green
         }
@@ -173,12 +172,12 @@ void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
 
 void UploadListModel::onChildTaskAdded(UploadTask* child) {
     if (child->role() == UploadTask::UrlShorteningRole) {
-        UploadListItem* fps = static_cast<UploadListItem*>(child->parentTask()->userData());
+        auto* fps = static_cast<UploadListItem*>(child->parentTask()->userData());
         fps->setStatusText(TR("Shortening link..."));
         notifyRowChanged(fps->tableRow);
     }
     using namespace std::placeholders;
-    child->addTaskFinishedCallback(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
-    child->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
-    child->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
+    child->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+    child->setOnUploadProgressCallback([this](auto && PH1) { onTaskUploadProgress(std::forward<decltype(PH1)>(PH1)); });
+    child->setOnStatusChangedCallback([this](auto && PH1) { onTaskStatusChanged(std::forward<decltype(PH1)>(PH1)); });
 }

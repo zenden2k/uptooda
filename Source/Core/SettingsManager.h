@@ -25,6 +25,8 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <type_traits>
+#include <utility>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
@@ -41,34 +43,56 @@ class SettingsNodeBase
         virtual ~SettingsNodeBase() = default;
 };
 
-template <class T>
-std::string myToString(const T& value) {
+// Проверка: есть ли у типа begin()/end()
+template <typename T, typename = void>
+struct has_begin_end : std::false_type {};
+
+template <typename T>
+struct has_begin_end<T, std::void_t<decltype(std::begin(std::declval<T>()),
+                                              std::end(std::declval<T>()))>>
+    : std::true_type {};
+
+// "Настоящий контейнер" = есть begin/end И это не std::string
+template <typename T>
+struct is_container
+    : std::integral_constant<bool,
+          has_begin_end<T>::value && !std::is_same<std::decay_t<T>, std::string>::value>
+{};
+
+// Перегрузка для контейнеров
+template <typename Container,
+          typename std::enable_if<is_container<Container>::value, int>::type = 0>
+std::string myToString(const Container& value)
+{
+    return IuStringUtils::Join(value, ";");
+}
+
+// Перегрузка для всего остального (включая std::string, int, double и т.п.)
+template <typename T,
+          typename std::enable_if<!is_container<T>::value, int>::type = 0>
+std::string myToString(const T& value)
+{
     std::stringstream str;
     str << value;
     return str.str();
 }
 
-inline std::string myToString(const std::vector<std::string>& value)
+// Перегрузка для контейнеров
+template <typename Container,
+          typename std::enable_if<is_container<Container>::value, int>::type = 0>
+void myFromString(const std::string& text, Container& value)
 {
-    return IuStringUtils::Join(value, ";");
-}
-
-inline void myFromString(const std::string& text, std::vector<std::string>& value) {
     value.clear();
     IuStringUtils::Split(text, ";", value);
 }
 
-
-template<class T> void myFromString(const std::string& text, T & value)
+// Перегрузка для всего остального (включая std::string, int, double и т.п.)
+template <typename T,
+          typename std::enable_if<!is_container<T>::value, int>::type = 0>
+void myFromString(const std::string& text, T& value)
 {
-   std::stringstream str(text);
-   str >> value;
-}
-
-template<class T, class T2> void myFromString(const std::string& text, T & value)
-{
-   std::stringstream str(text);
-   str >> value;
+    std::stringstream str(text);
+    str >> value;
 }
 
 inline void myFromString(const std::string& text, std::string & value)

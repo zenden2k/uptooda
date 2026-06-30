@@ -99,7 +99,7 @@ inline void myFromString(const std::string& text, Gdiplus::Color& value)
 class WtlGuiSettings : public CommonGuiSettings {
 public:
     WtlGuiSettings();
-    ~WtlGuiSettings();
+    ~WtlGuiSettings() override;
 
     void setFloatWnd(CFloatingWindow* floatWnd);
     ImageEditorSettingsStruct ImageEditorSettings;

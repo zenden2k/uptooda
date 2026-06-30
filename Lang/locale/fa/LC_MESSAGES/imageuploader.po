@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 15:30+0300\n"
+"POT-Creation-Date: 2026-06-30 18:46+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/image-uploader/"
@@ -138,7 +138,7 @@ msgstr ""
 msgid "%s Updates"
 msgstr ""
 
-#: ../Source/Gui/Models/UploadListModel.cpp:105
+#: ../Source/Gui/Models/UploadListModel.cpp:104
 #, c-format
 msgid "%s of %s (%d%%) %s"
 msgstr ""
@@ -210,7 +210,7 @@ msgstr "...درباره"
 msgid "Access:"
 msgstr "دستیابی:"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:39
+#: ../Source/Gui/Controls/ServerListView.cpp:36
 #, fuzzy
 #| msgid "Specify account..."
 msgid "Account"
@@ -246,7 +246,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:620
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:621
 #, fuzzy, c-format
 #| msgid "Choose server..."
 msgid "Add %s server..."
@@ -293,7 +293,7 @@ msgstr ""
 msgid "Add files..."
 msgstr "افزودن فایل ها"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:622
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
 #, fuzzy
 #| msgid "Add Folder..."
 msgid "Add folder as new server..."
@@ -335,6 +335,10 @@ msgstr "افزودن متن به عکس"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
 msgid "Add to Wizard"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
+msgid "Add to favorites"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:536
@@ -381,7 +385,7 @@ msgstr "توجه:"
 msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr ""
@@ -691,7 +695,7 @@ msgstr "نمیتوان تصویر کوچک را برای عکس بارگیری �
 msgid "Cannot open documentation: "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:681
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -843,7 +847,7 @@ msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:74
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:675
 msgid "Choose server"
 msgstr "انتخاب سرور"
@@ -1454,7 +1458,7 @@ msgstr "متن را وارد کنید:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:684
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1594,7 +1598,7 @@ msgstr ""
 msgid "File"
 msgstr "فایل"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
 #, fuzzy
 #| msgid "File"
 msgctxt "serverlist.servertype"
@@ -1629,7 +1633,7 @@ msgstr ""
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "فایل تجاوز کرده از اندازه فایل  محدود \"%s\" سرور (%s)."
 
-#: ../Source/Gui/Controls/ServerListView.cpp:40
+#: ../Source/Gui/Controls/ServerListView.cpp:37
 #, fuzzy
 #| msgid "Format:"
 msgid "File formats"
@@ -1659,13 +1663,8 @@ msgstr "فایل:"
 msgid "File: "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
-#, fuzzy
-#| msgid "Use template"
-msgid "Filename (or path) template:"
-msgstr "استفاده از قالب"
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #, fuzzy
 #| msgid "Use template"
 msgid "Filename and path template:"
@@ -1731,7 +1730,7 @@ msgid "Finish Screen Recording"
 msgstr ""
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
-#: ../Source/Gui/Models/UploadListModel.cpp:161
+#: ../Source/Gui/Models/UploadListModel.cpp:160
 msgid "Finished"
 msgstr ""
 
@@ -1872,7 +1871,7 @@ msgstr "سراسری"
 msgid "Global hotkey:"
 msgstr "کلید میانبر سراسری:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:733
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:740
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "بروبه صفحه ثبت نام"
@@ -1913,7 +1912,7 @@ msgid "Height:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
 msgstr ""
@@ -1950,7 +1949,7 @@ msgstr "کلید میانبر"
 msgid "I have an account on this server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
 msgid "Icons"
 msgstr ""
 
@@ -1965,7 +1964,7 @@ msgstr "نادیده گرفتن"
 msgid "Ignore all"
 msgstr "نادیده گرفتن"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 #, fuzzy
 #| msgid "Images"
 msgctxt "serverlist.servertype"
@@ -2261,7 +2260,7 @@ msgstr ""
 msgid "MD5 check of the update package failed "
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerListView.cpp:37
+#: ../Source/Gui/Controls/ServerListView.cpp:34
 #, fuzzy
 #| msgid "Filesize: "
 msgid "Max. file size"
@@ -2376,7 +2375,7 @@ msgid "No updates for %s components are available"
 msgstr "بروزرسانی دردسترس هست"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:159
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:158
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:146
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:185
 msgid "None"
@@ -2412,7 +2411,7 @@ msgstr "تعداد فریم ها:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
@@ -2468,7 +2467,7 @@ msgstr ""
 msgid "Open screenshots folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:624
 #, fuzzy
 #| msgid "Open in folder"
 msgid "Open servers folder"
@@ -2481,7 +2480,7 @@ msgid "Open system connection settings"
 msgstr "تنظیمات ارتباط"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:739
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr ""
@@ -2499,7 +2498,7 @@ msgid "Operation was cancelled by user."
 msgstr "اپلود فایل توسط کاربر لغو شده است"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:298
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
 msgstr "گزینه ها"
@@ -2744,6 +2743,12 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:181
 msgid "Remove all"
 msgstr "رفع همه"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:734
+#, fuzzy
+#| msgid "Remove from list"
+msgid "Remove from favorites"
+msgstr "رفع از لیست"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:77
 msgid "Remove from list"
@@ -3025,7 +3030,7 @@ msgid "Selected server: %s"
 msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
-#: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/Gui/Controls/ServerListView.cpp:33
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
@@ -3166,7 +3171,7 @@ msgstr ""
 msgid "Shortening URL \"%s\" using %s"
 msgstr ""
 
-#: ../Source/Gui/Models/UploadListModel.cpp:177
+#: ../Source/Gui/Models/UploadListModel.cpp:176
 msgid "Shortening link..."
 msgstr ""
 
@@ -3286,7 +3291,7 @@ msgstr ""
 msgid "Stopped"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerListView.cpp:38
+#: ../Source/Gui/Controls/ServerListView.cpp:35
 msgid "Storage time (days)"
 msgstr ""
 
@@ -3320,7 +3325,7 @@ msgstr "خلاصه:"
 msgid "Swap colors"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:629
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
 msgid "Table"
 msgstr ""
 
@@ -3743,7 +3748,7 @@ msgstr ""
 msgid "Vertical interval:"
 msgstr "فاصله عمودی:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
 #, fuzzy
 #| msgctxt "settings.menu"
 #| msgid "Video"
@@ -3806,7 +3811,7 @@ msgstr ""
 msgid "View Media File Information"
 msgstr "مشاهده اطلاعات درباره فایل مدیا"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:632
 #, fuzzy
 #| msgid "View"
 msgid "View Mode"
@@ -4002,7 +4007,7 @@ msgstr "چندین فایل"
 msgid "not selected"
 msgstr ""
 
-#: ../Source/Gui/Models/ServerListModel.cpp:246
+#: ../Source/Gui/Models/ServerListModel.cpp:255
 msgctxt "serverlist.account"
 msgid "required"
 msgstr ""
@@ -4050,6 +4055,11 @@ msgstr "تغییر عرض:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
 msgid "year"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Use template"
+#~ msgid "Filename (or path) template:"
+#~ msgstr "استفاده از قالب"
 
 #~ msgid "a tool for advanced users"
 #~ msgstr "یک ابزار برای کاربران حرفه ای"

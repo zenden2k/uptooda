@@ -45,13 +45,14 @@ constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_I
 // CServerListPopup
 CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType, int serverIndex, bool isChildWindow)
     : engineList_(engineList)
-    , serverListModel_(std::make_unique<ServerListModel>(engineList))
+    , settings_(ServiceLocator::instance()->settings<WtlGuiSettings>())
+    , serverListModel_(std::make_unique<ServerListModel>(engineList, settings_))
     , listView_(serverListModel_.get(), serverIconCache)
     , serversMask_(serverMask)
     , selectedServerType_(selectedServerType)
     , serverIndex_(serverIndex)
 {
-    settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     auto ued = engineList->byIndex(serverIndex);
     if (ued && ((selectedServerType & ued->TypeMask) == 0)) {
         // Fix current server type to ensure that current server is visible
@@ -719,9 +720,9 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
     if (hti.iItem >= 0) {
         constexpr auto ID_OPENREGISTERURL = 11000;
         constexpr auto ID_OPENWEBSITE = 11001;
+        constexpr auto ID_ADDTOFAVORITES = 11002;
+        constexpr auto ID_REMOVEFROMFAVORITES = 11003;
 
-        const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
-        auto* engineList = ServiceLocator::instance()->engineList();
         const ServerData& data = serverListModel_->getDataByIndex(hti.iItem);
         if (!data.ued) {
             return 0;
@@ -729,17 +730,31 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
 
+        if (settings->isServerFavorite(data.ued->Name)) {
+            contextMenu.AppendMenu(MF_STRING, ID_REMOVEFROMFAVORITES, TR("Remove from favorites"));
+        } else {
+            contextMenu.AppendMenu(MF_STRING, ID_ADDTOFAVORITES, TR("Add to favorites"));
+        }
+
         contextMenu.AppendMenu(MF_STRING | (data.ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
         contextMenu.AppendMenu(MF_STRING | (data.ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENREGISTERURL, TR("Go to signup page"));
 
         BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x, ScreenPoint.y, m_hWnd);
         switch (res) {
-        case ID_OPENWEBSITE:
-            WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->WebsiteUrl), m_hWnd);
-            break;
-        case ID_OPENREGISTERURL:
-            WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->RegistrationUrl), m_hWnd);
-            break;
+            case ID_OPENWEBSITE:
+                WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->WebsiteUrl), m_hWnd);
+                break;
+            case ID_OPENREGISTERURL:
+                WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->RegistrationUrl), m_hWnd);
+                break;
+            case ID_ADDTOFAVORITES:
+                settings->addServerToFavorites(data.ued->Name);
+                applyFilter(false);
+                break;
+            case ID_REMOVEFROMFAVORITES:
+                settings->removeServerFromFavorites(data.ued->Name);
+                applyFilter(false);
+                break;
         }
     }
     return 0;

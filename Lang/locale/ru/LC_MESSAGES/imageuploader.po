@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 15:30+0300\n"
-"PO-Revision-Date: 2026-06-29 15:30+0300\n"
+"POT-Creation-Date: 2026-06-30 18:46+0300\n"
+"PO-Revision-Date: 2026-06-30 18:46+0300\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ru/>\n"
@@ -148,7 +148,7 @@ msgstr "%s - Доступны обновления"
 msgid "%s Updates"
 msgstr "Обновления %s"
 
-#: ../Source/Gui/Models/UploadListModel.cpp:105
+#: ../Source/Gui/Models/UploadListModel.cpp:104
 #, c-format
 msgid "%s of %s (%d%%) %s"
 msgstr "%s из %s (%d%%) %s"
@@ -224,7 +224,7 @@ msgstr "О программе..."
 msgid "Access:"
 msgstr "Доступ:"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:39
+#: ../Source/Gui/Controls/ServerListView.cpp:36
 msgid "Account"
 msgstr "Аккаунт"
 
@@ -258,7 +258,7 @@ msgstr "Активный режим"
 msgid "Add"
 msgstr "Добавить"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:620
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:621
 #, c-format
 msgid "Add %s server..."
 msgstr "Добавить %s сервер..."
@@ -300,7 +300,7 @@ msgstr "Добавить пункт в контекстное меню пров�
 msgid "Add files..."
 msgstr "Добавить файлы..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:622
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
 msgid "Add folder as new server..."
 msgstr "Добавить папку как сервер..."
 
@@ -335,6 +335,10 @@ msgstr "Добавить текст на картинку"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
 msgid "Add to Wizard"
 msgstr "Добавить в мастер"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
+msgid "Add to favorites"
+msgstr "Добавить в избранное"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:536
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1000
@@ -378,7 +382,7 @@ msgstr "Совет:"
 msgid "Aero only (Windows Vista or later)"
 msgstr "Только для Aero (Windows Vista и новее)"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr "Все"
@@ -691,7 +695,7 @@ msgstr "Невозможно загрузить миниатюру к файлу
 msgid "Cannot open documentation: "
 msgstr "Не могу открыть документацию: "
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:681
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -844,7 +848,7 @@ msgstr "Выберите программу"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:74
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:675
 msgid "Choose server"
 msgstr "Выберите сервер"
@@ -1430,7 +1434,7 @@ msgstr "Введите текст:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:684
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1568,7 +1572,7 @@ msgstr "Получение файловой системы..."
 msgid "File"
 msgstr "Файл"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
 msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "Файлы"
@@ -1605,7 +1609,7 @@ msgstr ""
 "Размер файла превышает максимальный размер, допустимый для загрузки на "
 "сервер %s (%s)."
 
-#: ../Source/Gui/Controls/ServerListView.cpp:40
+#: ../Source/Gui/Controls/ServerListView.cpp:37
 msgid "File formats"
 msgstr "Форматы файлов"
 
@@ -1636,11 +1640,8 @@ msgstr "Файл:"
 msgid "File: "
 msgstr "Файл: "
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
-msgid "Filename (or path) template:"
-msgstr "Шаблон имени файла и пути:"
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 msgid "Filename and path template:"
 msgstr "Шаблон имени файла и пути:"
 
@@ -1704,7 +1705,7 @@ msgid "Finish Screen Recording"
 msgstr "Завершить запись экрана"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
-#: ../Source/Gui/Models/UploadListModel.cpp:161
+#: ../Source/Gui/Models/UploadListModel.cpp:160
 msgid "Finished"
 msgstr "Завершено"
 
@@ -1842,7 +1843,7 @@ msgstr "Глобальные"
 msgid "Global hotkey:"
 msgstr "Глобальная комбинация:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:733
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:740
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "Открыть страницу регистрации"
@@ -1881,7 +1882,7 @@ msgid "Height:"
 msgstr "Высота:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
 msgstr "Помощь"
@@ -1918,7 +1919,7 @@ msgstr "Горячие клавиши"
 msgid "I have an account on this server"
 msgstr "У меня есть учетная запись на этом сервере"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
 msgid "Icons"
 msgstr "Иконки"
 
@@ -1931,7 +1932,7 @@ msgstr "Игнорировать"
 msgid "Ignore all"
 msgstr "Игнорировать все"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 msgctxt "serverlist.servertype"
 msgid "Image"
 msgstr "Изображения"
@@ -2223,7 +2224,7 @@ msgstr "Проверка MD5 не удалась для файла "
 msgid "MD5 check of the update package failed "
 msgstr "Проверка MD5 не удалась для пакета обновления "
 
-#: ../Source/Gui/Controls/ServerListView.cpp:37
+#: ../Source/Gui/Controls/ServerListView.cpp:34
 msgid "Max. file size"
 msgstr "Макс. размер файла"
 
@@ -2335,7 +2336,7 @@ msgid "No updates for %s components are available"
 msgstr "Нет доступных обновлений для компонентов %s"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:159
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:158
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:146
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:185
 msgid "None"
@@ -2369,7 +2370,7 @@ msgstr "Кол-во кадров:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
@@ -2425,7 +2426,7 @@ msgstr "Открыть скриншот в редакторе"
 msgid "Open screenshots folder"
 msgstr "Открыть папку со снимками"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:624
 msgid "Open servers folder"
 msgstr "Открыть папку с серверами"
 
@@ -2434,7 +2435,7 @@ msgid "Open system connection settings"
 msgstr "Открыть системные настройки подключений"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:739
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr "Открыть веб-сайт"
@@ -2450,7 +2451,7 @@ msgid "Operation was cancelled by user."
 msgstr "Операция была прервана пользователем."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:298
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
 msgstr "Опции"
@@ -2698,6 +2699,10 @@ msgstr "Удалить элемент"
 #: ../Source/Gui/Dialogs/MainDlg.cpp:181
 msgid "Remove all"
 msgstr "Удалить всё"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:734
+msgid "Remove from favorites"
+msgstr "Удалить из избранного"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:77
 msgid "Remove from list"
@@ -2968,7 +2973,7 @@ msgid "Selected server: %s"
 msgstr "Выбран сервер: %s"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
-#: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/Gui/Controls/ServerListView.cpp:33
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
@@ -3107,7 +3112,7 @@ msgstr "Сократить ссылку из буфера"
 msgid "Shortening URL \"%s\" using %s"
 msgstr "Cокращаю ссылку \"%s\" с помощью %s"
 
-#: ../Source/Gui/Models/UploadListModel.cpp:177
+#: ../Source/Gui/Models/UploadListModel.cpp:176
 msgid "Shortening link..."
 msgstr "Сокращение ссылки..."
 
@@ -3225,7 +3230,7 @@ msgstr "Прервать загрузку"
 msgid "Stopped"
 msgstr "Остановлено"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:38
+#: ../Source/Gui/Controls/ServerListView.cpp:35
 msgid "Storage time (days)"
 msgstr "Время хран. (дней)"
 
@@ -3259,7 +3264,7 @@ msgstr "Описание:"
 msgid "Swap colors"
 msgstr "Обменять цвета"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:629
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
 msgid "Table"
 msgstr "Таблица"
 
@@ -3677,7 +3682,7 @@ msgstr "ВИДЕО %s"
 msgid "Vertical interval:"
 msgstr "Вертикальный промежуток:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
 msgctxt "serverlist.servertype"
 msgid "Video"
 msgstr "Видео"
@@ -3729,7 +3734,7 @@ msgstr "Коды BBCode/HTML"
 msgid "View Media File Information"
 msgstr "Информация о медиафайле"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:632
 msgid "View Mode"
 msgstr "Вид"
 
@@ -3910,7 +3915,7 @@ msgstr "множество файлов"
 msgid "not selected"
 msgstr "не выбран"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:246
+#: ../Source/Gui/Models/ServerListModel.cpp:255
 msgctxt "serverlist.account"
 msgid "required"
 msgstr "нужен"
@@ -3952,6 +3957,9 @@ msgstr "ширина видео"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
 msgid "year"
 msgstr "год"
+
+#~ msgid "Filename (or path) template:"
+#~ msgstr "Шаблон имени файла и пути:"
 
 #~ msgid "File name cannot contains forbidden characters!"
 #~ msgstr "Имя файла содержит запрещенные символы!"

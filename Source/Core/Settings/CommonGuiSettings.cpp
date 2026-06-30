@@ -184,6 +184,21 @@ void CommonGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
     }
 }
 
+bool CommonGuiSettings::isServerFavorite(const std::string& server) {
+    return FavoriteServers.find(server) != FavoriteServers.end();
+}
+
+void CommonGuiSettings::addServerToFavorites(const std::string& serverId) {
+    FavoriteServers.insert(serverId);
+}
+
+void CommonGuiSettings::removeServerFromFavorites(const std::string& serverId) {
+    auto it = FavoriteServers.find(serverId);
+    if (it != FavoriteServers.end()) {
+        FavoriteServers.erase(it);
+    }
+}
+
 void CommonGuiSettings::BindToManager() {
     BasicSettings::BindToManager();
     SettingsNode& upload = mgr_["Uploading"];
@@ -191,6 +206,7 @@ void CommonGuiSettings::BindToManager() {
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);
     DefaultImageUploadParams.bind(upload["DefaultImageUploadParams"]);
+    mgr_.n_bind(FavoriteServers);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 15:30+0300\n"
+"POT-Creation-Date: 2026-06-30 18:46+0300\n"
 "PO-Revision-Date: 2025-08-24 20:38+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -137,7 +137,7 @@ msgstr "%s - 업데이트 사용 가능"
 msgid "%s Updates"
 msgstr "%s 업데이트"
 
-#: ../Source/Gui/Models/UploadListModel.cpp:105
+#: ../Source/Gui/Models/UploadListModel.cpp:104
 #, c-format
 msgid "%s of %s (%d%%) %s"
 msgstr "%s / %s (%d%%) %s"
@@ -211,7 +211,7 @@ msgstr "정보..."
 msgid "Access:"
 msgstr "액세스:"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:39
+#: ../Source/Gui/Controls/ServerListView.cpp:36
 msgid "Account"
 msgstr "계정"
 
@@ -245,7 +245,7 @@ msgstr "활성 연결"
 msgid "Add"
 msgstr "추가"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:620
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:621
 #, c-format
 msgid "Add %s server..."
 msgstr "%s 서버 추가..."
@@ -287,7 +287,7 @@ msgstr "Windows 탐색기의 컨텍스트 메뉴에 항목 추가"
 msgid "Add files..."
 msgstr "파일 추가..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:622
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
 msgid "Add folder as new server..."
 msgstr "새 서버로 폴더 추가..."
 
@@ -322,6 +322,12 @@ msgstr "이미지에 텍스트 추가"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
 msgid "Add to Wizard"
 msgstr "마법사에 추가"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
+#, fuzzy
+#| msgid "Add to the list"
+msgid "Add to favorites"
+msgstr "목록에 추가"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:536
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1000
@@ -365,7 +371,7 @@ msgstr "팁:"
 msgid "Aero only (Windows Vista or later)"
 msgstr "에어로 전용 (Windows Vista 이상)"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr "모두"
@@ -674,7 +680,7 @@ msgstr "이미지의 썸네일을 로드할 수 없습니다."
 msgid "Cannot open documentation: "
 msgstr "문서를 열 수 없습니다: "
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:681
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -827,7 +833,7 @@ msgstr "프로그램 선택"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:74
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:675
 msgid "Choose server"
 msgstr "서버 선택"
@@ -1413,7 +1419,7 @@ msgstr "텍스트 입력:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:183
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:201
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:683
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:684
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1551,7 +1557,7 @@ msgstr "파일 시스템을 가져오는 중..."
 msgid "File"
 msgstr "파일"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
 msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "파일"
@@ -1586,7 +1592,7 @@ msgstr ""
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "파일이 \"%s\" 서버의 파일 크기 제한(%s)을 초과합니다."
 
-#: ../Source/Gui/Controls/ServerListView.cpp:40
+#: ../Source/Gui/Controls/ServerListView.cpp:37
 msgid "File formats"
 msgstr "파일 형식"
 
@@ -1617,13 +1623,8 @@ msgstr "파일:"
 msgid "File: "
 msgstr "파일: "
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
-#, fuzzy
-#| msgid "Filename format:"
-msgid "Filename (or path) template:"
-msgstr "파일 이름 형식:"
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #, fuzzy
 #| msgid "Filename format:"
 msgid "Filename and path template:"
@@ -1689,7 +1690,7 @@ msgid "Finish Screen Recording"
 msgstr "화면 녹화 완료"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
-#: ../Source/Gui/Models/UploadListModel.cpp:161
+#: ../Source/Gui/Models/UploadListModel.cpp:160
 msgid "Finished"
 msgstr "완료"
 
@@ -1827,7 +1828,7 @@ msgstr "전역"
 msgid "Global hotkey:"
 msgstr "전역 단축키:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:733
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:740
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "가입 페이지로 이동"
@@ -1866,7 +1867,7 @@ msgid "Height:"
 msgstr "높이:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:99
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
 msgstr "도움말"
@@ -1903,7 +1904,7 @@ msgstr "단축키"
 msgid "I have an account on this server"
 msgstr "이 서버의 계정이 있습니다"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
 msgid "Icons"
 msgstr ""
 
@@ -1916,7 +1917,7 @@ msgstr "무시"
 msgid "Ignore all"
 msgstr "모두 무시"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 msgctxt "serverlist.servertype"
 msgid "Image"
 msgstr "이미지"
@@ -2205,7 +2206,7 @@ msgstr "파일의 MD5 검사 실패 "
 msgid "MD5 check of the update package failed "
 msgstr "업데이트 패키지의 MD5 검사 실패 "
 
-#: ../Source/Gui/Controls/ServerListView.cpp:37
+#: ../Source/Gui/Controls/ServerListView.cpp:34
 msgid "Max. file size"
 msgstr "최대 파일 크기"
 
@@ -2317,7 +2318,7 @@ msgid "No updates for %s components are available"
 msgstr "%s 구성 요소에 대한 업데이트가 없습니다"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:159
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:158
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:146
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:185
 msgid "None"
@@ -2351,7 +2352,7 @@ msgstr "프레임 수:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
@@ -2407,7 +2408,7 @@ msgstr "편집기에서 스크린샷 열기"
 msgid "Open screenshots folder"
 msgstr "스크린샷 폴더 열기"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:624
 msgid "Open servers folder"
 msgstr "스크린샷 폴더 열기"
 
@@ -2416,7 +2417,7 @@ msgid "Open system connection settings"
 msgstr "시스템 연결 설정 열기"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:739
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr "웹사이트 열기"
@@ -2432,7 +2433,7 @@ msgid "Operation was cancelled by user."
 msgstr "사용자가 작업을 취소했습니다."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:298
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
 msgstr "옵션"
@@ -2678,6 +2679,12 @@ msgstr "항목 제거"
 #: ../Source/Gui/Dialogs/MainDlg.cpp:181
 msgid "Remove all"
 msgstr "모두 제거"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:734
+#, fuzzy
+#| msgid "Remove from list"
+msgid "Remove from favorites"
+msgstr "목록에서 제거"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:77
 msgid "Remove from list"
@@ -2947,7 +2954,7 @@ msgid "Selected server: %s"
 msgstr "선택한 서버: %s"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
-#: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/Gui/Controls/ServerListView.cpp:33
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
@@ -3086,7 +3093,7 @@ msgstr "클립보드에서 링크 단축"
 msgid "Shortening URL \"%s\" using %s"
 msgstr "%s 사용하여 URL \"%s\" 단축"
 
-#: ../Source/Gui/Models/UploadListModel.cpp:177
+#: ../Source/Gui/Models/UploadListModel.cpp:176
 msgid "Shortening link..."
 msgstr "링크 단축 중..."
 
@@ -3204,7 +3211,7 @@ msgstr "업로드 중지"
 msgid "Stopped"
 msgstr "중지됨"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:38
+#: ../Source/Gui/Controls/ServerListView.cpp:35
 msgid "Storage time (days)"
 msgstr "보관 시간(일)"
 
@@ -3238,7 +3245,7 @@ msgstr "요약:"
 msgid "Swap colors"
 msgstr "색상 교체"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:629
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
 msgid "Table"
 msgstr ""
 
@@ -3659,7 +3666,7 @@ msgstr "비디오 %s"
 msgid "Vertical interval:"
 msgstr "수직 간격:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
 msgctxt "serverlist.servertype"
 msgid "Video"
 msgstr "비디오"
@@ -3711,7 +3718,7 @@ msgstr "BBCode/HTML 코드 보기"
 msgid "View Media File Information"
 msgstr "미디어 파일 정보 보기"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:631
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:632
 #, fuzzy
 #| msgid "View"
 msgid "View Mode"
@@ -3895,7 +3902,7 @@ msgstr "다중 파일"
 msgid "not selected"
 msgstr "선택 안됨"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:246
+#: ../Source/Gui/Models/ServerListModel.cpp:255
 msgctxt "serverlist.account"
 msgid "required"
 msgstr "필수"
@@ -3941,6 +3948,11 @@ msgstr "이미지 너비"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:247
 msgid "year"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Filename format:"
+#~ msgid "Filename (or path) template:"
+#~ msgstr "파일 이름 형식:"
 
 #~ msgid "File name cannot contains forbidden characters!"
 #~ msgstr "파일 이름에 금지된 문자를 포함할 수 없습니다!"

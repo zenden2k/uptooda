@@ -10,6 +10,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
 
+class IFavoriteServers;
 class CUploadEngineData;
 class CMyEngineList;
 class UploadEngineManager;
@@ -60,7 +61,7 @@ public:
         tcStorageTime,
         tcAccount,
         tcFileFormats };
-    ServerListModel(CMyEngineList* engineList);
+    ServerListModel(CMyEngineList* engineList, IFavoriteServers* favoriteServers);
     ~ServerListModel();
     void updateEngineList();
     std::string getItemText(int row, int column) const;
@@ -83,6 +84,7 @@ protected:
     std::function<void(size_t)> itemCountChangedCallback_;
     std::function<void()> iconsChangedCallback_;
     ServerFilter filter_;
+    IFavoriteServers* favoriteServers_;
     DISALLOW_COPY_AND_ASSIGN(ServerListModel);
 };
 

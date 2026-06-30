@@ -55,12 +55,11 @@ public:
 class FileFormatCheckErrorModel {
 public:
     FileFormatCheckErrorModel(IFileList* fileList, const std::vector<BadFileFormat>&);
-    ~FileFormatCheckErrorModel();
     std::string getItemText(int row, int column) const;
     uint32_t getItemColor(int row) const;
     size_t getCount() const;
-    void notifyRowChanged(size_t row);
-    FileFormatModelData* getDataByIndex(size_t row);
+    void notifyRowChanged(size_t row) const;
+    FileFormatModelData* getDataByIndex(size_t row) const;
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void resetData();
     size_t hasItemsWithStatus(FileFormatModelData::RowStatus status) const;

@@ -335,6 +335,7 @@ set(HEADER_LIST
     Models/ServerListModel.h
     FileList.h
     ../resource.h
+		Interfaces/IFavoriteServers.h
 )
 
 if (IU_ENABLE_MEDIAINFO)

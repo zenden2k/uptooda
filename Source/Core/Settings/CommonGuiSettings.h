@@ -5,11 +5,13 @@
 
 
 #include <map>
+#include <unordered_set>
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ServerProfile.h"
 #include "BasicSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
+#include "Gui/Interfaces/IFavoriteServers.h"
 
 #ifdef IU_QT
     #include <QString>
@@ -112,10 +114,10 @@ struct HistorySettingsStruct {
 };
 #endif
 
-class CommonGuiSettings : public BasicSettings {
+class CommonGuiSettings : public BasicSettings, public IFavoriteServers {
     public:   
         CommonGuiSettings();
-        ~CommonGuiSettings();
+        ~CommonGuiSettings() override;
 
         bool UseDirectLinks = true;
 
@@ -125,6 +127,7 @@ class CommonGuiSettings : public BasicSettings {
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
         ImageUploadParams DefaultImageUploadParams;
+        std::unordered_set<std::string> FavoriteServers;
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -160,6 +163,7 @@ class CommonGuiSettings : public BasicSettings {
         bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
         void PostLoadServerProfileGroup(ServerProfileGroup& profile);
         virtual void PostLoadServerProfile(ServerProfile& profile);
+
     public:
         inline static const std::string VideoEngineDirectshow = "DirectShow";
         inline static const std::string VideoEngineDirectshow2 = "DirectShow v2";
@@ -185,5 +189,8 @@ class CommonGuiSettings : public BasicSettings {
         };
 
         static bool IsFFmpegAvailable();
+        bool isServerFavorite(const std::string& serverId) override;
+        void addServerToFavorites(const std::string& serverId);
+        void removeServerFromFavorites(const std::string& serverId);
     };
 #endif

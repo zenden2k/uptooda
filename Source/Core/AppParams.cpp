@@ -62,7 +62,7 @@ void AppParams::setLanguageFile(const std::string& languageFile)
 void AppParams::setTempDirectory(const std::string& directory) {
     tempDirectory_ = directory;
     if (!tempDirectory_.empty()) {
-        int pos = tempDirectory_.length() - 1;
+        size_t pos = tempDirectory_.length() - 1;
         if (tempDirectory_[pos] != '\\' && tempDirectory_[pos] != '/') {
             tempDirectory_ += kPathSeparator;
         }

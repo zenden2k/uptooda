@@ -15,15 +15,12 @@ CServerListView::CServerListView(ServerListModel* model, WinServerIconCache* ser
     , serverIconCache_(serverIconCache) {
     model_->setRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
     model_->setItemCountChangedCallback([this](size_t size) {
-        SetItemCount(size);
+        SetItemCount(static_cast<int>(size));
     });
 
     model_->setIconsChangedCallback([this] {
         createResources();
     });
-}
-
-CServerListView::~CServerListView() {
 }
 
 BOOL CServerListView::SubclassWindow(HWND hWnd) {
@@ -49,7 +46,7 @@ void CServerListView::Init() {
     setColumnWidths();
     createResources();
 
-    SetItemCount(model_->getCount());
+    SetItemCount(static_cast<int>(model_->getCount()));
 }
 
 int CServerListView::SetView(DWORD dwView) {
@@ -118,20 +115,10 @@ LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& 
         return CDRF_NOTIFYITEMDRAW;
 
     case CDDS_ITEMPREPAINT:
-    {
-        auto color = model_->getItemColor(lplvcd->nmcd.dwItemSpec);
-
-        if (color) {
-            lplvcd->clrTextBk = color;
-            return CDRF_NEWFONT;
-        }
-    }
-    break;
-    case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
-        lplvcd->clrText = RGB(255, 0, 0);
+        lplvcd->clrText = model_->getItemColor(lplvcd->nmcd.dwItemSpec);
         return CDRF_NEWFONT;
     }
-    return 0;
+    return CDRF_DODEFAULT;
 }
 
 LRESULT CServerListView::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {

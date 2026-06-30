@@ -152,6 +152,7 @@ private:
     ServerProfile serverProfile_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     CMyEngineList* engineList_;
+    WtlGuiSettings* settings_;
     bool isPopingUp_;
     bool isChildWindow_;
     HGLOBAL hMyDlgTemplate_;
@@ -164,7 +165,7 @@ private:
     CIcon helpButtonIcon_;
     CToolTipCtrl toolTip_;
     CMyImage searchIconCtrl_;
-    WtlGuiSettings* settings_;
+
     int serversMask_, serverIndex_, selectedServerType_;
     int ret_ = 0;
     CAccelerator hotkeys_;
