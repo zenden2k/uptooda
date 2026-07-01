@@ -42,20 +42,6 @@ namespace IuStringUtils
     struct has_push_back<T, std::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
         : std::true_type {};
 
-    // Версия для контейнеров с push_back (vector, list, deque...)
-    template <typename Container,
-              typename std::enable_if<has_push_back<Container>::value, int>::type = 0>
-    void Split(const std::string& str, const std::string& delimiters, Container& result) {
-        SplitTo(str, delimiters, std::back_inserter(result));
-    }
-
-    // Версия для контейнеров без push_back (set, unordered_set, map...)
-    template <typename Container,
-              typename std::enable_if<!has_push_back<Container>::value, int>::type = 0>
-    void Split(const std::string& str, const std::string& delimiters, Container& result) {
-        SplitTo(str, delimiters, std::inserter(result, result.end()));
-    }
-
     template <typename OutputIterator>
     void SplitTo(const std::string& str, const std::string& delimiters,
         OutputIterator output, int maxCount = -1) {
@@ -79,6 +65,20 @@ namespace IuStringUtils
             // Find next "non-delimiter"
             pos = str.find_first_of(delimiters, lastPos);
         }
+    }
+
+    // Версия для контейнеров с push_back (vector, list, deque...)
+    template <typename Container,
+              typename std::enable_if<has_push_back<Container>::value, int>::type = 0>
+    void Split(const std::string& str, const std::string& delimiters, Container& result) {
+        SplitTo(str, delimiters, std::back_inserter(result));
+    }
+
+    // Версия для контейнеров без push_back (set, unordered_set, map...)
+    template <typename Container,
+              typename std::enable_if<!has_push_back<Container>::value, int>::type = 0>
+    void Split(const std::string& str, const std::string& delimiters, Container& result) {
+        SplitTo(str, delimiters, std::inserter(result, result.end()));
     }
 
     template <typename Container>
