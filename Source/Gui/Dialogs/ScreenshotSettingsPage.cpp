@@ -23,7 +23,8 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
-#include "Func/myutils.h"
+#include "Func/MyUtils.h"
+#include "Gui/Constants.h"
 
 // CScreenshotSettingsPagePage
 CScreenshotSettingsPage::CScreenshotSettingsPage()
@@ -59,6 +60,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
+
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
@@ -111,15 +113,19 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
 bool CScreenshotSettingsPage::apply()
 {
-    CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+    const CWindow fileNameTemplateEdit = GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT);
+    const CString fileNameTemplate = GuiTools::GetWindowText(fileNameTemplateEdit);
 
-    if (fileName.FindOneOf(_T(":*?\"<>|")) != -1) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template contains forbidden characters!"));
-        ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
-        return false;
+    if (fileNameTemplate.IsEmpty()) {
+        throw ValidationException(TR("The filename template cannot be empty!"), fileNameTemplateEdit);
     }
+
+    if (fileNameTemplate.FindOneOf(FORBIDDEN_FILEPATH_TEMPLATE_CHARACTERS) != -1) {
+        throw ValidationException(TR("The filename template contains forbidden characters!"), fileNameTemplateEdit);
+    }
+
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.FilenameTemplate = fileName;
+    Settings.ScreenshotSettings.FilenameTemplate = fileNameTemplate;
 
     Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
     Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);

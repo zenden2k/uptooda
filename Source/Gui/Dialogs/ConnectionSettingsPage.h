@@ -16,8 +16,8 @@ class CConnectionSettingsPage :
     public CWinDataExchange<CConnectionSettingsPage>
 {
 public:
-    CConnectionSettingsPage();
-    virtual ~CConnectionSettingsPage();
+    CConnectionSettingsPage() = default;
+
     enum { IDD = IDD_CONNECTIONSETTINGSPAGE };
 
     BEGIN_MSG_MAP(CConnectionSettingsPage)
@@ -59,7 +59,6 @@ protected:
     CIcon externalLink_;
     CToolTipCtrl toolTip_;
     CEdit addressEdit_;
-    void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1) const;
     std::vector<std::pair<CString, int>> proxyTypes = {
         { _T("HTTP"), 0 },
         { _T("HTTPS"), 5 },
@@ -73,6 +72,6 @@ protected:
     void createResources();
 };
 
-#endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H
+#endif // IU_GUI_DIALOGS_CONNECTIONSETTINGSPAGE_H
 
 

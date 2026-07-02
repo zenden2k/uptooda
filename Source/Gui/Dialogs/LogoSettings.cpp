@@ -27,7 +27,6 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-// CLogoSettings
 CLogoSettings::CLogoSettings()
 {
     ZeroMemory(&lf, sizeof(lf));
@@ -61,10 +60,6 @@ void CLogoSettings::TranslateUI()
     SetWindowText(TR("Additional params"));
 }
 
-CLogoSettings::~CLogoSettings()
-{
-
-}
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -139,7 +134,6 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
     };
 
     auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
-    //CString initialFileName = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGOEDIT);
 
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
@@ -160,7 +154,6 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CLogoSettings::OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // Font selection dialog
     CFontDialog dlg(&lf);
     if(dlg.DoModal(m_hWnd) == IDOK)
        ProfileChanged();
@@ -169,7 +162,6 @@ LRESULT CLogoSettings::OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // Font selection dialog
     CFontDialog dlg(&ThumbFont);
     dlg.DoModal(m_hWnd);
 
@@ -348,6 +340,7 @@ LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 void CLogoSettings::ProfileChanged()
 {
     if(!m_CatchChanges) return;
+
     if(!m_ProfileChanged)
     {
         CurrentProfileOriginalName = CurrentProfileName;

@@ -29,7 +29,7 @@
 #include "GeneralSettings.h"
 #include "ConnectionSettingsPage.h"
 #include "TransferSettingsPage.h"
-#include "VideoGrabberParams.h"
+#include "VideoGrabberSettingsPage.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
 #include "Gui/GuiTools.h"
@@ -245,7 +245,7 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
             case spScreenRecording:
                 return createPageObject<CScreenRecordingSettingsPage>(m_hWnd, rc);
             case spVideo:
-                return createPageObject<CVideoGrabberParams>(m_hWnd, rc);
+                return createPageObject<CVideoGrabberSettingsPage>(m_hWnd, rc);
             case spConnection:
                 return createPageObject<CConnectionSettingsPage>(m_hWnd, rc);
             case spUploading:

@@ -27,19 +27,13 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
-
-// CUploadParamsDlg
+\
 CUploadParamsDlg::CUploadParamsDlg(ServerProfile &serverProfile, bool showImageProcessingParams, bool defaultServer) : serverProfile_(serverProfile)
 {
     params_ = serverProfile.getImageUploadParams();
     defaultServer_ = defaultServer;
     showImageProcessingParams_ = showImageProcessingParams;
     m_UploadEngine = nullptr;
-}
-
-CUploadParamsDlg::~CUploadParamsDlg()
-{
-
 }
 
 LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -74,7 +68,6 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     //Fill profile combobox
     profileCombo_.ResetContent();
 
-
     int selectedIndex = -1;
     int i = 0;
     for (auto it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
@@ -101,7 +94,6 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
 
     ThumbCreatingParams& thumb = params_.getThumbRef();
-
 
     GuiTools::SetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
     GuiTools::SetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
@@ -130,8 +122,6 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     SetDlgItemInt(IDC_THUMBQUALITYEDIT, thumb.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>(thumb.Format), 0);
-
-    //GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 

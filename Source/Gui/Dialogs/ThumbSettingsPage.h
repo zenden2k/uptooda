@@ -40,7 +40,7 @@ class CThumbSettingsPage : public CDialogImpl<CThumbSettingsPage>,
 {
 public:
     CThumbSettingsPage();
-    virtual ~CThumbSettingsPage();
+
     enum { IDD = IDD_THUMBSETTINGSPAGE };
 
     BEGIN_MSG_MAP(CThumbSettingsPage)
@@ -90,6 +90,7 @@ public:
         CButton thumbTextMacrosButton_;
         CIcon iconInfo_;
         CEdit thumbTextEdit_;
+        CToolTipCtrl tooltipControl_;
 };
 
 #endif // IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H

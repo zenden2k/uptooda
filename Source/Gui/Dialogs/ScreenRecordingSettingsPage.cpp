@@ -9,6 +9,7 @@
 #include "FFmpegSettingsPage.h"
 #include "DXGISettingsPage.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "Gui/Constants.h"
 
 CScreenRecordingSettingsPage::CScreenRecordingSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -120,9 +121,13 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
 
     toolTip_.Create(m_hWnd);
-    CString tipText = TR("Help");
-    CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, 0, const_cast<LPWSTR>(tipText.GetString()));
+    CString tooltipText = TR("Help");
+    CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
     toolTip_.AddTool(tip);
+
+    tooltipText = TR("Macros list");
+    CToolInfo fileNameMacrosTooltip(TTF_SUBCLASS, fileNameMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    toolTip_.AddTool(fileNameMacrosTooltip);
 
     createResources();
 
@@ -150,18 +155,14 @@ LRESULT CScreenRecordingSettingsPage::OnMyDpiChanged(UINT uMsg, WPARAM wParam, L
 
 bool CScreenRecordingSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
-        CString fileNameTemplate = GuiTools::GetWindowText(fileNameTemplateEditControl_);
+        const CString fileNameTemplate = GuiTools::GetWindowText(fileNameTemplateEditControl_);
 
         if (fileNameTemplate.IsEmpty()) {
-            GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template cannot be empty!"), TR("Error"), MB_ICONERROR);
-            fileNameTemplateEditControl_.SetFocus();
-            return false;
+            throw ValidationException(TR("The filename template cannot be empty!"), fileNameTemplateEditControl_);
         }
 
-        if (fileNameTemplate.FindOneOf(_T(":*?\"<>|")) != -1) {
-            GuiTools::LocalizedMessageBox(m_hWnd, TR("The filename template contains forbidden characters!"));
-            fileNameTemplateEditControl_.SetFocus();
-            return false;
+        if (fileNameTemplate.FindOneOf(FORBIDDEN_FILEPATH_TEMPLATE_CHARACTERS) != -1) {
+            throw ValidationException(TR("The filename template contains forbidden characters!"), fileNameTemplateEditControl_);
         }
 
         for (int i = 0; i < std::size(subPages_); i++) {

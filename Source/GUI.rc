@@ -652,7 +652,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,39,180,10
-    CTEXT           "© 2007-2025 Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
+    CTEXT           "© 2007-2026 Sergey Svistunov",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,45,18,15,13
     LTEXT           "#app name",IDC_APPNAMELABEL,87,14,148,12
     LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8

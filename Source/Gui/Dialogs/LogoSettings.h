@@ -20,7 +20,6 @@
 #ifndef IU_GUI_DIALOGS_LOGOSETTINGS_H
 #define IU_GUI_DIALOGS_LOGOSETTINGS_H
 
-
 #pragma once
 
 #include "atlheaders.h"
@@ -40,7 +39,6 @@ class CLogoSettings :
 {
     public:
         CLogoSettings();
-        ~CLogoSettings() override;
         enum { IDD = IDD_LOGOSETTINGS };
 
         BEGIN_MSG_MAP(CLogoSettings)

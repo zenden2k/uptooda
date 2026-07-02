@@ -27,13 +27,11 @@
 #include "3rdpart/ColorButton.h"
 #include "Gui/Controls/DialogIndirect.h"
 
-// CUploadParamsDlg
-
 class CUploadParamsDlg : public CCustomDialogIndirectImpl<CUploadParamsDlg>
 {
     public:
         CUploadParamsDlg(ServerProfile& serverProfile, bool showImageProcessingParams = true, bool defaultServer = false);
-        ~CUploadParamsDlg() override;
+
         enum { IDD = IDD_UPLOADPARAMSDLG };
         ImageUploadParams imageUploadParams() const;
     protected:

@@ -42,9 +42,6 @@ CThumbSettingsPage::CThumbSettingsPage()
     m_CatchFormChanges = false;
 }
 
-CThumbSettingsPage::~CThumbSettingsPage()
-{
-}
 
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -66,6 +63,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     //img.Create(m_hWnd, rc);
     img.loadImage(0);
     thumbsCombo_ = GetDlgItem(IDC_THUMBSCOMBO);
+    tooltipControl_.Create(m_hWnd);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
@@ -80,8 +78,11 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
         thumbsCombo_.AddString(WinUtils::GetOnlyFileName(fileName));
     }
 
-
     thumbTextMacrosButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
+    CString tooltipText = TR("Macros list");
+    CToolInfo tip(TTF_SUBCLASS, thumbTextMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    tooltipControl_.AddTool(tip);
+
     thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
 
     createResources();
@@ -279,10 +280,6 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 }
 
 std::unique_ptr<Gdiplus::Bitmap> CThumbSettingsPage::createSampleImage(int width, int height) {
-    /*CClientDC dc(m_hWnd);
-    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);*/
-
     using namespace Gdiplus;
     auto bm = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
     Graphics gr(bm.get());
@@ -361,7 +358,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         LOG(ERROR) << "Unable to save thumbnail template to file '" << destination << "'";
         return false;
     }
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, U2WC(newName));
     thumbsCombo_.SelectString(-1, U2W(newName));
     GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
     showSelectedThumbnailPreview();
@@ -454,6 +451,7 @@ LRESULT CThumbSettingsPage::OnThumbMacrosButtonClicked(WORD wNotifyCode, WORD wI
         { _T("%height%"), TR("image height") },
         { _T("%size%"), TR("file size") },
     };
+
     RECT rc {};
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin { rc.left, rc.bottom };

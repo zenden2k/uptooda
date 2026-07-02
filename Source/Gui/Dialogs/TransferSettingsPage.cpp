@@ -79,8 +79,8 @@ LRESULT CTransferSettingsPage::OnExecuteScriptCheckboxClicked(WORD wNotifyCode, 
 bool CTransferSettingsPage::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CheckBounds(IDC_FILERETRYLIMIT, 1, 10, IDC_RETRIES1LABEL);
-    CheckBounds(IDC_ACTIONRETRYLIMIT, 1, 10, IDC_RETRIES2LABEL);
+    checkBounds(IDC_FILERETRYLIMIT, 1, 10, IDC_RETRIES1LABEL);
+    checkBounds(IDC_ACTIONRETRYLIMIT, 1, 10, IDC_RETRIES2LABEL);
     
     DoDataExchange(TRUE);
     Settings.FileRetryLimit = GetDlgItemInt(IDC_FILERETRYLIMIT);
@@ -90,7 +90,7 @@ bool CTransferSettingsPage::apply()
     Settings.CheckFileTypesBeforeUpload = SendDlgItemMessage(IDC_CHECKFILETYPESCHECKBOX, BM_GETCHECK)== BST_CHECKED;
 
     Settings.TrayResult = useLastCodeTypeRadioButton_.GetCheck() == BST_CHECKED;
-    CheckBounds(IDC_MAXTHREADSEDIT, 1, 20, IDC_MAXTHREADSLABEL);
+    checkBounds(IDC_MAXTHREADSEDIT, 1, 20, IDC_MAXTHREADSLABEL);
     Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);
     if (Settings.MaxThreads <= 0 || Settings.MaxThreads > 50 )
     {
@@ -105,7 +105,7 @@ bool CTransferSettingsPage::apply()
     } else if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile)) {
         CString message1, message2;
         CString fieldTitle = GuiTools::GetDlgItemText(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX);
-        message1.Format(TR("Error in the field '%s':\n"), static_cast<LPCTSTR>(fieldTitle));
+        message1.Format(TR("Error in the field '%s':\n"), fieldTitle.GetString());
         message2.Format(TR("File %s doesn't exist"), static_cast<LPCTSTR>(scriptFile));
         throw ValidationException(message1+message2, GetDlgItem(IDC_SCRIPTFILENAMEEDIT));
     }
@@ -141,16 +141,6 @@ LRESULT CTransferSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*
 void CTransferSettingsPage::executeScriptCheckboxChanged() {
     bool Checked = SendDlgItemMessage(IDC_EXECUTESCRIPTCHECKBOX, BM_GETCHECK) != 0;
     GuiTools::EnableNextN(GetDlgItem(IDC_EXECUTESCRIPTCHECKBOX), 2, Checked);
-}
-
-void CTransferSettingsPage::CheckBounds(int controlId, int minValue, int maxValue, int labelId) const {
-    int value = GetDlgItemInt(controlId);
-    if (value < minValue || value > maxValue) {
-        CString fieldName = labelId != -1 ? GuiTools::GetDlgItemText(m_hWnd, labelId) : _T("Unknown field");
-        CString message;
-        message.Format(TR("Error in the field '%s': value should be between %d and %d."), static_cast<LPCTSTR>(fieldName), minValue, maxValue);
-        throw ValidationException(message, GetDlgItem(controlId));
-    }
 }
 
 LRESULT CTransferSettingsPage::OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

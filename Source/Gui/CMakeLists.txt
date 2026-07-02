@@ -95,7 +95,7 @@ set(SRC_LIST
     Dialogs/ConnectionSettingsPage.cpp
     Dialogs/TransferSettingsPage.cpp
     Dialogs/VideoGrabberPage.cpp
-    Dialogs/VideoGrabberParams.cpp
+        Dialogs/VideoGrabberSettingsPage.cpp
     Dialogs/WebViewWindow.cpp
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
@@ -264,7 +264,7 @@ set(HEADER_LIST
     Dialogs/ConnectionSettingsPage.h
     Dialogs/TransferSettingsPage.h
     Dialogs/VideoGrabberPage.h
-    Dialogs/VideoGrabberParams.h
+        Dialogs/VideoGrabberSettingsPage.h
     Dialogs/WebViewWindow.h
     Dialogs/WelcomeDlg.h
     Dialogs/WizardDlg.h

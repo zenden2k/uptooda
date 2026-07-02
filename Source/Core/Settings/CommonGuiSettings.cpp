@@ -85,8 +85,6 @@ bool CommonGuiSettings::SaveServerProfiles(SimpleXmlNode root)
         SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
 
         std::string profileName = SettingsStringToUtf8(it->first);
-
-        //ServerProfile sp = ;
         SettingsManager mgr;
         it->second.bind(mgr.root());
         mgr["@ServerProfileId"].bind(profileName);
@@ -109,7 +107,6 @@ bool CommonGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfile
         group.getItems().clear();
         for (size_t i = 0; i < servers.size(); i++) {
             SimpleXmlNode serverProfileNode = servers[i];
-            /*std::string profileName = serverProfileNode.Attribute("ServerProfileId");*/
             ServerProfile sp;
             SettingsManager mgr;
             sp.bind(mgr.root());
@@ -206,7 +203,7 @@ void CommonGuiSettings::BindToManager() {
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);
     DefaultImageUploadParams.bind(upload["DefaultImageUploadParams"]);
-    mgr_.n_bind(FavoriteServers);
+    upload.n_bind(FavoriteServers);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);

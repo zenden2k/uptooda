@@ -13,7 +13,8 @@
 class CTransferSettingsPage : 
     public CDialogImpl<CTransferSettingsPage>,
     public CSettingsPage,
-    public CWinDataExchange<CTransferSettingsPage>
+    public CWinDataExchange<CTransferSettingsPage>,
+    public CSettingsPageTrait<CTransferSettingsPage>
 {
 public:
     CTransferSettingsPage();
@@ -49,9 +50,8 @@ public:
 protected:
     CToolTipCtrl toolTip_;
     CButton justURLRadioButton_, useLastCodeTypeRadioButton_;
-    void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1) const;
 };
 
-#endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H
+#endif // IU_GUI_DIALOGS_TRANSFERSETTINGSPAGE_H
 
 
