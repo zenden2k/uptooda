@@ -38,7 +38,7 @@ public:
     std::string getMaxFileSizeString() const;
     std::string getServerDisplayName() const;
     std::string getStorageTimeString() const;
-    std::string getAcccountStr() const;
+    std::string getAccountStr() const;
     int getStorageTime() const;
 
     bool acceptFilter(const ServerFilter& filter) const;
@@ -62,14 +62,14 @@ public:
         tcAccount,
         tcFileFormats };
     ServerListModel(CMyEngineList* engineList, IFavoriteServers* favoriteServers);
-    ~ServerListModel();
     void updateEngineList();
     std::string getItemText(int row, int column) const;
     uint32_t getItemColor(int row) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     void notifyCountChanged(size_t row);
-    const ServerData& getDataByIndex(size_t row) const;
+    std::shared_ptr<ServerData> getDataByIndex(size_t row) const;
+    std::optional<size_t> getIndexByServerName(const std::string& serverName) const;
     void setRowChangedCallback(std::function<void(size_t)> callback);
     void setItemCountChangedCallback(std::function<void(size_t)> callback);
     void setIconsChangedCallback(std::function<void()> callback);
@@ -78,7 +78,7 @@ public:
 
 protected:
     CMyEngineList* engineList_;
-    std::vector<ServerData> items_;
+    std::vector<std::shared_ptr<ServerData>> items_;
     std::vector<size_t> filteredItemsIndexes_;
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;

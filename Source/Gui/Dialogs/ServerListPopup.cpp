@@ -150,14 +150,6 @@ LRESULT CServerListPopup::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 0;
 }
 
-void CServerListPopup::setTitle(CString title) {
-
-}
-
-CString CServerListPopup::getTitle() const {
-    return {};
-}
-
 void CServerListPopup::setServerProfile(const ServerProfile& serverProfile) {
     serverProfile_ = serverProfile;
 }
@@ -528,8 +520,8 @@ LRESULT CServerListPopup::OnListViewDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHa
     int nItem = pnmia->iItem;
 
     if (nItem >= 0) {
-        const auto& data = serverListModel_->getDataByIndex(nItem);
-        serverIndex_ = data.uedIndex;
+        const auto data = serverListModel_->getDataByIndex(nItem);
+        serverIndex_ = data->uedIndex;
         exitPopup(IDOK);
     }
     return 0;
@@ -538,8 +530,8 @@ LRESULT CServerListPopup::OnListViewDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHa
 LRESULT CServerListPopup::OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int nSelected = listView_.GetNextItem(-1, LVNI_SELECTED);
     if (nSelected >= 0) {
-        const auto& data = serverListModel_->getDataByIndex(nSelected);
-        serverIndex_ = data.uedIndex;
+        auto data = serverListModel_->getDataByIndex(nSelected);
+        serverIndex_ = data->uedIndex;
         exitPopup(IDOK);
     }
     return 0;
@@ -604,7 +596,7 @@ void CServerListPopup::selectServerByName(const CString& name) {
     const std::string serverName = W2U(name);
     size_t count = serverListModel_->getCount();
     for (size_t i = 0; i < count; ++i) {
-        if (serverListModel_->getDataByIndex(i).ued->Name == serverName) {
+        if (serverListModel_->getDataByIndex(i)->ued->Name == serverName) {
             listView_.SelectItem(i);
             return;
         }
@@ -723,36 +715,43 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
         constexpr auto ID_ADDTOFAVORITES = 11002;
         constexpr auto ID_REMOVEFROMFAVORITES = 11003;
 
-        const ServerData& data = serverListModel_->getDataByIndex(hti.iItem);
-        if (!data.ued) {
+        auto data = serverListModel_->getDataByIndex(hti.iItem);
+        if (!data->ued) {
             return 0;
         }
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
 
-        if (settings->isServerFavorite(data.ued->Name)) {
+        if (settings->isServerFavorite(data->ued->Name)) {
             contextMenu.AppendMenu(MF_STRING, ID_REMOVEFROMFAVORITES, TR("Remove from favorites"));
         } else {
             contextMenu.AppendMenu(MF_STRING, ID_ADDTOFAVORITES, TR("Add to favorites"));
         }
 
-        contextMenu.AppendMenu(MF_STRING | (data.ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
-        contextMenu.AppendMenu(MF_STRING | (data.ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENREGISTERURL, TR("Go to signup page"));
+        contextMenu.AppendMenu(MF_STRING | (data->ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
+        contextMenu.AppendMenu(MF_STRING | (data->ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENREGISTERURL, TR("Go to signup page"));
 
         BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+        std::optional<size_t> index;
         switch (res) {
             case ID_OPENWEBSITE:
-                WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->WebsiteUrl), m_hWnd);
+                WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->WebsiteUrl), m_hWnd);
                 break;
             case ID_OPENREGISTERURL:
-                WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->RegistrationUrl), m_hWnd);
+                WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->RegistrationUrl), m_hWnd);
                 break;
             case ID_ADDTOFAVORITES:
-                settings->addServerToFavorites(data.ued->Name);
+                settings->addServerToFavorites(data->ued->Name);
+                serverListModel_->updateEngineList();
                 applyFilter(false);
+                index = serverListModel_->getIndexByServerName(data->ued->Name);
+                if (index.has_value()) {
+                    listView_.SelectItem(*index);
+                }
                 break;
             case ID_REMOVEFROMFAVORITES:
-                settings->removeServerFromFavorites(data.ued->Name);
+                settings->removeServerFromFavorites(data->ued->Name);
+                serverListModel_->updateEngineList();
                 applyFilter(false);
                 break;
         }

@@ -67,7 +67,7 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     }
 
     if (pItem->mask & LVIF_IMAGE) {
-        const auto& serverName = model_->getDataByIndex(pItem->iItem).ued->Name;
+        const auto& serverName = model_->getDataByIndex(pItem->iItem)->ued->Name;
         auto it = serverIconImageListIndexes_.find(serverName);
 
          pItem->iImage = serverIconImageListIndexes_[serverName];

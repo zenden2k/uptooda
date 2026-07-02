@@ -1,5 +1,8 @@
 #include "ServerListModel.h"
 
+#include <boost/container/container_fwd.hpp>
+#include <utility>
+
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -27,8 +30,6 @@ ServerListModel::ServerListModel(CMyEngineList* engineList, IFavoriteServers* fa
     updateEngineList();
 }
 
-ServerListModel::~ServerListModel() {
-}
 
 void ServerListModel::updateEngineList() {
     filteredItemsIndexes_.clear();
@@ -37,41 +38,53 @@ void ServerListModel::updateEngineList() {
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);
 
-        ServerData sd;
-        sd.ued = ued;
-        sd.uedIndex = i;
-        sd.engineList = engineList_;
+        auto sd = std::make_shared<ServerData>();
+        sd->ued = ued;
+        sd->uedIndex = i;
+        sd->engineList = engineList_;
 
-        items_.push_back(std::move(sd));
+        items_.push_back(sd);
     }
+
+    std::sort(items_.begin(), items_.end(), [this](const auto& a, const auto& b) {
+        bool isFavoriteA = favoriteServers_->isServerFavorite(a->ued->Name);
+        bool isFavoriteB = favoriteServers_->isServerFavorite(b->ued->Name);
+
+        if (isFavoriteA != isFavoriteB) {
+            return isFavoriteA; // favorite servers go first
+        }
+
+        return IuStringUtils::stricmp(a->ued->Name.c_str(), b->ued->Name.c_str()) < 0;
+    });
+
     if (iconsChangedCallback_) {
         iconsChangedCallback_();
     }
 }
 
 std::string ServerListModel::getItemText(int row, int column) const {
-    const ServerData& serverData = getDataByIndex(row);
+    auto serverData = getDataByIndex(row);
     if (column == tcServerName) {
-        return serverData.getServerDisplayName();
+        return serverData->getServerDisplayName();
     }
     if (column == tcMaxFileSize) {
-        return serverData.getMaxFileSizeString();
+        return serverData->getMaxFileSizeString();
     }
     if (column == tcStorageTime) {
-        return serverData.getStorageTimeString();
+        return serverData->getStorageTimeString();
     }
     if (column == tcAccount) {
-        return serverData.getAcccountStr();
+        return serverData->getAccountStr();
     }
     if (column == tcFileFormats) {
-        return serverData.getFormats();
+        return serverData->getFormats();
     } 
     return {};
 }
 
 uint32_t ServerListModel::getItemColor(int row) const {
-    const ServerData& serverData = getDataByIndex(row);
-    std::string name = serverData.ued->Name;
+    auto serverData = getDataByIndex(row);
+    std::string name = serverData->ued->Name;
     if (favoriteServers_->isServerFavorite(name)) {
         return RGB(56,176, 0); // Green
     }
@@ -80,7 +93,7 @@ uint32_t ServerListModel::getItemColor(int row) const {
 }
 
 size_t ServerListModel::getCount() const {
-    if (filter_.empty()) {
+    if (filter_.empty() || filteredItemsIndexes_.empty()) {
         return items_.size();
     }
     return filteredItemsIndexes_.size();
@@ -92,11 +105,31 @@ void ServerListModel::notifyRowChanged(size_t row) {
     }
 }
 
-const ServerData& ServerListModel::getDataByIndex(size_t row) const {
-    if (!filter_.empty()) {
+std::shared_ptr<ServerData> ServerListModel::getDataByIndex(size_t row) const {
+    if (!filter_.empty() && !filteredItemsIndexes_.empty() ) {
         row = filteredItemsIndexes_[row];
     }
     return items_[row];
+}
+
+std::optional<size_t> ServerListModel::getIndexByServerName(const std::string& serverName) const {
+    std::optional<size_t> index;
+    for (size_t i = 0; i < items_.size(); i++) {
+        if (items_[i]->ued->Name == serverName) {
+            index = i;
+            break;
+        }
+    }
+    if (!index.has_value() || filter_.empty() || filteredItemsIndexes_.empty()) {
+        return index;
+    }
+
+    auto it = std::find(filteredItemsIndexes_.begin(), filteredItemsIndexes_.end(), index);
+
+    if (it == filteredItemsIndexes_.end()) {
+        return {};
+    }
+    return std::distance(filteredItemsIndexes_.begin(), it);
 }
 
 void ServerListModel::setRowChangedCallback(std::function<void(size_t)> callback) {
@@ -108,7 +141,7 @@ void ServerListModel::setItemCountChangedCallback(std::function<void(size_t)> ca
 }
 
 void ServerListModel::setIconsChangedCallback(std::function<void()> callback) {
-    iconsChangedCallback_ = callback;
+    iconsChangedCallback_ = std::move(callback);
 }
 
 void ServerListModel::resetData() {
@@ -123,11 +156,12 @@ void ServerListModel::applyFilter(const ServerFilter& filter) {
     filteredItemsIndexes_.clear();
     size_t i = 0;
     for (const auto& item : items_) {
-        if (item.acceptFilter(filter_)) {
+        if (item->acceptFilter(filter_)) {
             filteredItemsIndexes_.push_back(i);
         }
         i++;
     }
+
     notifyCountChanged(getCount());
 }
 
@@ -243,7 +277,7 @@ std::string ServerData::getStorageTimeString() const {
 }
 
 
-std::string ServerData::getAcccountStr() const {
+std::string ServerData::getAccountStr() const {
     switch (ued->NeedAuthorization) {
         case CUploadEngineData::naNotAvailable:
             return "-";

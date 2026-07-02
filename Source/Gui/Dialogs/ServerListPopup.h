@@ -48,7 +48,7 @@ class CServerListPopup :
 {
 public:
     explicit CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType = CUploadEngineListBase::ALL_SERVERS, int serverIndex = -1, bool isChildWindow = false);
-    virtual ~CServerListPopup();
+    ~CServerListPopup() override;
 
     enum { IDD = IDD_SERVERLISTPOPUP };
     inline static constexpr auto IDM_ADD_FTP_SERVER = 10000;
@@ -130,13 +130,9 @@ public:
     LRESULT OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     LRESULT OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     void TranslateUI();
-    void setTitle(CString title);
-    CString getTitle() const;
 
     void setServerProfile(const ServerProfile& serverProfile);
-
     void setServersMask(int mask);
-
     void notifyChange();
     void notifyServerListChanged();
     void updateServerList();
