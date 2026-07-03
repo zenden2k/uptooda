@@ -38,8 +38,6 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
         return iconIt->second;
     }
 
-    CUploadEngineData* ued = engineList_->byName(name);
-
     HICON icon = nullptr;
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
 
@@ -48,18 +46,16 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
         return {};
     }*/
 
-
-
     HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
 
     if (FAILED(hr)) {
         if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
             serverIcons_[key] = {};
             return {}; 
-        } else {
+        } /*else {
             _com_error err(hr);
             LOG(WARNING) << "LoadIconWithScaleDown" << std::endl << err.ErrorMessage();
-        }
+        }*/
     }
 
     if (!icon) {
@@ -97,11 +93,11 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int 
     if (FAILED(hr)) {
         if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
             return {};
-        } else {
+        } /*else {
             _com_error err(hr);
             LOG(WARNING) << "getBigIconForServer() LoadIconWithScaleDown" << std::endl
                          << err.ErrorMessage();
-        }
+        }*/
     }
 
     if (!icon) {

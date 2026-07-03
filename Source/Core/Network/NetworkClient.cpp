@@ -395,6 +395,15 @@ bool NetworkClient::doUploadMultipartData()
         return false;
     }
 
+    struct MultipartChunkUploadData {
+        FILE* file = nullptr;
+        int64_t startOffset = 0;
+        int64_t dataSize = 0;
+        int64_t bytesRead = 0;
+    };
+
+    bool chunkUploadFileAdded = false;
+
     for (const auto& param : m_QueryParams) {
         curl_mimepart* part = curl_mime_addpart(mime);
         curl_mime_name(part, param.name.c_str());
@@ -404,8 +413,118 @@ bool NetworkClient::doUploadMultipartData()
             curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 
             std::string ansiFileName = UTF8_FILENAME(param.value);
+            if (chunkOffset_ != -1 && !chunkUploadFileAdded) {
+                FILE* file = IuCoreUtils::FopenUtf8(param.value.c_str(), "rb");
+                if (!file) {
+                    curl_mime_free(mime);
+                    return false;
+                }
 
-            curl_mime_filedata(part, ansiFileName.c_str());
+                if (IuCoreUtils::Fseek64(file, 0, SEEK_END) != 0) {
+                    fclose(file);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                int64_t fileSize = IuCoreUtils::Ftell64(file);
+                if (fileSize < 0 || chunkOffset_ < 0 || chunkOffset_ > fileSize) {
+                    fclose(file);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                int64_t dataSize = fileSize - chunkOffset_;
+                if (chunkSize_ > 0) {
+                    dataSize = std::min<int64_t>(chunkSize_, dataSize);
+                }
+
+                if (IuCoreUtils::Fseek64(file, chunkOffset_, SEEK_SET) != 0) {
+                    fclose(file);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                auto* chunkUploadData = new MultipartChunkUploadData;
+                chunkUploadData->file = file;
+                chunkUploadData->startOffset = chunkOffset_;
+                chunkUploadData->dataSize = dataSize;
+
+                auto readCallback = [](char* buffer, size_t size, size_t nmemb, void* arg) -> size_t {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (!data || !data->file || data->bytesRead >= data->dataSize) {
+                        return 0;
+                    }
+
+                    size_t bytesRequested = size * nmemb;
+                    size_t bytesToRead = static_cast<size_t>(std::min<int64_t>(
+                        static_cast<int64_t>(bytesRequested),
+                        data->dataSize - data->bytesRead
+                    ));
+                    size_t bytesRead = fread(buffer, 1, bytesToRead, data->file);
+                    data->bytesRead += bytesRead;
+                    return bytesRead;
+                };
+
+                auto seekCallback = [](void* arg, curl_off_t offset, int origin) -> int {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (!data || !data->file) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    int64_t newOffset = 0;
+                    if (origin == SEEK_SET) {
+                        newOffset = offset;
+                    } else if (origin == SEEK_CUR) {
+                        newOffset = data->bytesRead + offset;
+                    } else if (origin == SEEK_END) {
+                        newOffset = data->dataSize + offset;
+                    } else {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    if (newOffset < 0 || newOffset > data->dataSize) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    if (IuCoreUtils::Fseek64(data->file, data->startOffset + newOffset, SEEK_SET) != 0) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    data->bytesRead = newOffset;
+                    return CURL_SEEKFUNC_OK;
+                };
+
+                auto freeCallback = [](void* arg) {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (data) {
+                        if (data->file) {
+                            fclose(data->file);
+                        }
+                        delete data;
+                    }
+                };
+
+                CURLcode dataCallbackResult = curl_mime_data_cb(
+                    part,
+                    static_cast<curl_off_t>(dataSize),
+                    readCallback,
+                    seekCallback,
+                    freeCallback,
+                    chunkUploadData
+                );
+
+                if (dataCallbackResult != CURLE_OK) {
+                    freeCallback(chunkUploadData);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                m_CurrentFileSize = fileSize;
+                m_currentUploadDataSize = dataSize;
+                chunkUploadFileAdded = true;
+            } else {
+                curl_mime_filedata(part, ansiFileName.c_str());
+            }
             curl_mime_filename(part, param.displayName.c_str());
 
             if (!param.contentType.empty()) {

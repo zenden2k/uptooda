@@ -55,7 +55,7 @@ set(SRC_LIST
     Dialogs/GeneralSettings.cpp
     Dialogs/HistoryWindow.cpp
     Dialogs/HotkeyEditor.cpp
-    Dialogs/HotkeySettings.cpp
+        Dialogs/HotkeySettingsPage.cpp
     Dialogs/ImageDownloaderDlg.cpp
     Dialogs/ImageReuploaderDlg.cpp
     Dialogs/InputDialog.cpp
@@ -224,7 +224,7 @@ set(HEADER_LIST
     Dialogs/GeneralSettings.h
     Dialogs/HistoryWindow.h
     Dialogs/HotkeyEditor.h
-    Dialogs/HotkeySettings.h
+        Dialogs/HotkeySettingsPage.h
     Dialogs/ImageDownloaderDlg.h
     Dialogs/ImageReuploaderDlg.h
     Dialogs/InputDialog.h

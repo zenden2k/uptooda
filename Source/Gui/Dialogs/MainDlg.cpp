@@ -410,20 +410,6 @@ BOOL CMainDlg::FileProp(){
         hr = desktop->ParseDisplayName(m_hWnd, 0, const_cast<LPWSTR>(FileName), 0, &newPIdL, 0);
         if (SUCCEEDED(hr)) {
             list.push_back(newPIdL);
-            /*
-            CComPtr<IShellFolder> folder;
-            if (SUCCEEDED(mycomputer->BindToObject(folderPidl, 0, IID_IShellFolder, (void**)&folder))) {
-                //ILAppend()
-                PIDLIST_RELATIVE newPIdL = NULL;
-                ULONG dwAttributes = SFGAO_FILESYSTEM | SHCIDS_ALLFIELDS | SFGAO_HASPROPSHEET;
-                ULONG eaten = 0;
-                CString onlyFileName = WinUtils::myExtractFileName(FileName);
-                hr = folder->ParseDisplayName(m_hWnd, 0, (LPWSTR)(LPCTSTR)onlyFileName, 0, &newPIdL,0);
-                if (SUCCEEDED(hr)) {
-
-
-                }
-            }*/
         }
     }
 
@@ -455,13 +441,13 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    CString EditorCmd = settings->ImageEditorPath;
-    EditorCmd.Replace(_T("%1"), FileName);
-    CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
+    CString editorCmd = settings->ImageEditorPath;
+    editorCmd.Replace(_T("%1"), FileName);
+    CString editorCmdLine = WinUtils::ExpandEnvironmentStrings(editorCmd);
 
-    CCmdLine EditorLine(EditorCmdLine);
-    CString moduleName = EditorLine.ModuleName();
-    CString params = EditorLine.OnlyParams();
+    CCmdLine editorLine(editorCmdLine);
+    CString moduleName = editorLine.ModuleName();
+    CString params = editorLine.OnlyParams();
     SHELLEXECUTEINFO Sei;
     ZeroMemory(&Sei, sizeof(Sei));
     Sei.cbSize = sizeof(Sei);
@@ -485,7 +471,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         if(IsRunning())
         {
             WaitThreadStop.SetEvent();
-            WaitForThread(9999);
+            (void)WaitForThread();
         }
         itemIndexThumbToBeUpdated_ = nCurItem;
         m_EditorProcess = Sei.hProcess;

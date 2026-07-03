@@ -146,10 +146,10 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
         CString result;
         for (int i = 0; i < selectedItemsCount; i++) {
             int itemIndex = selectedItems[i];
-            LogListBoxItem* item = MsgList.getItemFromIndex(itemIndex);
+            const LogListBoxItem* item = MsgList.getItemFromIndex(itemIndex);
             CString text;
-            text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), static_cast<LPCTSTR>(item->Time), static_cast<LPCTSTR>(item->Info),
-                static_cast<LPCTSTR>(item->strTitle), static_cast<LPCTSTR>(item->strText));
+            text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), item->Time.GetString(), item->Info.GetString(),
+                item->strTitle.GetString(), item->strText.GetString());
             result += text;
             result += "\r\n\r\n";
         }

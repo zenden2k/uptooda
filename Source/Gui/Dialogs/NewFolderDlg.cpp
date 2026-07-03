@@ -24,8 +24,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 
-// CNewFolderDlg
-CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder,std::vector<std::string>& accessTypeList):
+CNewFolderDlg::CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, const std::vector<std::string>& accessTypeList):
     m_bCreateNewFolder(CreateNewFolder), m_folder(folder), m_accessTypeList(accessTypeList)
 {
 }

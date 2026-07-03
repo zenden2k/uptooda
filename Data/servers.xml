@@ -155,6 +155,14 @@
         </Info>
         <Result ImageUrlTemplate="stub" />
     </Server>
+    <Server Name="OpenDrive" FileHost="1" Authorize="2" Plugin="opendrive" WebsiteUrl="https://www.opendrive.com/">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Result ImageUrlTemplate="stub" />
+    </Server>
     <Server Name="Dropbox New" FileHost="1" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="1" WebsiteUrl="https://www.dropbox.com/">
         <Info>
             <StorageTimeInfo>

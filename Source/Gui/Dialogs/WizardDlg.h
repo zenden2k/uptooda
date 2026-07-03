@@ -29,7 +29,7 @@
 
 #include "atlheaders.h"
 #include "Func/MyEngineList.h"
-#include "HotkeySettings.h"
+#include "HotkeySettingsPage.h"
 #include "ScreenCapture/ScreenCaptureWin.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/UpdateDlg.h"

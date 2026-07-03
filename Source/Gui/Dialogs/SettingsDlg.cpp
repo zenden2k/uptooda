@@ -21,7 +21,7 @@
 #include "SettingsDlg.h"
 
 #include "TraySettings.h"
-#include "HotkeySettings.h"
+#include "HotkeySettingsPage.h"
 #include "ScreenshotSettingsPage.h"
 #include "ScreenRecordingSettingsPage.h"
 #include "ImageEditorSettingsPage.h"

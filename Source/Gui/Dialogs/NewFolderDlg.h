@@ -35,7 +35,7 @@ class CNewFolderDlg :
     public CDialogResize<CNewFolderDlg>
 {
     public:
-        CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, std::vector<std::string>& accessTypeList);
+        CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, const std::vector<std::string>& accessTypeList);
         enum { IDD = IDD_NEWFOLDERDLG };
     protected:
          BEGIN_MSG_MAP(CNewFolderDlg)

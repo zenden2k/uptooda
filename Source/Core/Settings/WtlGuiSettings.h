@@ -6,7 +6,7 @@
 #include "atlheaders.h"
 #include "CommonGuiSettings.h"
 #include "Func/WinUtils.h"
-#include "Gui/Dialogs/HotkeySettings.h"
+#include "Gui/Dialogs/HotkeySettingsPage.h"
 #include "Core/SearchByImage.h"
 #include "3rdpart/GdiplusH.h" 
 #include "Core/Images/Utils.h"
@@ -67,7 +67,7 @@ inline std::string myToString(const CHotkeyList& value) {
 }
 
 inline void myFromString(const std::string& text, CHotkeyList& value) {
-    value.DeSerialize(IuCoreUtils::Utf8ToWstring(text).c_str());
+    value.deserialize(IuCoreUtils::Utf8ToWstring(text).c_str());
 }
 
 /* LOGFONT serialization support */

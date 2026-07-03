@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 18:11+0300\n"
+"POT-Creation-Date: 2026-07-03 16:02+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/image-uploader/"
@@ -66,21 +66,21 @@ msgid "%1% + %2%"
 msgstr ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
-#: ../Source/Gui/Dialogs/MainDlg.cpp:910
+#: ../Source/Gui/Dialogs/MainDlg.cpp:896
 #, c-format
 msgid "%d file"
 msgid_plural "%d files"
 msgstr[0] "%d fichier"
 msgstr[1] "%d fichiers"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:904
+#: ../Source/Gui/Dialogs/MainDlg.cpp:890
 #, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
 msgstr[0] "%d fichier sélectionné"
 msgstr[1] "%d fichiers sélectionnés"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:905
+#: ../Source/Gui/Dialogs/MainDlg.cpp:891
 #, c-format
 msgid "%d file total"
 msgid_plural "%d files total"
@@ -224,7 +224,7 @@ msgstr "À propos de..."
 msgid "About..."
 msgstr "À propos de..."
 
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
 msgid "Access:"
 msgstr "Accès :"
 
@@ -247,7 +247,7 @@ msgstr "Un compte avec ce nom existe déjà."
 msgid "Account..."
 msgstr "Compte..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:46
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:36
 msgid "Action"
 msgstr "Action"
 
@@ -417,8 +417,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:133
 #: ../Source/Gui/Dialogs/LogWindow.cpp:181
-#: ../Source/Gui/Dialogs/MainDlg.cpp:732
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
+#: ../Source/Gui/Dialogs/MainDlg.cpp:718
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:179
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1793
@@ -529,7 +529,7 @@ msgstr "Demander une confirmation en quittant"
 msgid "At least one mouse command should not be empty"
 msgstr "Au moins une commande de souris ne doit pas être vide"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:44
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:34
 msgid "Attention! Global hotkeys are active only when tray icon is shown."
 msgstr ""
 "Attention ! Les raccourcis clavier globaux sont actifs que si l'icône de la "
@@ -558,7 +558,9 @@ msgid "Audio source:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:330
-msgid "Authenticated succesfully."
+#, fuzzy
+#| msgid "Authenticated succesfully."
+msgid "Authenticated successfully."
 msgstr "Authentifié avec succès."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:31
@@ -670,7 +672,7 @@ msgstr "Brosse"
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:252
 #: ../Source/Gui/Dialogs/InputDialog.cpp:54
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
@@ -697,11 +699,11 @@ msgstr ""
 "supporté).\n"
 "Assurez-vous que les codecs requis sont installés sur votre système."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:757
+#: ../Source/Gui/Dialogs/MainDlg.cpp:743
 msgid "Cannot copy file "
 msgstr "Impossible de copier le fichier "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:746
+#: ../Source/Gui/Dialogs/MainDlg.cpp:732
 msgid "Cannot copy file: "
 msgstr "Impossible de copier le fichier : "
 
@@ -740,12 +742,12 @@ msgstr ""
 "Il est peut-être utilisé par un autre processus."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:213
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:207
 msgid "Capture Last Region"
 msgstr "Capturer la dernière région"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:208
 msgid "Capture Rectangular Region"
 msgstr "Capturer une région rectangulaire"
 
@@ -755,13 +757,13 @@ msgid "Capture Selected Area"
 msgstr "Capturer la zone choisie"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:211
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
 msgstr "Capturer l'objet choisi"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:212
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:203
 msgid "Capture Selected Window"
 msgstr "Capturer la fenêtre choisie"
@@ -773,14 +775,14 @@ msgid "Capture cursor"
 msgstr "Capturer le curseur"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:581
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:210
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Capturer la fenêtre active"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:209
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:199
 #: ../Source/Gui/Win7JumpList.cpp:243
 msgid "Capture the Entire Screen"
@@ -798,7 +800,7 @@ msgstr "Menu contextuel en cascade"
 msgid "Center"
 msgstr "Centre"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:160
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:162
 msgid "Change"
 msgstr "Modifier"
 
@@ -899,7 +901,7 @@ msgid "Choose..."
 msgstr "Choisir..."
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:162
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:164
 #: ../Source/Gui/Dialogs/LogWindow.cpp:206
 msgid "Clear"
 msgstr "Effacer"
@@ -912,7 +914,7 @@ msgstr "Effacer l’historique"
 msgid "Clear History..."
 msgstr "Effacer l’historique..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:163
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:165
 msgid "Clear all"
 msgstr "Effacer tout"
 
@@ -924,7 +926,7 @@ msgstr "Effacer les filtres"
 msgid "Clear list"
 msgstr "Effacer liste"
 
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:28
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:26
 msgid "Clear log"
 msgstr "Effacer le journal"
 
@@ -1216,7 +1218,7 @@ msgstr "Créer une copie"
 msgid "Create folder"
 msgstr "Créer un dossier"
 
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:44
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:43
 msgid "Create folder (album)"
 msgstr "Créer un dossier (album)"
 
@@ -1261,7 +1263,7 @@ msgstr "Chemin du fichier de données :"
 msgid "Date from:"
 msgstr "Date du :"
 
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:30
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:28
 msgid "Decode response"
 msgstr "Décoder la réponse"
 
@@ -1330,7 +1332,7 @@ msgstr "Ne redemandez plus"
 msgid "Do not launch new program's instance from tray"
 msgstr "Aucune instance d'1 nouveau programme depuis la barre système"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:201
 msgid "Do nothing"
 msgstr "Ne rien faire"
 
@@ -1393,11 +1395,11 @@ msgstr "Éditer le profil"
 msgid "Edit file on server"
 msgstr "Éditer le fichier sur le serveur"
 
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:46
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:45
 msgid "Edit folder"
 msgstr "Modifier le dossier"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:43
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:33
 msgid "Edit hotkey..."
 msgstr "Éditer raccourci..."
 
@@ -1464,7 +1466,7 @@ msgstr "Entrez votre texte :"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:192
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
@@ -1538,7 +1540,7 @@ msgstr "Exécuter le script Squirrel pour chaque tâche (fichier)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:284
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:672
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:226
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:230
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:522
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
 msgid "Exit"
@@ -1697,7 +1699,7 @@ msgstr "Nom du fichier :"
 msgid "Filename: "
 msgstr "Nom du fichier : "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:731
+#: ../Source/Gui/Dialogs/MainDlg.cpp:717
 msgid "Files"
 msgstr "Fichiers"
 
@@ -1749,10 +1751,6 @@ msgstr "Action de capture d'écran"
 msgid "Finished"
 msgstr "Terminé"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:123
-msgid "First you have to select an item in the list."
-msgstr "Vous devez d’abord sélectionner un élément dans la liste."
-
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:77
 msgid "Fit"
 msgstr "En forme"
@@ -1783,7 +1781,7 @@ msgstr "Liste des dossiers"
 msgid "Folder list on server %s for account '%s':"
 msgstr "Liste des dossiers sur le serveur %s pour le compte '%s' :"
 
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:35
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:34
 msgid "Folder name:"
 msgstr "Nom du dossier :"
 
@@ -1836,7 +1834,7 @@ msgid "Frames layout"
 msgstr "Disposition des cadres"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:585
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:214
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
 msgstr "Capture à main levée"
@@ -1877,7 +1875,7 @@ msgstr "Obtenez le code couleur..."
 msgid "Getting info about file..."
 msgstr "Obtention d'infos sur le fichier..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:48
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:38
 msgid "Global"
 msgstr "Global"
 
@@ -2050,7 +2048,7 @@ msgstr "Images"
 msgid "Images editor:"
 msgstr "Éditeur d'images :"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:220
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:224
 msgid "Images from web"
 msgstr "Images du Web"
 
@@ -2068,7 +2066,7 @@ msgstr "Implicite"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:537 ../Source/Gui/Win7JumpList.cpp:291
@@ -2224,7 +2222,7 @@ msgstr "Liste des URL"
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:47
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:37
 msgid "Local"
 msgstr "Local"
 
@@ -2263,7 +2261,9 @@ msgid "Logout"
 msgstr "Déconnexion"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:342
-msgid "Logout succesfully."
+#, fuzzy
+#| msgid "Logout succesfully."
+msgid "Logout successfully."
 msgstr "Déconnexion réussie."
 
 #: ../Source/Func/UpdatePackage.cpp:507
@@ -2349,7 +2349,7 @@ msgstr "Le nom ne peut être vide"
 msgid "Name:"
 msgstr "Nom :"
 
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:21
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2854
 msgid "Network Debugger"
 msgstr "Débogueur réseau"
@@ -2430,7 +2430,7 @@ msgstr "Nombre de cadres :"
 #: ../Source/Gui/Dialogs/InputDialog.cpp:55
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:91
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
@@ -2483,7 +2483,7 @@ msgid "Open screenshot in the editor"
 msgstr "Ouvrir la capture d'écran dans l'éditeur"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:664
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:221
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2850
 msgid "Open screenshots folder"
 msgstr "Ouvrir le dossier des captures d'écran"
@@ -2538,7 +2538,7 @@ msgid "Password:"
 msgstr "Mot de passe :"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:219
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:223
 #: ../Source/Gui/Dialogs/MainDlg.cpp:174
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
@@ -2712,7 +2712,7 @@ msgid "Queued"
 msgstr "File d’attente"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:222
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:226
 msgid "Quick upload image from clipboard"
 msgstr "Chargement rapide d'une image depuis le presse-papiers"
 
@@ -2803,7 +2803,7 @@ msgstr "Réessayer"
 msgid "Reupload"
 msgstr "Recharger"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:225
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:229
 msgid "Reupload images"
 msgstr "Recharger les images"
 
@@ -2849,7 +2849,7 @@ msgstr "SFTP"
 msgid "Same format as image"
 msgstr "Même format que l'image"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:750
+#: ../Source/Gui/Dialogs/MainDlg.cpp:736
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1014
 msgid "Save"
 msgstr "Enregistrer"
@@ -2871,11 +2871,11 @@ msgstr "Enregistrer sous :"
 msgid "Save changes?"
 msgstr "Enregistrer les modifications ?"
 
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:184
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:182
 msgid "Save log file"
 msgstr "Enregistrer le fichier journal"
 
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:29
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:27
 msgid "Save to file"
 msgstr "Enregistrer dans un fichier"
 
@@ -2914,31 +2914,31 @@ msgctxt "settings.menu"
 msgid "Screen Recording"
 msgstr "Action de capture d'écran"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:219
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (cancel)"
 msgstr "Action de capture d'écran"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:218
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (pause)"
 msgstr "Action de capture d'écran"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:216
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (start)"
 msgstr "Action de capture d'écran"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:217
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (stop)"
 msgstr "Action de capture d'écran"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:215
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording Window"
@@ -2958,7 +2958,7 @@ msgid "Screen recording backend: %s"
 msgstr "Action de capture d'écran"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:207
 #: ../Source/Gui/Dialogs/MainDlg.cpp:75
 msgid "Screenshot"
 msgstr "Capturer écran"
@@ -3149,7 +3149,7 @@ msgstr "Session Totale :"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:669
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:222
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2847
 msgid "Settings"
@@ -3194,12 +3194,12 @@ msgid "Shorten URLs"
 msgstr "Raccourcir les URL"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:223
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:227
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
 msgid "Shorten a Link"
 msgstr "Raccourcir un lien"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:224
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:228
 msgid "Shorten a link from the clipboard"
 msgstr "Raccourcir un lien depuis presse-papiers"
 
@@ -3239,7 +3239,7 @@ msgid "Show preview for video files in file list"
 msgstr "Afficher l'aperçu des fichiers vidéo dans la liste des fichiers"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:220
 msgid "Show program window"
 msgstr "Afficher la fenêtre du programme"
 
@@ -3355,7 +3355,7 @@ msgstr "Succès"
 msgid "Summary"
 msgstr "Sommaire"
 
-#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:35
 msgid "Summary:"
 msgstr "Sommaire :"
 
@@ -3404,7 +3404,7 @@ msgstr "Le texte contient des caractères interdits !"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:94
 #: ../Source/Gui/Dialogs/LogWindow.cpp:180
-#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:180
+#: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:178
 msgid "Text files"
 msgstr "Fichiers texte"
 
@@ -3433,11 +3433,11 @@ msgstr "Merci à :"
 msgid "The field '%s' cannot be empty."
 msgstr "Le champ '%s' ne peut pas être vide."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:867
+#: ../Source/Gui/Dialogs/MainDlg.cpp:853
 msgid "The file name cannot be empty."
 msgstr "Le nom du fichier ne peut être vide."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:871
+#: ../Source/Gui/Dialogs/MainDlg.cpp:857
 msgid "The file name contains forbidden characters."
 msgstr "Le nom du fichier contient des caractères interdits."
 
@@ -3563,7 +3563,7 @@ msgctxt "settings.menu"
 msgid "Tray icon"
 msgstr "Icône de la barre d'état"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:202
 msgid "Tray icon context menu"
 msgstr "Menu contextuel de l'icône de la barre d'état"
 
@@ -3654,17 +3654,17 @@ msgstr "Chargement a échoué. Une autre tentative (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:549
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:204
 msgid "Upload files"
 msgstr "Charger des fichiers"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:205
 msgid "Upload folder"
 msgstr "Chargement du dossier"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:240
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:203
 msgid "Upload images"
 msgstr "Charger des images"
 
@@ -3845,7 +3845,7 @@ msgstr "Afficher"
 msgid "View BBCode/HTML codes"
 msgstr "Afficher les codes BBCode/HTML"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:221
+#: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:225
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:343
 msgid "View Media File Information"
 msgstr "Afficher les infos du fichier multimédia"
@@ -4085,6 +4085,9 @@ msgstr "largeur de l'image"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
 msgid "year"
 msgstr ""
+
+#~ msgid "First you have to select an item in the list."
+#~ msgstr "Vous devez d’abord sélectionner un élément dans la liste."
 
 #~ msgid "Filename format:"
 #~ msgstr "Format du nom de fichier :"

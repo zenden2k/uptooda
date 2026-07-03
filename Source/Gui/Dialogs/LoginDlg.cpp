@@ -327,7 +327,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
         if (ok) {
             OnProcessFinished();
             ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
-                LocalizedMessageBox(TR("Authenticated succesfully."));
+                LocalizedMessageBox(TR("Authenticated successfully."));
                 Accept();
             });
         }
@@ -339,7 +339,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
         OnProcessFinished();
         if (ok) {
             ServiceLocator::instance()->taskRunner()->runInGuiThread([this, ok] {
-                LocalizedMessageBox(ok ? TR("Logout succesfully.") : TR("Failed to logout."));
+                LocalizedMessageBox(ok ? TR("Logout successfully.") : TR("Failed to logout."));
                 logoutButton_.ShowWindow(SW_HIDE);
                 loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);
             });

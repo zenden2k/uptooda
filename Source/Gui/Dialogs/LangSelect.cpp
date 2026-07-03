@@ -102,7 +102,7 @@ CString CLangSelect::getLanguage() const {
 
 LRESULT CLangSelect::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     for (int i = 0; i < langListCombo_.GetCount(); i++) {
-        free(static_cast<char*>(langListCombo_.GetItemDataPtr(i)));
+        free(langListCombo_.GetItemDataPtr(i));
     }
     langListCombo_.ResetContent();
     return 0;
