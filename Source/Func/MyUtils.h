@@ -46,12 +46,6 @@ inline bool IsAudioFile(LPCWSTR szFileName)
 CString PrepareVideoDialogFilters();
 CString PrepareAudioDialogFilters();
 
-LPTSTR fgetline(LPTSTR buf, int num, FILE* f);
-
-LPCTSTR CopyToStartOfW(LPCTSTR szString, LPCTSTR szPattern, LPTSTR szBuffer, int nBufferSize);
-
-LPTSTR MoveToEndOfW(LPTSTR szString, LPTSTR szPattern);
-
 #endif
 
 

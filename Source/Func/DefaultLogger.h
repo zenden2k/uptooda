@@ -27,7 +27,6 @@ public:
         virtual void onItemAdded(size_t rowIndex, const LogEntry&) = 0;
     };
 
-    DefaultLogger();
     void addListener(Listener* listener);
     void removeListener(const Listener* listener);
     size_t entryCount() const;
@@ -42,6 +41,7 @@ private:
     std::vector<LogEntry> entries_;
     std::vector<Listener*> listeners_;
     std::mutex entriesMutex_;
+    static thread_local bool insideWriteFunction_;
 };
 
 #endif

@@ -4,10 +4,16 @@
 #include "atlheaders.h"
 #include "Gui/Dialogs/LogWindow.h"
 
-DefaultLogger::DefaultLogger() {
-}
+thread_local bool DefaultLogger::insideWriteFunction_  = false;
 
 void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string&  FileName) {
+    if (insideWriteFunction_) { // Prevent recursion
+        return;
+    }
+    insideWriteFunction_ = true;
+    defer d([&] { // Run at function exit
+        insideWriteFunction_ = false;
+    });
     LogEntry entry;
     entry.MsgType = MsgType;
     entry.Msg = IuCoreUtils::Utf8ToWstring(Msg);
@@ -19,6 +25,32 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
     ::GetLocalTime(&st);
 
     entry.Time  = str(boost::wformat(L"%02d:%02d:%02d")% static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
+
+    std::ostringstream oss;
+    oss << "[" << Sender << "] ";
+    if (!entry.FileName.empty()) {
+        oss << "[" << FileName << "] ";
+    }
+    oss << std::endl;
+    if (!entry.Info.empty()) {
+        oss << Info << std::endl;
+    }
+    oss << Msg;
+
+    switch (MsgType) {
+    case LogMsgType::logWarning:
+        LOG(WARNING) << oss.str();
+        break;
+    case LogMsgType::logError:
+        LOG(ERROR) << oss.str();
+        break;
+    case LogMsgType::logInformation:
+        LOG(INFO) << oss.str();
+        break;
+    default:
+        LOG(INFO) << oss.str();
+    }
+
 
     size_t itemIndex;
     {
@@ -32,7 +64,16 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
     }
 }
 
+#pragma optimize("", off)
+
 void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t*  FileName) {
+    if (insideWriteFunction_) { // Prevent recursion
+        return;
+    }
+    insideWriteFunction_ = true;
+    defer d([&] { // Run at function exit
+        insideWriteFunction_ = false;
+    });
     LogEntry entry;
     entry.MsgType = MsgType;
     entry.Msg = Msg;
@@ -43,6 +84,34 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
     ::GetLocalTime(&st);
 
     entry.Time = str(boost::wformat(L"%02d:%02d:%02d") % static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
+
+    std::wstringstream oss;
+    oss << "[" << Sender << "] ";
+    if (!entry.FileName.empty()) {
+        oss << "[" << FileName << "] ";
+    }
+    oss << std::endl;
+    if (!entry.Info.empty()) {
+        oss << Info << std::endl;
+    }
+    oss << Msg;
+    std::string utf8String = IuCoreUtils::WstringToUtf8(oss.str());
+
+    switch (MsgType) {
+        case LogMsgType::logWarning:
+            LOG(WARNING) << utf8String;
+            break;
+        case LogMsgType::logError:
+            LOG(ERROR) << utf8String;
+            break;
+        case LogMsgType::logInformation:
+            LOG(INFO) << utf8String;
+            break;
+        default:
+            LOG(INFO) << utf8String;
+    }
+
+    insideWriteFunction_ = false;
 
     size_t itemIndex;
     {
@@ -55,7 +124,7 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
         listener->onItemAdded(itemIndex, entry);
     }
 }
-
+#pragma optimize("", on)
 void DefaultLogger::addListener(Listener* listener) {
     listeners_.push_back(listener);
 }

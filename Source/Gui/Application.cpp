@@ -30,6 +30,7 @@ crash_rpt::CrashRpt g_crashRpt(
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
+#include <gflags/gflags.h>
 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
@@ -425,9 +426,20 @@ public:
     }
 };
 
-
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
+    int argc = __argc;
+    wchar_t** wargv = __wargv;
+    std::vector<std::string> argsStorage(argc); // Should be alive until the program exit
+    std::vector<char*> argv(argc + 1);
+
+    for (int i = 0; i < argc; ++i) {
+        argsStorage[i] = IuCoreUtils::WstringToUtf8(wargv[i]);
+        argv[i] = argsStorage[i].data();
+    }
+    argv[argc] = nullptr;
+
+    char** gflagsArgv = argv.data();
     // Create and install global locale
     std::locale::global(boost::locale::generator().generate(""));
     // Make boost.filesystem use it
@@ -448,14 +460,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
-    google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
 
+    gflags::ParseCommandLineFlags(&argc, &gflagsArgv, true);
+    google::InitGoogleLogging(argsStorage[0].c_str());
+    google::SetLogDestination(google::GLOG_WARNING, "");
+    google::SetLogDestination(google::GLOG_ERROR, "");
+    google::SetLogDestination(google::GLOG_FATAL, "");
+
+    LOG(INFO) << "Application started";
     // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
-    ::DefWindowProc( NULL, 0, 0, 0L );
+    ::DefWindowProc( nullptr, 0, 0, 0L );
 
     AtlInitCommonControls( ICC_BAR_CLASSES | ICC_USEREX_CLASSES  );    // add flags to support other controls
 
-    HRESULT hRes = _Module.Init( NULL, hInstance );
+    HRESULT hRes = _Module.Init( nullptr, hInstance );
     int nRet;
     ATLASSERT( SUCCEEDED( hRes ) );
     {

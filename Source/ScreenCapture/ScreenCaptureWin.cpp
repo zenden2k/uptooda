@@ -57,8 +57,6 @@ void ActivateWindowRepeat(HWND handle, int count)
     }
 }
 
-
-
 HRGN CloneRegion(HRGN source)
 {
     HRGN resultRgn = CreateRectRgn(0, 0, 0, 0);
@@ -419,7 +417,7 @@ HWND CreateDummyWindow(const RECT& rc)
 {
     HWND hWnd;
     WNDCLASSEX WndClsEx;
-    TCHAR* clsName = _T("DummyWindow");
+    LPCTSTR clsName = _T("DummyWindow");
     // Create the application window
     WndClsEx.cbSize        = sizeof(WNDCLASSEX);
     WndClsEx.style         = CS_HREDRAW | CS_VREDRAW;
