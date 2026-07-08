@@ -20,10 +20,6 @@ CImageEditorView::CImageEditorView():
     canvas_ = nullptr;
 }
 
-CImageEditorView::~CImageEditorView()
-{
-}
-
 BOOL CImageEditorView::PreTranslateMessage(MSG* /*pMsg*/) {
     return FALSE;
 }
@@ -50,6 +46,40 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
     return 0;
 }
 
+LRESULT CImageEditorView::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (wParam != ID_AUTOSCROLL_TIMER) return 0;
+    if (!mouseDown_) { KillTimer(ID_AUTOSCROLL_TIMER); return 0; }
+
+    POINT cursorScreen;
+    GetCursorPos(&cursorScreen);
+    POINT cursorClient = cursorScreen;
+    ScreenToClient(&cursorClient);
+
+    RECT clientRect;
+    GetClientRect(&clientRect);
+
+    int dx, dy;
+    computeAutoScrollDelta(cursorClient.x, cursorClient.y, clientRect, dx, dy);
+
+    if (dx == 0 && dy == 0) {
+        KillTimer(ID_AUTOSCROLL_TIMER);
+        return 0;
+    }
+
+    POINT pt;
+    GetScrollOffset(pt);
+    pt.x += dx;
+    pt.y += dy;
+    SetScrollOffset(pt.x, pt.y); // сам подрежет по границам документа
+
+    GetScrollOffset(pt); // берём уже подрезанное значение
+
+    int canvasX = cursorClient.x + pt.x;
+    int canvasY = cursorClient.y + pt.y;
+    canvas_->mouseMove(canvasX, canvasY, MK_LBUTTON);
+
+    return 0;
+}
 
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -74,19 +104,84 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 }
 
 LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-    int cx = GET_X_LPARAM(lParam); 
+    int cx = GET_X_LPARAM(lParam);
     int cy = GET_Y_LPARAM(lParam);
+
+    // обновляем оценку скорости движения курсора (в экранных координатах)
+    POINT curScreen = { cx, cy };
+    ClientToScreen(&curScreen);
+    DWORD now = GetTickCount();
+    DWORD dt = now - lastCursorTick_;
+    if (dt > 0 && dt < 200) { // игнорируем большие/нулевые промежутки
+        double vx = double(curScreen.x - lastCursorScreen_.x) / dt; // px/ms
+        double vy = double(curScreen.y - lastCursorScreen_.y) / dt;
+        // сглаживаем (экспоненциальное скользящее среднее)
+        velLeadX_ = velLeadX_ * 0.6 + vx * 0.4;
+        velLeadY_ = velLeadY_ * 0.6 + vy * 0.4;
+    }
+    lastCursorScreen_ = curScreen;
+    lastCursorTick_ = now;
+
+    RECT clientRect;
+    GetClientRect(&clientRect);
+    bool outsideView = cx < clientRect.left  || cx >= clientRect.right ||
+                        cy < clientRect.top   || cy >= clientRect.bottom;
+
+    if (mouseDown_ && outsideView) {
+        if (!isAutoScrollActive_)
+            SetTimer(ID_AUTOSCROLL_TIMER, AUTOSCROLL_INTERVAL_MS);
+    } else {
+        KillTimer(ID_AUTOSCROLL_TIMER);
+    }
+
     POINT ptScroll;
     GetScrollOffset(ptScroll);
-    cx += ptScroll.x;
-    cy += ptScroll.y;
-    POINT pt = {cx, cy};
-    RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-    if ( mouseDown_ || PtInRect(&canvasRect, pt) ){
-        canvas_->mouseMove( cx, cy, wParam );
+    int canvasX = cx + ptScroll.x;
+    int canvasY = cy + ptScroll.y;
+
+    if (mouseDown_) {
+        canvas_->mouseMove(canvasX, canvasY, wParam); // без клэмпинга
+    } else {
+        RECT canvasRect = {0, 0, canvas_->getWidth(), canvas_->getHeigth()};
+        POINT pt = {canvasX, canvasY};
+        if (PtInRect(&canvasRect, pt))
+            canvas_->mouseMove(canvasX, canvasY, wParam);
     }
-    
+
     return 0;
+}
+
+// Расстояние курсора за границей -> скорость скролла (пикселей за тик)
+int CImageEditorView::speedFromDistance(int dist, int maxDist, int maxSpeed) {
+    dist = std::min(dist, maxDist);
+    double t = static_cast<double>(dist) / maxDist;
+    return static_cast<int>(1 + t * t * (maxSpeed - 1)); // квадратичное ускорение
+}
+
+double CImageEditorView::positionalSpeed(int distOutside) {
+    const double k = 1.15; // 1.0 = точное соответствие, >1 = небольшой забег вперёд
+    return distOutside * k;
+}
+
+void CImageEditorView::computeAutoScrollDelta(int cx, int cy, const RECT& rc, int& dx, int& dy) const {
+    double fx = 0, fy = 0;
+
+    if (cx < rc.left)        fx = -positionalSpeed(rc.left - cx);
+    else if (cx >= rc.right) fx =  positionalSpeed(cx - rc.right + 1);
+
+    if (cy < rc.top)          fy = -positionalSpeed(rc.top - cy);
+    else if (cy >= rc.bottom) fy =  positionalSpeed(cy - rc.bottom + 1);
+
+    // добавляем velocity-lead только в ту же сторону, куда уже скроллим,
+    // и только если курсор реально движется в направлении выхода за край
+    const double velScale = 40.0; // подбирается на глаз
+    if (fx != 0 && ((fx > 0) == (velLeadX_ > 0)))
+        fx += velLeadX_ * velScale;
+    if (fy != 0 && ((fy > 0) == (velLeadY_ > 0)))
+        fy += velLeadY_ * velScale;
+
+    dx = int(fx);
+    dy = int(fy);
 }
 
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -109,6 +204,11 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
         SetCapture();
         canvas_->mouseDown( 0, cx, cy );
     }
+
+    lastCursorScreen_ = {cx, cy};
+    ClientToScreen(&lastCursorScreen_);
+    lastCursorTick_ = GetTickCount();
+    velLeadX_ = velLeadY_ = 0.0;
     return 0;
 }
 
@@ -129,6 +229,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     }
     ReleaseCapture();
     mouseDown_ = false;
+    KillTimer(ID_AUTOSCROLL_TIMER);
     
     return 0;
 }

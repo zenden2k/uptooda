@@ -929,7 +929,7 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
                 mi.wID = ID_SEARCHBYIMAGE_START + i;
                 mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                 mi.cch = itemText.GetLength();
-                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name, dpi);
+                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name, dpi, true);
 
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;

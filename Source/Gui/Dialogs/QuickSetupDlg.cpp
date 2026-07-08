@@ -30,13 +30,6 @@
 #include "Core/AbstractServerIconCache.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-CQuickSetupDlg::CQuickSetupDlg() {
-}
-
-CQuickSetupDlg::~CQuickSetupDlg() {
-}
-
-
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -93,11 +86,11 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     line[ARRAY_SIZE(line) - 1] = 0;
     for (int j = 0; j < 2; j++) {
         for (int i = 0; i < myEngineList->count(); i++) {
-            CUploadEngineData * ue = myEngineList->byIndex(i);
+            const CUploadEngineData * ue = myEngineList->byIndex(i);
             if ((!ue->hasType(CUploadEngineData::TypeImageServer) && j == 0)|| (!ue->hasType(CUploadEngineData::TypeFileServer) && j == 1)) {
                 continue;
             }
-            HICON hImageIcon = ServiceLocator::instance()->serverIconCache()->getIconForServer(ue->Name, dpi);
+            HICON hImageIcon = ServiceLocator::instance()->serverIconCache()->getIconForServer(ue->Name, dpi, true);
             int nImageIndex = -1;
             if (hImageIcon) {
                 nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
@@ -163,7 +156,6 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         }
         Settings.quickScreenshotServer = Settings.imageServer;
         Settings.contextMenuServer = Settings.imageServer;
-        //Settings.fileServer.setServerName("zippyshare.com");
     } else {
 
     }
@@ -252,7 +244,7 @@ void  CQuickSetupDlg::serverChanged() {
         bool authorizationAvailable = uploadEngineData->NeedAuthorization != 0;
         showAuthorizationControls( authorizationAvailable );
         bool forceAuthorization = uploadEngineData->NeedAuthorization == 2;
-        CString doAuthCheckboxText = forceAuthorization ? TR("Authorize") : CString(TR("I have an account on this server") ); //+ (forceAuthorization? _T("") : TR(" (optional)"));
+        CString doAuthCheckboxText = forceAuthorization ? TR("Authorize") : TR("I have an account on this server"); //+ (forceAuthorization? _T("") : TR(" (optional)"));
         SetDlgItemText( IDC_DOAUTHCHECKBOX, doAuthCheckboxText );
         ::EnableWindow( GetDlgItem( IDC_DOAUTHCHECKBOX), !forceAuthorization);
         SendDlgItemMessage( IDC_DOAUTHCHECKBOX, BM_SETCHECK, forceAuthorization? BST_CHECKED : BST_UNCHECKED );

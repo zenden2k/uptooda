@@ -33,8 +33,6 @@
 class CQuickSetupDlg : public CCustomDialogIndirectImpl<CQuickSetupDlg>
 {
 	public:
-		CQuickSetupDlg();
-		~CQuickSetupDlg();
 
 		enum { IDD = IDD_QUICKSETUPDLG };
 	protected:

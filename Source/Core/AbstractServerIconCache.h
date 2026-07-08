@@ -28,19 +28,19 @@ public:
     {
 
     }
-    virtual ~AbstractServerIconCache() { }
-    virtual NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon = true) = 0;
+    virtual ~AbstractServerIconCache() = default;
+    virtual NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon) = 0;
 
     [[nodiscard]] virtual NativeIcon getBigIconForServer(const std::string& name, int dpi) = 0;
 
-    virtual NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon = true) = 0;
+    virtual NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon) = 0;
 
-    virtual std::string getIconNameForServer(const std::string& name, bool returnFullPath = false);
+    virtual std::string getIconNameForServer(const std::string& name, bool returnFullPath);
+
     /**
     * @throws std::logic_error 
     */
     virtual void preLoadIcons(int dpi) = 0;
-
 protected:
     CUploadEngineListBase* engineList_;
     std::string iconsDir_;

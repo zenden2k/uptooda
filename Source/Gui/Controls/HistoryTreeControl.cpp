@@ -226,7 +226,6 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
 
     dc.SetBkMode(TRANSPARENT);
 
-
     CBrush backgroundBrush;
 
     DWORD color = GetSysColor(COLOR_WINDOW);
@@ -312,7 +311,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     drawRect.bottom = drawRect.top + calcRect.Height();
     drawRect.left = rc.left + curX + 4;
     drawRect.right = drawRect.left + calcRect.Width();
-    HICON ico = ServiceLocator::instance()->serverIconCache()->getIconForServer(ses->serverName(), dpi);
+    HICON ico = ServiceLocator::instance()->serverIconCache()->getIconForServer(ses->serverName(), dpi, true);
 
     if (ico && draw) {
         dc.DrawIconEx(drawRect.left, drawRect.top, ico, 16, 16);

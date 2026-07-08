@@ -35,8 +35,8 @@ class DrawingElement {
         int getWidth() const;
         int getHeight() const;
     protected:
-        POINT startPoint_;
-        POINT endPoint_;
+        POINT startPoint_{};
+        POINT endPoint_{};
         Gdiplus::Color color_;
         Gdiplus::Color backgroundColor_;
         int penSize_;

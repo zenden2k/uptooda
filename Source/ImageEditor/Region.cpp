@@ -18,22 +18,20 @@
 
 #include "Region.h"
 
+#include <memory>
+
 #include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
 
 Region::Region(int x,int y, int w, int h)
 {
-    rgn_.reset(new Gdiplus::Region(Gdiplus::Rect(x,y,w,h)));
+    rgn_ = std::make_shared<Gdiplus::Region>(Gdiplus::Rect(x,y,w,h));
 }
 
 Region::Region(Gdiplus::Region* rgn)
 {
     rgn_.reset(rgn);
-}
-
-Region::~Region()
-{
 }
 
 Region Region::intersected(const Region & r) const

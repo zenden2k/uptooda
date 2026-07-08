@@ -24,8 +24,6 @@ ipch/
 *.obj
 *.aps
 Lang/*.new
-Dist/debian/imgupload
-Dist/serverchecker
 /Dist/versioninfo*.h
 /Build*/
 .vs/

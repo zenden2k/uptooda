@@ -327,7 +327,7 @@ void CServerSelectorControl::updateServerButton() {
     auto iconCache = ServiceLocator::instance()->serverIconCache();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
-    HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi) : nullptr;
+    HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi, true) : nullptr;
     serverButton_.SetWindowText(ued ? U2WC(myEngineList->getServerDisplayName(ued)) : TR("Choose server"));
     serverButton_.SetIcon(serverIcon);
 }

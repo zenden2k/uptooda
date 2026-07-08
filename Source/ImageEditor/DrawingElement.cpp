@@ -38,11 +38,11 @@ void DrawingElement::resize(int width, int height) {
     //dimensions_ = newSize;
 }
 
-void DrawingElement::setStartPoint(POINT startPoint) {
+void DrawingElement::setStartPoint(const POINT startPoint) {
     startPoint_ = startPoint;
 }
 
-void DrawingElement::setEndPoint(POINT endPoint) {
+void DrawingElement::setEndPoint(const POINT endPoint) {
     endPoint_ = endPoint;
 }
 

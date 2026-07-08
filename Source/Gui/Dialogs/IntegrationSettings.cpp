@@ -147,7 +147,7 @@ bool CIntegrationSettings::apply()
             std::mt19937 mt{ std::random_device{}() };
             std::uniform_int_distribution<int> dist(0, 999999);
                 for( int i = 0; i< menuItemCount; i++ ){
-                    ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
+                    auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
                     if ( lid->invalid ) {
                         continue;
                     }
@@ -163,14 +163,14 @@ bool CIntegrationSettings::apply()
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
                     auto iconCache = ServiceLocator::instance()->serverIconCache();
-                    if ( Reg2.SetKey("Software\\Uptooda\\ContextMenuItems\\" + itemId, true) ) {
+                    if ( Reg2.SetKey(R"(Software\Uptooda\ContextMenuItems\)" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
                         Reg2.WriteString("ProfileName", Utf8ToWCstring(lid->serverProfile.profileName()));
                         Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
                         Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
                         Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-                        CString icon = U2W(iconCache->getIconNameForServer(lid->serverProfile.serverName()));
+                        CString icon = U2W(iconCache->getIconNameForServer(lid->serverProfile.serverName(), false));
                         CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
                             Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );
