@@ -25,9 +25,6 @@ struct HistoryTreeItem
     HistoryTreeItem() :hi(nullptr), thumbnail(nullptr), ThumbnailRequested(false){
         
     }
-
-    ~HistoryTreeItem() {
-    }
 };
 
 class CHistoryTreeControlCallback {

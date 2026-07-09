@@ -518,9 +518,8 @@ TreeItem * CHistoryTreeControl::selectedItem()
         TreeItem* prop = GetItem(idx);
         return prop;
     }
-    return 0;
+    return nullptr;
 }
-
 
 bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 {

@@ -119,6 +119,11 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     return 0;
 }
 
+LRESULT CHistoryWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    GuiTools::ClearWindowPointer(m_hWnd);
+    return 0;
+}
+
 BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 {
     return CWindow::IsDialogMessage(pMsg);

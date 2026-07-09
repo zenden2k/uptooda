@@ -77,7 +77,7 @@ int CUploader::pluginProgressFunc(INetworkClient* nc, int64_t dltotal, int64_t d
         uploader->m_PrInfo.IsUploading = true;
         uploader->m_PrInfo.Total = ultotal;
         uploader->m_PrInfo.Uploaded = ulnow;
-        uploader->m_PrInfo.IsUploading = networkClient->currrentActionType() == NetworkClient::ActionType::atUpload;
+        uploader->m_PrInfo.IsUploading = networkClient->currentActionType() == NetworkClient::ActionType::atUpload;
     }
 
     uploader->currentTask_->uploadProgress(uploader->m_PrInfo);

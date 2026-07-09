@@ -416,18 +416,36 @@ bool NetworkClient::doUploadMultipartData()
             if (chunkOffset_ != -1 && !chunkUploadFileAdded) {
                 FILE* file = IuCoreUtils::FopenUtf8(param.value.c_str(), "rb");
                 if (!file) {
+                    const std::error_code ec(errno, std::system_category());
                     curl_mime_free(mime);
+                    internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                        "Could not open file '%1%' for reading: %2% (code %3)"
+                        ) % param.value % ec.message() % ec.value()
+                    );
+
                     return false;
                 }
 
                 if (IuCoreUtils::Fseek64(file, 0, SEEK_END) != 0) {
+                    const std::error_code ec(errno, std::system_category());
                     fclose(file);
                     curl_mime_free(mime);
+                    internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                        "Could not seek file '%1%' to the end: %2% (code %3)"
+                        ) % param.value % ec.message() % ec.value()
+                    );
                     return false;
                 }
 
                 int64_t fileSize = IuCoreUtils::Ftell64(file);
                 if (fileSize < 0 || chunkOffset_ < 0 || chunkOffset_ > fileSize) {
+                    if (fileSize < 0) {
+                        const std::error_code ec(errno, std::system_category());
+                        internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                            "Cannot get size of file '%1%': %2% (code %3)"
+                            ) % param.value % ec.message() % ec.value()
+                        );
+                    }
                     fclose(file);
                     curl_mime_free(mime);
                     return false;
@@ -545,6 +563,7 @@ bool NetworkClient::doUploadMultipartData()
 
 bool NetworkClient::private_on_finish_request()
 {
+
     private_check_response();
     cleanupAfter();
     private_parse_headers();
@@ -689,7 +708,7 @@ void NetworkClient::private_check_response()
         return;
     }
     int code = responseCode();
-    if ( (curl_result != CURLE_OK || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
+    if ( (curl_result != CURLE_OK || (code>= 400 && code<=499) || !internalErrorString_.empty()) && errorString() != "Callback aborted" ) {
         std::string errorDescr;
 
         if (!errorLogIdString_.empty()) {
@@ -707,6 +726,9 @@ void NetworkClient::private_check_response()
         std::string fullErrorString = errorString();
         if (!fullErrorString.empty()) {
             errorDescr += fullErrorString  + "\r\n";
+        }
+        if (!internalErrorString_.empty()) {
+            errorDescr += internalErrorString_ + "\r\n";
         }
         errorDescr += internalBuffer;
         if (logger_) {
@@ -816,6 +838,7 @@ void NetworkClient::cleanupAfter()
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, stdin);
 
     m_uploadData.clear();
+    internalErrorString_.clear();
     m_uploadingFile = nullptr;
     chunkOffset_ = -1;
     chunkSize_ = -1;
@@ -898,20 +921,37 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     if(!fileName.empty())
     {
         m_uploadingFile = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb"); /* open file to upload */
+        if (!m_uploadingFile) {
+            const std::error_code ec(errno, std::system_category());
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Could not open file '%1%' for reading: %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
+            return false;
+        }
         if (fseek(m_uploadingFile, 0, SEEK_END) == 0) {
             m_CurrentFileSize = IuCoreUtils::Ftell64(m_uploadingFile);
             IuCoreUtils::Fseek64(m_uploadingFile, 0, SEEK_SET);
         }
         else {
+            const std::error_code ec(errno, std::system_category());
             fclose(m_uploadingFile);
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Could not seek file '%1%' to the end: %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
             m_uploadingFile = nullptr;
-            //currentFileSize_ = NetworkClientInternal::GetBigFileSize(fileName);
             return false;
         }
 
         m_currentUploadDataSize = m_CurrentFileSize;
         if(m_CurrentFileSize < 0) {
+            const std::error_code ec(errno, std::system_category());
             fclose(m_uploadingFile);
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Cannot get size of file '%1%': %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
             return false;
         }
 
@@ -1109,7 +1149,7 @@ void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
     curl_easy_setopt(curl_handle, CURLOPT_MAX_RECV_SPEED_LARGE, static_cast<curl_off_t>(speed));
 }
 
-NetworkClient::ActionType NetworkClient::currrentActionType() const {
+NetworkClient::ActionType NetworkClient::currentActionType() const {
     return m_currentActionType;
 }
 

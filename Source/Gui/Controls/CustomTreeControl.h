@@ -465,6 +465,10 @@ BEGIN_MSG_MAP(CCustomTreeControlImpl)
     }
 
     TreeItem* GetItem(int index) {
+        auto itemData = TBase::GetItemData(index);
+        if (itemData == LB_ERR) {
+            return nullptr;
+        }
         return reinterpret_cast<TreeItem*>(TBase::GetItemData(index));
     }
 

@@ -246,7 +246,7 @@ class NetworkClient: public INetworkClient
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
         void setDebugger(std::shared_ptr<Debugger> debugger) override;
-        ActionType currrentActionType() const;
+        ActionType currentActionType() const;
 
         static void clearThreadData();
 
@@ -337,6 +337,7 @@ class NetworkClient: public INetworkClient
         Logger * logger_;
         std::shared_ptr<ProxyProvider> proxyProvider_;
         std::shared_ptr<Debugger> debugger_;
+        std::string internalErrorString_;
 };
 
 #endif
