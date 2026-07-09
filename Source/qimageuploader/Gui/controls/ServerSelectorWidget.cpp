@@ -272,7 +272,7 @@ void ServerSelectorWidget::fillServerIcons() {
         QString s = serverListComboBox->itemData(i).toString();
         std::string serverName = s.toStdString();
 
-        QIcon ico = serverIconCache->getIconForServer(serverName, 96);
+        QIcon ico = serverIconCache->getIconForServer(serverName, 96, true);
         serverListComboBox->setItemIcon(i, ico);
     }
 }
