@@ -612,12 +612,14 @@ std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType) {
     const CString folder = WinUtils::GetFilePath(fileName);
 
-    if (!WinUtils::FileExists(folder)) {
-        if (!WinUtils::CreateFolder(folder)) {
-            throw IOException("Could not create the folder '" + W2U(folder) + "'", W2U(fileName));
+    if (!folder.IsEmpty()) {
+        if (!WinUtils::FileExists(folder)) {
+            if (!WinUtils::CreateFolder(folder)) {
+                throw IOException("Could not create the folder '" + W2U(folder) + "'", W2U(fileName));
+            }
+        }  else if (!WinUtils::IsDirectory(folder)) {
+            throw IOException("This is not a folder: '" + W2U(folder) + "'", W2U(fileName));
         }
-    }  else if (!WinUtils::IsDirectory(folder)) {
-        throw IOException("This is not a folder: '" + W2U(folder) + "'", W2U(fileName));
     }
 
     std::unique_ptr<Bitmap> quantizedImage;
