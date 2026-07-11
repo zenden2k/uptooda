@@ -28,8 +28,6 @@ class CImageEditorSettingsPage :    public CDialogImpl<CImageEditorSettingsPage>
                                      public CSettingsPage
 {
     public:
-        CImageEditorSettingsPage();
-        ~CImageEditorSettingsPage();
         enum { IDD = IDD_IMAGEEDITORSETTINGS};
 
     protected:

@@ -127,7 +127,7 @@ std::optional<size_t> ServerListModel::getIndexByServerName(const std::string& s
     auto it = std::find(filteredItemsIndexes_.begin(), filteredItemsIndexes_.end(), index);
 
     if (it == filteredItemsIndexes_.end()) {
-        return {};
+        return std::nullopt;
     }
     return std::distance(filteredItemsIndexes_.begin(), it);
 }

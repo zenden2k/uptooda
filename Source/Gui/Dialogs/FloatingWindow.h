@@ -243,8 +243,8 @@ public:
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(UploadTask* task, const CString& url);
-     void ShowScreenshotCopiedToClipboardMessage();
-     bool canExitApp();
+     void ShowScreenshotCopiedToClipboardMessage(CString message);
+     bool canExitApp() const;
 
      int iconAnimationCounter_;
      std::shared_ptr<UploadSession> currentUploadSession_;

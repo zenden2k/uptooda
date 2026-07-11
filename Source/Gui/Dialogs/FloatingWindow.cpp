@@ -1035,13 +1035,12 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
     lastUploadedItem_ = std::move(obj);
 }
 
-void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
-    CString statusText = TR("Screenshot has been copied to clipboard.");
-    ShowBaloonTip(statusText, APP_NAME, 17000);
-    setStatusText(statusText, kStatusHideTimeout);
+void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage(CString message) {
+    ShowBaloonTip(message, APP_NAME, 17000);
+    setStatusText(message, kStatusHideTimeout);
 }
 
-bool CFloatingWindow::canExitApp() {
+bool CFloatingWindow::canExitApp() const {
     return !m_bIsUploading && wizardDlg_->canExitApp();
 }
 

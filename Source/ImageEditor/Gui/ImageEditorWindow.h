@@ -36,7 +36,9 @@ public:
         ID_UPLOAD,
         ID_SHARE,
         ID_SAVE,
+        ID_SAVE_ALT,
         ID_SAVEAS,
+        ID_SAVEAS_ALT,
         ID_COPYBITMAPTOCLIBOARD,
         ID_COPYBITMAPTOCLIBOARD_ALT,
         ID_COPYBITMAPTOCLIBOARDASDATAURI,
@@ -139,6 +141,7 @@ public:
         COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )
         COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )
         COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )
+        COMMAND_ID_HANDLER( ID_SAVE_ALT, OnClickedSave )
         COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD_ALT, OnClickedCopyToClipboard )
@@ -285,11 +288,11 @@ public:
         void onFontChanged(LOGFONT font);
         bool createTooltip();
         void updatePixelLabels();
-        bool OnSaveAs();
+        bool onSaveAs(bool closeFlag);
         void saveSettings();
         bool copyBitmapToClipboard(ClipboardFormat format = ClipboardFormat::None, bool closeFlag = true);
         BOOL PreTranslateMessage(MSG* pMsg) override;
-        bool OnClickedSave();
+        bool onSave(bool closeFlag);
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
@@ -303,10 +306,12 @@ public:
         void showMoreActionsDropdownMenu(Toolbar::Item* item);
         void createIcons();
 
-        bool checkCloseWindowAfterAction();
-        bool canCloseAfterAction();
+        bool checkCloseWindowAfterAction() const;
+        bool canCloseAfterAction() const;
 
-        std::string getUploadButtonText();
+        std::string getUploadButtonText() const;
+        bool openedAfterScreenshot() const;
+        CString makeFileName() const;
 };
 
 class ConfigurationProvider {

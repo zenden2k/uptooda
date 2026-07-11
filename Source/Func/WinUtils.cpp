@@ -599,6 +599,22 @@ LPCTSTR GetFileExt(LPCTSTR szFileName)
     return szReturn;
 }
 
+CString GetFilePath(const CString& strFullPath)
+{
+    int nPos = strFullPath.ReverseFind(_T('\\'));
+    if (nPos == -1)
+    {
+        nPos = strFullPath.ReverseFind(_T('/'));
+    }
+
+    if (nPos != -1)
+    {
+        return strFullPath.Left(nPos);
+    }
+
+    return {};
+}
+
 bool IsStrInList(LPCTSTR szExt,LPCTSTR szList)
 {
     if(!szList || !szExt) return false;

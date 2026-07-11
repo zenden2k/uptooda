@@ -552,14 +552,14 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
     if (userFolder.Right(1) != _T('\\')) {
         userFolder += _T('\\');
     }
-    buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
+    buffer2.Format(_T("%s%s.%s"), (Folder ? userFolder : AppParams::instance()->tempDirectoryW()).GetString(), szNameBuffer.GetString(),
                     szImgTypes[Format]);
     if (!img) {
         szBuffer = buffer2;
         return true;
     }
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
-    WinUtils::CreateFilePath(resultFilename);
+
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
 
     szBuffer = resultFilename;
@@ -610,6 +610,16 @@ std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
 }
 
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType) {
+    const CString folder = WinUtils::GetFilePath(fileName);
+
+    if (!WinUtils::FileExists(folder)) {
+        if (!WinUtils::CreateFolder(folder)) {
+            throw IOException("Could not create the folder '" + W2U(folder) + "'", W2U(fileName));
+        }
+    }  else if (!WinUtils::IsDirectory(folder)) {
+        throw IOException("This is not a folder: '" + W2U(folder) + "'", W2U(fileName));
+    }
+
     std::unique_ptr<Bitmap> quantizedImage;
 
     if (Format == sifDetectByExtension) {
@@ -655,7 +665,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
             result = stream ? img->Save(stream, &clsidEncoder, &eps) : img->Save(fileName, &clsidEncoder);
         }
     } else {
-        throw std::runtime_error("Could not find suitable converter");
+        throw std::runtime_error("Could not find a suitable converter");
     }
 
     if (result != Ok) {
@@ -670,7 +680,6 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
 
     return true;
 }
-
 
 SaveImageFormat GetFormatByFileName(CString filename) {
     CString ext = WinUtils::GetFileExt(filename);

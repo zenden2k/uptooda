@@ -49,6 +49,7 @@ namespace WinUtils {
     CString myExtractFileName(const CString & FileName);
     LPCTSTR GetFileExt(LPCTSTR szFileName);
     CString GetOnlyFileName(const CString& szFilename);
+    CString GetFilePath(const CString& strFullPath);
     bool FileExists(LPCTSTR FileName);
     CString TrimString(const CString& source, int nMaxLen);
     CString TrimStringEnd(const CString& source, int nMaxLen);

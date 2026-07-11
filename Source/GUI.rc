@@ -147,11 +147,11 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "#Allow alt-tab in image editor",IDC_ALLOWALTTABINIMAGEEDITOR,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,11,229,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,11,246,10
     CONTROL         "#Allow fullscreen editor",IDC_ALLOWFULLSCREENEDITORCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,25,227,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,25,246,10
     CONTROL         "#close imageeditor on copy and search",IDC_CLOSEIMAGEEDITORONCOPY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,39,237,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,39,246,10
 END
 
 IDD_SERVERLISTPOPUP DIALOGEX 0, 0, 473, 242
@@ -233,7 +233,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 10
         RIGHTMARGIN, 256
-        VERTGUIDE, 19
+        VERTGUIDE, 10
         TOPMARGIN, 4
         BOTTOMMARGIN, 300
         HORZGUIDE, 11
