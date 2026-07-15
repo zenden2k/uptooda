@@ -48,10 +48,6 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     newStyleDialog_->SetOptions(dwFlags);
 }
 
-
-CNewStyleFileDialog::~CNewStyleFileDialog() {
-}
-
 INT_PTR CNewStyleFileDialog::DoModal(HWND hWndParent) {
     HRESULT hr = newStyleDialog_->Show(hWndParent);
 

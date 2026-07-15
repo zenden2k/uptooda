@@ -148,14 +148,27 @@ void DoUpdates(bool force = false);
 
 std::chrono::steady_clock::time_point lastProgressTime;
 
-void PrintServerList()
-{
-    for (const auto& ued : *list) {
-        if (!ued->hasType(CUploadEngineData::TypeImageServer) && !ued->hasType(CUploadEngineData::TypeFileServer)) {
-		   continue;
+void PrintServerList() {
+    const std::pair<CUploadEngineData::ServerType, std::string> serverTypes[] = {
+        {CUploadEngineData::TypeImageServer, "Image"},
+        {CUploadEngineData::TypeFileServer, "File"},
+        {CUploadEngineData::TypeVideoServer, "Video"},
+    };
+
+    for (const auto& serverType : serverTypes) {
+        std::cout << termcolor::green << serverType.second << " servers:" << termcolor::reset << std::endl;
+        for (const auto& ued : *list) {
+            if (!ued->hasType(serverType.first)) {
+                continue;
+            }
+            std::cout << ued->Name;
+            if (!ued->DisplayName.empty() && ued->DisplayName != ued->Name) {
+                std::cout << " [" << ued->DisplayName << "]";
+            }
+            std::cout << std::endl;
         }
-        std::cout << ued->Name << std::endl;
-   }
+        std::cout << std::endl;
+    }
 }
 
 CUploadEngineData* getServerByName(const std::string& name)
@@ -586,14 +599,9 @@ int main(int argc, char *argv[]){
     AppParams::instance()->setVersionInfo(appVersion);
 
     argparse::ArgumentParser program("uptooda-cli", appVersion.FullVersion);
-    program.add_argument("-s", "--server")
-        .help("Choose server by name")
-        .required()
-        .metavar("NAME")
-        .store_into(serverName);
 
     program.add_argument("-l", "--list")
-        .help("Prints server list (hosting services) and exits")
+        .help("print server list (hosting services) and exit")
         .action([=](const auto& s) {
             PrintServerList();
             std::exit(0);
@@ -602,8 +610,14 @@ int main(int argc, char *argv[]){
         .implicit_value(true)
         .nargs(0);
 
+    program.add_argument("-s", "--server")
+        .help("choose server by name")
+        .required()
+        .metavar("NAME")
+        .store_into(serverName);
+
     program.add_argument("-cl", "--code_lang")
-        .help("Code language (bbcode|html|json|plain)")
+        .help("code language (bbcode|html|json|plain)")
         .action([&](const std::string& cl) {
             const std::unordered_map<std::string, OutputGenerator::CodeLang> types = {
                 { "plain", OutputGenerator::clPlain },
@@ -622,7 +636,7 @@ int main(int argc, char *argv[]){
         .nargs(1);
 
     program.add_argument("-ct", "--code_type")
-        .help("Code type (TableOfThumbnails|ClickableThumbnails|Images|Links)")
+        .help("code type (TableOfThumbnails|ClickableThumbnails|Images|Links)")
         .action([&](const std::string& ct) {
             const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
                 { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
@@ -641,26 +655,26 @@ int main(int argc, char *argv[]){
      .nargs(1);
 
     program.add_argument("-u", "--user")
-        .help("User name (login)")
+        .help("user name (login)")
         .metavar("USERNAME")
         .store_into(login);
 
     program.add_argument("-p", "--password")
-        .help("Password")
+        .help("password")
         .metavar("PASSWORD")
         .store_into(password);
 
     program.add_argument("-fl", "--folder_id")
-        .help("The ID of remote folder/album (supported by some servers)")
+        .help("the ID of remote folder/album (supported by some servers)")
         .metavar("ID")
         .store_into(folderId);
 
     program.add_argument("-r", "--retries")
-        .help("Maximum number of attempts (per file)")
+        .help("maximum number of attempts (per file)")
         .store_into(maxRetries);
 
     program.add_argument("-a", "--retries_per_action")
-        .help("Maximum number of attempts (per action)")
+        .help("maximum number of attempts (per action)")
         .store_into(maxRetriesPerAction);
 
     program.add_argument("-tw", "--thumb_width")
@@ -672,13 +686,13 @@ int main(int argc, char *argv[]){
         .store_into(thumbHeight);
 
     program.add_argument("-sp", "--server_param")
-        .help("Set parameter of remote server (NAME:VALUE)")
+        .help("set parameter of remote server (NAME:VALUE)")
         .metavar("NAME:VALUE")
         .append();
        // .nargs(argparse::nargs_pattern::at_least_one);
 
     program.add_argument("-pl", "--param_list")
-        .help("Print server parameter list and exits")
+        .help("print server parameter list and exit")
         .action([=](const auto& s) {
             PrintServerParamList();
             std::exit(0);
@@ -688,7 +702,7 @@ int main(int argc, char *argv[]){
         .nargs(0);
 
     program.add_argument("-pr", "--proxy")
-        .help("Proxy address (with port)")
+        .help("proxy address:port")
         .action([&](const std::string& pr) {
             const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
                 { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
@@ -707,18 +721,18 @@ int main(int argc, char *argv[]){
         });
 
     program.add_argument("-pu", "--proxy_user")
-         .help("Proxy username (login)")
+         .help("proxy username (login)")
          .metavar("USERNAME")
          .store_into(login);
 
     program.add_argument("-pp", "--proxy_password")
-         .help("Proxy password")
+         .help("proxy password")
          .metavar("PASSWORD")
          .store_into(password);
 
 
     program.add_argument("-pt", "--proxy_type")
-         .help("Proxy type (http|https|socks4|socks4a|socks5|socks5dns)")
+         .help("proxy type (http|https|socks4|socks4a|socks5|socks5dns)")
          .choices("http", "socks4", "socks4a", "socks5", "socks5dns", "https")
          .action([&](const std::string& type) {
             std::map<std::string, int> types;
@@ -741,12 +755,12 @@ int main(int argc, char *argv[]){
 
 #ifdef _WIN32
     program.add_argument("-ps", "--proxy_system")
-         .help("Use system proxy settings (this option is supported only on Windows)")
+         .help("use system proxy settings (this option is supported only on Windows)")
          .flag()
          .store_into(useSystemProxy);
 
     program.add_argument("-up", "--update")
-        .help("Update servers.xml. The 'Data' directory must be writable, otherwise update will fail.")
+        .help("update servers.xml (the 'Data' directory must be writable, otherwise update will fail)")
         .action([=](const auto& s) {
             DoUpdates(true);
             std::exit(0);
@@ -765,7 +779,7 @@ int main(int argc, char *argv[]){
        .nargs(0);*/
 
     program.add_argument("files")
-         .help("Files to upload on remote server")
+         .help("files to upload on remote server")
          .remaining();
 
     list = std::make_unique<CUploadEngineList>();

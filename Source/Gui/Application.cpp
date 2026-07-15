@@ -96,6 +96,12 @@ private:
     HRESULT m_hr;
 };
 
+#ifndef NDEBUG
+extern "C" const char* __asan_default_options() {
+    return "continue_on_error=1";
+}
+#endif
+
 COleInitialize oleInitializer;
 
 class Application {

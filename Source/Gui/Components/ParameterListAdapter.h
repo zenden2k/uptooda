@@ -12,7 +12,7 @@ class ServerSettingsStruct;
 
 class IParameterController {
 public:
-    ~IParameterController() = default;
+    virtual ~IParameterController() = default;
     virtual HPROPERTY show(AbstractParameter* parameter, CString title, const std::string& value, LPARAM lParam) = 0;
     virtual bool save(AbstractParameter* parameter, const CComVariant& value) = 0;
 };
@@ -28,6 +28,6 @@ public:
 private:
     ParameterList* parameterList_;
     CPropertyListCtrl* control_;
-    IParameterController* getParameterController(const std::string& typeStr) const;
+    [[nodiscard]] IParameterController* getParameterController(const std::string& typeStr) const;
     std::map<std::string, std::unique_ptr<IParameterController>> registeredTypes_;
 };
