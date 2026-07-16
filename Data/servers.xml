@@ -458,7 +458,7 @@
         </Info>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgbox.com"  Type="image"  Authorize="0" Plugin="imgbox" WebsiteUrl="https://imgbox.com" RegistrationUrl="https://imgbox.com/register">
+    <Server Name="imgbox.com" Type="image" Authorize="1" Plugin="imgbox" WebsiteUrl="https://imgbox.com" RegistrationUrl="https://imgbox.com/register">
         <Info>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
@@ -572,7 +572,7 @@
             RegistrationUrl="https://imgbb.com/signup">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="33554432" UserTypes="anon">
+                <FormatGroup MaxFileSize="33554432" UserTypes="anon,reg">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/bmp">*.bmp</Format>

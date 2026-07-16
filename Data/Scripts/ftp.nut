@@ -36,19 +36,6 @@ function _GetProtocol() {
     return "ftp";
 }
 
-function _StrReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function TestConnection() {
     local host = ServerParams.getParam("hostname");
     local login = ServerParams.getParam("Login");
@@ -73,7 +60,7 @@ function TestConnection() {
     if(folder.slice(folder.len()-1) != "/") {
         folder += "/";
     }
-    folder = _StrReplace(folder, " ", "%20");
+    folder = StrReplace(folder, " ", "%20");
 
     local url = _GetProtocol() + "://" + host + folder;
 
@@ -137,7 +124,7 @@ function UploadFile(FileName, options) {
     if(folder.slice(folder.len()-1) != "/")
         folder += "/";
 
-    folder = _StrReplace(folder, " ", "%20");
+    folder = StrReplace(folder, " ", "%20");
     local url = _GetProtocol() + "://" + host + folder + nm.urlEncode(newFilename);
     nm.setUrl(url);
     nm.setCurlOptionInt(CURLOPT_NOBODY, 1);
@@ -167,7 +154,7 @@ function UploadFile(FileName, options) {
     }
     if(downloadPath.slice(downloadPath.len()-1) != "/")
         downloadPath += "/";
-    options.setDirectUrl(downloadPath+_StrReplace(nm.urlEncode(newFilename),"%2E","."));
+    options.setDirectUrl(downloadPath+StrReplace(nm.urlEncode(newFilename),"%2E","."));
 
     return 1;
 }

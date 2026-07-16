@@ -1,19 +1,6 @@
 ﻿CLIENT_ID <-  GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_ID");
 CLIENT_SECRET <- GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_SECRET");
 
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function _GetAuthorizationString() {
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
@@ -330,7 +317,7 @@ function UploadFile(FileName, options) {
 
         local ServerFileName = options.getServerFileName();
         if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
-        local encodedFname = /*nm.urlEncode*/_RegReplace(ServerFileName, " ", "_");
+        local encodedFname = /*nm.urlEncode*/StrReplace(ServerFileName, " ", "_");
         nm.addQueryHeader("X-Goog-Upload-File-Name", encodedFname);
         nm.addQueryHeader("X-Goog-Upload-Protocol", "raw");
         nm.addQueryHeader("Expect","");

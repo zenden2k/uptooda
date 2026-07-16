@@ -84,7 +84,7 @@ IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
         id = IuStringUtils::Replace(id, ":", "_");
 
         if (!id.empty()) {
-            result.push_back({ "[directshow]" + id, name.empty() ? id : name });
+            result.emplace_back( "[directshow]" + id, name.empty() ? id : name );
         }
 
         pMoniker.Release(); 
@@ -187,7 +187,7 @@ IdNameArray FFMpegOptionsManager::getVideoCodecs() {
         if (!codec) {
             continue;
         }
-        result.push_back(std::make_pair(codecId, codec->name()));
+        result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
         return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
@@ -204,7 +204,7 @@ IdNameArray FFMpegOptionsManager::getAudioCodecs() {
         if (!codec) {
             continue;
         }
-        result.push_back(std::make_pair(codecId, codec->name()));
+        result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
         return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
@@ -225,7 +225,7 @@ IdNameArray FFMpegOptionsManager::getVideoSources() {
         if (!source || source->hidden()) {
             continue;
         }
-        result.push_back(std::make_pair(sourceId, source->name()));
+        result.emplace_back(sourceId, source->name());
     }
     std::sort(result.begin(), result.end(), compareFunc);
 
@@ -250,7 +250,7 @@ IdNameArray FFMpegOptionsManager::getAudioSources() {
         if (!source || source->hidden()) {
             continue;
         }
-        result.push_back(std::make_pair(sourceId, source->name()));
+        result.emplace_back(sourceId, source->name());
     }
     std::sort(result.begin(), result.end(), compareFunc);
 

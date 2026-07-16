@@ -81,9 +81,8 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
     return {};
 }
 
-uint32_t ServersCheckerModel::getItemColor(int row) const {
-    const ServerData& serverData = *items_[row];
-    return serverData.color;
+uint32_t ServersCheckerModel::getItemColor(size_t row) const {
+    return items_[row]->color;
 }
 
 size_t ServersCheckerModel::getCount() const {

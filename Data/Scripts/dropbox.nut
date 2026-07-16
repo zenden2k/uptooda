@@ -242,7 +242,7 @@ function UploadFile(FileName, options) {
                     local arg ={
                         close=false
                     };
-                    local json = _RegReplace(ToJSON(arg),"\n","");
+                    local json = StrReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 } else{
                     url = "https://content.dropboxapi.com/2/files/upload_session/append_v2" ;
@@ -254,7 +254,7 @@ function UploadFile(FileName, options) {
                         },
                         close=false
                     };
-                    local json = _RegReplace(ToJSON(arg),"\n","");
+                    local json = StrReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 }
                 local currentChunkSize = min(CHUNK_SIZE, fileSize - offset).tointeger();
@@ -300,7 +300,7 @@ function UploadFile(FileName, options) {
                 mute=false
             }
         };
-        local json = _RegReplace(ToJSON(arg),"\n","");
+        local json = StrReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.addQueryHeader("Content-Type", "application/octet-stream");
         _SignRequest(url, token);
@@ -322,7 +322,7 @@ function UploadFile(FileName, options) {
             mute=false
         };
         nm.addQueryHeader("Content-Type", "application/octet-stream");
-        local json = _RegReplace(ToJSON(arg),"\n","");
+        local json = StrReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.setUrl(url);
         nm.doUpload(FileName, "");
@@ -344,7 +344,7 @@ function UploadFile(FileName, options) {
                 requested_visibility="public"
             }
     };
-    local json = _RegReplace(ToJSON(arg),"\n","");
+    local json = StrReplace(ToJSON(arg),"\n","");
     nm.addQueryHeader("Content-Type","application/json")
     nm.setUrl(url);
     nm.enableResponseCodeChecking(false);
@@ -361,7 +361,7 @@ function UploadFile(FileName, options) {
                     path=remotePath,
                     direct_only=true
             };
-            local json = _RegReplace(ToJSON(arg),"\n","");
+            local json = StrReplace(ToJSON(arg),"\n","");
             nm.addQueryHeader("Content-Type","application/json")
             nm.setUrl(url);
             nm.doUpload("",json);
@@ -391,19 +391,6 @@ function UploadFile(FileName, options) {
     }
      
     return 0;
-}
-
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
 }
 
 function GetFolderList(list) {

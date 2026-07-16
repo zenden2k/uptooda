@@ -1,16 +1,3 @@
-function _StrReplace(str, pattern, replace_with) {
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 // Get salt for authentication
 function _GetSalt() {
     local login = ServerParams.getParam("Login");
@@ -213,7 +200,7 @@ function UploadFile(fileName, options) {
                     local fileIdent = identNode.Text();
                     
                     // Generate file name for URL (replace dots with dashes)
-                    local fileNameForUrl = _StrReplace(name, ".", "-");
+                    local fileNameForUrl = StrReplace(name, ".", "-");
                     
                     // Construct webshare.cz file URL
                     local fileUrl = "https://webshare.cz/#/file/" + fileIdent + "/" + nm.urlEncode(fileNameForUrl);

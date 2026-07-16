@@ -17,6 +17,7 @@ std::string StrToLower(const std::string& str) {
 #endif
 }
 }
+
 std::string AbstractServerIconCache::getIconNameForServer(const std::string& name, bool returnFullPath /*= false*/) {
     
     CUploadEngineData* ued = engineList_->byName(name);

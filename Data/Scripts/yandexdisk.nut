@@ -26,21 +26,8 @@ function _RegexSimple(data, regStr, start) {
         return resultStr;
 }
 
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function _IdFromPath(path) {
-    return _RegReplace(path, "disk:", "") + "/";
+    return StrReplace(path, "disk:", "") + "/";
 }
 /*function _UrlEncodePath(str) {
     local res = "";
@@ -153,7 +140,7 @@ function GetFolderList(list) {
                 }
                 local folder = CFolderItem();
                 local path = item.path;
-                path = _RegReplace(path, "disk:", "") + "/";
+                path = StrReplace(path, "disk:", "") + "/";
                 folder.setId(path);
                 folder.setTitle(item.name);
                 folder.setSummary("");

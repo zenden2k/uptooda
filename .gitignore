@@ -33,6 +33,7 @@ Lang/*.new
 /Dist/Releases/
 /Dist/Build_Release_Temp/
 /Dist/Libs/
+/Dist/PDB/
 /Dist/curl-ca-bundle.crt
 /Dist/certdata.txt
 CMakeLists.txt.user

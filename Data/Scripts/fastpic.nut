@@ -1,15 +1,3 @@
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function UploadFile(FileName, options) {
     local thumbUseServerText = (options.getParam("THUMBCREATE") == "1" && options.getParam("THUMBADDTEXT") == "1" && options.getParam("THUMBUSESERVER") == "1");
 
@@ -38,7 +26,7 @@ function UploadFile(FileName, options) {
                     options.setDirectUrl(imgUrlNode.Text());
                     options.setThumbUrl(thumbUrlNode.Text());
                     local viewUrlStr = viewUrl.Text();
-                    viewUrlStr = _RegReplace(viewUrlStr, "fastpic.org/view/", "fastpic.org/fullview/");
+                    viewUrlStr = StrReplace(viewUrlStr, "fastpic.org/view/", "fastpic.org/fullview/");
                     options.setViewUrl(viewUrlStr);
                     return 1;
                 } else {

@@ -108,7 +108,7 @@ IdNameArray DXGIOptionsManager::getAudioSources() {
     IdNameArray result;
     
     for (const auto& [id, source]: audioSources_) {
-        result.push_back({ id, source.Name });
+        result.emplace_back( id, source.Name );
     }
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {

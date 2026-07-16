@@ -64,8 +64,6 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
     }
 }
 
-#pragma optimize("", off)
-
 void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t*  FileName) {
     if (insideWriteFunction_) { // Prevent recursion
         return;
@@ -124,7 +122,7 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
         listener->onItemAdded(itemIndex, entry);
     }
 }
-#pragma optimize("", on)
+
 void DefaultLogger::addListener(Listener* listener) {
     listeners_.push_back(listener);
 }

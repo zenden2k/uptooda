@@ -145,7 +145,7 @@ function UploadFile(FileName, options) {
              _PrintError(t, "Failed to upload.");
         }
     } else {
-                _PrintError(null, "Got error from server. ");
+        _PrintError(null, "Got error from server. ");
         return 0;
     }
     return 0;

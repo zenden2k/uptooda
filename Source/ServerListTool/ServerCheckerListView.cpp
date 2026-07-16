@@ -12,11 +12,8 @@ CServerCheckerListView::CServerCheckerListView(ServersCheckerModel* model) : mod
     model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
 }
 
-CServerCheckerListView::~CServerCheckerListView() {
-}
-
 void CServerCheckerListView::Init() {
-    SetItemCount(model_->getCount());
+    SetItemCount(static_cast<int>(model_->getCount()));
 
     AddColumn(_T("N"), 0);
     AddColumn(_T("Server"), 1);

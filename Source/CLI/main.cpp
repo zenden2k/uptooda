@@ -485,15 +485,15 @@ void PrintServerParamList()
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
-    std::unique_ptr<UploadEngineManager> uploadEngineManager;
-    uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
+    auto uploadEngineManager = std::make_unique<UploadEngineManager>(
+        list.get(), uploadErrorHandler, networkClientFactory);
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     ParameterList parameterList;
-    auto* m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager->getUploadEngine(profile));
-    if (m_pluginLoader) {
+    auto* pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager->getUploadEngine(profile));
+    if (pluginLoader) {
         std::cout << "Parameters of server '" << ued->Name << "':" << std::endl;
-        m_pluginLoader->getServerParamList(parameterList);
+        pluginLoader->getServerParamList(parameterList);
         int i = 0;
         for (auto& parameter : parameterList) {
             std::cout << ++i << ") " << parameter->getTitle() << std::endl
@@ -545,13 +545,11 @@ public:
 
     }
     void updateStatus(int packageIndex, const CString& status) override {
-        //std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
         if ( m_UpdateManager.m_updateList.size() > packageIndex+1) {
-            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
+            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8(m_UpdateManager.m_updateList[packageIndex].displayName().GetString()).c_str(), IuCoreUtils::WstringToUtf8(status.GetString()).c_str());
             fprintf(stderr, "\r");
             fflush(stderr);
         }
-        //std::cout<< "\r"<<IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()) <<" : "<< IuCoreUtils::WstringToUtf8((LPCTSTR)status);
     }
 protected:
     CUpdateManager m_UpdateManager;

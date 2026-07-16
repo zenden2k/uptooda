@@ -187,7 +187,7 @@ public:
     ServersCheckerModel(CMyEngineList* engineList);
     ~ServersCheckerModel();
     std::string getItemText(int row, int column) const;
-    uint32_t getItemColor(int row) const;
+    uint32_t getItemColor(size_t row) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     ServerData* getDataByIndex(size_t row);

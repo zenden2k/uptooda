@@ -123,7 +123,7 @@ function GetFolderList(list) {
         local doc = Document(nm.responseBody());
         doc.find(".galleryThumbs > div").each(function(index, elem) {
             local id = elem.attr("id");
-            id = _StrReplace(id, "gall_", "");
+            id = StrReplace(id, "gall_", "");
             local album = CFolderItem();
             album.setId(id);
             album.setTitle(strip(elem.find(".thumbTitle").text()));
@@ -177,17 +177,4 @@ function _GenerateRandomUUID() {
         }
     }
   return result;
-}
-
-function _StrReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
 }

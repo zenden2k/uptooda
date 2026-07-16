@@ -1,9 +1,5 @@
 #include "MonitorEnumerator.h"
 
-MonitorEnumerator::MonitorEnumerator() {
-
-}
-
 BOOL MonitorEnumerator::enumDisplayMonitors(HDC hdc, LPCRECT lprcClip) {
     return EnumDisplayMonitors(hdc, lprcClip, monitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
@@ -37,9 +33,9 @@ BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
 }
 
 std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::begin() {
-    return monitors_.begin();
+    return monitors_.cbegin();
     
 }
 std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::end() {
-    return monitors_.end();
+    return monitors_.cend();
 }

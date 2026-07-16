@@ -45,7 +45,7 @@ function UploadFile(fileName, options) {
         return ResultCode.Failure;
     }
 
-    local uploadUrl = _StrReplace(t.data.signUrl, "http://", "https://");
+    local uploadUrl = StrReplace(t.data.signUrl, "http://", "https://");
 
     nm.setUrl(uploadUrl);
     nm.setMethod("PUT");
@@ -149,19 +149,6 @@ function CreateFolder(parentFolder, folder) {
         
     folder.setId(t.data.dirId);
     return ResultCode.Success;
-}
-
-function _StrReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
 }
 
 function GetServerParamList() {

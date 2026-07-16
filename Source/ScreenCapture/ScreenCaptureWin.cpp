@@ -474,11 +474,11 @@ BOOL BringWindowToForeground(HWND hWnd)
 
 enum Corner { TopLeft, TopRight, BottomLeft, BottomRight };
 
-// Removes a pixel from the clipping region of the given graphics object, if
-// the bitmap is red at the coordinates of the pixel, or if it is null.
-// </summary>
-// <param name="bmp">The bitmap with the form corners masked in red</param>
-
+/**
+ * Removes a pixel from the clipping region of the given graphics object, if
+ * the bitmap is red at the coordinates of the pixel, or if it is null.
+ * @param bmp The bitmap with the form corners masked in red
+*/
 void RemoveCornerPixel(Bitmap* bmp, Graphics* g, int y, int x)
 {
     bool remove;
@@ -500,10 +500,11 @@ void RemoveCornerPixel(Bitmap* bmp, Graphics* g, int y, int x)
     }
 }
 
-// / <summary>
-// / Removes a corner from the clipping region of the given graphics object.
-// / </summary>
-// / <param name="bmp">The bitmap with the form corners masked in red</param>
+
+/**
+ * Removes a corner from the clipping region of the given graphics object.
+ * @param bmp The bitmap with the form corners masked in red
+*/
 void RemoveCorner(Bitmap* bmp, Graphics* g, int minx, int miny, int maxx, Corner corner)
 {
     int s1[5] = { 5, 3, 2, 1, 1 };
@@ -575,8 +576,8 @@ void DrawShadow(Graphics& g, Bitmap* shadowBitmap, int x, int y, int width, int 
 
 bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
 {
-    int width = input->GetWidth();
-    int height = input->GetHeight();
+    const int width = static_cast<int>(input->GetWidth());
+    const int height = static_cast<int>(input->GetHeight());
     Color c;
     input->GetPixel(0, 0, &c);
     bool topLeftRound = c.GetAlpha() < 20;
@@ -611,7 +612,7 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     }
     else
     {
-        Bitmap* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
+        auto* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
         Graphics g(bmpResult);
         g.Clear(Gdiplus::Color::Transparent);
         g.DrawImage(topLeftShadow.get(), 0, 0);
@@ -782,10 +783,10 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
     if (!m_ScreenRegion.IsNull())
         m_ScreenRegion.DeleteObject();
     m_ScreenRegion.CreateRectRgnIndirect(&captureRect);
-    for (size_t i = 0; i < m_hWnds.size(); i++)
+    for (auto & m_hWnd : m_hWnds)
     {
-        CRgn newRegion = ScreenshotHelper::getWindowVisibleRegion(m_hWnds[i].wnd);
-        m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR : RGN_DIFF);
+        CRgn newRegion = ScreenshotHelper::getWindowVisibleRegion(m_hWnd.wnd);
+        m_ScreenRegion.CombineRgn(newRegion, m_hWnd.Include ? RGN_OR : RGN_DIFF);
     }
     bool move = false;
     bool parentIsInList = false;
@@ -854,7 +855,7 @@ std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::size
 
 void CWindowHandlesRegion::AddWindow(HWND wnd, bool Include)
 {
-    CWindowHandlesRegionItem newItem;
+    CWindowHandlesRegionItem newItem{};
     newItem.wnd = wnd;
     newItem.Include = Include;
     RemoveWindow(wnd);
@@ -988,19 +989,26 @@ void CFreeFormRegion::Clear()
     m_curvePoints.clear();
 }
 
-bool CFreeFormRegion::IsEmpty()
-{
-    if (m_curvePoints.empty()) return true;
+bool CFreeFormRegion::IsEmpty() {
+    if (m_curvePoints.empty()) {
+        return true;
+    }
+
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
     average_polyline(m_curvePoints, curveAvgPoints, 29);
-    for (size_t i = 0; i < curveAvgPoints.size(); i++)
-    {
-        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
+    points.reserve(curveAvgPoints.size());
+
+    for (const auto& [x, y] : curveAvgPoints) {
+        points.emplace_back(x, y);
     }
-    if (points.empty()) return true;
-    grPath.AddCurve(&points[0], points.size());
+
+    if (points.empty()) {
+        return true;
+    }
+
+    grPath.AddCurve(&points[0], static_cast<INT>(points.size()));
     Rect grPathRect;
     grPath.GetBounds(&grPathRect);
     int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
@@ -1008,17 +1016,18 @@ bool CFreeFormRegion::IsEmpty()
     return !(bmWidth * bmHeight);
 }
 
-std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src)
-{
+std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src) {
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
     average_polyline(m_curvePoints, curveAvgPoints, 29);
-    for (size_t i = 0; i < curveAvgPoints.size(); i++)
-    {
-        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
+    points.reserve(curveAvgPoints.size());
+
+    for (const auto& [x, y] : curveAvgPoints) {
+        points.emplace_back(x, y);
     }
-    grPath.AddCurve(&points[0], points.size());
+
+    grPath.AddCurve(&points[0], static_cast<INT>(points.size()));
     Rect grPathRect;
     grPath.GetBounds(&grPathRect);
     int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
@@ -1036,19 +1045,19 @@ std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src)
     SolidBrush gdipBrush(Color(255, 0, 0, 0));
     Bitmap alphaBm(bmWidth, bmHeight, PixelFormat32bppARGB);
     Graphics alphaGr(&alphaBm);
-    alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
     alphaGr.SetSmoothingMode(SmoothingModeAntiAlias);
     alphaGr.FillPath(&gdipBrush, &grPath);
-    std::shared_ptr<Bitmap> finalbm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
-    Graphics gr(finalbm.get());
-    gr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    auto finalBitmap = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
+    Graphics gr(finalBitmap.get());
+    gr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
     gr.DrawImage(&b, 0, 0);
     SolidBrush gdipBrush2(Color(100, 123, 0, 0));
-    Pen pn(Color(255, 40, 255), 1.0f) ;
-    Pen pn2(Color(40, 0, 255), 1.0f) ;
-    transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalbm, Alpha, Alpha);
-    return finalbm;
+    Pen pn(Color(255, 40, 255), 1.0f);
+    Pen pn2(Color(40, 0, 255), 1.0f);
+    transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalBitmap, Alpha, Alpha);
+    return finalBitmap;
 }
 
 CFreeFormRegion::~CFreeFormRegion()

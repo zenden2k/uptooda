@@ -387,7 +387,8 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             // We need to steal all keyboard messages, too.
 
         case WM_CHAR:
-            if (msg.hwnd == listView_) {
+            if (msg.hwnd == listView_ || msg.hwnd ==  allTypesRadioButton_ || msg.hwnd == imageTypeRadioButton_
+                || msg.hwnd == fileTypeRadioButton_ || msg.hwnd == videoTypeRadioButton_) {
                 msg.hwnd = queryEditControl_;
                 queryEditControl_.SetFocus();
             }

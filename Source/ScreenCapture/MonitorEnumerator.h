@@ -9,7 +9,7 @@
 class MonitorEnumerator {
 
 public:
-    MonitorEnumerator();
+    MonitorEnumerator() = default;
     BOOL enumDisplayMonitors(HDC hdc, LPCRECT lprcClip);
     [[nodiscard]] size_t getCount() const;
 

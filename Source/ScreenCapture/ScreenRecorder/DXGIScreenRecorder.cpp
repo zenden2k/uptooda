@@ -68,7 +68,7 @@ DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect
         if (audioSourceInfo) {
             std::vector<int> vec(audioSourceInfo->NumChannels);
             std::iota(vec.begin(), vec.end(), 0);
-            dp_->AudioFrom.push_back({ IuCoreUtils::Utf8ToWstring(audioSource), std::move(vec) });
+            dp_->AudioFrom.emplace_back( IuCoreUtils::Utf8ToWstring(audioSource), std::move(vec) );
             dp_->HasAudio = true;
         }
     }
