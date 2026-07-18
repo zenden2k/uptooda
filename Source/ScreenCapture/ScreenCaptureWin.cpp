@@ -808,7 +808,7 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
         if (topWindow)
         {
             TCHAR Buffer[MAX_PATH];
-            GetClassName(topWindow, Buffer, sizeof(Buffer) / sizeof(TCHAR));
+            GetClassName(topWindow, Buffer, std::size(Buffer));
             if (lstrcmpi(Buffer, _T("Shell_TrayWnd")))
             {
                 move = true;
@@ -821,7 +821,7 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
     GuiTools::GetScreenBounds(scr);
     m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
     std::shared_ptr<Bitmap> resultBm;
-    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVistaOrLater() &&
+    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  IsWindowsVistaOrGreater() &&
         IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
         && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
     {

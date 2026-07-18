@@ -24,7 +24,7 @@
 IconBitmapUtils::IconBitmapUtils()
     : hUxTheme(NULL)
 {
-    if (WinUtils::IsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
     {
         hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
 
@@ -174,7 +174,6 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
     
     return hBmp;
 }
-
 
 HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, int dpi)
 {

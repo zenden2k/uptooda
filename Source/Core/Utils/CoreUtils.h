@@ -143,7 +143,9 @@ namespace IuCoreUtils
     std::string GetFileContents(const std::string& filename);
 
     /**
-     * @throws std::system_error, std::out_of_range, std::runtime_error
+     * @throws std::system_error
+     * @throws std::out_of_range
+     * @throws std::runtime_error
      */
     std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead = false);
 

@@ -22,40 +22,6 @@ namespace WinUtils {
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
 typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
-bool IsWinXP()
-{
-    DWORD dwVersion = GetVersion();
-
-    // Get major and minor version numbers of Windows
-    DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-    DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
-
-    // Check for Windows XP
-    if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
-        (dwWindowsMajorVersion >= 5) &&
-        (dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
-        return TRUE;
-
-    return FALSE;
-}
-
-bool IsWinXPOrLater()
-{
-    DWORD dwVersion = GetVersion();
-
-    // Get major and minor version numbers of Windows
-    DWORD dwWindowsMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-    DWORD dwWindowsMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
-
-    // Check for Windows XP
-    if ((dwVersion < 0x80000000) &&                 // The OS is a NT family
-        (dwWindowsMajorVersion > 5) ||
-        (dwWindowsMajorVersion == 5 && dwWindowsMinorVersion >= 1))         // Windows NT 5.1 is an Windows XP version
-        return TRUE;
-
-    return FALSE;
-}
-
 // Function that gets path to SendTo folder
 CString GetSendToPath() {
     return GetSystemSpecialPath(CSIDL_SENDTO);
@@ -130,22 +96,22 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
     return false;
 }
 
-bool CopyTextToClipboard(const CString& text)
-{
-    LPTSTR lptstrCopy;
-    HGLOBAL hglbCopy;
-    int cch = text.GetLength();
-    if (!OpenClipboard( NULL))
-        return FALSE;
-    EmptyClipboard();
-    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
-    if (hglbCopy == NULL)
-    {
-        CloseClipboard();
-        return FALSE;
+bool CopyTextToClipboard(const CString& text) {
+    const int cch = text.GetLength();
+    if (!OpenClipboard(NULL)) {
+        return false;
     }
-    lptstrCopy = reinterpret_cast<LPTSTR>(GlobalLock(hglbCopy));
-    memcpy(lptstrCopy, static_cast<LPCTSTR>(text), text.GetLength() * sizeof(TCHAR));
+
+    EmptyClipboard();
+    HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) * sizeof(TCHAR));
+
+    if (hglbCopy == NULL) {
+        CloseClipboard();
+        return false;
+    }
+
+    auto lptstrCopy = static_cast<LPTSTR>(GlobalLock(hglbCopy));
+    memcpy(lptstrCopy, text.GetString(), text.GetLength() * sizeof(TCHAR));
     lptstrCopy[cch] = 0;
     GlobalUnlock(hglbCopy);
     SetClipboardData(CF_UNICODETEXT, hglbCopy);
@@ -155,24 +121,32 @@ bool CopyTextToClipboard(const CString& text)
 
 bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard)
 {
-    LPSTR lptstrCopy;
-    HGLOBAL hglbCopy;
-   
-    if (!OpenClipboard(NULL))
-        return FALSE;
+    if (!OpenClipboard(NULL)) {
+        return false;
+    }
+
     if (emptyClipboard) {
         EmptyClipboard();
     }
-    std::string textUtf8 = W2U(text);
-    std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), textUtf8.length());
+
+    const std::string textUtf8 = W2U(text);
+    const std::string html = TextToClipboardHtmlFormat(textUtf8.c_str(), textUtf8.length());
     unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
-    int cch = html.size();
-    hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (cch + 1) );
+    size_t cch = html.size();
+    HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, cch + 1);
+
     if (hglbCopy == NULL) {
         CloseClipboard();
-        return FALSE;
+        return false;
     }
-    lptstrCopy = static_cast<LPSTR>(GlobalLock(hglbCopy));
+
+    auto lptstrCopy = static_cast<LPSTR>(GlobalLock(hglbCopy));
+
+    if (lptstrCopy == NULL) {
+        CloseClipboard();
+        return false;
+    }
+
     memcpy(lptstrCopy, html.c_str(), cch);
     lptstrCopy[cch] = 0;
     GlobalUnlock(hglbCopy);
@@ -181,7 +155,7 @@ bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard)
     return true;
 }
 
-std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url) {
+std::string TextToClipboardHtmlFormat(const char* html, size_t length, const std::string& base_url) {
     // chromium//src/ui/base/clipboard/clipboard_util_win.cc
 #define MAX_DIGITS 10
 #define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
@@ -390,33 +364,6 @@ bool IsDirectory(LPCTSTR szFileName)
     return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != INVALID_FILE_ATTRIBUTES);
 }
 
-bool IsVistaOrLater() {
-    static int isVista = -1;
-    if (isVista == -1)
-    {
-        OSVERSIONINFO osver;
-        osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-
-        isVista = (::GetVersionEx(&osver) &&
-            osver.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-            (osver.dwMajorVersion >= 6));
-    }
-    return isVista != FALSE;
-}
-
-bool IsWindows8orLater() {
-    OSVERSIONINFO osver;
-    osver.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-
-    if ( ::GetVersionEx( &osver ) && 
-        osver.dwPlatformId == VER_PLATFORM_WIN32_NT && 
-        ( (osver.dwMajorVersion > 6 ) || (osver.dwMajorVersion == 6 && osver.dwMinorVersion >=2)) ) {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 bool IsWine()
 {
     HMODULE hDll = LoadLibrary(_T("ntdll.dll"));
@@ -473,18 +420,33 @@ CString GetSystemSpecialPath(int csidl)
     return result;
 }
 
-CString FormatWindowsErrorMessage(DWORD idCode)
-{
-    LPVOID lpMsgBuf;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
-        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
-    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
-    // Free the buffer.
-    LocalFree( lpMsgBuf );
+CString FormatWindowsErrorMessage(DWORD idCode) {
+    LPVOID lpMsgBuf = nullptr;
+    DWORD len = FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        idCode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPTSTR>(&lpMsgBuf),
+        0,
+        nullptr);
+
+    if (len == 0 || lpMsgBuf == nullptr) {
+        DWORD formatErr = GetLastError();
+        CString res;
+        res.Format(_T("Unknown error (code %lu, FormatMessage failed with %lu)"), idCode, formatErr);
+        if (lpMsgBuf != nullptr)
+            LocalFree(lpMsgBuf);
+        return res;
+    }
+
+    CString res = static_cast<LPCTSTR>(lpMsgBuf);
+    LocalFree(lpMsgBuf);
+
+    res.TrimRight(_T("\r\n"));
+
     return res;
 }
-
-//CString ShellExecuteErrorStrring
 
 bool FileExists(LPCTSTR FileName)
 {
@@ -564,19 +526,16 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf, size_t bufferSize)
     return buf;
 }
 
-CString myExtractFileName(const CString & FileName)
-{  
-    CString temp = FileName;
-    //int Qpos = temp.ReverseFind('?');
-    //if(Qpos>=0) temp = temp.Left(Qpos);
-    int i,len = temp.GetLength();
-    for(i=len-1; i>=0; i--)
-    {
-        if(temp[i] == _T('\\') || temp[i]==_T('/'))
+CString DoExtractFileName(const CString& fileName) {
+    int i;
+    const int len = fileName.GetLength();
+
+    for (i = len - 1; i >= 0; i--) {
+        if (fileName[i] == _T('\\') || fileName[i] == _T('/'))
             break;
     }
-    return temp.Right(len-i-1);
 
+    return fileName.Right(len - i - 1);
 }
 
 //  Function doesn't allocate new string, it returns  pointer
@@ -628,7 +587,7 @@ bool IsStrInList(LPCTSTR szExt,LPCTSTR szList)
 }
 
 CString GetOnlyFileName(const CString& szFilename) {
-    CString tempName = myExtractFileName(szFilename);
+    CString tempName = DoExtractFileName(szFilename);
     int dotPos = tempName.ReverseFind(_T('.'));
     if(dotPos != -1) {
         tempName=tempName.Left(dotPos);
@@ -654,7 +613,7 @@ bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize)
 bool IsElevated() 
 {
     BOOL pbElevated = false;
-    ATLASSERT( IsVistaOrLater() );
+    ATLASSERT( IsWindowsVistaOrGreater() );
 
     HRESULT hResult = E_FAIL; // assume an error occured
     HANDLE hToken  = NULL;
@@ -735,24 +694,18 @@ CString GetUniqFileName(const CString& filePath)
     return result;
 }
 
-size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
-{
+size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask) {
     WIN32_FIND_DATA wfd;
     ZeroMemory(&wfd, sizeof(wfd));
     HANDLE findfile = 0;
 
-
-    for (;; )
-    {
-        if (!findfile)
-        {
+    for (;;) {
+        if (!findfile) {
             findfile = FindFirstFile(folder + _T("\\") + mask, &wfd);
             if (!findfile)
                 break;
-            ;
         }
-        else
-        {
+        else {
             if (!FindNextFile(findfile, &wfd))
                 break;
         }
@@ -761,13 +714,11 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
 
         list.emplace_back(wfd.cFileName);
     }
-    // return TRUE;
 
-    // error:
     if (findfile)
         FindClose(findfile);
+
     return list.size();
-    // return FALSE;
 }
 
 bool FontToString(const LOGFONT * lFont, CString &Result)
@@ -787,9 +738,6 @@ bool FontToString(const LOGFONT * lFont, CString &Result)
     TCHAR szUnderline[2][2]={_T("\0"),_T("u")};
     TCHAR szStrikeOut[2][2]={_T("\0"),_T("s")};
 
-    //hScreenDC = ::GetDC( NULL );
-
-    //if( !hScreenDC ) return false;
     HDC dc = ::GetDC(0);
     nPixelsPerInch = GetDeviceCaps(dc , LOGPIXELSY );
     ReleaseDC(0, dc);
@@ -965,7 +913,7 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
     UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
     if ( OpenClipboard(NULL) ) {
         HGLOBAL hglb = GetClipboardData(clipboardFormat);
-        LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
+        auto lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
         std::string ansiString = lpstr;
 
         std::istringstream f(ansiString);
@@ -1141,7 +1089,7 @@ int GetInternetExplorerMajorVersion()
     return 7;
 }
 
-TCHAR* GetBrowserKey() {
+const TCHAR* GetBrowserKey() {
     //32bit OS
     //\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
     //32bit app on 64bit OS
@@ -1157,9 +1105,8 @@ void RemoveBrowserKey(){
     CRegistry Reg;
     Reg.SetRootKey( HKEY_CURRENT_USER );
     if ( Reg.SetKey( GetBrowserKey(), false ) ) {
-        Reg.DeleteKey(myExtractFileName(GetAppFileName()));
+        Reg.DeleteKey(DoExtractFileName(GetAppFileName()));
     }
-
 }
 
 void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
@@ -1195,9 +1142,8 @@ void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective) {
     CRegistry Reg;
     Reg.SetRootKey( HKEY_CURRENT_USER );
     if ( Reg.SetKey( GetBrowserKey(), true ) ) {
-        Reg.WriteDword(myExtractFileName(GetAppFileName()), value);
-    }    
-
+        Reg.WriteDword(DoExtractFileName(GetAppFileName()), value);
+    }
 }
 
 bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd) {
@@ -1241,6 +1187,7 @@ bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hw
             }
         }
     }
+
     return false;
 }
 
@@ -1276,6 +1223,7 @@ std::wstring strtows(const std::string &str, UINT codePage)
     }
     return ws;
 }
+
 std::string wstostr(const std::wstring &ws, UINT codePage)
 {
     std::string str;
@@ -1319,7 +1267,7 @@ CString GetProcessName(DWORD pid)
         }
         CloseHandle(hSnapshot);
     }
-    return CString();
+    return {};
 }
 
 std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
@@ -1342,7 +1290,6 @@ CString ErrorCodeToString(DWORD idCode, HMODULE mod)
     }
     
     CString res = static_cast<LPCTSTR>(lpMsgBuf);
-    // Free the buffer.
     LocalFree(lpMsgBuf);
     return res;
 }
@@ -1360,63 +1307,62 @@ CString ExpandEnvironmentStrings(const CString& s)
     return buf.get();
 }
 
-void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force){
-    if (Force == false &&
-        Argument.empty() == false &&
-        Argument.find_first_of(L" \t\n\v\"") == Argument.npos) {
-        CommandLine.append(Argument);
+void ArgvQuote(const std::wstring& argument, std::wstring& commandLine, bool force){
+    if (force == false &&
+        argument.empty() == false &&
+        argument.find_first_of(L" \t\n\v\"") == std::wstring::npos) {
+        commandLine.append(argument);
     } else {
-        CommandLine.push_back(L'"');
+        commandLine.push_back(L'"');
 
-        for (auto It = Argument.begin();; ++It) {
+        for (auto It = argument.begin();; ++It) {
             unsigned NumberBackslashes = 0;
 
-            while (It != Argument.end() && *It == L'\\') {
+            while (It != argument.end() && *It == L'\\') {
                 ++It;
                 ++NumberBackslashes;
             }
 
-            if (It == Argument.end()) {
+            if (It == argument.end()) {
                 // Escape all backslashes, but let the terminating
                 // double quotation mark we add below be interpreted
                 // as a metacharacter.
-                CommandLine.append(NumberBackslashes * 2, L'\\');
+                commandLine.append(NumberBackslashes * 2, L'\\');
                 break;
             } else if (*It == L'"') {
                 //
                 // Escape all backslashes and the following
                 // double quotation mark.
                 //
-                CommandLine.append(NumberBackslashes * 2 + 1, L'\\');
-                CommandLine.push_back(*It);
+                commandLine.append(NumberBackslashes * 2 + 1, L'\\');
+                commandLine.push_back(*It);
             } else {
                 //
                 // Backslashes aren't special here.
                 //
-                CommandLine.append(NumberBackslashes, L'\\');
-                CommandLine.push_back(*It);
+                commandLine.append(NumberBackslashes, L'\\');
+                commandLine.push_back(*It);
             }
         }
 
-        CommandLine.push_back(L'"');
+        commandLine.push_back(L'"');
     }
-   
 }
 
-bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
+bool GetProxyInfo(CString& proxyAddress, CString& proxyBypass)
 {
-    proxy_address.Empty();
-    proxy_bypass.Empty();
+    proxyAddress.Empty();
+    proxyBypass.Empty();
 
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxy_info;
     if (FALSE == WinHttpGetIEProxyConfigForCurrentUser(&proxy_info))
         return false;
 
     if (proxy_info.lpszProxy)
-        proxy_address = proxy_info.lpszProxy;
+        proxyAddress = proxy_info.lpszProxy;
 
     if (proxy_info.lpszProxyBypass)
-        proxy_bypass = proxy_info.lpszProxyBypass;
+        proxyBypass = proxy_info.lpszProxyBypass;
 
     if (proxy_info.lpszProxy) {
         GlobalFree(proxy_info.lpszProxy);
@@ -1427,7 +1373,7 @@ bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
     if (proxy_info.lpszAutoConfigUrl) {
         GlobalFree(proxy_info.lpszAutoConfigUrl);
     }
-    return !proxy_address.IsEmpty();
+    return !proxyAddress.IsEmpty();
 }
 
 bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory, bool throwOnError) {
@@ -1703,7 +1649,7 @@ CString GUIDToString(const GUID& guid) {
     return guidStr;
 }
 
-CString NormalizLineEndings(const CString& text) {
+CString NormalizeLineEndings(const CString& text) {
     CString result;
     result.Preallocate(text.GetLength() + text.GetLength() / 10); // Reserve memory
 

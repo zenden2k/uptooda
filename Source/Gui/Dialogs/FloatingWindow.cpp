@@ -124,7 +124,7 @@ CFloatingWindow::~CFloatingWindow()
     m_hWnd = 0;
 }
 
-LRESULT CFloatingWindow::OnClose(void)
+LRESULT CFloatingWindow::OnClose()
 {
     return 0;
 }
@@ -349,8 +349,8 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
     if (m_bIsUploading) {
         return 0;
     }
-    if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
 
+    if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
         auto bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (bmp) {
@@ -361,7 +361,7 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             if (bm.GetLastStatus() == Gdiplus::Ok) {
                 try {
                     if (ImageUtils::MySaveImage(&bm, _T("clipboard"), filePath, ImageUtils::sifPNG, 100)) {
-                        CString fileName = WinUtils::myExtractFileName(filePath);
+                        CString fileName = WinUtils::DoExtractFileName(filePath);
                         UploadScreenshot(filePath, fileName);
                     }
                 }
@@ -374,13 +374,12 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
         return 0;
     }
 
-
     if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
         CString url;
         WinUtils::GetClipboardText(url);
         CString outFileName;
-        if (ImageUtils::SaveImageFromCliboardDataUriFormat(url, outFileName)) {
-            CString fileName = WinUtils::myExtractFileName(outFileName);
+        if (ImageUtils::SaveImageFromClipboardDataUriFormat(url, outFileName)) {
+            CString fileName = WinUtils::DoExtractFileName(outFileName);
             UploadScreenshot(outFileName, fileName);
             return true;
         }
@@ -390,11 +389,10 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             const auto& downloadedFilesList = dlg.getDownloadedFiles();
             if (!downloadedFilesList.empty()) {
                 CString filePath = downloadedFilesList[0];
-                CString fileName = WinUtils::myExtractFileName(filePath);
+                CString fileName = WinUtils::DoExtractFileName(filePath);
                 UploadScreenshot(filePath, fileName);
             }
             return true;
-
         }
     }
 
@@ -711,7 +709,6 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     return 0;
 }
 
-
 void CFloatingWindow::CreateTrayIcon()
 {
     BOOL bFound = FALSE;
@@ -961,7 +958,6 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             bool usedDirectLink = true;
             WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
             if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
-
                 url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened : uploadResult->directUrl).c_str();
             } else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
                 url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();

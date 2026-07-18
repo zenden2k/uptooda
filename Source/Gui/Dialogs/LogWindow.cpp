@@ -206,7 +206,7 @@ void CLogWindow::TranslateUI()
     TRC(IDC_CLEARLOGBUTTON, "Clear");
     CString windowTitle = TR("Error log");
     if (!fileNameFilter_.IsEmpty()) {
-        windowTitle += _T(": ") + WinUtils::myExtractFileName(fileNameFilter_);
+        windowTitle += _T(": ") + WinUtils::DoExtractFileName(fileNameFilter_);
     }
     SetWindowText(windowTitle);
 }

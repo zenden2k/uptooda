@@ -338,7 +338,7 @@ unique_c_ptr<Gdiplus::ColorPalette> OctreeColorQuantizer::generatePalette() {
 void OctreeColorQuantizer::reduceTree() {
     // Scanning all levels towards root. Leaves are skipped (hence -2) because they are not reducible.
     for (int level = levelCount_ - 2; level >= 0; level--) {
-        if (levels_[level].size() == 0)
+        if (levels_[level].empty())
             continue;
 
         // Sorting nodes of the current level (least significant ones first)

@@ -20,7 +20,7 @@ protected:
     void closeWinHttpSession();
     static std::string extractProxyForUrlFromList(const std::string& list, const std::string& url);
     bool obtainProxyConfig();
-    CString proxyForUrlErrorToString(DWORD errorCode) const;
+    static CString proxyForUrlErrorToString(DWORD errorCode);
     DISALLOW_COPY_AND_ASSIGN(DefaultProxyProvider);
 };
 #endif

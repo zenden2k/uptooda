@@ -102,7 +102,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
     SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
 
-    bool isVista = WinUtils::IsVistaOrLater();
+    bool isVista = IsWindowsVistaOrGreater();
     ::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
     ::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
     ::EnableWindow(GetDlgItem(IDC_ADDSHADOW), isVista);

@@ -66,7 +66,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg* wizardDlg, const CString& i
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;
     m_nSuccessfullDownloads = 0;
-    isVistaOrLater_ = WinUtils::IsVistaOrLater();
+    isVistaOrLater_ = IsWindowsVistaOrGreater();
     isRunning_ = false;
     ACCEL accels[] = {
         { FVIRTKEY|FCONTROL , VK_RETURN, IDOK },
@@ -158,7 +158,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
         ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
         ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
         if (ais.VirtualFileName.IsEmpty()) {
-            ais.VirtualFileName = WinUtils::myExtractFileName(ais.RealFileName);
+            ais.VirtualFileName = WinUtils::DoExtractFileName(ais.RealFileName);
         }
         bool add = true;
         std::string u8FileName = W2U(ais.RealFileName);

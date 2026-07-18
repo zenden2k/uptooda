@@ -120,7 +120,7 @@ void IU_RunElevated(CString params)
     TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
     TempInfo.fMask = 0;
     TempInfo.hwnd = NULL;
-    if (WinUtils::IsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
         TempInfo.lpVerb = _T("runas");
     else
         TempInfo.lpVerb = _T("open");

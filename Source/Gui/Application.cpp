@@ -195,7 +195,7 @@ public:
         std::string dir = W2U(dataFolder);
 
         dotenv::init(dotenv::Preserve, (dir + "/.env").c_str());
-        char* cacheDir = strdup(dir.c_str());
+        char* cacheDir = _strdup(dir.c_str());
         if (cacheDir) {
             const char* dirs[2]
                 = { cacheDir, nullptr };

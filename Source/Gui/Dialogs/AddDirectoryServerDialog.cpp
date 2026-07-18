@@ -23,7 +23,7 @@ limitations under the License.
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include <winsock2.h>
+#include <WinSock2.h>
 #include <iphlpapi.h>
 #define SECURITY_WIN32
 #include <security.h>
@@ -56,8 +56,9 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON), dpi);
-    SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
-    presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
+    presetButton_ = GetDlgItem(IDC_PRESETSBUTTON);
+    presetButton_.SetIcon(presetButtonIcon_);
+
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     LoadComputerAddresses();
     GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
@@ -170,14 +171,14 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 
     PSHARE_INFO_502 BufPtr,p;
     NET_API_STATUS res;
-    LPTSTR lpszServer = NULL;
     DWORD er=0,tr=0,resume=0;
     sharedFolders_.clear();
 
     //
     do // begin do
     {
-        res = NetShareEnum ((LPTSTR)lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
+        LPTSTR lpszServer = nullptr;
+        res = NetShareEnum (lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
         //
         // If the call succeeds,
         //
@@ -207,7 +208,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
             NetApiBufferFree(BufPtr);
         }
         else
-            printf("Error: %ld\n",(int)res);
+            printf("Error: %ld\n",static_cast<long>(res));
     }
     // Continue to call NetShareEnum while
     // there are more entries.

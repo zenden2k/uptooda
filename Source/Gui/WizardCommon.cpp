@@ -22,12 +22,7 @@
 #include "atlheaders.h"
 #include "Dialogs/WizardDlg.h"
 
-CWizardPage::~CWizardPage()
-{
-}
-
-bool CWizardPage::OnShow()
-{
+bool CWizardPage::OnShow() {
     EnableNext();
     EnablePrev();
     ShowNext();
@@ -35,58 +30,62 @@ bool CWizardPage::OnShow()
     return true;
 }
 
-bool CWizardPage::OnNext()
-{
+bool CWizardPage::OnNext() {
     return true;
 }
 
-void CWizardPage::EnableNext(bool Enable)
-{
-    if (!WizardDlg)
+void CWizardPage::EnableNext(bool Enable) {
+    if (!WizardDlg) {
         return;
+    }
+
     ::EnableWindow(WizardDlg->GetDlgItem(IDC_NEXT), Enable);
 }
 
-void CWizardPage::EnablePrev(bool Enable)
-{
-    if (!WizardDlg)
+void CWizardPage::EnablePrev(bool Enable) {
+    if (!WizardDlg) {
         return;
+    }
+
     ::EnableWindow(WizardDlg->GetDlgItem(IDC_PREV), Enable);
 }
 
-void CWizardPage::EnableExit(bool Enable)
-{
-    if (!WizardDlg)
+void CWizardPage::EnableExit(bool Enable) {
+    if (!WizardDlg) {
         return;
+    }
+
     ::EnableWindow(WizardDlg->GetDlgItem(IDCANCEL), Enable);
 }
 
-void CWizardPage::SetNextCaption(LPCTSTR Caption)
-{
-    if (!WizardDlg)
+void CWizardPage::SetNextCaption(LPCTSTR Caption) {
+    if (!WizardDlg) {
         return;
+    }
+
     WizardDlg->SetDlgItemText(IDC_NEXT, Caption);
 }
 
-void CWizardPage::ShowNext(bool Show)
-{
-    if (!WizardDlg)
+void CWizardPage::ShowNext(bool Show) {
+    if (!WizardDlg) {
         return;
-    ::ShowWindow(WizardDlg->GetDlgItem(IDC_NEXT), Show ? SW_SHOW : SW_HIDE);
+    }
+
+    WizardDlg->GetDlgItem(IDC_NEXT).ShowWindow(Show ? SW_SHOW : SW_HIDE);
 }
 
-void CWizardPage::ShowPrev(bool Show)
-{
-    if (!WizardDlg)
+void CWizardPage::ShowPrev(bool Show) {
+    if (!WizardDlg) {
         return;
-    ::ShowWindow(WizardDlg->GetDlgItem(IDC_PREV), Show ? SW_SHOW : SW_HIDE);
+    }
+
+    WizardDlg->GetDlgItem(IDC_PREV).ShowWindow(Show ? SW_SHOW : SW_HIDE);
 }
 
 void CWizardPage::SetInitialFocus() {
     ::SetFocus(PageWnd);
 }
 
-bool CWizardPage:: OnHide()
-{
+bool CWizardPage::OnHide() {
     return false;
 }

@@ -49,6 +49,7 @@ CUpdateDlg::~CUpdateDlg()
 
 LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     // FIXME
     DlgResize_Init();
     m_UpdateEvent.Create();
@@ -74,13 +75,18 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     return 1;  // Let the system set the focus
 }
 
+LRESULT CUpdateDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    GuiTools::ClearWindowPointer(m_hWnd);
+    return 0;
+}
+
 LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     if (!m_bUpdateFinished) {
         // Begin Update Process
         CString pid = WinUtils::IntToStr(GetCurrentProcessId());
 
         BOOL elev = false;
-        bool isVista = WinUtils::IsVistaOrLater();
+        bool isVista = IsWindowsVistaOrGreater();
         if (isVista) {
             WinUtils::IsElevated(&elev);
         }
@@ -140,7 +146,10 @@ LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWn
 void CUpdateDlg::CheckUpdates()
 {
     m_Checked = true;
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this)) {
+            return;
+        }
         m_listView.ShowWindow(SW_HIDE);
         ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
         SetDlgItemText(IDC_UPDATEINFO, TR("Checking for updates..."));
@@ -148,7 +157,10 @@ void CUpdateDlg::CheckUpdates()
 
     if (!m_UpdateManager.CheckUpdates()) {
         m_Checked = false;
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+            if (!GuiTools::CheckWindowPointer(wnd, this)) {
+                return;
+            }
             TRC(IDCANCEL, "Close");
             CString errorStr = TR("An error occured while receiving update information from server.");
             errorStr += "\r\n";
@@ -161,7 +173,10 @@ void CUpdateDlg::CheckUpdates()
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->LastUpdateTime = static_cast<int>(time(0));
 
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this)) {
+            return;
+        }
         if (m_UpdateManager.AreManualUpdates()) {
             CString text2 = m_UpdateManager.generateReport(true);
             CString message = TR("A new version is available:");
@@ -189,7 +204,10 @@ void CUpdateDlg::CheckUpdates()
 
         CString text = m_UpdateManager.generateReport();
 
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, text] {
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this, text] {
+            if (!GuiTools::CheckWindowPointer(wnd, this)) {
+                return;
+            }
             ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
             TRC(IDOK, "Update components");
             if (m_UpdateCallback) {
@@ -204,7 +222,10 @@ void CUpdateDlg::CheckUpdates()
         });
     }
     else {
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+            if (!GuiTools::CheckWindowPointer(wnd, this)) {
+                return;
+            }
             TRC(IDCANCEL, "Close");
             std::wstring text = str(IuStringUtils::FormatWideNoExcept(TR("No updates for %s components are available")) % APP_NAME);
             SetDlgItemText(IDC_UPDATEINFO, text.c_str());

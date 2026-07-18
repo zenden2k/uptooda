@@ -329,7 +329,7 @@ bool CWizardDlg::pasteFromClipboard() {
         CString text;
         WinUtils::GetClipboardText(text);
         CString outFileName;
-        if (ImageUtils::SaveImageFromCliboardDataUriFormat(text, outFileName)) {
+        if (ImageUtils::SaveImageFromClipboardDataUriFormat(text, outFileName)) {
             CreatePage(wpMainPage);
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             if (MainDlg) {
@@ -601,7 +601,7 @@ bool CWizardDlg::ParseCmdLine()
             if (dr == ImageEditorWindow::drCancel) {
                 PostQuitMessage(0);
             } else if (dr != ImageEditorWindow::drCopiedToClipboard){
-                this->AddImage(imageFileName, WinUtils::myExtractFileName(imageFileName), true);
+                this->AddImage(imageFileName, WinUtils::DoExtractFileName(imageFileName), true);
                 //ShowPage(1);
                 m_bShowAfter = true;
                 m_bShowWindow = true;
@@ -2394,7 +2394,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
         suggestingFileName += IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
         if (Settings.ScreenshotSettings.Folder.IsEmpty()) {
-            suggestingFileName = WinUtils::myExtractFileName(suggestingFileName);
+            suggestingFileName = WinUtils::DoExtractFileName(suggestingFileName);
         }
     }
 
@@ -2457,12 +2457,12 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             }
             auto savingFormat = static_cast<ImageUtils::SaveImageFormat>(Settings.ScreenshotSettings.Format);
             if (savingFormat == ImageUtils::sifJPEG) {
-                ImageUtils::Gdip_RemoveAlpha(*result, Color(255, 255, 255, 255));
+                ImageUtils::RemoveAlphaFromBitmap(*result, Color(255, 255, 255, 255));
             }
 
             try {
                 CString folder = WinUtils::GetFilePath(suggestingFileName);
-                ImageUtils::MySaveImage(result.get(),WinUtils::myExtractFileName(suggestingFileName),outFileName,savingFormat,
+                ImageUtils::MySaveImage(result.get(),WinUtils::DoExtractFileName(suggestingFileName),outFileName,savingFormat,
                     Settings.ScreenshotSettings.Quality,
                     Settings.ScreenshotSettings.Folder.IsEmpty() ? nullptr: folder.GetString()
                 );
@@ -2494,7 +2494,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
             } else if (fromTray && (dialogResult == ImageEditorWindow::drUpload || (!dialogResult && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD))) {
                 Result = false;
-                CString displayFileName = WinUtils::myExtractFileName(outFileName);
+                CString displayFileName = WinUtils::DoExtractFileName(outFileName);
                 floatWnd_->UploadScreenshot(outFileName, displayFileName);
             }
         }

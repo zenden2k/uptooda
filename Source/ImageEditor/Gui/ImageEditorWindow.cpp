@@ -1846,7 +1846,7 @@ void ImageEditorWindow::updateWindowTitle() {
         windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
     }
     else {
-        CString fileNameStr = WinUtils::TrimString(WinUtils::myExtractFileName(sourceFileName_), 60);
+        CString fileNameStr = WinUtils::TrimString(WinUtils::DoExtractFileName(sourceFileName_), 60);
         std::wstring fileNameWstring{ fileNameStr };
 
         windowTitle = str(boost::wformat(TR("Image Editor - %1% (%2%x%3%)")) % fileNameWstring % currentDoc_->getWidth() % currentDoc_->getHeight());

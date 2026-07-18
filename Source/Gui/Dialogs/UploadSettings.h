@@ -25,7 +25,6 @@
 #include "resource.h"       // main symbols
 #include "atlctrlx.h"
 #include "Gui/WizardCommon.h"
-#include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/Common.h"
 
@@ -175,7 +174,7 @@ class CUploadSettings :
     CToolBarCtrl FileServerSelectBar;
     bool OnNext() override;
     bool OnShow() override;
-    virtual bool OnHide() override;
+    bool OnHide() override;
     void UpdateAllPlaceSelectors();
     void UpdatePlaceSelector(bool ImageServer);
     void UpdateToolbarIcons();

@@ -26,14 +26,6 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 
-Thumbnail::Thumbnail()
-{
-}
-
-Thumbnail::~Thumbnail()
-{
-}
-
 bool Thumbnail::loadFromFile(const std::string& filename)
 {
     SimpleXml xml;

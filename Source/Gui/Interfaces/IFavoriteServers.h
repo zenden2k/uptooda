@@ -8,7 +8,7 @@
 #include <string>
 class IFavoriteServers {
 public:
-    virtual ~IFavoriteServers() {};
+    virtual ~IFavoriteServers() = default;
     virtual bool isServerFavorite(const std::string& server) = 0;
 };
 

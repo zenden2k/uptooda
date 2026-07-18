@@ -240,7 +240,7 @@
     <Server Name="turboimagehost.com" Authorize="1" Plugin="turboimagehost" SupportsFolders="1" WebsiteUrl="https://www.turboimagehost.com" RegistrationUrl="https://www.turboimagehost.com/signup.tu">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="20971520">
+                <FormatGroup MaxFileSize="36700160">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>

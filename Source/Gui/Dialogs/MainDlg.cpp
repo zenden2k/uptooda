@@ -294,7 +294,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     fl.FileName = FileName;
 
     if (virtualFileName.IsEmpty())
-        fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
+        fl.VirtualFileName = WinUtils::DoExtractFileName(FileName);
     else
         fl.VirtualFileName = virtualFileName;
 
@@ -739,7 +739,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
             if (!newPath.IsEmpty()) {
                 size_t fileCount = selectedFiles.size();
                 for (size_t i = 0; i < fileCount; i++) {
-                    if (!CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i]), false)) {
+                    if (!CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::DoExtractFileName(selectedFiles[i]), false)) {
                         LOG(ERROR) << TR("Cannot copy file ")<< selectedFiles[i] << "\r\n" << WinUtils::GetLastErrorAsString();
                     }
                 }

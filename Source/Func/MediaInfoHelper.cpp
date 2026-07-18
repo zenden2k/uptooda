@@ -133,7 +133,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
     int VideoCount = MI.Count_Get(Stream_Video); //Count of video streams in file
     int SubsCount = MI.Count_Get(Stream_Text);
     fullInfo = MI.Inform().c_str();
-    Result += CString(TR("Filename: ")) + WinUtils::myExtractFileName(FileName);
+    Result += CString(TR("Filename: ")) + WinUtils::DoExtractFileName(FileName);
     Result += _T("\r\n");
     CString fileSize = MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name).c_str();
     fileSize.Replace(_T("iB"), _T("B")); // MiB --> MB

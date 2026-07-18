@@ -14,18 +14,13 @@ namespace Gdiplus {
 
 std::wstring Utf8ToWstring(const std::string &str);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
-#define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
-//wstostr(str, CP_UTF8)
+
 #define WCstringToUtf8(str) WinUtils::wstostr((static_cast<LPCTSTR>(str)), CP_UTF8)
 #define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
 
 namespace WinUtils {
-    bool IsWinXP();
-    bool IsWinXPOrLater();
     bool IsDirectory(LPCTSTR szFileName);
-    bool IsVistaOrLater();
     bool IsWindows64Bit();
-    bool IsWindows8orLater();
     bool IsWine();
     // Function that gets path to SendTo folder
     CString GetSendToPath();
@@ -46,7 +41,7 @@ namespace WinUtils {
 
     // File path functions
     LPTSTR ExtractFilePath(LPCTSTR FileName,LPTSTR buf, size_t bufferSize);
-    CString myExtractFileName(const CString & FileName);
+    CString DoExtractFileName(const CString & fileName);
     LPCTSTR GetFileExt(LPCTSTR szFileName);
     CString GetOnlyFileName(const CString& szFilename);
     CString GetFilePath(const CString& strFullPath);
@@ -102,10 +97,11 @@ namespace WinUtils {
     CString GetProcessName(DWORD pid);
     CString ErrorCodeToString(DWORD idCode, HMODULE mod = NULL);
     CString ExpandEnvironmentStrings(const CString& s);
-    void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
-    bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
-    std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
+    void ArgvQuote(const std::wstring& argument, std::wstring& commandLine, bool force);
+    bool GetProxyInfo(CString& proxyAddress, CString& proxyBypass);
+    std::string TextToClipboardHtmlFormat(const char* html, size_t length, const std::string& base_url = std::string());
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
+
     /**
      * @throws Win32Exception
      */
@@ -120,7 +116,7 @@ namespace WinUtils {
     BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg);
     std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID);
     CString GUIDToString(const GUID& guid);
-    CString NormalizLineEndings(const CString& text);
+    CString NormalizeLineEndings(const CString& text);
 }
 
 #endif

@@ -6,8 +6,7 @@
 #include <vector>
 
 #include "atlheaders.h"
-#include "resource.h"   
-#include "Gui/Controls/IconButton.h"
+#include "resource.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 class CUploadEngineList;
@@ -60,7 +59,7 @@ protected:
     CString createdServerName_;
     std::vector<CString> addresses_;
     std::vector<CString> sharedFolders_;
-    CIconButton presetButton_;
+    CButton presetButton_;
     CIcon presetButtonIcon_;
     CString computerName_;
 public:

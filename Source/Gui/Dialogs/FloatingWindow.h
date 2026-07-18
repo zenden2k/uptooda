@@ -174,7 +174,7 @@ public:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-     LRESULT OnClose(void);
+     LRESULT OnClose();
      LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
      LRESULT OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);

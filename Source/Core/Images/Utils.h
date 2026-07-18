@@ -41,7 +41,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isAnimated);
 Gdiplus::Color StringToColor(const std::string& str);
 CComPtr<IStream> CreateMemStream(const BYTE* pInit, UINT cbInit);
-void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color);
+void RemoveAlphaFromBitmap(Gdiplus::Bitmap& source, Gdiplus::Color color);
 
 /**
  * @throws IOException, runtime_error
@@ -77,7 +77,7 @@ std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
  */
 bool CopyBitmapToClipboardInDataUriFormat(Gdiplus::Bitmap* bm, SaveImageFormat Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
-bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);
+bool SaveImageFromClipboardDataUriFormat(const CString& clipboardText, CString& fileName);
 // Load image from file with webp support
 std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);

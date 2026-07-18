@@ -118,7 +118,7 @@ bool CopyBitmapToClipboard(Gdiplus::Bitmap* image, HWND hwnd, bool preserveAlpha
         }
 
         if (!preserveAlpha) {
-            ImageUtils::Gdip_RemoveAlpha(*image, Gdiplus::Color(255, 255, 255, 255));
+            ImageUtils::RemoveAlphaFromBitmap(*image, Gdiplus::Color(255, 255, 255, 255));
         }
         HBITMAP out = nullptr;
         CClientDC dc(hwnd);

@@ -251,17 +251,19 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
     TempInfo.hwnd = NULL;
     BOOL b = FALSE;
     WinUtils::IsElevated(&b);
-    if (WinUtils::IsVistaOrLater() && !b) {
+
+    if (IsWindowsVistaOrGreater() && !b) {
         TempInfo.lpVerb = _T("runas");
     } else {
         TempInfo.lpVerb = _T("open");
     }
+
     TempInfo.lpFile = _T("regsvr32");
     CString parameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
     TempInfo.lpParameters = parameters;
     TempInfo.lpDirectory = s;
     TempInfo.nShow = SW_NORMAL;
-    //MessageBox(0,TempInfo.lpParameters,0,0);
+
     ::ShellExecuteEx(&TempInfo);
     if (TempInfo.hProcess) {
         WaitForSingleObject(TempInfo.hProcess, INFINITE);
@@ -515,7 +517,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.ShowForeground = false;
     ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
     ScreenshotSettings.CopyToClipboard = false;
-    ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
+    ScreenshotSettings.RemoveCorners = !IsWindows8OrGreater();
     ScreenshotSettings.AddShadow = false;
     ScreenshotSettings.RemoveBackground = false;
     ScreenshotSettings.OpenInEditor = true;
@@ -697,7 +699,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (SendToContextMenu_changed || ExplorerContextMenu_changed) {
         AutoStartup_changed = false;
         BOOL b;
-        if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
+        if (IsWindowsVistaOrGreater() && WinUtils::IsElevated(&b) != S_OK) {
             // Start new elevated process
             ApplyRegistrySettings();
         } else {
@@ -1022,7 +1024,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 void WtlGuiSettings::Uninstall() {
     BOOL b;
     bool beforeInstall = CmdLine.IsOption(_T("beforeinstall"));
-    if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
+    if (IsWindowsVistaOrGreater() && WinUtils::IsElevated(&b) != S_OK) {
         CString command = _T("/uninstall");
         if (beforeInstall) {
             command += _T(" /beforeinstall");
