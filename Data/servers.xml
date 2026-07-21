@@ -1527,4 +1527,10 @@
         </Actions>
         <Result />
     </Server>
+    <Server Name="tineye.com" Type="searchbyimage" WebsiteUrl="https://www.tineye.com/" UploadToTempServer="1" DefaultForTypes="searchbyimage">
+        <Actions>
+            <Action Type="openurl" Url="https://www.tineye.com/search?sort=size&amp;order=desc&amp;url=$(_IMAGEURL|urlencode)" />
+        </Actions>
+        <Result />
+    </Server>
 </Servers>
