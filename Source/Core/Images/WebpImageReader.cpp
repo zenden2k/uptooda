@@ -83,7 +83,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
         return nullptr;
     }
    
-    if (FAILED(stream->Read(pBuffer.get(), ULONG(sSize), &bytesRead))) {
+    if (FAILED(stream->Read(pBuffer.get(), static_cast<ULONG>(sSize), &bytesRead))) {
         lastError_ = L"Failed to read from IStream";
         return nullptr;
     }

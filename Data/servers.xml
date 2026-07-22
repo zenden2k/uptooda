@@ -381,6 +381,7 @@
                 Type="post"
                 Url="https://u.to/api/shorten/"
                 AssignVars="surl:0"
+                CustomHeaders="Content-Type:application/json;Referer:https://u.to/"
             ><![CDATA[{"url": $(_ORIGINALURL|jsonescape)}]]>
                 <Call Function="json" Arg1="shortUrl" AssignVars="ShortUrl:0;" Required="1"/>
             </Action>
@@ -1149,17 +1150,6 @@
             </Action>
         </Actions>
         <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
-    </Server>
-    <Server Name="1file.su" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://1file.su" MaxThreads="1">
-        <Actions>
-            <Action Type="get" Url="https://1file.su" RegExp="_token&quot;\s+value=&quot;(.+?)&quot;" AssignVars="Token:0"/>
-            <Action Type="upload" Url="https://1file.su/upload-file" PostParams="_token=$(Token);files[]=%filename%;">
-                <Call Function="json" Arg1="files[0].url" AssignVars="ViewUrl:0;"/>
-                <Call Function="json" Arg1="files[0].thumbnailUrl" AssignVars="ThumbUrl:0;"/>
-                <Call Function="json" Arg1="files[0].deleteUrl" AssignVars="DeleteUrl:0;"/>
-            </Action>
-        </Actions>
-        <Result ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
     <Server Name="linkme.ufanet.ru" Plugin="linkme.ufanet" WebsiteUrl="https://linkme.ufanet.ru/" >
         <Info>

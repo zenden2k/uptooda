@@ -32,10 +32,10 @@ BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
     return TRUE;
 }
 
-std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::begin() {
+std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::begin() const {
     return monitors_.cbegin();
-    
 }
-std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::end() {
+
+std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::end() const {
     return monitors_.cend();
 }

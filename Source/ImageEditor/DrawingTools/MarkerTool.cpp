@@ -169,83 +169,59 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
     canvas_->updateView(updatedRect);
 }
 
-
-void MarkerTool::highlightRegion(RECT rc)
-{
+void MarkerTool::highlightRegion(RECT rc) {
     Bitmap* canvasBm = canvas_->currentDocument()->getBitmap();
     BitmapData canvasData;
-    int w = min<int>(canvasBm->GetWidth()-rc.left,static_cast<UINT>(rc.right - rc.left));
-    int h = min<int>(canvasBm->GetHeight() - rc.top, static_cast<UINT>(rc.bottom - rc.top));
-    rc.left = max<LONG>(0,rc.left);
-    rc.top = max<LONG>(0,rc.top);
-    Rect rc2 (rc.left , rc.top, w, h);
-    segments_.markRect( rc );
-    if (canvasBm->LockBits(& rc2, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & canvasData) == Ok) {
+    int w = std::min(static_cast<int>(canvasBm->GetWidth() - rc.left), static_cast<int>(rc.right - rc.left));
+    int h = std::min(static_cast<int>(canvasBm->GetHeight() - rc.top), static_cast<int>(rc.bottom - rc.top));
+    rc.left = max<LONG>(0, rc.left);
+    rc.top = max<LONG>(0, rc.top);
+    Rect rc2(rc.left, rc.top, w, h);
+    segments_.markRect(rc);
+    if (canvasBm->LockBits(&rc2, ImageLockModeRead | ImageLockModeWrite, PixelFormat32bppARGB, &canvasData) == Ok) {
         UINT stride;
-        uint8_t * source= (uint8_t *) canvasData.Scan0;
-        uint8_t * brSource= (uint8_t *) circleData_.get();
+        auto* source = static_cast<uint8_t*>(canvasData.Scan0);
+        uint8_t* brSource = circleData_.get();
         if (canvasData.Stride > 0) {
             stride = canvasData.Stride;
-        } else {
-            stride = - canvasData.Stride;
         }
-        /*int lum = 0;
-        int disp = 0;
-        for ( int i =0; i < h; i++ ) {
-        for ( int j = 0; j < w; j++ ) {
-        int offset = i*stride+j*4;
-        int Y = 0.299 * source[offset] + 0.587 * source[offset+1] + 0.114 * source[offset+2];
-        lum += Y;
-        }
+        else {
+            stride = -canvasData.Stride;
         }
 
-        lum = float(lum) / ( w * h);
-        for ( int i =0; i < h; i++ ) {
-        for ( int j = 0; j < w; j++ ) {
-        int offset = i*stride+j*4;
-        int Y = 0.299 * source[offset] + 0.587 * source[offset+1] + 0.114 * source[offset+2];
-        if ( abs(Y-lum) > disp ) {
-        disp = abs(Y-lum);
-        }
-        }
-        }*/
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                int offset = i * stride + j * 4;
+                int circleOffset = i * circleStride_ + j * 4;
+                int Y = static_cast<int>(0.299 * source[offset] + 0.587 * source[offset + 1] + 0.114 * source[offset +
+                    2]);
 
-        for ( int i =0; i < h; i++ ) {
-            for ( int j = 0; j < w; j++ ) {
-                /*if ( affectedRegion_.IsVisible(i+rc.top, j+rc.left) ) {
-                continue;
-                }*/
-                int offset = i*stride+j*4;
-                int circleOffset = i * circleStride_ + j* 4;
-                int Y = static_cast<int>(0.299 * source[offset] + 0.587 * source[offset+1] + 0.114 * source[offset+2]);
-
-                float srcA =  static_cast<float>(pow(brSource[circleOffset+3]/255.0 * (Y/255.0),15)); // why pow 15 ?? I don't know
-                uint8_t srcR=  brSource[circleOffset];
-                uint8_t srcG=  brSource[circleOffset+1];
-                uint8_t srcB=  brSource[circleOffset+2];
+                auto srcA = static_cast<float>(pow(brSource[circleOffset + 3] / 255.0 * (Y / 255.0), 15));
+                // why pow 15 ?? I don't know
+                uint8_t srcR = brSource[circleOffset];
+                uint8_t srcG = brSource[circleOffset + 1];
+                uint8_t srcB = brSource[circleOffset + 2];
                 /*if ( Y != 255 ) {
                     srcA = srcA;
                 }*/
 
-                float dstA =  static_cast<float>(source[offset+3]/255.0);
-                uint8_t dstR=  source[offset];
-                uint8_t dstG=  source[offset+1];
-                uint8_t dstB=  source[offset+2];
-                float outA = srcA + dstA*(1-srcA);
-                uint8_t outR=  static_cast<uint8_t>((srcR * srcA + dstR * dstA * ( 1 - srcA))/ outA);
-                uint8_t outG = static_cast<uint8_t>((srcG * srcA + dstG * dstA* (1 - srcA)) / outA);
-                uint8_t outB = static_cast<uint8_t>((srcB * srcA + dstB * dstA* (1 - srcA)) / outA);
+                auto dstA = static_cast<float>(source[offset + 3] / 255.0);
+                uint8_t dstR = source[offset];
+                uint8_t dstG = source[offset + 1];
+                uint8_t dstB = source[offset + 2];
+                float outA = srcA + dstA * (1 - srcA);
+                auto outR = static_cast<uint8_t>((srcR * srcA + dstR * dstA * (1 - srcA)) / outA);
+                auto outG = static_cast<uint8_t>((srcG * srcA + dstG * dstA * (1 - srcA)) / outA);
+                auto outB = static_cast<uint8_t>((srcB * srcA + dstB * dstA * (1 - srcA)) / outA);
                 source[offset] = outR;
-                source[offset+1] = outG ;
-                source[offset+2] = outB;
-                source[offset+3] = static_cast<uint8_t>(outA * 255);
-
+                source[offset + 1] = outG;
+                source[offset + 2] = outB;
+                source[offset + 3] = static_cast<uint8_t>(outA * 255);
             }
         }
 
         canvasBm->UnlockBits(&canvasData);
     }
-
 }
 
 void MarkerTool::setPenSize(int size)
@@ -254,30 +230,29 @@ void MarkerTool::setPenSize(int size)
     createCircle();
 }
 
-
-void MarkerTool::createCircle()
-{
+void MarkerTool::createCircle() {
     using namespace Gdiplus;
     circleData_ = 0;
     circleStride_ = 0;
-    Bitmap  circle(penSize_, penSize_, PixelFormat32bppARGB);
+    Bitmap circle(penSize_, penSize_, PixelFormat32bppARGB);
     Graphics gr2(&circle);
-    SolidBrush br(Color(255,255,0));
+    SolidBrush br(Color(255, 255, 0));
     if (penSize_ == 1) {
         gr2.FillRectangle(&br, 0, 0, 1, 1);
-    } else {
+    }
+    else {
         gr2.FillEllipse(&br, 0, 0, circle.GetWidth(), circle.GetHeight());
     }
 
     BitmapData circleData;
 
-    Rect lc(0,0,circle.GetWidth(),circle.GetHeight());
-    if ( circle.LockBits(&lc, ImageLockModeRead, PixelFormat32bppARGB, & circleData) == Ok)
-    {
+    Rect lc(0, 0, circle.GetWidth(), circle.GetHeight());
+    if (circle.LockBits(&lc, ImageLockModeRead, PixelFormat32bppARGB, &circleData) == Ok) {
         if (circleData.Stride > 0) {
             circleStride_ = circleData.Stride;
-        } else {
-            circleStride_ = - circleData.Stride;
+        }
+        else {
+            circleStride_ = -circleData.Stride;
         }
         size_t dataSize = circleStride_ * circle.GetHeight();
         circleData_ = std::make_unique<uint8_t[]>(dataSize);

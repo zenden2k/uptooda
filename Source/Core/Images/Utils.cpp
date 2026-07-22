@@ -20,7 +20,6 @@
 
 #include "Utils.h"
 
-#include <cstdint>
 #include <cmath>
 #include <cassert>
 #include <memory>
@@ -1311,36 +1310,31 @@ bool SaveImageFromClipboardDataUriFormat(const CString& clipboardText, CString& 
 
 // Allocates storage for entire file 'file_name' and returns contents and size
 std::pair<std::unique_ptr<uint8_t[]>, size_t> ExUtilReadFile(const wchar_t* file_name) {
-
     std::unique_ptr<uint8_t[]> file_data;
 
     if (file_name == nullptr) {
-        return {};
+        throw std::invalid_argument("file_name cannot be null");
     }
 
-    FILE* in = _wfopen(file_name, L"rb");
-    if (in == nullptr) {
+    std::ifstream in(file_name, std::ios::binary | std::ios::ate);
+    if (!in) {
         throw IOException("Cannot open input file", IuCoreUtils::WstringToUtf8(file_name));
     }
-    fseek(in, 0, SEEK_END);
-    size_t file_size = ftell(in);
-    fseek(in, 0, SEEK_SET);
+
+    std::streamoff file_size_off = in.tellg();
+    if (file_size_off < 0) {
+        throw IOException("Cannot determine file size", IuCoreUtils::WstringToUtf8(file_name));
+    }
+    auto file_size = static_cast<size_t>(file_size_off);
+    in.seekg(0, std::ios::beg);
+
     try {
         file_data = std::make_unique<uint8_t[]>(file_size);
+    } catch (std::exception&) {
+        throw IOException("Unable to allocate memory for reading file");
     }
-    catch (std::exception &) {
-        LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
-        fclose(in);
-        return {};
-    }
-    if (file_data == nullptr) {
-        fclose(in);
-        return {};
-    }
-    int ok = (fread(file_data.get(), 1, file_size, in) == file_size);
-    fclose(in);
 
-    if (!ok) {
+    if (!in.read(reinterpret_cast<char*>(file_data.get()), static_cast<std::streamsize>(file_size))) {
         throw IOException(str(boost::format("Could not read %d bytes of data from file") % file_size), IuCoreUtils::WstringToUtf8(file_name));
     }
 

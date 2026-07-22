@@ -6,7 +6,7 @@
                Data\user_templates.xml  (if you are using portable version)
 	         or 
                %appdata%\Uptooda\user_templates.xml    (if you have used installer)
-           Create an xml file there with the same structure as this file.
+           Create an XML file there with the same structure as this file.
 		   
            ************************ Russian ****************************************
 		   
@@ -18,14 +18,6 @@
                 %appdata%\Uptooda\user_templates.xml    (если вы использовали инсталлятор)
     --> 
 <Templates>
-	<!--<Template Name="Markdown">
-        <Text>$(Items)</Text>
-        <Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="\n">![$(FileName)]($(ImageUrl))</Items>
-	</Template>-->
-	<!--<Template Name="Markdown (with thumbnails)">
-        <Text>$(Items)</Text>
-        <Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="\n">![![$(FileName)]($(ImageUrl)]($(ThumbUrl))</Items>
-	</Template>-->
 	<Template Name="Torrentsmd (with spoiler)">
 		<Text>[spoiler=Screenshots]$(Items)[/spoiler]</Text>
 		<Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="   ">[iurl=$(ImageUrl)][img]$(ThumbUrl)[/img][/iurl]</Items>
