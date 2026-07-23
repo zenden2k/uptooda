@@ -50,7 +50,7 @@ LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
     SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
-    serversChecker_->setOnFinishedCallback(std::bind(&CServersCheckerDlg::processFinished, this));
+    serversChecker_->setOnFinishedCallback([this] { processFinished(); });
     return TRUE;
 }
 

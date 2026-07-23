@@ -32,7 +32,7 @@ ServerListModel::ServerListModel(CMyEngineList* engineList, IFavoriteServers* fa
 
 
 void ServerListModel::updateEngineList() {
-    filteredItemsIndexes_.clear();
+    filteredItemsIndexes_.reset();
     items_.clear();
 
     for (int i = 0; i < engineList_->count(); i++) {
@@ -93,10 +93,10 @@ uint32_t ServerListModel::getItemColor(int row) const {
 }
 
 size_t ServerListModel::getCount() const {
-    if (filter_.empty() || filteredItemsIndexes_.empty()) {
+    if (filter_.empty() || !filteredItemsIndexes_.has_value()) {
         return items_.size();
     }
-    return filteredItemsIndexes_.size();
+    return filteredItemsIndexes_->size();
 }
 
 void ServerListModel::notifyRowChanged(size_t row) {
@@ -106,8 +106,8 @@ void ServerListModel::notifyRowChanged(size_t row) {
 }
 
 std::shared_ptr<ServerData> ServerListModel::getDataByIndex(size_t row) const {
-    if (!filter_.empty() && !filteredItemsIndexes_.empty() ) {
-        row = filteredItemsIndexes_[row];
+    if (!filter_.empty() && filteredItemsIndexes_.has_value() ) {
+        row = filteredItemsIndexes_.value()[row];
     }
     return items_[row];
 }
@@ -120,16 +120,16 @@ std::optional<size_t> ServerListModel::getIndexByServerName(const std::string& s
             break;
         }
     }
-    if (!index.has_value() || filter_.empty() || filteredItemsIndexes_.empty()) {
+    if (!index.has_value() || filter_.empty() || !filteredItemsIndexes_.has_value()) {
         return index;
     }
 
-    auto it = std::find(filteredItemsIndexes_.begin(), filteredItemsIndexes_.end(), index);
+    auto it = std::find(filteredItemsIndexes_->begin(), filteredItemsIndexes_->end(), index);
 
-    if (it == filteredItemsIndexes_.end()) {
+    if (it == filteredItemsIndexes_->end()) {
         return std::nullopt;
     }
-    return std::distance(filteredItemsIndexes_.begin(), it);
+    return std::distance(filteredItemsIndexes_->begin(), it);
 }
 
 void ServerListModel::setRowChangedCallback(std::function<void(size_t)> callback) {
@@ -153,11 +153,11 @@ void ServerListModel::resetData() {
 
 void ServerListModel::applyFilter(const ServerFilter& filter) {
     filter_ = filter;
-    filteredItemsIndexes_.clear();
+    filteredItemsIndexes_ = std::vector<size_t>();
     size_t i = 0;
     for (const auto& item : items_) {
-        if (item->acceptFilter(filter_)) {
-            filteredItemsIndexes_.push_back(i);
+        if (item->acceptFilter(filter_, favoriteServers_)) {
+            filteredItemsIndexes_->push_back(i);
         }
         i++;
     }
@@ -294,14 +294,22 @@ int ServerData::getStorageTime() const {
     return *storageTime;
 }
 
-bool ServerData::acceptFilter(const ServerFilter& filter) const {
+bool ServerData::acceptFilter(const ServerFilter& filter, IFavoriteServers* favoriteServers) const {
     if (!filter.query.empty()) {
         if (StringSearch(getServerDisplayName(), filter.query) == std::string::npos) {
             return false;
         }
     }
 
-    return (ued->TypeMask & filter.typeMask) != 0;
+    if ((ued->TypeMask & filter.typeMask.value()) == 0) {
+        return false;
+    }
+
+    if (filter.showFavoritesOnly && !favoriteServers->isServerFavorite(ued->Name)) {
+        return false;
+    }
+
+    return true;
 }
 
 void ServerData::cacheStorageTime() const {

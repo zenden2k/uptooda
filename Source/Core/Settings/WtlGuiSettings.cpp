@@ -763,6 +763,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(Hotkeys);
     general.n_bind(DeviceId);
     general.n_bind(ServerListPopupViewMode);
+    general.n_bind(ServerListPopupShowFavoritesOnly);
 
     SettingsNode& screenshot = mgr_["Screenshot"];
     screenshot.nm_bind(ScreenshotSettings, Delay);

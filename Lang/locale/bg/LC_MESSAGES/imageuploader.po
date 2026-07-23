@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 18:51+0300\n"
+"POT-Creation-Date: 2026-07-23 17:53+0300\n"
 "PO-Revision-Date: 2026-07-03 16:03+0300\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
@@ -136,7 +136,7 @@ msgstr "%s - Бърза настройка"
 msgid "%s - Updates available"
 msgstr "%s - Налични са актуализации"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:56
 #, c-format
 msgid "%s Updates"
 msgstr "%s актуализации"
@@ -181,12 +181,12 @@ msgstr "&Качване"
 msgid "(edited)"
 msgstr "(редактирано)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1025
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1021
 msgid "(the code has been copied to the clipboard)"
 msgstr "(кодът е копиран в клипборда)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:949
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1002
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:946
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:998
 msgid "(the link has been copied to the clipboard)"
 msgstr "(линкът е копиран в клипборда)"
 
@@ -199,7 +199,7 @@ msgstr "< Назад"
 msgid "<no authentication>"
 msgstr "<без удостоверяване>"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:167
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:182
 msgid "A new version is available:"
 msgstr "Налична е нова версия:"
 
@@ -250,7 +250,7 @@ msgstr "Активна връзка"
 msgid "Add"
 msgstr "Добавяне"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:613
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:616
 #, c-format
 msgid "Add %s server..."
 msgstr "Добавяне на %s сървър..."
@@ -292,7 +292,7 @@ msgstr "Добавяне на елемент към контекстното м�
 msgid "Add files..."
 msgstr "Добавяне на файлове..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:615
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:618
 msgid "Add folder as new server..."
 msgstr "Добавяне на папка като нов сървър..."
 
@@ -324,11 +324,11 @@ msgstr "Добавяне на текст към миниатюрата"
 msgid "Add text to image"
 msgstr "Добавяне на текст към изображение"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:640
 msgid "Add to Wizard"
 msgstr "Добавяне към съветника"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:728
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Add to favorites"
@@ -376,7 +376,7 @@ msgstr "Съвет:"
 msgid "Aero only (Windows Vista or later)"
 msgstr "Само Aero (Windows Vista или по-нова версия)"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr "Всички"
@@ -412,7 +412,7 @@ msgstr "Всички файлове"
 msgid "All files have been successfully uploaded."
 msgstr "Всички файлове са успешно качени."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:593
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:591
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:178
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:80
 msgid "All monitors"
@@ -444,7 +444,7 @@ msgstr "Възникна грешка при извличане на видео�
 msgid "An error occured while loading script."
 msgstr "Възникна грешка при зареждане на скрипта."
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:153
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:165
 msgid "An error occured while receiving update information from server."
 msgstr ""
 "Възникна грешка при получаване на информация за актуализация от сървъра."
@@ -660,7 +660,7 @@ msgstr "Четка"
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:69
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:292
 msgid "Cancel"
@@ -695,7 +695,7 @@ msgstr "Не може да се зареди миниатюра на изобр�
 msgid "Cannot open documentation: "
 msgstr "Не мога да отворя документацията:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:673
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:677
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -703,7 +703,7 @@ msgstr ""
 "Не може да се отвори папка „%1%“.\n"
 "%2%"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:759
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:756
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
 #, c-format
 msgid ""
@@ -715,7 +715,7 @@ msgstr ""
 "%s.\n"
 "Може би се използва от друг процес."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:213
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:207
 msgid "Capture Last Region"
@@ -725,18 +725,18 @@ msgstr "Заснемане на последния регион"
 msgid "Capture Rectangular Region"
 msgstr "Заснемане на правоъгълна област"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:201
 msgid "Capture Selected Area"
 msgstr "Заснемане на избраната област"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:211
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
 msgstr "Заснемане на избрания обект"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:212
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:203
 msgid "Capture Selected Window"
@@ -748,14 +748,14 @@ msgstr "Заснемане на избрания прозорец"
 msgid "Capture cursor"
 msgstr "Заснемане на курсора"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:581
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:210
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Заснемане на активния прозорец"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:209
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:199
 #: ../Source/Gui/Win7JumpList.cpp:243
@@ -804,7 +804,7 @@ msgstr "Проверка за актуализации"
 msgid "Checking file formats..."
 msgstr "Проверка на файловите формати..."
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:146
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:155
 msgid "Checking for updates..."
 msgstr "Проверка за актуализации..."
 
@@ -829,7 +829,7 @@ msgstr "Изберете папка..."
 msgid "Choose media file"
 msgstr "Изберете медиен файл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:612
 msgid "Choose monitor"
 msgstr "Изберете монитор"
 
@@ -848,7 +848,7 @@ msgstr "Изберете програма"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:675
 msgid "Choose server"
 msgstr "Изберете сървър"
@@ -920,7 +920,7 @@ msgstr "Прозрачен фон на прозореца"
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "Кликнете върху бутона „Качване“, за да започнете процеса на качване."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1031
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1027
 msgid "Click on this message to view details..."
 msgstr "Кликнете върху това съобщение, за да видите подробности..."
 
@@ -936,9 +936,9 @@ msgstr "Миниатюри с възможност за кликване"
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:76
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:104
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:57
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:260
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1039
 msgid "Close"
 msgstr "Затвори"
@@ -971,11 +971,11 @@ msgstr "Цветови кодове"
 msgid "Colors"
 msgstr "Цветове"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:59
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:60
 msgid "Component name"
 msgstr "Име на компонента"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:70
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:71
 msgid "Components:"
 msgstr "Компоненти:"
 
@@ -992,7 +992,7 @@ msgstr "Връзка"
 msgid "Connection  name:"
 msgstr "Име на връзката:"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:92
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:93
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:255
 msgid "Connection name cannot be empty"
 msgstr "Името на връзката не може да бъде празно"
@@ -1093,7 +1093,7 @@ msgstr "Копиране на връзката към миниатюрата"
 msgid "Copy link to view page"
 msgstr "Копиране на връзката за преглед на страницата"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:634
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:632
 msgid "Copy to Clipboard"
 msgstr "Копиране в клипборда"
 
@@ -1117,7 +1117,7 @@ msgstr "Копиране в клипборда и затваряне (%s)"
 msgid "Copy to the clipboard:"
 msgstr "Копиране в клипборда:"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:116
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:332
 msgid "Could not add server."
 msgstr "Не можа да се добави сървър."
@@ -1149,7 +1149,7 @@ msgstr ""
 "Файлът с настройки не можа да бъде запазен. Вижте дневника на грешките за "
 "подробности."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:974
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
 msgid "Could not upload screenshot :("
 msgstr "Не можах да кача екранна снимка :("
 
@@ -1209,7 +1209,7 @@ msgstr "Създаване на нов готов миниатюрен файл"
 msgid "Crop"
 msgstr "Култура"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:595
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:593
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:169
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 msgid "Current monitor"
@@ -1317,7 +1317,7 @@ msgstr "Нямате акаунт? Регистрирайте се в %s още 
 msgid "Don't resize"
 msgstr "Не преоразмерявайте"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:100
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:101
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:262
 msgid "Download URL cannot be empty."
 msgstr "URL адресът за изтегляне не може да бъде празен."
@@ -1417,9 +1417,9 @@ msgid "Enter your text:"
 msgstr "Въведете текста си:"
 
 #: ../Source/Core/Upload/UploadTask.cpp:379 ../Source/Func/Common.cpp:314
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:92
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:100
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:121
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:93
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:101
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:122
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:249
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:255
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:262
@@ -1441,7 +1441,7 @@ msgstr "Въведете текста си:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:184
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:202
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:676
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1506,7 +1506,7 @@ msgid "Execute Squirrel script for each task (file)"
 msgstr "Изпълнете скрипта Squirrel за всяка задача (файл)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:284
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:672
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:230
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:522
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
@@ -1577,12 +1577,12 @@ msgstr "Извличане на файлова система..."
 msgid "File"
 msgstr "Файл"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
 msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "Файл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:882
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:879
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "Файлът \"%s\" се качва на сървъра %s."
@@ -1695,7 +1695,7 @@ msgstr "Филтри"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:253
 msgid "Finish"
 msgstr "Завършек"
 
@@ -1703,7 +1703,7 @@ msgstr "Завършек"
 msgid "Finish >"
 msgstr "Завършек >"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:545
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:543
 msgid "Finish Screen Recording"
 msgstr "Завършване на записа на екрана"
 
@@ -1724,7 +1724,7 @@ msgstr "Обърни хоризонтално"
 msgid "Flip vertical"
 msgstr "Обърни вертикално"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:166
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:167
 #, c-format
 msgid "Folder %s"
 msgstr "Папка %s"
@@ -1792,7 +1792,7 @@ msgstr "Честота на кадрите:"
 msgid "Frames layout"
 msgstr "Оформление на рамки"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:585
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:583
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:214
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
@@ -1842,7 +1842,7 @@ msgstr "Глобално"
 msgid "Global hotkey:"
 msgstr "Глобална гореща клавишна комбинация:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "Отидете на страницата за регистрация"
@@ -1881,7 +1881,7 @@ msgid "Height:"
 msgstr "Височина:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:124
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:101
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:414
 msgid "Help"
 msgstr "Помощ"
@@ -1896,7 +1896,7 @@ msgstr "Скриване"
 msgid "Highlight"
 msgstr "Акцент"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:668
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2862
 msgid "History"
 msgstr "История"
@@ -1918,7 +1918,7 @@ msgstr "Клавишни комбинации"
 msgid "I have an account on this server"
 msgstr "Имам акаунт на този сървър"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:623
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:626
 msgid "Icons"
 msgstr ""
 
@@ -1931,7 +1931,7 @@ msgstr "Игнорирай"
 msgid "Ignore all"
 msgstr "Игнорирайте всичко"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
 msgctxt "serverlist.servertype"
 msgid "Image"
 msgstr "Изображение"
@@ -2018,7 +2018,7 @@ msgid "Implicit"
 msgstr "Имплицитно"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
@@ -2251,7 +2251,7 @@ msgstr "Щракване със средния бутон:"
 msgid "Mime-type"
 msgstr "MIME тип"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:599
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:597
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:97
 msgid "Monitor"
 msgstr "Монитор"
@@ -2337,7 +2337,7 @@ msgstr "Не бяха намерени снимки."
 msgid "No proxy (direct connection)"
 msgstr "Без прокси (директна връзка)"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:209
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:230
 #, c-format
 msgid "No updates for %s components are available"
 msgstr "Няма налични актуализации за %s компоненти"
@@ -2377,7 +2377,7 @@ msgstr "Брой рамки:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:81
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
@@ -2396,7 +2396,7 @@ msgstr "По-старо от 30 дни"
 msgid "Open containing folder"
 msgstr "Отвори съдържащата папка"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:69
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:70
 msgid "Open download page"
 msgstr "Отваряне на страницата за изтегляне"
 
@@ -2406,7 +2406,7 @@ msgstr "Отваряне на страницата за изтегляне"
 msgid "Open in Web Browser"
 msgstr "Отваряне в уеб браузър"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:638
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:636
 msgid "Open in Wizard"
 msgstr "Отваряне в съветника"
 
@@ -2419,7 +2419,7 @@ msgstr "Отваряне във външен редактор"
 msgid "Open in folder"
 msgstr "Отвори в папка"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:626
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
 msgid "Open in the editor"
 msgstr "Отвори в редактора"
 
@@ -2427,13 +2427,13 @@ msgstr "Отвори в редактора"
 msgid "Open screenshot in the editor"
 msgstr "Отворете екранна снимка в редактора"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:664
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:662
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:221
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2864
 msgid "Open screenshots folder"
 msgstr "Отваряне на папката със снимки на екрана"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:616
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:619
 msgid "Open servers folder"
 msgstr "Отваряне на папката на сървърите"
 
@@ -2442,7 +2442,7 @@ msgid "Open system connection settings"
 msgstr "Отворете настройките за системна връзка"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:731
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:735
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr "Отворете уебсайта"
@@ -2458,7 +2458,7 @@ msgid "Operation was cancelled by user."
 msgstr "Операцията е отменена от потребителя."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:298
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:82
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
 msgstr "Опции"
@@ -2480,7 +2480,7 @@ msgstr "Параметри:"
 msgid "Password:"
 msgstr "Парола:"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:223
 #: ../Source/Gui/Dialogs/MainDlg.cpp:174
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
@@ -2648,11 +2648,11 @@ msgstr "Тип прокси:"
 msgid "Quality:"
 msgstr "Качество:"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:223
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:244
 msgid "Queued"
 msgstr "На опашка"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:226
 msgid "Quick upload image from clipboard"
 msgstr "Бързо качване на изображение от клипборда"
@@ -2665,7 +2665,7 @@ msgstr "Качване на изображения отново"
 msgid "Real-time (fastest)"
 msgstr "В реално време (най-бързо)"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:119
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:120
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:335
 msgid "Reason:"
 msgstr "Причина:"
@@ -2708,7 +2708,7 @@ msgstr "Премахване на елемент"
 msgid "Remove all"
 msgstr "Премахни всички"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:726
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:730
 #, fuzzy
 #| msgid "Remove from list"
 msgid "Remove from favorites"
@@ -2884,7 +2884,7 @@ msgstr "Запис на екрана (спиране)"
 msgid "Screen Recording Window"
 msgstr "Прозорец за запис на екрана"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:657
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336 ../Source/Gui/Win7JumpList.cpp:267
 msgid "Screen Recording..."
 msgstr "Запис на екрана..."
@@ -2894,13 +2894,13 @@ msgstr "Запис на екрана..."
 msgid "Screen recording backend: %s"
 msgstr "Бекенд за запис на екрана: %s"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:207
 #: ../Source/Gui/Dialogs/MainDlg.cpp:75
 msgid "Screenshot"
 msgstr "Скрийншот"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:650
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:648
 msgid "Screenshot Action"
 msgstr "Действие на екрана"
 
@@ -2916,8 +2916,8 @@ msgstr "Снимката на екрана е копирана в клипбор
 msgid "Screenshot has been saved and copied to the clipboard."
 msgstr "Снимката на екрана е копирана в клипборда."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1032
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1033
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1028
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1029
 msgid "Screenshot was uploaded"
 msgstr "Качена е екранна снимка"
 
@@ -2973,7 +2973,7 @@ msgstr "Изберете действие:"
 msgid "Select all"
 msgstr "Избери всички"
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:378
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:156
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:135
@@ -3082,7 +3082,7 @@ msgid "Session total:"
 msgstr "Общо за сесията:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:669
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:667
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:222
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2861
@@ -3105,7 +3105,7 @@ msgstr "Настройки..."
 msgid "Shell context menu integration"
 msgstr "Интеграция на контекстното меню на Shell"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:950
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:947
 msgid "Short URL"
 msgstr "Кратък URL адрес"
 
@@ -3127,7 +3127,7 @@ msgstr "Съкратете URL адреса, използвайки %s"
 msgid "Shorten URLs"
 msgstr "Съкратете URL адресите"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:659
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:227
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
 msgid "Shorten a Link"
@@ -3137,7 +3137,7 @@ msgstr "Съкратете връзка"
 msgid "Shorten a link from the clipboard"
 msgstr "Съкращаване на връзка от клипборда"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:467
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:465
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr "Съкращаване на URL адрес „%s“ с помощта на %s"
@@ -3160,6 +3160,12 @@ msgstr "Показване на дневника на грешките"
 msgid "Show automatically log window in case of error"
 msgstr "Автоматично показване на прозореца за логване в случай на грешка"
 
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:628
+#, fuzzy
+#| msgid "Add to the list"
+msgid "Show favorites only"
+msgstr "Добави към списъка"
+
 #: ../Source/Gui/Dialogs/MainDlg.cpp:206
 msgid "Show in default viewer"
 msgstr "Показване в стандартния визуализатор"
@@ -3173,12 +3179,12 @@ msgid "Show preview for video files in file list"
 msgstr ""
 "Показване на предварителен преглед на видео файлове в списъка с файлове"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:220
 msgid "Show program window"
 msgstr "Покажи прозореца на програмата"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:666
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:664
 msgid "Show results of last upload"
 msgstr "Показване на резултатите от последното качване"
 
@@ -3229,7 +3235,7 @@ msgstr "Посочете акаунт..."
 msgid "Start"
 msgstr "Старт"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:656
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:337 ../Source/Gui/Win7JumpList.cpp:275
 msgid "Start Recording"
 msgstr "Стартиране на запис"
@@ -3238,7 +3244,7 @@ msgstr "Стартиране на запис"
 msgid "Starting upload"
 msgstr "Стартиране на качването"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:60
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:75
 msgid "Status"
 msgstr "Статус"
@@ -3255,7 +3261,7 @@ msgstr "Стъпка"
 msgid "Stop"
 msgstr "Спри"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:545
 msgid "Stop uploading"
 msgstr "Спиране на качването"
 
@@ -3297,7 +3303,7 @@ msgstr "Резюме:"
 msgid "Swap colors"
 msgstr "Размяна на цветове"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:622
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:625
 msgid "Table"
 msgstr ""
 
@@ -3538,7 +3544,7 @@ msgstr "Не може да се зареди снимката"
 msgid "Unable to make screenshot!"
 msgstr "Не е възможно да се направи екранна снимка!"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:953
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:950
 msgid "Unable to shorten the link..."
 msgstr "Невъзможно е да се съкрати линкът..."
 
@@ -3556,7 +3562,7 @@ msgstr "Отмяна"
 msgid "Unknown status"
 msgstr "Неизвестен статус"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:194
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:212
 msgid "Update components"
 msgstr "Актуализиране на компоненти"
 
@@ -3587,12 +3593,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr "Качването не бе успешно. Още един опит (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:549
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:204
 msgid "Upload files"
 msgstr "Качване на файлове"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:548
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:205
 msgid "Upload folder"
 msgstr "Качване на папка"
@@ -3624,7 +3630,7 @@ msgstr "Ограничение на скоростта на качване на 
 msgid "Upload to %s"
 msgstr "Качване в %s"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:630
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1992
 msgid "Upload to Web"
 msgstr "Качване в мрежата"
@@ -3673,7 +3679,7 @@ msgstr "Качването е започнато от системната ле�
 msgid "Uploading module"
 msgstr "Модул за качване"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:887
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:884
 msgid "Uploading screenshot"
 msgstr "Качване на екранна снимка"
 
@@ -3723,7 +3729,7 @@ msgstr "ВИДЕО %s"
 msgid "Vertical interval:"
 msgstr "Вертикален интервал:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 msgctxt "serverlist.servertype"
 msgid "Video"
 msgstr "Видео"
@@ -3775,14 +3781,14 @@ msgstr "Преглед на BBCode/HTML кодове"
 msgid "View Media File Information"
 msgstr "Преглед на информацията за медийния файл"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:624
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:627
 #, fuzzy
 #| msgid "View"
 msgid "View Mode"
 msgstr "Преглед"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:954
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:975
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:951
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:971
 msgid "View log for details."
 msgstr "Вижте дневника за подробности."
 
@@ -3843,7 +3849,7 @@ msgstr "Работа в процес"
 msgid "Yes"
 msgstr "Да"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:171
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:186
 #, c-format
 msgid "You are using the latest %s version."
 msgstr "Използвате най-новата версия на %s."

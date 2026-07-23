@@ -58,6 +58,7 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
         // Fix current server type to ensure that current server is visible
         selectedServerType_ = ued->TypeMask & serverMask;
     }
+    showFavoriteServersOnly_ = settings_->ServerListPopupShowFavoritesOnly;
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     isChildWindow_ = isChildWindow;
     hMyDlgTemplate_ = nullptr;
@@ -579,6 +580,7 @@ void CServerListPopup::applyFilter(bool selectItem) {
 
     filter.query = W2U(query);
     filter.typeMask = mask;
+    filter.showFavoritesOnly = showFavoriteServersOnly_;
     serverListModel_->applyFilter(filter);
     if (selectItem) {
         listView_.SelectItem(0);
@@ -623,6 +625,7 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
     subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_DETAILS ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_REPORT, TR("Table"));
     subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_ICON ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_ICONS, TR("Icons"));
     popupMenu.AppendMenu(MF_STRING, subMenu, TR("View Mode"));
+    popupMenu.AppendMenu(MF_STRING | (showFavoriteServersOnly_ ? MF_CHECKED : MF_UNCHECKED), IDM_SHOW_FAVORITE_ONLY, TR("Show favorites only"));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -774,5 +777,11 @@ LRESULT CServerListPopup::OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWnd
 LRESULT CServerListPopup::OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     listView_.SetView(LV_VIEW_ICON);
     settings_->ServerListPopupViewMode = LV_VIEW_ICON;
+    return 0;
+}
+
+LRESULT CServerListPopup::OnShowFavoriteServersOnly(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    settings_->ServerListPopupShowFavoritesOnly = showFavoriteServersOnly_ = !showFavoriteServersOnly_;
+    applyFilter();
     return 0;
 }

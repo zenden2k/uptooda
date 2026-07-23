@@ -17,11 +17,12 @@ class UploadEngineManager;
 
 struct ServerFilter {
     std::string query;
-    int64_t fileSize = 0;
-    int typeMask = CUploadEngineListBase::ALL_SERVERS;
+    std::optional<int64_t> fileSize;
+    std::optional<int> typeMask = CUploadEngineListBase::ALL_SERVERS;
+    bool showFavoritesOnly = false;
 
     bool empty() const {
-        return false;
+        return query.empty() && !fileSize.has_value() && !typeMask.has_value() && !showFavoritesOnly;
     }
 };
 
@@ -41,7 +42,7 @@ public:
     std::string getAccountStr() const;
     int getStorageTime() const;
 
-    bool acceptFilter(const ServerFilter& filter) const;
+    bool acceptFilter(const ServerFilter& filter, IFavoriteServers* favoriteServers) const;
 
 private:
     mutable std::optional<std::string> formats;
@@ -79,7 +80,7 @@ public:
 protected:
     CMyEngineList* engineList_;
     std::vector<std::shared_ptr<ServerData>> items_;
-    std::vector<size_t> filteredItemsIndexes_;
+    std::optional<std::vector<size_t>> filteredItemsIndexes_;
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;
     std::function<void()> iconsChangedCallback_;

@@ -23,7 +23,7 @@
 IconBitmapUtils::IconBitmapUtils()
     : hUxTheme(NULL)
 {
-    if (Helpers::IsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
     {
         hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
 

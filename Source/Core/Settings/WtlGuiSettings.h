@@ -142,6 +142,8 @@ public:
     std::string testFileName, testUrl;
 
     int ServerListPopupViewMode = LV_VIEW_DETAILS;
+    bool ServerListPopupShowFavoritesOnly = false;
+
 
     CString getServerName();
     CString getQuickServerName();

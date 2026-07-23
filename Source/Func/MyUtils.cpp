@@ -45,7 +45,7 @@ bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet
 
 CString PrepareVideoDialogFilters() {
     CString result;
-    for (const auto& ex : VideoUtils::instance().videoFilesExtensionsSet) {
+    for (const auto& ex : VideoUtils::videoFilesExtensions) {
         result += _T("*.");
         result += ex.c_str();
         result += _T(";");
@@ -55,7 +55,7 @@ CString PrepareVideoDialogFilters() {
 
 CString PrepareAudioDialogFilters() {
     CString result;
-    for (const auto& ex : VideoUtils::instance().audioFilesExtensionsSet) {
+    for (const auto& ex : VideoUtils::audioFilesExtensions) {
         result += _T("*.");
         result += ex.c_str();
         result += _T(";");

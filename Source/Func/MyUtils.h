@@ -35,12 +35,12 @@ bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet
 
 inline bool IsVideoFile(LPCWSTR szFileName)
 {
-    return IsFileOfType(szFileName, VideoUtils::instance().videoFilesExtensionsSet);
+    return IsFileOfType(szFileName, VideoUtils::videoFilesExtensions);
 }
 
 inline bool IsAudioFile(LPCWSTR szFileName)
 {
-    return IsFileOfType(szFileName, VideoUtils::instance().audioFilesExtensionsSet);
+    return IsFileOfType(szFileName, VideoUtils::audioFilesExtensions);
 }
 
 CString PrepareVideoDialogFilters();

@@ -777,6 +777,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Core\Video\VideoUtils.cpp" />
     <ClCompile Include="ExplorerIntegration.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="IconBitmapUtils.cpp" />

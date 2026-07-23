@@ -51,11 +51,12 @@ public:
     ~CServerListPopup() override;
 
     enum { IDD = IDD_SERVERLISTPOPUP };
-    inline static constexpr auto IDM_ADD_FTP_SERVER = 10000;
-    inline static constexpr auto IDM_ADD_DIRECTORY_AS_SERVER = 10001;
-    inline static constexpr auto IDM_OPEN_SERVERS_FOLDER = 10002;
-    inline static constexpr auto IDM_VIEW_MODE_REPORT = 10003;
-    inline static constexpr auto IDM_VIEW_MODE_ICONS = 10004;
+    static constexpr auto IDM_ADD_FTP_SERVER = 10000;
+    static constexpr auto IDM_ADD_DIRECTORY_AS_SERVER = 10001;
+    static constexpr auto IDM_OPEN_SERVERS_FOLDER = 10002;
+    static constexpr auto IDM_VIEW_MODE_REPORT = 10003;
+    static constexpr auto IDM_VIEW_MODE_ICONS = 10004;
+    static constexpr auto IDM_SHOW_FAVORITE_ONLY = 10005;
 
     BEGIN_MSG_MAP(CServerListPopup)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -77,6 +78,7 @@ public:
         COMMAND_ID_HANDLER_EX(IDM_OPEN_SERVERS_FOLDER, OnOpenServersFolder)
         COMMAND_ID_HANDLER_EX(IDM_VIEW_MODE_REPORT, OnViewModeReport)
         COMMAND_ID_HANDLER_EX(IDM_VIEW_MODE_ICONS, OnViewModeIcons)
+        COMMAND_ID_HANDLER_EX(IDM_SHOW_FAVORITE_ONLY, OnShowFavoriteServersOnly)
         COMMAND_ID_HANDLER_EX(IDC_HELPBUTTON, OnHelpButton)
         NOTIFY_HANDLER(IDC_ADDBUTTON, BCN_DROPDOWN, OnBnDropdownAddServerButton)
         NOTIFY_HANDLER(IDC_SERVERLISTCONTROL, NM_DBLCLK, OnListViewDblClick)
@@ -129,6 +131,7 @@ public:
     LRESULT OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     LRESULT OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnShowFavoriteServersOnly(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void TranslateUI();
 
     void setServerProfile(const ServerProfile& serverProfile);
@@ -163,6 +166,7 @@ private:
     CMyImage searchIconCtrl_;
 
     int serversMask_, serverIndex_, selectedServerType_;
+    bool showFavoriteServersOnly_ = false;
     int ret_ = 0;
     CAccelerator hotkeys_;
     void serverChanged();
