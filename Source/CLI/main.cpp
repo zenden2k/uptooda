@@ -585,7 +585,7 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
-    gflags::ParseCommandLineFlags(&argc, &gflagsArgv, true);
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InitGoogleLogging(argv[0]);
     ConsoleUtils::instance();
     AppRuntimeInfo::AppVersionInfo appVersion;
