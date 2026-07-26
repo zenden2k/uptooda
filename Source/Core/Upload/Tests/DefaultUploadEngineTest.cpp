@@ -24,8 +24,8 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
-    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
+    auto sync = std::make_shared<ServerSync>();
+    CDefaultUploadEngine engine(sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance
@@ -109,8 +109,8 @@ TEST_F(DefaultUploadEngineTest, login)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
-    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
+    auto sync = std::make_shared<ServerSync>();
+    CDefaultUploadEngine engine(sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance
@@ -169,8 +169,8 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
-    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
+    auto sync = std::make_shared<ServerSync>();
+    CDefaultUploadEngine engine(sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance
@@ -230,8 +230,8 @@ TEST_F(DefaultUploadEngineTest, json)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
-    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
+    auto sync = std::make_shared<ServerSync>();
+    CDefaultUploadEngine engine(sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance

@@ -35,7 +35,7 @@ TEST_F(DownloadTaskTest, Download)
     std::string url = "http://example.com/test.png";
     std::string referer = "http://example2.com/";
     auto callback = [&]() {
-        auto client = new MockINetworkClient();
+        auto client = new testing::NiceMock<MockINetworkClient>();
         EXPECT_CALL(*client, doGet(url));
         EXPECT_CALL(*client, setOutputFile(_));
         EXPECT_CALL(*client, setReferer(referer));

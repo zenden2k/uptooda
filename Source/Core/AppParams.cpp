@@ -3,7 +3,7 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 
-const char kPathSeparator =
+constexpr char kPathSeparator =
 #ifdef _WIN32
     '\\';
 #else

@@ -39,7 +39,8 @@ namespace {
     const std::unordered_set<std::string_view> ALLOWED_ACTION_TYPES = { "get", "post", "put", "patch", "delete", "head", "options", "openurl", "login", "upload" };
 }
 
-CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
+CDefaultUploadEngine::CDefaultUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback)
+    : CAbstractUploadEngine(std::move(serverSync), std::move(errorCallback)), mt_(randomDevice_())
 {
     m_CurrentActionIndex = -1;
     fatalError_ = false;
@@ -467,7 +468,6 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
                 {
                     serverSync_->setAuthPerformed(Result);
                 }
-
             }
             serverSync_->endAuth();
         }

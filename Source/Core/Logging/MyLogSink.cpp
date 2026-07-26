@@ -1,11 +1,22 @@
 #include "MyLogSink.h"
 
+#include "Core/Utils/CoreUtils.h"
+
+thread_local bool MyLogSink::insideSendFunction_  = false;
+
 MyLogSink::MyLogSink(ILogger* logger) {
     logger_ = logger;
 }
 
 void MyLogSink::send(google::LogSeverity severity, const char* full_filename, const char* base_filename, int line, const struct ::tm* tm_time, const char* message, size_t message_len)
 {
+    if (insideSendFunction_) { // Prevent recursion
+        return;
+    }
+    insideSendFunction_ = true;
+    defer d([&] { // Run at function exit
+        insideSendFunction_ = false;
+    });
     std::string sender = base_filename;
     sender += ":" + std::to_string(line);
     std::string msg(message, message_len);
@@ -23,6 +34,6 @@ void MyLogSink::send(google::LogSeverity severity, const char* full_filename, co
         default:
             msgType = ILogger::logWarning;
     }
-    logger_->write(msgType, sender, msg);
+    logger_->write(msgType, sender, msg, {}, {}, true);
 }
 

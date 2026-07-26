@@ -78,7 +78,7 @@ class CServerParamsDlg :
         ParameterList m_paramNameList;
         CUploadEngineData *m_ue;
         bool focusOnLoginControl_;
-        CAdvancedUploadEngine *m_pluginLoader;
+        std::shared_ptr<CAdvancedUploadEngine> m_pluginLoader;
         CString oldLogin_;
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;

@@ -368,9 +368,9 @@ void FileQueueUploaderPrivate::run()
             continue;
         }
         
-        std::string  profileName = it->serverProfile().profileName();
+        std::string profileName = it->serverProfile().profileName();
 
-        CAbstractUploadEngine *engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
+        std::shared_ptr<CAbstractUploadEngine> engine = uploadEngineManager_->getUploadEngine(it->serverProfile());
 
         if (!engine)
         {

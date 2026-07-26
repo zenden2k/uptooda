@@ -145,13 +145,13 @@ class UploadTask {
         UploadProgress progress_;
         ServerProfile serverProfile_;
         ServerProfile urlShorteningProfile_;
-        CAbstractUploadEngine* currentUploadEngine_;
+        std::shared_ptr<CAbstractUploadEngine> currentUploadEngine_;
         void* userData_;
         void init();
         void childTaskFinished(UploadTask* child);
         void taskFinished();
         void statusChanged();
-        void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
+        void setCurrentUploadEngine(std::shared_ptr<CAbstractUploadEngine> currentUploadEngine);
         UploadSession* session_;
         std::recursive_mutex tasksMutex_;
         std::mutex finishMutex_;

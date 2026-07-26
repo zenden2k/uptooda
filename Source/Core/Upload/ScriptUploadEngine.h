@@ -40,7 +40,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
                             public NetworkClient::Logger
 {
     public:
-        CScriptUploadEngine(const std::string& pluginName, ServerSync* serverSync, ServerSettingsStruct* settings,
+        CScriptUploadEngine(const std::string& pluginName, std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings,
             std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
         ~CScriptUploadEngine() override;
 

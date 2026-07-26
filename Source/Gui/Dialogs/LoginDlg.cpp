@@ -47,11 +47,11 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     uploadEngineManager_ = uem;
 
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
-        auto* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
-        if ( plugin_ ) {
-            serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
-            serverSupportsLogout_ = plugin_->supportsLogout();
-            isAuthenticated_ = plugin_->isAuthenticated();
+        auto plugin = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
+        if (plugin) {
+            serverSupportsBeforehandAuthorization_ = plugin->supportsBeforehandAuthorization();
+            serverSupportsLogout_ = plugin->supportsLogout();
+            isAuthenticated_ = plugin->isAuthenticated();
         }
     }
     createNew_ = createNew;

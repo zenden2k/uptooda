@@ -24,8 +24,8 @@
 #include "FolderTask.h"
 #include "Core/Upload/ServerSync.h"
 
-CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
-                        CAbstractUploadEngine(serverSync, std::move(errorCallback)),
+CAdvancedUploadEngine::CAdvancedUploadEngine(std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
+                        CAbstractUploadEngine(std::move(serverSync), std::move(errorCallback)),
                             m_CurrentActionIndex(0),
                             m_nThumbWidth(0)
 {

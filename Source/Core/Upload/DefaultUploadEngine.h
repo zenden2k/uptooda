@@ -37,7 +37,7 @@ class ServerSync;
 class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::Logger
 {
     public:
-        CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
+        CDefaultUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback);
         int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
     protected:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);

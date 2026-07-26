@@ -25,11 +25,11 @@ limitations under the License.
 #include "Core/Logging.h"
 #include "Core/ThreadSync.h"
 
-Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
+Script::Script(const std::string& fileName, std::shared_ptr<ThreadSync> serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
     m_CreationTime = time(nullptr);
     m_bIsPluginLoaded = false;
-    sync_ = serverSync;
+    sync_ = std::move(serverSync);
     owningThread_ = std::this_thread::get_id();
     networkClientFactory_ = std::move(networkClientFactory);
     fileName_ = fileName;
@@ -71,7 +71,7 @@ bool Script::preLoad()
     networkClient_ = networkClientFactory_->create();
     networkClient_->setCurlShare(sync_->getCurlShare());
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
-    rootTable.SetInstance("Sync", sync_);
+    rootTable.SetInstance("Sync", sync_.get());
     rootTable.SetInstance("nm", networkClient_.get());
     return true;
 }

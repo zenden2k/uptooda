@@ -198,7 +198,6 @@ void TextElement::render(Painter* gr) {
     }
 }
 
-
 void TextElement::getAffectedSegments( AffectedSegments* segments ) {
     int x = getX();
     int y = getY();
@@ -206,7 +205,6 @@ void TextElement::getAffectedSegments( AffectedSegments* segments ) {
     int height = getHeight();
     segments->markRect( x, y, width, height ); // top
 }
-
 
 void TextElement::resize(int width, int height)
 {

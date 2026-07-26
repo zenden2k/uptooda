@@ -15,7 +15,7 @@ class ServerSync;
 class NetworkClient;
 class Script {
     public:
-        Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool load = true);
+        Script(const std::string& fileName, std::shared_ptr<ThreadSync> serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool load = true);
         virtual ~Script();
         Sqrat::SqratVM& getVM();
         bool isLoaded() const;
@@ -46,7 +46,7 @@ class Script {
         time_t m_CreationTime;
         bool m_bIsPluginLoaded;
         std::thread::id owningThread_;
-        ThreadSync* sync_;
+        std::shared_ptr<ThreadSync> sync_;
         std::string topLevelFileName_;
         std::unique_ptr<INetworkClient> networkClient_;
         std::shared_ptr<INetworkClientFactory> networkClientFactory_;

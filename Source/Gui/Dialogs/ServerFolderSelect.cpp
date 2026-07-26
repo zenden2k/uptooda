@@ -97,7 +97,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     m_FolderOperationType = FolderOperationType::foGetFolders;
     auto engineList = ServiceLocator::instance()->engineList();
-    auto* uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    auto uploadScript = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!uploadScript)
     {

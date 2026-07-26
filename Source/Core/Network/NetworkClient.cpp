@@ -300,8 +300,8 @@ NetworkClient::NetworkClient()
 
     curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
-    curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
-    curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
+    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
+    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 
     //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
 

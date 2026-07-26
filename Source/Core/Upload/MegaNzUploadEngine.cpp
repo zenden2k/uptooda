@@ -186,8 +186,8 @@ public:
 private:
     CMegaNzUploadEngine* engine_;
 };
-CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
-    CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback))
+CMegaNzUploadEngine::CMegaNzUploadEngine(std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
+    CAdvancedUploadEngine(std::move(serverSync), settings, std::move(errorCallback))
 {
     setServerSettings(settings);
     loginFinished_ = false;

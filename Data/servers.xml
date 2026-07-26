@@ -564,11 +564,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <!-- <Server Name="pastenow.ru" Plugin="pastenow" WebsiteUrl="https://pastenow.ru">
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-    </Server> -->
+
     <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
             RegistrationUrl="https://imgbb.com/signup">
         <Info>
@@ -973,11 +969,6 @@
         </Actions>
         <Result ImageUrlTemplate="$(Link)"/>
     </Server>
-    <!--<Server Name="transfer.sh" FileHost="1" MaxFileSize="10737418240" Plugin="transfer.sh">
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="stub"/>
-    </Server>-->
     <Server Name="lostpix.com" MaxFileSize="10485760" WebsiteUrl="https://lostpix.com/">
         <Info>
             <SupportedFormats>

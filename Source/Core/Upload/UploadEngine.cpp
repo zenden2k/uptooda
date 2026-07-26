@@ -377,13 +377,13 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
     m_UploadData = data;
 }
 
-CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback)
+CAbstractUploadEngine::CAbstractUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback)
 {
     m_bShouldStop = 0;
     m_NetworkClient = nullptr;
     m_UploadData = nullptr;
     currUploader_ = nullptr;
-    serverSync_ = serverSync;
+    serverSync_ = std::move(serverSync);
     m_ServersSettings = nullptr;
     onErrorMessage_ = errorCallback;
 }
@@ -414,7 +414,7 @@ void CAbstractUploadEngine::setOnErrorMessageCallback(ErrorMessageCallback cb) {
     onErrorMessage_ = cb;
 }
 
-void CAbstractUploadEngine::setServerSync(ServerSync* sync)
+void CAbstractUploadEngine::setServerSync(std::shared_ptr<ServerSync> sync)
 {
     serverSync_ = sync;
 }
@@ -433,7 +433,7 @@ void CAbstractUploadEngine::stop()
     //serverSync_->stop();
 }
 
-ServerSync* CAbstractUploadEngine::serverSync() const
+std::shared_ptr<ServerSync> CAbstractUploadEngine::serverSync() const
 {
     return serverSync_;
 }

@@ -16,15 +16,15 @@ public:
     enum class ScriptType {TypeUploadFilterScript};
     explicit ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory);
     ~ScriptsManager();
-    Script* getScript(const std::string &fileName, ScriptType type);
+    std::shared_ptr<Script> getScript(const std::string &fileName, ScriptType type);
     void unloadScripts();
     void clearThreadData();
-    ServerSync* getServerSync(const std::string& fileName);
+    std::shared_ptr<ServerSync> getServerSync(const std::string& fileName);
 protected:
-    std::map<std::thread::id, std::map<const std::string,Script*>> scripts_;
+    std::map<std::thread::id, std::map<const std::string,std::shared_ptr<Script>>> scripts_;
     std::mutex scriptsMutex_;
     typedef std::string ServerSyncMapKey;
-    std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
+    std::map<ServerSyncMapKey, std::shared_ptr<ServerSync>> serverSyncs_;
     std::mutex serverSyncsMutex_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 private:

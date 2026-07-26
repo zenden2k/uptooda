@@ -17,6 +17,7 @@ public:
 protected:
     DISALLOW_COPY_AND_ASSIGN(MyLogSink);
     ILogger* logger_;
+    static thread_local bool insideSendFunction_;
 }; 
 
 #endif

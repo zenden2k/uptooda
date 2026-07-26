@@ -5,6 +5,7 @@
 #include "Core/Utils/StringUtils.h"
 
 namespace {
+
 std::string StrToLower(const std::string& str) {
 #ifdef IU_QT
     return QString::fromStdString(str).toLower().toStdString();
@@ -16,10 +17,10 @@ std::string StrToLower(const std::string& str) {
     return IuStringUtils::ToLower(str);
 #endif
 }
+
 }
 
 std::string AbstractServerIconCache::getIconNameForServer(const std::string& name, bool returnFullPath /*= false*/) {
-    
     CUploadEngineData* ued = engineList_->byName(name);
 
     std::string serverName = IuStringUtils::Replace(name, "\\", "_");

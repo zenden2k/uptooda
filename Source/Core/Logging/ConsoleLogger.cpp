@@ -7,7 +7,10 @@
 #include "Core/Utils/ConsoleUtils.h"
 
 
-void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string& FileName) {
+void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string& FileName, bool fromSink) {
+    if (fromSink) {
+        return;
+    }
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
 //#ifdef _WIN32
     std::wcerr << std::endl << IuCoreUtils::Utf8ToWstring(Msg) << std::endl;
@@ -17,7 +20,10 @@ void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const s
 }
 
 #ifdef _WIN32
-void ConsoleLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t* FileName) {
+void ConsoleLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t* FileName, bool fromSink = false) {
+    if (fromSink) {
+        return;
+    }
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     std::cerr << ( MsgType == logError ? "error" : "warning" ) << " : ";
 //#ifdef _WIN32

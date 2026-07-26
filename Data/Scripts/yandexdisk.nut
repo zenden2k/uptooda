@@ -640,10 +640,6 @@ function GetFolderAccessTypeList() {
 function GetServerParamList() {
     return {
         useWebdav = "Use WebDav",
-        token = "Token",
-        enableOAuth ="enableOAuth",
-        tokenType = "tokenType",
-        PrevLogin = "PrevLogin",
-        OAuthLogin = "OAuthLogin"
+        enableOAuth ="enableOAuth"
     };
 }

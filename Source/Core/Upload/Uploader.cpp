@@ -224,7 +224,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
     }
 }
 
-bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)
+bool CUploader::setUploadEngine(std::shared_ptr<CAbstractUploadEngine> UploadEngine)
 {
     if (m_CurrentEngine == UploadEngine)
         return true;
@@ -250,7 +250,7 @@ bool CUploader::isFatalError() const
     return isFatalServerError_;
 }
 
-CAbstractUploadEngine* CUploader::getUploadEngine()
+std::shared_ptr<CAbstractUploadEngine> CUploader::getUploadEngine() const
 {
     return m_CurrentEngine;
 }

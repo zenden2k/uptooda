@@ -802,7 +802,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         if(!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end()) )
         {
             bool addedSeparator = false;
-            CAdvancedUploadEngine* plug = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+            auto plug = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
             /*if(!plug) return TBDDRET_TREATPRESSED;*/
 
             int i =0;
@@ -982,7 +982,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
     bool ImageServer = (wID % 2)!=0;
     ServerProfile & serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
 
-    auto uploadEngine = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+    auto uploadEngine = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
     if (!uploadEngine) {
         return 0;
     }

@@ -17,6 +17,7 @@ Data/EBWebView
 Source/.idea
 Source/versioninfo.h
 Source/ShellExt/Generated
+Source/ShellExt/x64
 Utils/Localize/.idea
 Utils/Web/.idea
 Sandbox/
@@ -42,3 +43,7 @@ CMakeLists.txt.user
 /*.lnk
 /notes.txt
 .env
+Source/ShellExt/dlldata.c
+Source/ShellExt/*_i.c
+Source/ShellExt/*_p.c
+Source/ShellExt/ExplorerIntegration.h

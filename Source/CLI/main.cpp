@@ -490,7 +490,7 @@ void PrintServerParamList()
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     ParameterList parameterList;
-    auto* pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager->getUploadEngine(profile));
+    auto pluginLoader = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager->getUploadEngine(profile));
     if (pluginLoader) {
         std::cout << "Parameters of server '" << ued->Name << "':" << std::endl;
         pluginLoader->getServerParamList(parameterList);

@@ -5,10 +5,6 @@
 #include "NewStyleFileDialog.h"
 #include "NewStyleFileSaveDialog.h"
 
-
-IMyFileDialog::~IMyFileDialog() {
-}
-
 void IMyFileDialog::setTitle(LPCWSTR title) {
 }
 

@@ -44,13 +44,9 @@ UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, st
 UploadEngineManager::~UploadEngineManager()
 {
     unloadUploadEngines();
-    for (auto& sync : serverSyncs_) {
-        delete sync.second;
-    }
-    serverSyncs_.clear();
 }
 
-CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serverProfile)
+std::shared_ptr<CAbstractUploadEngine> UploadEngineManager::getUploadEngine(const ServerProfile &serverProfile)
 {
     if (serverProfile.serverName().empty()) {
         LOG(ERROR) << "UploadEngineManager::getUploadEngine" << " empty server name";
@@ -63,12 +59,12 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     }
     std::shared_ptr<CAbstractUploadEngine> result = nullptr;
     std::string serverName = serverProfile.serverName();
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile, true);
     std::string authDataLogin = serverSettings ? serverSettings->authData.Login : std::string();
-    auto key = std::make_pair(serverName, serverProfile.profileName());
+    const auto key = std::make_pair(serverName, serverProfile.profileName());
 
     if (ue->UsingPlugin) {
         // Try to load Squirrel (.nut) script
@@ -79,22 +75,24 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         }
     } else {
         std::lock_guard<std::mutex> guard(pluginsMutex_);
-        CAbstractUploadEngine* plugin = nullptr;
+        std::shared_ptr<CAbstractUploadEngine> plugin = nullptr;
         auto it = m_plugins.find(threadId);
         if (it != m_plugins.end()) {
             auto it2 = it->second.find(key);
             if (it2 != it->second.end()) {
-                plugin = it2->second.get();
+                plugin = it2->second;
             }
         }
 
-        if (plugin &&  plugin->serverSettings()->authData.Login == authDataLogin) {
+        if (plugin && plugin->serverSettings()->authData.Login == authDataLogin) {
             return plugin;
         }
 
-        delete plugin;
-        ServerSync* serverSync = getServerSync(serverProfile);
-        CAbstractUploadEngine::ErrorMessageCallback errorCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
+        plugin.reset();
+        std::shared_ptr<ServerSync> serverSync = getServerSync(serverProfile);
+        CAbstractUploadEngine::ErrorMessageCallback errorCallback([uploadErrorHandler = uploadErrorHandler_.get()](auto && PH1) {
+            uploadErrorHandler->ErrorMessage(std::forward<decltype(PH1)>(PH1));
+        });
         if (!ue->Engine.empty()) {
 #ifdef IU_ENABLE_MEGANZ
             if (ue->Engine == "MegaNz") {
@@ -116,23 +114,25 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 
     result->setServerSettings(serverSettings);
     result->setUploadData(ue);
-    result->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage,uploadErrorHandler_.get(),std::placeholders::_1));
-    return result.get();
+    result->setOnErrorMessageCallback([uploadErrorHandler = uploadErrorHandler_.get()](auto && PH1) {
+        uploadErrorHandler->ErrorMessage(std::forward<decltype(PH1)>(PH1));
+    });
+    return result;
 }
 
-CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& serverProfile)
+std::shared_ptr<CScriptUploadEngine> UploadEngineManager::getScriptUploadEngine(const ServerProfile& serverProfile)
 {
-    return dynamic_cast<CScriptUploadEngine*>(getUploadEngine(serverProfile));
+    return std::dynamic_pointer_cast<CScriptUploadEngine>(getUploadEngine(serverProfile));
 }
 
- std::shared_ptr<CScriptUploadEngine> UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
+ std::shared_ptr<CScriptUploadEngine> UploadEngineManager::getPlugin(const ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     std::string serverName = serverProfile.serverName();
 
     BasicSettings* basicSettings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* params = basicSettings->getServerSettings(serverProfile, true);
 
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     std::shared_ptr<CScriptUploadEngine> plugin;
     auto key = std::make_pair(serverName, serverProfile.profileName());
     auto it = m_plugins.find(threadId);
@@ -143,26 +143,26 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
         }
     }
 
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    if (plugin && (time(0)- plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    if (plugin && (time(nullptr)- plugin->getCreationTime() < (settings->DeveloperMode ? 3000 : 1000 * 60 * 5)))
         UseExisting = true;
 
     if (plugin) {
         ServerSettingsStruct* serverSettings = plugin->serverSettings();
         if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params->authData.Login) {
-            plugin->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
+            plugin->setOnErrorMessageCallback([capture0 = uploadErrorHandler_.get()](auto && PH1) { capture0->ErrorMessage(std::forward<decltype(PH1)>(PH1)); });
             plugin->switchToThisVM();
             return plugin;
         }
     }
 
     if (plugin) {
-        m_plugins[threadId][key] = nullptr;
+        m_plugins[threadId].erase(key);
     }
-    ServerSync* serverSync = getServerSync(serverProfile);
+    auto serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
     auto newPlugin = std::make_shared<CScriptUploadEngine>(fileName, serverSync, params, networkClientFactory_,
-        std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
+        [uploadErrorHandler = uploadErrorHandler_.get()](auto && PH1) { uploadErrorHandler->ErrorMessage(std::forward<decltype(PH1)>(PH1)); });
 
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][key] = newPlugin;
@@ -176,7 +176,6 @@ void UploadEngineManager::unloadUploadEngines() {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     m_plugins.clear();
 }
-
 
 void UploadEngineManager::unloadUploadEngines(const std::string& serverName, const std::string& profileName) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
@@ -192,7 +191,7 @@ void UploadEngineManager::setScriptsDirectory(const std::string & directory) {
 void UploadEngineManager::clearThreadData()
 {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     auto it = m_plugins.find(threadId);
     if (it != m_plugins.end()) {
         m_plugins.erase(it);
@@ -201,25 +200,25 @@ void UploadEngineManager::clearThreadData()
 
 void UploadEngineManager::resetAuthorization(const ServerProfile& serverProfile)
 {
-    ServerSync* sync = getServerSync(serverProfile);
+    auto sync = getServerSync(serverProfile);
     sync->resetAuthorization();
 }
 
 void UploadEngineManager::resetFailedAuthorization()
 {
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);
-    for (auto sync : serverSyncs_) {
+    for (const auto& sync : serverSyncs_) {
         sync.second->resetFailedAuthorization();
     }
 }
 
-ServerSync* UploadEngineManager::getServerSync(const ServerProfile& serverProfile)
+std::shared_ptr<ServerSync> UploadEngineManager::getServerSync(const ServerProfile& serverProfile)
 {
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);
     ServerSyncMapKey key = std::make_pair(serverProfile.serverName(), serverProfile.profileName());
-    auto it = serverSyncs_.find(key);
+    const auto it = serverSyncs_.find(key);
     if (it == serverSyncs_.end()) {
-        ServerSync *sync = new ServerSync();
+        auto sync = std::make_shared<ServerSync>();
         serverSyncs_[key] = sync;
         return sync;
     }

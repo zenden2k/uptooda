@@ -32,18 +32,13 @@ ScriptsManager::ScriptsManager(std::shared_ptr<INetworkClientFactory> networkCli
 ScriptsManager::~ScriptsManager()
 {
     unloadScripts();
-    for (auto& it : serverSyncs_) {
-        delete it.second;
-    }
-    serverSyncs_.clear();
 }
 
-Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
-{
+std::shared_ptr<Script> ScriptsManager::getScript(const std::string& fileName, ScriptType type) {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
     bool useExisting = false;
     const std::thread::id threadId = std::this_thread::get_id();
-    Script* plugin = nullptr;
+    std::shared_ptr<Script> plugin = nullptr;
     auto it = scripts_.find(threadId);
     if (it != scripts_.end()) {
         auto it2 = it->second.find(fileName);
@@ -52,49 +47,38 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
         }
     }
     const auto settings = ServiceLocator::instance()->basicSettings();
-    if (plugin && (time(nullptr) - plugin->getCreationTime() < (settings->DeveloperMode ? 3000 : 1000 * 60 * 5))) {
+    if (plugin && (time(nullptr) - plugin->getCreationTime() < (settings->DeveloperMode ? 0 : 1000 * 60 * 5))) {
         useExisting = true;
     }
 
-    if ( plugin && useExisting ) {
+    if (plugin && useExisting) {
         plugin->switchToThisVM();
         return plugin;
     }
 
     if (plugin) {
-        delete plugin;
-        plugin = nullptr;
-
+        plugin.reset();
         scripts_.erase(threadId);
     }
-    ServerSync* serverSync = getServerSync(fileName);
-    Script* newPlugin;
-    if (type == ScriptType::TypeUploadFilterScript)
-    {
-        newPlugin = new UploadFilterScript(fileName, serverSync, networkClientFactory_);
-    } else
-    {
-        newPlugin  = new Script(fileName, serverSync, networkClientFactory_);
+    std::shared_ptr<ServerSync> serverSync = getServerSync(fileName);
+    std::shared_ptr<Script> newPlugin;
+    if (type == ScriptType::TypeUploadFilterScript) {
+        newPlugin = std::make_shared<UploadFilterScript>(fileName, serverSync, networkClientFactory_);
+    } else {
+        newPlugin = std::make_shared<Script>(fileName, serverSync, networkClientFactory_);
     }
 
     if (newPlugin->isLoaded()) {
         scripts_[threadId][fileName] = newPlugin;
         return newPlugin;
     }
-    else {
-        delete newPlugin;
-    }
+
     return nullptr;
 }
 
 void ScriptsManager::unloadScripts()
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
-    for (auto it = scripts_.begin(); it != scripts_.end(); ++it) {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            delete it2->second;
-        }
-    }
     scripts_.clear();
 }
 
@@ -104,20 +88,17 @@ void ScriptsManager::clearThreadData()
     const std::thread::id threadId = std::this_thread::get_id();
     auto it = scripts_.find(threadId);
     if (it != scripts_.end()) {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            delete it2->second;
-        }
         scripts_.erase(it);
     }
 }
 
-ServerSync* ScriptsManager::getServerSync(const std::string& fileName)
+std::shared_ptr<ServerSync> ScriptsManager::getServerSync(const std::string& fileName)
 {
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);
     auto it = serverSyncs_.find(fileName);
     if (it == serverSyncs_.end())
     {
-        ServerSync *sync = new ServerSync();
+        auto sync = std::make_shared<ServerSync>();
         serverSyncs_[fileName] = sync;
         return sync;
     }

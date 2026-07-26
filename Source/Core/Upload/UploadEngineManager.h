@@ -29,12 +29,12 @@ public:
     Load and create upload engine. Object is owned by UploadEngineManager.
     CScriptUploadEngine functions can be called only in the thread it has been created.
     **/
-    CAbstractUploadEngine* getUploadEngine(ServerProfile &serverProfile);
+    std::shared_ptr<CAbstractUploadEngine> getUploadEngine(const ServerProfile &serverProfile);
 
     /*
     Same as getUploadEngine(), but result is casted to CScriptUploadEngine
     */
-    CScriptUploadEngine* getScriptUploadEngine(ServerProfile &serverProfile);
+    std::shared_ptr<CScriptUploadEngine> getScriptUploadEngine(const ServerProfile &serverProfile);
     
     /** 
     Force unload all cached upload engines
@@ -61,14 +61,14 @@ public:
     */
     void resetFailedAuthorization();
 protected:
-    std::shared_ptr<CScriptUploadEngine> getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
-    ServerSync* getServerSync(const ServerProfile& serverProfile);
+    std::shared_ptr<CScriptUploadEngine> getPlugin(const ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting = false);
+    std::shared_ptr<ServerSync> getServerSync(const ServerProfile& serverProfile);
     std::map<std::thread::id, std::unordered_map<std::pair<std::string, std::string>, std::shared_ptr<CAbstractUploadEngine>>> m_plugins;
     std::mutex pluginsMutex_;
     std::string scriptsDirectory_;
     CUploadEngineList* uploadEngineList_;
     typedef std::pair<std::string, std::string> ServerSyncMapKey;
-    std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
+    std::map<ServerSyncMapKey, std::shared_ptr<ServerSync>> serverSyncs_;
     std::mutex serverSyncsMutex_;
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;

@@ -27,7 +27,6 @@ void UploadTask::init()
     role_ = DefaultRole;
     shorteningStarted_ = false;
     stopSignal_ = false;
-    currentUploadEngine_ = nullptr;
     tempFileDeleter_ = nullptr;
     uploadSuccess_ = false;
     index_ = 0;
@@ -88,7 +87,7 @@ void UploadTask::statusChanged()
     }
 }
 
-void UploadTask::setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine)
+void UploadTask::setCurrentUploadEngine(std::shared_ptr<CAbstractUploadEngine> currentUploadEngine)
 {
     currentUploadEngine_ = currentUploadEngine;
 }

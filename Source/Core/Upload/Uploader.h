@@ -36,8 +36,8 @@ class CUploader {
         explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
         ~CUploader();
 
-        bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
-        CAbstractUploadEngine * getUploadEngine();
+        bool setUploadEngine(std::shared_ptr<CAbstractUploadEngine> UploadEngine);
+        std::shared_ptr<CAbstractUploadEngine> getUploadEngine() const;
 
         bool UploadFile(const std::string& FileName, const std::string& displayFileName, int maxRetries);
         bool Upload(std::shared_ptr<UploadTask> task, int maxRetries);
@@ -70,7 +70,7 @@ class CUploader {
         void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
         void ErrorMessage(const ErrorInfo&);
         std::unique_ptr<INetworkClient> m_NetworkClient;
-        CAbstractUploadEngine *m_CurrentEngine;
+        std::shared_ptr<CAbstractUploadEngine> m_CurrentEngine;
         std::shared_ptr<UploadTask> currentTask_;
         // events
         std::function<bool()> onNeedStop_;

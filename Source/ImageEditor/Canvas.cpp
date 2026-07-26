@@ -663,7 +663,7 @@ void Canvas::addMovableElement(MovableElement* element)
         return;
     }
 
-    std::vector<MovableElement*>::iterator it = find (elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
+    auto it = std::find(elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
     if (it == elementsOnCanvas_.end()) {
 
         elementsOnCanvas_.push_back(element);
@@ -759,7 +759,7 @@ void Canvas::setBlurRadius(float radius)
 }
 
 void Canvas::beginBlurRadiusChanging() {
-    if (!originalBlurRadius_) {
+    if (originalBlurRadius_ == 0) {
         originalBlurRadius_ = blurRadius_;
     }
 }
@@ -850,8 +850,7 @@ void Canvas::updateView( const CRgn& region ) {
 
 void Canvas::updateView( RECT boundingRect ) {
     using namespace Gdiplus;
-    //CRgn region;
-    //LOG(INFO) << "updateView " << boundingRect;
+
     Rect newRect(std::max<int>(0,boundingRect.left), std::max<int>(0,boundingRect.top), boundingRect.right - boundingRect.left, boundingRect.bottom - boundingRect.top );
     newRect.Width = min(canvasWidth_ - newRect.X, newRect.Width);
     newRect.Height = min(canvasHeight_ - newRect.Y, newRect.Height);
@@ -859,20 +858,16 @@ void Canvas::updateView( RECT boundingRect ) {
         return;
     }
     canvasChanged_ = true;
-    //LOG(INFO) << "updatedRect_ before union" << updatedRect_.X << " " << updatedRect_.Y << " " << updatedRect_.Width << " " <<updatedRect_.Height;
+
     if ( updatedRect_.IsEmptyArea() ) {
         updatedRect_ = newRect;
     } else {
         Rect::Union(updatedRect_,newRect,updatedRect_);
     }
 
-    //LOG(INFO) << "updatedRect_ after union" << updatedRect_.X << " " << updatedRect_.Y << " " << updatedRect_.Width << " " <<updatedRect_.Height;
-
-    //region.CreateRectRgnIndirect( &boundingRect );
     if ( callback_ ) {
         callback_->updateView(this, updatedRect_, fullRender_);
     }
-
 }
 
 POINT Canvas::GetScrollOffset() const {

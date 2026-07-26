@@ -10,7 +10,7 @@ class IMyFileDialog {
 public:
     using FileFilter = std::pair<CString, CString>;
     using FileFilterArray = std::vector<FileFilter>;
-    virtual ~IMyFileDialog();
+    virtual ~IMyFileDialog() = default;
     virtual INT_PTR DoModal(HWND hWndParent)=0;
     virtual CString getFolderPath();
     virtual void setTitle(LPCWSTR title);

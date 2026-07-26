@@ -19,6 +19,7 @@
 #include "Document.h"
 
 #include <cassert>
+#include <utility>
 
 #include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
@@ -109,7 +110,7 @@ Gdiplus::Bitmap* Document::getBitmap() const
 
 void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
     saveDocumentState(true);
-    currentImage_ = bm;
+    currentImage_ = std::move(bm);
     init();
 }
 
@@ -257,11 +258,8 @@ bool Document::undo() {
                 //memset( bpSrc + dstDataOffset, 255, rowSize );
                 pdata += rowSize;
             }
-
-
         }
     }
-
 
     delete[] undoItem.data;
     image->UnlockBits( &bdSrc );
@@ -295,7 +293,7 @@ Painter* Document::getGraphicsObject() const {
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     saveDocumentState(true);
-    std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
+    auto newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
     Gdiplus::Graphics gr(newBitmap.get());
     gr.Clear(Gdiplus::Color::Transparent);
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);

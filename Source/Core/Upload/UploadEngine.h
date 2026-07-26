@@ -434,7 +434,7 @@ class CAbstractUploadEngine
     public:
         typedef std::function<void(const ErrorInfo&)> ErrorMessageCallback;
 
-        CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
+        CAbstractUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback);
         virtual ~CAbstractUploadEngine();
         virtual int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
@@ -442,11 +442,11 @@ class CAbstractUploadEngine
         virtual int RetryLimit()=0;
         virtual void setNetworkClient(INetworkClient* nm);
         void setUploadData(CUploadEngineData* data);
-        void setServerSync(ServerSync* sync);
+        void setServerSync(std::shared_ptr<ServerSync> sync);
         void setCurrentUploader(CUploader *uploader);
         CUploader * currentUploader() const;
         virtual void stop();
-        ServerSync* serverSync() const;
+        std::shared_ptr<ServerSync> serverSync() const;
         CUploadEngineData* getUploadData() const;
         // Events
         void setOnNeedStopCallback(std::function<bool()> cb);
@@ -462,7 +462,7 @@ class CAbstractUploadEngine
         CUploader * currUploader_;
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;
-        ServerSync* serverSync_;
+        std::shared_ptr<ServerSync> serverSync_;
         ErrorMessageCallback onErrorMessage_;
 
         std::function<bool()> onNeedStop_;
