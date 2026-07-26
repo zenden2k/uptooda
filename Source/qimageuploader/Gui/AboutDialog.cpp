@@ -1,7 +1,7 @@
 #include "AboutDialog.h"
 
 #include "ui_AboutDialog.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/BasicConstants.h"
 
 #include <QPushButton>
@@ -14,7 +14,7 @@ AboutDialog::AboutDialog(QWidget *parent):
 
     ui->programNameLabel->setText(APP_NAME_A + QStringLiteral(" (Qt GUI)"));
 
-    auto version = AppParams::instance()->GetAppVersion();
+    auto version = AppRuntimeInfo::instance()->GetAppVersion();
 
     ui->versionLabel->setText(QString::fromStdString(version->FullVersion) + " build " + QString::number(version->Build));
     QPushButton * btn = new QPushButton(tr("About Qt"), this);

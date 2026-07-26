@@ -16,16 +16,8 @@
 #include <shellapi.h>
 #include <shobjidl.h>
 
-// Direct2D
-#include <D2d1.h>
-#include <D2d1helper.h>
-
-// Misc
-#include <strsafe.h>
-#include <assert.h>
-#include <propvarutil.h>
-
 #include "atlheaders.h"
+
 #include "AbstractFrameGrabber.h"
 #include "Core/COMInitializer.h"
 

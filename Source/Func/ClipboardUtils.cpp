@@ -11,7 +11,7 @@
 namespace ClipboardUtils {
 
 bool CopyFileAndImageToClipboard(LPCTSTR fileName, HWND hwnd) {
-    if (IuCommonFunctions::IsImage(fileName) ) {
+    if (IuCommonFunctions::IsImage(fileName)) {
         CopyImageToClipboard(fileName, hwnd);
     }
     std::vector<CString> fileNames;

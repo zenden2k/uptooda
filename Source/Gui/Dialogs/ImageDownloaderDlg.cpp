@@ -30,7 +30,7 @@
 #include "Func/WebUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
 #include "Core/3rdpart/UriParser.h"
@@ -259,7 +259,7 @@ bool CImageDownloaderDlg::BeginDownloading()
         using namespace std::placeholders;
 
         auto networkClientFactory = ServiceLocator::instance()->networkClientFactory();
-        downloadTask_ = std::make_shared<DownloadTask>(networkClientFactory, AppParams::instance()->tempDirectory(), downloadItems);
+        downloadTask_ = std::make_shared<DownloadTask>(networkClientFactory, AppRuntimeInfo::instance()->tempDirectory(), downloadItems);
         downloadTask_->onFileFinished.connect(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3));
         downloadTask_->onTaskFinished.connect(std::bind(&CImageDownloaderDlg::OnQueueFinished, this));
         isRunning_ = true;

@@ -317,7 +317,7 @@ CHistoryReader::CHistoryReader(CHistoryManager* mgr)
     d_ptr->mgr_ = mgr;
 }
 
-int CHistoryReader::getSessionCount() const
+size_t CHistoryReader::getSessionCount() const
 {
     return d_ptr->m_sessions.size();
 }

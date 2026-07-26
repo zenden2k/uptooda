@@ -213,8 +213,6 @@ void CServerSelectorControl::serverChanged() {
                 serverProfile_.clearFolderInfo();
             }
         }
-            
-
     } else {
         serverProfile_ = ServerProfile();
     }
@@ -901,7 +899,6 @@ LRESULT CServerSelectorControl::OnBnClickedServerButton(WORD wNotifyCode, WORD w
 }
 
 LRESULT CServerSelectorControl::OnBnDropdownServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    //serverButton_.PostMessage(BM_CLICK);
     showServerButtonPopup();
     return 0;
 }

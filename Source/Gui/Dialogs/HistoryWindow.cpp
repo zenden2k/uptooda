@@ -237,41 +237,42 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return 0;
 }
 
-void CHistoryWindow::FillList(CHistoryReader* mgr)
-{
+void CHistoryWindow::FillList(CHistoryReader* mgr) {
     bool enabledDownload = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
     m_treeView.setDownloadingEnabled(enabledDownload);
-    int nSessionsCount = mgr->getSessionCount();
+    size_t nSessionsCount = mgr->getSessionCount();
 
     m_treeView.SetRedraw(false);
     TreeItem* res = nullptr;
     int nFilesCount = 0;
     int64_t totalFileSize = 0;
-    for(int i=0; i<nSessionsCount; i++)
-    {
+
+    for (size_t i = 0; i < nSessionsCount; i++) {
         CHistorySession* ses = mgr->getSession(i);
         std::string serverName = ses->serverName();
-        if(serverName.empty()) serverName = "n/a";
+        if (serverName.empty()) serverName = "n/a";
 
-        std::string label = W2U(WinUtils::TimestampToString(ses->timeStamp())) + "\r\n Server: "+ serverName+ " Files: " + std::to_string(ses->entriesCount());
+        std::string label = W2U(WinUtils::TimestampToString(ses->timeStamp())) + "\r\n Server: " + serverName +
+            " Files: " + std::to_string(ses->entriesCount());
         res = m_treeView.addEntry(ses, Utf8ToWCstring(label));
-        int nCount = ses->entriesCount();
-        for(int j=0; j<nCount; j++)
-        {
+        size_t nCount = ses->entriesCount();
+
+        for (int j = 0; j < nCount; j++) {
             nFilesCount++;
-            if ( ses->entry(j).uploadFileSize < 1000000000 ) {
+            if (ses->entry(j).uploadFileSize < 1000000000) {
                 totalFileSize += ses->entry(j).uploadFileSize;
             }
-            m_treeView.addSubEntry(res, &ses->entry(j),nCount<4);
+            m_treeView.addSubEntry(res, &ses->entry(j), nCount < 4);
         }
         ses->setDeleteItems(false); // treeView will manage history items
         //m_treeView.ExpandItem(res);
     }
-    if(res)
-    {
-        m_treeView.SetCurSel(m_treeView.GetCount()-1);
+
+    if (res) {
+        m_treeView.SetCurSel(m_treeView.GetCount() - 1);
         m_treeView.SetCurSel(-1);
     }
+
     m_treeView.SetRedraw(true);
 
     SetDlgItemInt(IDC_FILESCOUNTLABEL, nFilesCount, false);
@@ -354,29 +355,25 @@ Uptooda::Core::OutputGenerator::UploadObject fromHistoryItem(const HistoryItem& 
     return it;
 }
 
-LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
+LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     using namespace Uptooda::Core::OutputGenerator;
     TreeItem* item = m_treeView.selectedItem();
-    if(!item) return 0;
+    if (!item) return 0;
     std::vector<UploadObject> items;
 
-    if(item->level()==0)
-    {
-        auto* ses = static_cast<CHistorySession*>(item->userData());
-        for(int i=0; i<ses->entriesCount(); i++)
-        {
+    if (item->level() == 0) {
+        const auto* ses = static_cast<CHistorySession*>(item->userData());
+        for (size_t i = 0; i < ses->entriesCount(); i++) {
             UploadObject it = fromHistoryItem(ses->entry(i));
             items.push_back(it);
         }
     }
-    else
-    {
+    else {
         const HistoryItem* hit = CHistoryTreeControl::getItemData(item);
         if (!hit) {
             return 0;
         }
-        Uptooda::Core::OutputGenerator::UploadObject it  = fromHistoryItem(*hit);
+        Uptooda::Core::OutputGenerator::UploadObject it = fromHistoryItem(*hit);
         items.push_back(it);
     }
     CResultsWindow rp(wizardDlg_, items, false);

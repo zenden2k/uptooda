@@ -73,7 +73,7 @@ class CHistoryReader : public IHistoryReader {
         // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename) override;
         bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) override;
-        int getSessionCount() const override;
+        size_t getSessionCount() const override;
         void loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode);
 
         // The pointer returned by this function is only valid

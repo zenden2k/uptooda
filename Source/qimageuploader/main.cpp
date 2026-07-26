@@ -14,7 +14,7 @@
 #include "Gui/MainWindow.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "QtUploadErrorHandler.h"
 #include "QtDefaultLogger.h"
 #include "QtScriptDialogProvider.h"
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
     google::InitGoogleLogging(argv[0]);
 
-    AppParams::AppVersionInfo appVersion;
+    AppRuntimeInfo::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = std::stoi(IU_BUILD_NUMBER);
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     appVersion.CommitHash = IU_COMMIT_HASH;
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
+    AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     MyApplication a(argc, argv);
     logWindow = std::make_unique<LogWindow>();
@@ -139,7 +139,6 @@ int main(int argc, char *argv[])
     serviceLocator->setLogger(logger);
     serviceLocator->setDialogProvider(&dlgProvider);
     serviceLocator->setSettings(&Settings);
-    AbstractImage::autoRegisterFactory<void>();
 
     QString appDirectory = QCoreApplication::applicationDirPath();
     QString settingsFolder;
@@ -163,7 +162,7 @@ settingsDir.mkpath(settingsFolder);
 #endif
     qDebug() << "Data directory:" << dataFolder;
     qDebug() << "Settings directory:" << settingsFolder;
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     std::string dataFolderU8 = Q2U(dataFolder);
     params->setDataDirectory(dataFolderU8);
     params->setSettingsDirectory(Q2U(settingsFolder));
@@ -176,9 +175,9 @@ settingsDir.mkpath(settingsFolder);
         LOG(ERROR) << "Unable to create temp directory!";
     }
 
-    Settings.LoadSettings(AppParams::instance()->settingsDirectory(), "uptooda.xml");
+    Settings.LoadSettings(AppRuntimeInfo::instance()->settingsDirectory(), "uptooda.xml");
 
-	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
+	if (!engineList->loadFromFile(AppRuntimeInfo::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
 	}
     ServiceLocator::instance()->setEngineList(engineList.get());

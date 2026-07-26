@@ -34,7 +34,7 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
@@ -518,7 +518,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
             url = this->UrlList[0].getDownloadUrl();
         }
     } else {
-        std::string outputTempFileName = AppParams::instance()->tempDirectory()  + "preview.html";
+        std::string outputTempFileName = AppRuntimeInfo::instance()->tempDirectory()  + "preview.html";
         std::string code = GenerateOutput();
         /*if ( m_Page == 0) {
             code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));

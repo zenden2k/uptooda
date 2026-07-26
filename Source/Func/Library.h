@@ -30,11 +30,13 @@ class Library {
 public:
     Library(const wchar_t* libraryName) :  dll_(::LoadLibraryW(libraryName)) {
     }
+
     ~Library() {
         if (dll_) {
             FreeLibrary(dll_);
         }
     }
+
     operator bool() const {
         return dll_ != nullptr;
     }

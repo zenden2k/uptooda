@@ -120,12 +120,11 @@ void Canvas::mouseMove( int x, int y, DWORD flags) {
     /*if ( x > canvasWidth_ || y > canvasHeight_ || x <0 || y <0) {
         return;
     }*/
+    assert(currentDrawingTool_);
     if ( isLButtonDown  ) {
-        assert( currentDrawingTool_ );
-
         currentDrawingTool_->continueDraw( x,  y, flags );
     }
-    CursorType ct = currentDrawingTool_->getCursor(x ,y);
+    CursorType ct = currentDrawingTool_->getCursor(x, y);
     setCursor(ct);
     /*if (isLButtonDown && currentElement_ != NULL ) {
         AffectedSegments prevSegments;
@@ -347,11 +346,12 @@ void Canvas::endPenSizeChanging(int penSize) {
 
 
 void Canvas::setRoundingRadius(int radius) {
-    if ( radius < 1 || radius > kMaxRoundingRadius ) {
+    if (radius < 1 || radius > kMaxRoundingRadius) {
         return;
     }
+
     roundingRadius_ = radius;
-    if ( currentDrawingTool_ ) {
+    if (currentDrawingTool_) {
         currentDrawingTool_->setRoundingRadius(radius);
     }
     for (const auto& el: elementsOnCanvas_) {
@@ -1040,6 +1040,25 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     gr.DrawImage( buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
     lastAppliedCrop_ = Rect(cropX, cropY, cropWidth, cropHeight);
     return bm;
+}
+
+SIZE Canvas::getExportBitmapSize() const {
+    Crop * crop = nullptr;
+    if (cropOnExport_) {
+        // Find first Crop element
+        for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
+            if (elementsOnCanvas_[i]->getType() == ElementType::etCrop) {
+                crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
+                break;
+            }
+        }
+    }
+    if ( !crop )  {
+        return {static_cast<LONG>(buffer_->GetWidth()), static_cast<LONG>(buffer_->GetHeight())};
+    }
+
+
+    return {crop->getWidth(), crop->getHeight()};
 }
 
 float Canvas::getZoomFactor() const

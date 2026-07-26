@@ -39,7 +39,7 @@ void CWizardPage::EnableNext(bool Enable) {
         return;
     }
 
-    ::EnableWindow(WizardDlg->GetDlgItem(IDC_NEXT), Enable);
+    WizardDlg->GetDlgItem(IDC_NEXT).EnableWindow(Enable);
 }
 
 void CWizardPage::EnablePrev(bool Enable) {
@@ -47,7 +47,7 @@ void CWizardPage::EnablePrev(bool Enable) {
         return;
     }
 
-    ::EnableWindow(WizardDlg->GetDlgItem(IDC_PREV), Enable);
+    WizardDlg->GetDlgItem(IDC_PREV).EnableWindow(Enable);
 }
 
 void CWizardPage::EnableExit(bool Enable) {
@@ -55,7 +55,7 @@ void CWizardPage::EnableExit(bool Enable) {
         return;
     }
 
-    ::EnableWindow(WizardDlg->GetDlgItem(IDCANCEL), Enable);
+    WizardDlg->GetDlgItem(IDCANCEL).EnableWindow(Enable);
 }
 
 void CWizardPage::SetNextCaption(LPCTSTR Caption) {

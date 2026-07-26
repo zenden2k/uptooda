@@ -12,6 +12,5 @@ public:
     {
     }
 
-    virtual ~FrameGrabberException() throw () {}
-
+    ~FrameGrabberException() throw () override {}
 };

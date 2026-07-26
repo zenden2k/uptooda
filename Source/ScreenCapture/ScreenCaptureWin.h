@@ -58,7 +58,6 @@ public:
         drawCursor_ = draw;
     }
 
-
 protected:
     bool m_bFromScreen;
     bool drawCursor_ = false;

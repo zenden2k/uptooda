@@ -36,7 +36,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
 #endif
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT APP_NAME_A
@@ -206,7 +206,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(std::shared_ptr<ServerSync> serverSync,
 #ifdef _WIN32
     proc_ = std::make_unique<MyGfxProcessor>();
     gfxProvider_.reset(MegaGfxProvider::createExternalInstance(proc_.get()));
-    megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppParams::instance()->tempDirectory().c_str(), USER_AGENT);
+    megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppRuntimeInfo::instance()->tempDirectory().c_str(), USER_AGENT);
 #else
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif

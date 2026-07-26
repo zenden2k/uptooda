@@ -11,12 +11,12 @@ CHistorySession::CHistorySession(const std::string& filename, const std::string&
     dbEntryCreated_ = false;
 }
 
-int CHistorySession::entriesCount() const
+size_t CHistorySession::entriesCount() const
 {
     return m_entries.size();
 }
 
-const HistoryItem& CHistorySession::entry(int index) const
+const HistoryItem& CHistorySession::entry(size_t index) const
 {
     return m_entries[index];
 }
@@ -37,9 +37,10 @@ CHistorySession::~CHistorySession() {
 }
 
 void CHistorySession::sortByOrderIndex() {
-    std::sort(m_entries.begin(), m_entries.end(), [](HistoryItem& lhs, HistoryItem& rhs) {
+    std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem& lhs, const HistoryItem& rhs) {
         return lhs.sortIndex < rhs.sortIndex;
     });
+
     if (!m_entries.empty()) {
         m_serverName = m_entries[0].serverName;
     }

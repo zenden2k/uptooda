@@ -45,7 +45,7 @@ crash_rpt::CrashRpt g_crashRpt(
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
 #include "Func/WtlScriptDialogProvider.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Func/LangClass.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Gui/Dialogs/LangSelect.h"
@@ -159,7 +159,7 @@ public:
     }
 
     static void setAppVersion() {
-        AppParams::AppVersionInfo appVersion;
+        AppRuntimeInfo::AppVersionInfo appVersion;
         appVersion.FullVersion = IU_APP_VER;
         appVersion.FullVersionClean = IU_APP_VER_CLEAN;
         appVersion.Build = atoi(IU_BUILD_NUMBER);
@@ -167,11 +167,10 @@ public:
         appVersion.CommitHash = IU_COMMIT_HASH;
         appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
         appVersion.BranchName = IU_BRANCH_NAME;
-        AppParams::instance()->setVersionInfo(appVersion);
+        AppRuntimeInfo::instance()->setVersionInfo(appVersion);
     }
 
     void initBasicServices() {
-        AbstractImage::autoRegisterFactory<void>();
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         logger_ = std::make_shared<DefaultLogger>();
         myLogSink_ = std::make_unique<MyLogSink>(logger_.get());
@@ -291,7 +290,7 @@ public:
 
         IuCommonFunctions::CreateTempFolder(commonTempFolder_, tempFolder_);
 
-        AppParams::instance()->setTempDirectory(W2U(tempFolder_));
+        AppRuntimeInfo::instance()->setTempDirectory(W2U(tempFolder_));
         std::vector<CString> fileList;
         WinUtils::GetFolderFileList(fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old"));
         for (const auto& file : fileList) {
@@ -394,7 +393,7 @@ public:
             lang_.LoadLanguage(settings_.Language);
         }
 
-        //AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
+        //AppRuntimeInfo::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
 
         if (lang_.isRTL()) {
             SetProcessDefaultLayout(LAYOUT_RTL);
@@ -440,7 +439,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     std::vector<char*> argv(argc + 1);
 
     for (int i = 0; i < argc; ++i) {
-        argsStorage[i] = IuCoreUtils::WstringToUtf8(wargv[i]);
+        argsStorage[i] = IuCoreUtils::WstringToSystemLocale(wargv[i]);
         argv[i] = argsStorage[i].data();
     }
     argv[argc] = nullptr;

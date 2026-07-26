@@ -30,7 +30,7 @@ limitations under the License.
 #include "3rdpart/Registry.h"
 #include "Core/Video/VideoUtils.h"
 #include "Func/WinUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Utils/StringUtils.h"
 #include "Gui/Dialogs/FloatingWindow.h"
 #include "Core/i18n/Translator.h"
@@ -277,7 +277,7 @@ and store it's path into DataFolder member
 */
 void WtlGuiSettings::FindDataFolder()
 {
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
         SettingsFolder = W2U(DataFolder);

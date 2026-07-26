@@ -40,7 +40,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/ServiceLocator.h"
 #include "Func/Library.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "ImageLoader.h"
 #include "Core/Utils/IOException.h"
 #include "3rdpart/FastGaussianBlurTemplate.h"
@@ -536,7 +536,7 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
     if (userFolder.Right(1) != _T('\\')) {
         userFolder += _T('\\');
     }
-    buffer2.Format(_T("%s%s.%s"), (Folder ? userFolder : AppParams::instance()->tempDirectoryW()).GetString(), szNameBuffer.GetString(),
+    buffer2.Format(_T("%s%s.%s"), (Folder ? userFolder : AppRuntimeInfo::instance()->tempDirectoryW()).GetString(), szNameBuffer.GetString(),
                     szImgTypes[Format]);
     if (!img) {
         szBuffer = buffer2;
@@ -1286,7 +1286,7 @@ bool SaveImageFromClipboardDataUriFormat(const CString& clipboardText, CString& 
         if (!outLen) {
             return false;
         }
-        CString tempDirectory = AppParams::instance()->tempDirectoryW();
+        CString tempDirectory = AppRuntimeInfo::instance()->tempDirectoryW();
         CString extension = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(W2U(contentType)));
         if (extension.IsEmpty()) {
             extension = _T("dat");

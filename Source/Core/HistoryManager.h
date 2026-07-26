@@ -65,8 +65,8 @@ class CHistorySession
     public:
         explicit CHistorySession(const std::string& filename, const std::string& sessionId);
         ~CHistorySession();
-        int entriesCount() const;
-        const HistoryItem& entry(int index) const;
+        size_t entriesCount() const;
+        const HistoryItem& entry(size_t index) const;
         std::string serverName() const;
         void setServerName(const std::string& name);
         time_t timeStamp() const;
@@ -117,7 +117,7 @@ public:
     // filename must be utf-8 encoded
     virtual bool loadFromFile(const std::string& filename) = 0;
     virtual bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) = 0;
-    virtual int getSessionCount() const = 0;
+    virtual size_t getSessionCount() const = 0;
     // The pointer returned by this function is only valid
     //  during lifetime of CHistoryReader object
     virtual CHistorySession* getSession(size_t index) const = 0 ;

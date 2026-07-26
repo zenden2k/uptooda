@@ -21,7 +21,7 @@ std::string StrToLower(const std::string& str) {
 }
 
 std::string AbstractServerIconCache::getIconNameForServer(const std::string& name, bool returnFullPath /*= false*/) {
-    CUploadEngineData* ued = engineList_->byName(name);
+    const CUploadEngineData* ued = engineList_->byName(name);
 
     std::string serverName = IuStringUtils::Replace(name, "\\", "_");
     serverName = IuStringUtils::Replace(serverName, "/", "_");

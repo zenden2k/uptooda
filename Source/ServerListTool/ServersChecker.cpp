@@ -2,7 +2,7 @@
 
 #include "Core/Upload/UploadSession.h"
 #include "Core/Settings/BasicSettings.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Upload/UploadManager.h"
@@ -28,7 +28,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     needStop_ = false;
     isRunning_ = false;
     using namespace std::placeholders;
-    fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
+    fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppRuntimeInfo::instance()->tempDirectory());
     fileDownloader_->setOnFileFinishedCallback(std::bind(&ServersChecker::onFileFinished, this, _1, _2, _3));
 }
 

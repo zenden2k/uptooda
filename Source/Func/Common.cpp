@@ -50,7 +50,7 @@ bool IULaunchCopy(CString additionalParams)
     // Start the child process.
     if ( !CreateProcess(
             NULL,              // No module name (use command line).
-            (LPWSTR)(LPCTSTR)TempCmdLine, // Command line.
+            const_cast<LPWSTR>(TempCmdLine.GetString()), // Command line.
             NULL,                // Process handle not inheritable.
             NULL,                // Thread handle not inheritable.
             FALSE,               // Set handle inheritance to FALSE.

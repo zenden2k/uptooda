@@ -18,7 +18,7 @@ Improvements:
 Bug Fixes:
 
 * Fixed thumbnail width setting not being applied correctly
-* Resolved unicode output problems in CLI mode
+* Resolved Unicode output problems in CLI mode
 * Fixed default thumbnail bug in the file list
 * Fixed upload functionality for directupload.eu accounts 
 * Prevented crash after login changes

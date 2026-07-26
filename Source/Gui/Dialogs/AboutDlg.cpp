@@ -32,7 +32,7 @@
 #ifdef IU_ENABLE_MEGANZ
 #include <mega/version.h>
 #endif
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
 #endif
@@ -53,7 +53,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
-    auto* ver = AppParams::instance()->GetAppVersion();
+    auto* ver = AppRuntimeInfo::instance()->GetAppVersion();
     auto* translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));

@@ -154,7 +154,7 @@ namespace IuCoreUtils
     int64_t GetFileSize(const std::string& utf8Filename);
     std::wstring Utf8ToWstring(const std::string &str);
     std::string WstringToUtf8(const std::wstring &str);
-
+    std::string WstringToSystemLocale(const std::wstring &str);
     // Convert UTF16-LE encoded string to Utf-8
     std::string Utf16ToUtf8(const std::u16string& src);
 

@@ -16,6 +16,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/SearchByImage.h"
+#include "Func/IuCommonFunctions.h"
 
 class UploadEngineManager;
 
@@ -97,7 +98,7 @@ public:
     void setInitialDrawingTool(DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
-    void setSuggestedFileName(CString fileName);
+    void setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData);
     std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap() const;
     Gdiplus::Rect lastAppliedCrop() const;
     CRect getSelectedRect() const;
@@ -243,7 +244,6 @@ public:
         bool showUploadButton_;
         bool showAddToWizardButton_;
         bool askBeforeClose_;
-        CString suggestedFileName_;
         std::string serverDisplayName_;
         int prevPenSize_;
         int prevRoundingRadius_;
@@ -266,6 +266,7 @@ public:
         CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
         CRect selectedRect_;
         bool onlySelectRegion_ = false;
+        IuCommonFunctions::ScreenshotData screenshotData_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);

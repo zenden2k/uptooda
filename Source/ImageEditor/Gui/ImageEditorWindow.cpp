@@ -50,7 +50,6 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
-    setSuggestedFileName(sourceFileName_);
     init();
 }
 
@@ -300,9 +299,9 @@ void ImageEditorWindow::showAddToWizardButton(bool show)
     showAddToWizardButton_ = show;
 }
 
-void ImageEditorWindow::setSuggestedFileName(CString fileName)
+void ImageEditorWindow::setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData)
 {
-    suggestedFileName_ = fileName;
+    screenshotData_ = screenshotData;
 }
 
 std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
@@ -1585,8 +1584,8 @@ bool ImageEditorWindow::onSaveAs(bool closeFlag)
     };
 
     CString fileName = makeFileName();
-    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
-    dlg->setFileName(fileName);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetFilePath(fileName), CString(), filters, false, false);
+    dlg->setFileName(WinUtils::DoExtractFileName(fileName));
     CString ext = WinUtils::GetFileExt(fileName);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
@@ -1609,8 +1608,8 @@ bool ImageEditorWindow::onSaveAs(bool closeFlag)
 
     if (saveDocument(ClipboardFormat::None, true)) {
         auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-        setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
-            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));
+        /*setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
+            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));*/
         if (canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
             EndDialog(drCopiedToClipboard);
         }
@@ -2001,19 +2000,29 @@ bool ImageEditorWindow::openedAfterScreenshot() const {
 
 CString ImageEditorWindow::makeFileName() const {
     const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString result;
-    int dotPos = suggestedFileName_.Find(_T("."));
-    if (dotPos != -1) {
-        result = suggestedFileName_.Left(dotPos);
+    const ScreenshotSettingsStruct& screenshotSettings = settings->ScreenshotSettings;
+    CString suggestingFileName;
+
+    if (sourceFileName_.IsEmpty()) {
+        const SIZE bitmapSize = canvas_->getExportBitmapSize();
+        suggestingFileName = IuCommonFunctions::MakeScreenshotFileName(screenshotData_, bitmapSize);
     } else {
-        result = suggestedFileName_;
+        suggestingFileName = sourceFileName_;
     }
 
-    CString fileExt = suggestedFileName_.Mid(dotPos + 1);
+    CString result;
+    int dotPos = suggestingFileName.Find(_T("."));
+    if (dotPos != -1) {
+        result = suggestingFileName.Left(dotPos);
+    } else {
+        result = suggestingFileName;
+    }
+
+    CString fileExt = suggestingFileName.Mid(dotPos + 1);
     fileExt.MakeLower();
 
-    std::wstring_view imgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp") };
-    int format = settings->ScreenshotSettings.Format;
+    std::wstring_view imgTypes[5] = {_T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
+    int format = screenshotSettings.Format;
     if (format >= 0 && format < std::size(imgTypes)) {
         fileExt = imgTypes[format].data();
     }
@@ -2022,7 +2031,7 @@ CString ImageEditorWindow::makeFileName() const {
         fileExt = _T("png");
     }
 
-    return result + + _T(".") + fileExt;
+    return result + +_T(".") + fileExt;
 }
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -2058,12 +2067,10 @@ LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID
     return 0;
 }
 
-
 LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     EndDialog(drRecordScreen);
     return 0;
 }
-
 
 LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     // This ensures lastCrop is stored
@@ -2072,7 +2079,6 @@ LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/,
     EndDialog(drContinue);
     return 0;
 }
-
 
 LRESULT ImageEditorWindow::OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->setDrawBorder(horizontalToolbar_.isDrawBorderChecked());

@@ -10,7 +10,7 @@
 #include "Video/VideoGrabber.h"
 #include "Core/CommonDefs.h"
 #include "Video/QtImage.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/QtGuiSettings.h"
 
@@ -62,7 +62,7 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
     QImage img = qtImage->toQImage();
 
     if (!img.isNull()) {
-        QString tempDirectory = U2Q(AppParams::instance()->tempDirectory());
+        QString tempDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
         QTemporaryFile f(tempDirectory + "/grab_XXXXXX.png");
         f.setAutoRemove(false);
         QString uniqueFileName;

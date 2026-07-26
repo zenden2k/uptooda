@@ -27,7 +27,7 @@
 #include <json/json.h>
 
 #include "Core/BasicConstants.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Logging.h"
@@ -65,12 +65,12 @@ namespace ScriptAPI {
 
 std::string GetScriptsDirectory()
 {
-    return AppParams::instance()->dataDirectory() + "/Scripts/";
+    return AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
 }
 
 std::string GetAppLanguageFile()
 {
-    std::string languageFile = AppParams::instance()->languageFile();
+    std::string languageFile = AppRuntimeInfo::instance()->languageFile();
     if ( languageFile.empty() ) {
         return "English";
     }
@@ -79,14 +79,14 @@ std::string GetAppLanguageFile()
 
 SQInteger GetAppVersion(HSQUIRRELVM vm) {
     Sqrat::Table res(vm);
-    auto version = AppParams::instance()->GetAppVersion();
+    auto version = AppRuntimeInfo::instance()->GetAppVersion();
     if (version) {
         res.SetValue("Major", static_cast<SQInteger>(version->Major));
         res.SetValue("Minor", static_cast<SQInteger>(version->Minor));
         res.SetValue("Release", static_cast<SQInteger>(version->Release));
         res.SetValue("Build", static_cast<SQInteger>(version->Build));
     }
-    res.SetValue("Gui", AppParams::instance()->isGui());
+    res.SetValue("Gui", AppRuntimeInfo::instance()->isGui());
     Sqrat::PushVar(vm, res);
     return 1;
 }
@@ -293,7 +293,7 @@ std::string JsonEscapeString( const std::string& src) {
 }
 
 std::string GetTempDirectory() {
-    return AppParams::instance()->tempDirectory();
+    return AppRuntimeInfo::instance()->tempDirectory();
 }
 
 std::string url_encode(const std::string &value) {

@@ -6,11 +6,11 @@
 #define UPTOODA_IFAVORITESERVERS_H
 
 #include <string>
+
 class IFavoriteServers {
 public:
     virtual ~IFavoriteServers() = default;
     virtual bool isServerFavorite(const std::string& server) = 0;
 };
-
 
 #endif //UPTOODA_IFAVORITESERVERS_H

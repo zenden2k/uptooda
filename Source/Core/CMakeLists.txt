@@ -34,7 +34,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     OutputGenerator/XmlTemplateGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
-    AppParams.cpp
+        AppRuntimeInfo.cpp
     Scripting/API/Functions.cpp
     Scripting/API/RegularExpression.cpp
     Scripting/API/ScriptAPI.cpp
@@ -159,7 +159,7 @@ set(HEADER_LIST
     OutputGenerator/XmlTemplateGenerator.h
     UploadEngineList.h
     SettingsManager.h
-    AppParams.h
+        AppRuntimeInfo.h
     Scripting/API/Functions.h
     Scripting/API/RegularExpression.h
     Scripting/API/ScriptAPI.h

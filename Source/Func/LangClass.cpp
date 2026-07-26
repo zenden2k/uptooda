@@ -84,6 +84,7 @@ CString CLang::getLocale() const
 {
     return localeName_;
 }
+
 #ifndef IU_SHELLEXT
 std::string CLang::getCurrentLanguage() {
     return W2U(m_sLang);

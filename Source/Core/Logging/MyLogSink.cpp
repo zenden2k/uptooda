@@ -8,7 +8,8 @@ MyLogSink::MyLogSink(ILogger* logger) {
     logger_ = logger;
 }
 
-void MyLogSink::send(google::LogSeverity severity, const char* full_filename, const char* base_filename, int line, const struct ::tm* tm_time, const char* message, size_t message_len)
+void MyLogSink::send(google::LogSeverity severity, const char* full_filename, const char* base_filename, int line,
+                      const google::LogMessageTime& time, const char* message, size_t message_len)
 {
     if (insideSendFunction_) { // Prevent recursion
         return;

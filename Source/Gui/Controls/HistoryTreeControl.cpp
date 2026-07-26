@@ -32,7 +32,7 @@
 #include "Func/WinUtils.h"
 #include "Core/LocalFileCache.h"
 #include "Core/Images/Utils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
 #include "Core/AbstractServerIconCache.h"
@@ -60,7 +60,7 @@ CHistoryTreeControl::~CHistoryTreeControl()
 
 void CHistoryTreeControl::CreateDownloader() {
     if(!m_FileDownloader) {
-        m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
+        m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppRuntimeInfo::instance()->tempDirectory());
         m_FileDownloader->setOnConfigureNetworkClientCallback([this](auto* nm) { OnConfigureNetworkClient(nm); });
         m_FileDownloader->setOnFileFinishedCallback([this](bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it) {
             OnFileFinished(ok, statusCode, it);
@@ -188,8 +188,8 @@ TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString
 }
 
 void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight) {
-    const int kPaddingX = 2;
-    const int kPaddingY = 2;
+    constexpr int kPaddingX = 2;
+    constexpr int kPaddingY = 2;
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     CDCHandle dc(hdc);
     HFONT listboxFont = GetFont();
@@ -334,31 +334,25 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     }
 }
 
-int CHistoryTreeControl::CalcItemHeight(TreeItem* item)
-{
-    bool isRootItem = (item->level()==0);
-    if(isRootItem && m_SessionItemHeight)
-    {
+int CHistoryTreeControl::CalcItemHeight(TreeItem* item) {
+    bool isRootItem = item->level() == 0;
+    if (isRootItem && m_SessionItemHeight) {
         return m_SessionItemHeight;
     }
-    else if(!isRootItem && m_SubItemHeight)
-    {
+
+    if (!isRootItem && m_SubItemHeight) {
         return m_SubItemHeight;
     }
 
     int res = 0;
-    HDC dc =  GetDC();
+    HDC dc = GetDC();
     RECT rc;
     GetItemRect(FindVisibleItemIndex(item), &rc);
-    if( !isRootItem)
-    {
-        DrawSubItem(item,  dc, 0, rc, &res);
-        //m_SubItemHeight = res;
+    if (!isRootItem) {
+        DrawSubItem(item, dc, 0, rc, &res);
     }
-    else
-    {
-        _DrawItem(item,  dc, 0, rc, &res);
-        //m_SessionItemHeight = res;
+    else {
+        _DrawItem(item, dc, 0, rc, &res);
     }
 
     ReleaseDC(dc);

@@ -9,7 +9,7 @@
 #include "atlheaders.h"
 #endif
 
-class AppParams: public Singleton<AppParams>
+class AppRuntimeInfo: public Singleton<AppRuntimeInfo>
 {
     public:
         struct AppVersionInfo {
@@ -35,7 +35,7 @@ class AppParams: public Singleton<AppParams>
                 CurlWithOpenSSL = false;
             }
         };
-		AppParams();
+		AppRuntimeInfo();
         std::string dataDirectory() const;
         void setDataDirectory(const std::string& directory);
         std::string settingsDirectory() const;

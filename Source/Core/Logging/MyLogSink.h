@@ -11,9 +11,10 @@ class MyLogSink: public google::LogSink {
 public:
     MyLogSink(ILogger* logger);
     void send(google::LogSeverity severity, const char* full_filename,
-        const char* base_filename, int line,
-        const struct ::tm* tm_time,
-        const char* message, size_t message_len) override;
+                      const char* base_filename, int line,
+                      const google::LogMessageTime& time, const char* message,
+                      size_t message_len) override;
+
 protected:
     DISALLOW_COPY_AND_ASSIGN(MyLogSink);
     ILogger* logger_;

@@ -2,8 +2,9 @@
 
 #include "Core/Logging.h"
 
-std::function<AbstractImage* ()> AbstractImage::factory_;
-std::string  AbstractImage::factoryName_;
+std::function<AbstractImage*()> AbstractImage::factory_;
+std::string AbstractImage::factoryName_;
+AbstractImage::FactoryRegistrar AbstractImage::factoryRegistrar_;
 
 AbstractImage::AbstractImage(): width_(0), height_(0) {
 }

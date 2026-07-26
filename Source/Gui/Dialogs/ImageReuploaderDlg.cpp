@@ -37,7 +37,7 @@
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/3rdpart/UriParser.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -46,7 +46,7 @@ const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
     UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :
-        m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory()),
+        m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppRuntimeInfo::instance()->tempDirectory()),
         m_InitialBuffer(initialBuffer)
 {
     m_WizardDlg = wizardDlg;

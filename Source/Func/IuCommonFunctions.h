@@ -8,21 +8,30 @@
 #include "atlheaders.h"
 
 namespace IuCommonFunctions {
-    extern int screenshotIndex;
-    CString GetDataFolder();
 
-    BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);
-    void ClearTempFolder(CString folder);
+struct ScreenshotData {
+    int index;
+    time_t time;
+};
 
-    int GetNextImgFile(LPCTSTR folder, CString& szBuffer);
-    CString GenerateFileName(const CString &templateStr, int index, const CPoint& size, const CString& originalName = _T(""));
-    bool IsImage(LPCTSTR szFileName);
-    bool IsImage(const std::string fileName);
+extern int screenshotIndex;
+CString GetDataFolder();
 
-    CString FindDataFolder();
+BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);
+void ClearTempFolder(CString folder);
 
-    const std::unordered_set<std::string>& GetSupportedImageExtensions();
+int GetNextImgFile(LPCTSTR folder, CString& szBuffer);
+CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, time_t t,
+                         const CString& originalName = _T(""));
+CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size);
 
-    CString PrepareFileDialogImageFilter();
+bool IsImage(LPCTSTR szFileName);
+bool IsImage(const std::string& fileName);
+
+CString FindDataFolder();
+
+const std::unordered_set<std::string>& GetSupportedImageExtensions();
+
+CString PrepareFileDialogImageFilter();
 };
 #endif

@@ -32,9 +32,6 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
     }
 }
 
-ServersCheckerModel::~ServersCheckerModel() {
-}
-
 std::string ServersCheckerModel::getItemText(int row, int column) const {
     const ServerData& serverData = *items_[row];
     if (column == 0) {

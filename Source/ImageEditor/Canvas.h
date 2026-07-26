@@ -127,6 +127,7 @@ class Canvas {
         Gdiplus::Bitmap* getBufferBitmap() const;
         void addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item);
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
+        SIZE getExportBitmapSize() const;
     
         float getZoomFactor() const;
         MovableElement* getElementAtPosition(int x, int y, ElementType et = ElementType::etNone);

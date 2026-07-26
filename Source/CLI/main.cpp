@@ -23,6 +23,7 @@
 #include <iostream>
 #include <condition_variable>
 #include <csignal>
+#include <gflags/gflags.h>
 
 #include <boost/format.hpp>
 #include <curl/curl.h>
@@ -41,7 +42,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/CliSettings.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
@@ -357,7 +358,7 @@ int func() {
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
     std::unique_ptr<UploadEngineManager> uploadEngineManager;
     uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
-    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
 
@@ -487,7 +488,7 @@ void PrintServerParamList()
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadEngineManager = std::make_unique<UploadEngineManager>(
         list.get(), uploadErrorHandler, networkClientFactory);
-    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     ParameterList parameterList;
     auto pluginLoader = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager->getUploadEngine(profile));
@@ -584,9 +585,10 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
+    gflags::ParseCommandLineFlags(&argc, &gflagsArgv, true);
     google::InitGoogleLogging(argv[0]);
     ConsoleUtils::instance();
-    AppParams::AppVersionInfo appVersion;
+    AppRuntimeInfo::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = std::stoi(IU_BUILD_NUMBER);
@@ -594,7 +596,7 @@ int main(int argc, char *argv[]){
     appVersion.CommitHash = IU_COMMIT_HASH;
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
+    AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     argparse::ArgumentParser program("uptooda-cli", appVersion.FullVersion);
 
@@ -781,15 +783,13 @@ int main(int argc, char *argv[]){
          .remaining();
 
     list = std::make_unique<CUploadEngineList>();
-    std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
+    auto defaultLogger = std::make_shared<ConsoleLogger>();
 
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setSettings(&Settings);
     serviceLocator->setLogger(defaultLogger);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
-
-    AbstractImage::autoRegisterFactory<void>();
 
     int res  = 0;
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
@@ -819,10 +819,10 @@ int main(int argc, char *argv[]){
 #ifdef _WIN32
     COMInitializer comInitializer(COM_MULTI_THREADED);
 #endif
-    AppParams* params = AppParams::instance();
-    params->setDataDirectory(dataFolder);
-    params->setSettingsDirectory(settingsFolder);
-    params->setIsGui(false);
+    AppRuntimeInfo* appParams = AppRuntimeInfo::instance();
+    appParams->setDataDirectory(dataFolder);
+    appParams->setSettingsDirectory(settingsFolder);
+    appParams->setIsGui(false);
     dotenv::init(dotenv::Preserve, (dataFolder + ".env").c_str());
 #ifdef _WIN32
     TCHAR ShortPath[1024];
@@ -831,9 +831,9 @@ int main(int argc, char *argv[]){
     if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
         lstrcpy(TempPath, ShortPath);
     }
-    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
+    appParams->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
 #else
-    params->setTempDirectory("/var/tmp/");
+    appParams->setTempDirectory("/var/tmp/");
 #endif
     //PrintWelcomeMessage();
     if(! list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
@@ -897,7 +897,7 @@ int main(int argc, char *argv[]){
 
     res = func();
 
-    if ( !Settings.SaveSettings() ) {
+    if (!Settings.SaveSettings()) {
         std::cerr<<"Cannot save settings!"<<std::endl;
     }
 

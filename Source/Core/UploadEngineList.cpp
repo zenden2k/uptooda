@@ -26,7 +26,7 @@
 
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
-#include "AppParams.h"
+#include "AppRuntimeInfo.h"
 #include "Core/BasicConstants.h"
 
 namespace {
@@ -64,7 +64,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     root.GetChilds("Server2", childs);
     root.GetChilds("Server3", childs);
 
-    auto versionInfo = AppParams::instance()->GetAppVersion();
+    auto versionInfo = AppRuntimeInfo::instance()->GetAppVersion();
     int majorVersion = versionInfo->Major;
     int minorVersion = versionInfo->Minor * 100 + versionInfo->Release;
     int build = versionInfo->Build;

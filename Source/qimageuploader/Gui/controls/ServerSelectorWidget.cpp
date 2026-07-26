@@ -9,7 +9,7 @@
 #include "Core/Upload/ServerProfile.h"
 #include "Core/ServiceLocator.h"
 #include "Core/CommonDefs.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/LoginDialog.h"
 #include "Core/AbstractServerIconCache.h"
@@ -88,7 +88,7 @@ void ServerSelectorWidget::updateServerList() {
     QString line;
     line.fill('-', 40);
 
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     QString dataDir = U2Q(params->dataDirectory());
 
     for (int mask = 1; mask <= 4; mask *= 2) {

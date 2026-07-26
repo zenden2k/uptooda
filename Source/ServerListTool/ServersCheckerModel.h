@@ -185,7 +185,6 @@ public:
 class ServersCheckerModel {
 public:
     ServersCheckerModel(CMyEngineList* engineList);
-    ~ServersCheckerModel();
     std::string getItemText(int row, int column) const;
     uint32_t getItemColor(size_t row) const;
     size_t getCount() const;

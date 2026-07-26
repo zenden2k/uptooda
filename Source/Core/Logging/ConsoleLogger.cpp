@@ -6,7 +6,6 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/ConsoleUtils.h"
 
-
 void ConsoleLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string& FileName, bool fromSink) {
     if (fromSink) {
         return;

@@ -94,7 +94,6 @@ void MovableElement::renderGrips(Painter* gr)
             gr->FillRectangle( &brush, x-halfSizeX, y-halfSizeY, rectSizeX, rectSizeY );
             gr->DrawRectangle( &pen2, x-halfSizeX-1, y-halfSizeY-1, rectSizeX+1, rectSizeY+1 );
         }
-
     }
 }
 

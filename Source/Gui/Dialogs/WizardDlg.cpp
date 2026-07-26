@@ -61,7 +61,7 @@
 #include "Func/MyUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "ScreenCapture/MonitorEnumerator.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -102,13 +102,13 @@ struct TaskDispatcherMessageStruct {
 
 CString MakeTempFileName(const CString& FileName)
 {
-    CString FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
+    CString FileNameBuf = AppRuntimeInfo::instance()->tempDirectoryW() + FileName;
 
     if (WinUtils::FileExists(FileNameBuf))
     {
         CString OnlyName = WinUtils::GetOnlyFileName(FileName);
         CString Ext = WinUtils::GetFileExt(FileName);
-        FileNameBuf = AppParams::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
+        FileNameBuf = AppRuntimeInfo::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
     }
     return FileNameBuf;
 }
@@ -193,7 +193,7 @@ std::optional<CString> SaveClipboardBinaryData(UINT format, const CString& exten
                 return std::nullopt;
             }
 
-            CString tempFilePath = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + L"\\clipboard." + extension);
+            CString tempFilePath = WinUtils::GetUniqFileName(AppRuntimeInfo::instance()->tempDirectoryW() + L"\\clipboard." + extension);
 
             HANDLE hFile = CreateFile(tempFilePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hFile == INVALID_HANDLE_VALUE) {
@@ -420,7 +420,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
 
-        const auto aumi = WinToast::configureAUMI(L"SergeySvistunov", L"Uptooda", {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        const auto aumi = WinToast::configureAUMI(L"SergeySvistunov", L"Uptooda", {}, IuCoreUtils::Utf8ToWstring(AppRuntimeInfo::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);
 
         if (!toast->initialize()) {
@@ -2382,20 +2382,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
     using namespace ImageEditor;
     std::optional<ImageEditorWindow::DialogResult> dialogResult;
-    CString suggestingFileName;
+    IuCommonFunctions::ScreenshotData screenshotData{};
     if (result) {
-        if (!Settings.ScreenshotSettings.Folder.IsEmpty()) {
-            suggestingFileName = Settings.ScreenshotSettings.Folder;
-            TCHAR lastChar = suggestingFileName[suggestingFileName.GetLength() - 1];
-            if (lastChar != _T('\\') && lastChar != _T('/')) {
-                suggestingFileName += _T("\\");
-            }
-        }
-
-        suggestingFileName += IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-        if (Settings.ScreenshotSettings.Folder.IsEmpty()) {
-            suggestingFileName = WinUtils::DoExtractFileName(suggestingFileName);
-        }
+        screenshotData.index = IuCommonFunctions::screenshotIndex;
+        screenshotData.time = time(nullptr);
     }
 
     std::shared_ptr<Gdiplus::Bitmap> bitmapToCopy;
@@ -2404,13 +2394,14 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             showNotificationAfterScreenshot(bitmapToCopy, outFileName,  !Settings.ScreenshotSettings.Folder.IsEmpty());
         }
     });
+
     if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
     {
         ImageEditorConfigurationProvider configProvider;
         ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider, uploadEngineManager_);
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(fromTray);
-        imageEditor.setSuggestedFileName(suggestingFileName);
+        imageEditor.setScreenshotData(screenshotData);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
@@ -2461,6 +2452,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             }
 
             try {
+                CString suggestingFileName = IuCommonFunctions::MakeScreenshotFileName(screenshotData,
+                    {static_cast<LONG>(result->GetWidth()), static_cast<LONG>(result->GetHeight())}
+                );
+
                 CString folder = WinUtils::GetFilePath(suggestingFileName);
                 ImageUtils::MySaveImage(result.get(),WinUtils::DoExtractFileName(suggestingFileName),outFileName,savingFormat,
                     Settings.ScreenshotSettings.Quality,
@@ -2599,7 +2594,7 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
     CString screenshotFolder = Settings.ScreenshotSettings.Folder;
 
     if (screenshotFolder.IsEmpty()) {
-        screenshotFolder = AppParams::instance()->tempDirectoryW();
+        screenshotFolder = AppRuntimeInfo::instance()->tempDirectoryW();
     }
 
     if (!screenshotFolder.IsEmpty()) {

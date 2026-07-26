@@ -29,7 +29,7 @@
 #include "Core/i18n/Translator.h"
 #include "WinUtils.h"
 
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/ServiceLocator.h"
 
 namespace MediaInfoHelper {

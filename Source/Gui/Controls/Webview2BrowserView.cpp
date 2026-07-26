@@ -3,13 +3,13 @@
 #include <ComDef.h>
 
 
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Utils/CoreUtils.h"
 
 bool Webview2BrowserView::createBrowserView(HWND parentWnd, const RECT& bounds) {
     using namespace Microsoft::WRL;
 
-    HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, U2W(AppParams::instance()->settingsDirectory()), nullptr,
+    HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, U2W(AppRuntimeInfo::instance()->settingsDirectory()), nullptr,
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [parentWnd, this](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
 

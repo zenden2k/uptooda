@@ -52,7 +52,7 @@ class CUpdateInfo
         bool CheckUpdates();
         CString getHash() const;
         bool CanUpdate(const CUpdateInfo& newInfo) const;
-        bool operator<(const CUpdateInfo& p);
+        bool operator<(const CUpdateInfo& p) const;
 
         bool isCoreUpdate() const;
         bool isManualUpdate() const;

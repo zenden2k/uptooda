@@ -1,4 +1,4 @@
-#include "AppParams.h"
+#include "AppRuntimeInfo.h"
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
@@ -10,11 +10,11 @@ constexpr char kPathSeparator =
     '/';
 #endif
 
-AppParams::AppParams() {
+AppRuntimeInfo::AppRuntimeInfo() {
     isGui_ = true;
 }
 
-void AppParams::setVersionInfo(const AppVersionInfo& info) {
+void AppRuntimeInfo::setVersionInfo(const AppVersionInfo& info) {
     versionInfo_ = info;
     std::vector<std::string> tokens;
     IuStringUtils::Split(versionInfo_.FullVersionClean, ".", tokens, 3);
@@ -29,37 +29,37 @@ void AppParams::setVersionInfo(const AppVersionInfo& info) {
 }
 
 
-std::string AppParams::dataDirectory() const
+std::string AppRuntimeInfo::dataDirectory() const
 {
     return dataDirectory_;
 }
 
-void AppParams::setDataDirectory(const std::string& directory)
+void AppRuntimeInfo::setDataDirectory(const std::string& directory)
 {
     dataDirectory_ = directory;
 }
 
-std::string AppParams::settingsDirectory() const
+std::string AppRuntimeInfo::settingsDirectory() const
 {    
     return settingsDirectory_;
 }
 
-void AppParams::setSettingsDirectory(const std::string& directory)
+void AppRuntimeInfo::setSettingsDirectory(const std::string& directory)
 {
     settingsDirectory_ = directory;
 }
 
-std::string AppParams::languageFile() const
+std::string AppRuntimeInfo::languageFile() const
 {
     return languageFile_;
 }
 
-void AppParams::setLanguageFile(const std::string& languageFile)
+void AppRuntimeInfo::setLanguageFile(const std::string& languageFile)
 {
     languageFile_ = languageFile;
 }
 
-void AppParams::setTempDirectory(const std::string& directory) {
+void AppRuntimeInfo::setTempDirectory(const std::string& directory) {
     tempDirectory_ = directory;
     if (!tempDirectory_.empty()) {
         size_t pos = tempDirectory_.length() - 1;
@@ -69,24 +69,24 @@ void AppParams::setTempDirectory(const std::string& directory) {
     }
 }
 
-std::string AppParams::tempDirectory() const {
+std::string AppRuntimeInfo::tempDirectory() const {
     return tempDirectory_;
 }
 
-AppParams::AppVersionInfo const * AppParams::GetAppVersion() const {
+AppRuntimeInfo::AppVersionInfo const * AppRuntimeInfo::GetAppVersion() const {
     return &versionInfo_;
 }
 
-void AppParams::setIsGui(bool isGui) {
+void AppRuntimeInfo::setIsGui(bool isGui) {
     isGui_ = isGui;
 }
 
-bool AppParams::isGui() const {
+bool AppRuntimeInfo::isGui() const {
     return isGui_;
 }
 
 #ifdef _WIN32
-CString AppParams::tempDirectoryW() const {
+CString AppRuntimeInfo::tempDirectoryW() const {
     return IuCoreUtils::Utf8ToWstring(tempDirectory_).c_str();
 }
 #endif

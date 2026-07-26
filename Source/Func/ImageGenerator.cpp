@@ -1,4 +1,5 @@
 #include "ImageGenerator.h"
+
 #ifdef IU_ENABLE_MEDIAINFO
 #include "MediaInfoHelper.h"
 #endif

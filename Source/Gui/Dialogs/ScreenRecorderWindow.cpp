@@ -206,7 +206,7 @@ std::string ScreenRecorderWindow::prepareFileName(int width, int height) {
 
     fs::path relPath = W2U(IuCommonFunctions::GenerateFileName(
         U2WC(settings->ScreenRecordingSettings.FileNameTemplate),
-        fileNameCounter_++, CPoint(width, height))
+        fileNameCounter_++, CPoint(width, height), time(nullptr))
     );
 
     fs::path fullPath = basePath / relPath;

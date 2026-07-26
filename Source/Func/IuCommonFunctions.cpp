@@ -6,16 +6,15 @@
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Utils/StringUtils.h"
 
 namespace IuCommonFunctions {
-
 int screenshotIndex = 1;
 
-CString GetDataFolder()
-{
-    CString result = U2W(AppParams::instance()->dataDirectory());
+CString GetDataFolder() {
+    CString result = U2W(AppRuntimeInfo::instance()->dataDirectory());
 
     if (result.Right(1) != "\\" && result.Right(1) != "/") {
         result += "\\";
@@ -23,12 +22,11 @@ CString GetDataFolder()
     return result;
 }
 
-BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
-{
+BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder) {
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
     TCHAR TempPath[1024];
-    if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
+    if (!GetLongPathName(ShortPath, TempPath, ARRAY_SIZE(TempPath))) {
         lstrcpy(TempPath, ShortPath);
     }
     DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
@@ -37,18 +35,18 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
     if (!CreateDirectory(IUCommonTempFolder, 0)) {
         DWORD errorCode = GetLastError();
         if (errorCode != ERROR_ALREADY_EXISTS) {
-            LOG(ERROR) << "Unable to create temp folder: " << std::endl 
+            LOG(ERROR) << "Unable to create temp folder: " << std::endl
                 << IUCommonTempFolder << std::endl << WinUtils::ErrorCodeToString(errorCode);
             return false;
         }
     }
     IUTempFolder.Format(_T("%s\\iu_temp_%x"), static_cast<LPCTSTR>(IUCommonTempFolder), pid);
 
-    if (!CreateDirectory(IUTempFolder, 0) ) {
+    if (!CreateDirectory(IUTempFolder, 0)) {
         DWORD errorCode = GetLastError();
         if (errorCode != ERROR_ALREADY_EXISTS) {
-            LOG(ERROR) << "Unable to create temp folder: " << std::endl 
-                << IUTempFolder << std::endl  << WinUtils::ErrorCodeToString(errorCode);
+            LOG(ERROR) << "Unable to create temp folder: " << std::endl
+                << IUTempFolder << std::endl << WinUtils::ErrorCodeToString(errorCode);
             return false;
         }
     }
@@ -60,18 +58,14 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
 WIN32_FIND_DATA wfd;
 HANDLE findfile = 0;
 
-int GetNextImgFile(LPCTSTR folder, CString& szBuffer)
-{
+int GetNextImgFile(LPCTSTR folder, CString& szBuffer) {
     CString buffer2 = folder + CString(_T("*.*"));
 
-    if (!findfile)
-    {
+    if (!findfile) {
         findfile = FindFirstFile(buffer2, &wfd);
         if (!findfile)
             goto error;
-    }
-    else
-    {
+    } else {
         if (!FindNextFile(findfile, &wfd))
             goto error;
     }
@@ -86,10 +80,9 @@ error:
     if (findfile)
         FindClose(findfile);
     return FALSE;
-
 }
-void ClearTempFolder(CString folder)
-{
+
+void ClearTempFolder(CString folder) {
     if (folder.IsEmpty()) {
         return;
     }
@@ -101,8 +94,7 @@ void ClearTempFolder(CString folder)
     CString buffer2;
 
     findfile = 0;
-    while (GetNextImgFile(folder, buffer))
-    {
+    while (GetNextImgFile(folder, buffer)) {
 #ifdef DEBUG
         if (buffer == _T("log.txt")) {
             continue;
@@ -114,17 +106,15 @@ void ClearTempFolder(CString folder)
         buffer2 = CString(folder) + buffer;
         DeleteFile(buffer2);
     }
-    if (!RemoveDirectory(folder))
-    {
+    if (!RemoveDirectory(folder)) {
         WinUtils::DeleteDir2(folder);
     }
 }
 
-CString FindDataFolder()
-{
+CString FindDataFolder() {
     CString DataFolder;
     if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
-        DataFolder     = WinUtils::GetAppFolder() + _T("Data\\");
+        DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
         return DataFolder;
     }
 
@@ -133,12 +123,10 @@ CString FindDataFolder()
         CRegistry Reg;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
-        if (Reg.SetKey(_T("Software\\Uptooda"), false))
-        {
+        if (Reg.SetKey(_T("Software\\Uptooda"), false)) {
             CString dir = Reg.ReadString(_T("DataPath"));
 
-            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
-            {
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
                 return DataFolder;
             }
@@ -152,14 +140,12 @@ CString FindDataFolder()
 #ifdef _WIN64
             _T("Software\\Wow6432Node\\Uptooda");
 #else
-            _T("Software\\Uptooda");
+        _T("Software\\Uptooda");
 #endif
-            
-        if (Reg.SetKey(keyStr, false))
-        {
+
+        if (Reg.SetKey(keyStr, false)) {
             CString dir = Reg.ReadString(_T("DataPath"));
-            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir))
-            {
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
                 return DataFolder;
             }
@@ -167,22 +153,19 @@ CString FindDataFolder()
     }
 
     if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + L"Settings.xml")) {
-        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Aptooda\\");
-    }
-    else 
+        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Uptooda\\");
+    } else
 #endif
 
     {
-        DataFolder = WinUtils::GetApplicationDataPath() + _T("Aptooda\\");
+        DataFolder = WinUtils::GetApplicationDataPath() + _T("Uptooda\\");
     }
     return DataFolder;
 }
 
-CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
-{
-	static std::mt19937 mt{std::random_device{}()};
+CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, time_t t, const CString& originalName) {
+    static std::mt19937 mt{std::random_device{}()};
     CString result = templateStr;
-    time_t t = time(nullptr);
     tm* timeinfo = localtime(&t);
     CString indexStr;
     CString day, month, year;
@@ -190,7 +173,8 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
     indexStr.Format(_T("%03d"), index);
     const std::thread::id threadId = std::this_thread::get_id();
     std::uniform_int_distribution<int> dist(0, 100);
-    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::ThreadIdToString(threadId) + std::to_string(GetTickCount() + dist(mt)))).c_str();
+    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(
+        IuCoreUtils::ThreadIdToString(threadId) + std::to_string(GetTickCount() + dist(mt)))).c_str();
     result.Replace(_T("%md5"), md5);
     result.Replace(_T("%width%"), WinUtils::IntToStr(size.x));
     result.Replace(_T("%height%"), WinUtils::IntToStr(size.y));
@@ -210,10 +194,33 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
     return result;
 }
 
-const std::unordered_set<std::string> supportedImageExtensions = { "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf", "wmf"};
+CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size) {
+    const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const ScreenshotSettingsStruct& screenshotSettings = settings->ScreenshotSettings;
+    CString suggestingFileName;
+    if (!screenshotSettings.Folder.IsEmpty()) {
+        suggestingFileName = screenshotSettings.Folder;
+        TCHAR lastChar = suggestingFileName[suggestingFileName.GetLength() - 1];
+        if (lastChar != _T('\\') && lastChar != _T('/')) {
+            suggestingFileName += _T("\\");
+        }
+    }
 
-bool IsImage(LPCTSTR szFileName)
-{
+    suggestingFileName += GenerateFileName(screenshotSettings.FilenameTemplate, screenshotData.index, size, screenshotData.time);
+
+    if (screenshotSettings.Folder.IsEmpty()) {
+        suggestingFileName = WinUtils::DoExtractFileName(suggestingFileName);
+    }
+
+    return suggestingFileName;
+}
+
+const std::unordered_set<std::string> supportedImageExtensions = {
+    "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
+    "wmf"
+};
+
+bool IsImage(LPCTSTR szFileName) {
     if (!szFileName) {
         return false;
     }
@@ -226,7 +233,7 @@ bool IsImage(LPCTSTR szFileName)
     return supportedImageExtensions.find(W2U(find)) != supportedImageExtensions.end();
 }
 
-bool IsImage(const std::string fileName) {
+bool IsImage(const std::string& fileName) {
     if (fileName.empty()) {
         return false;
     }
@@ -251,5 +258,4 @@ CString PrepareFileDialogImageFilter() {
     }
     return result;
 }
-
 }

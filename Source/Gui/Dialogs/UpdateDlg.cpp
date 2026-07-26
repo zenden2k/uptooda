@@ -25,10 +25,10 @@
 #include "Func/CmdLine.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/WinUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Network/NetworkClientFactory.h"
 
-CUpdateDlg::CUpdateDlg() :m_UpdateManager(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectoryW())
+CUpdateDlg::CUpdateDlg() :m_UpdateManager(std::make_shared<NetworkClientFactory>(), AppRuntimeInfo::instance()->tempDirectoryW())
 {
     m_UpdateCallback = nullptr;
     m_Checked = false;

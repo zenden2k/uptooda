@@ -34,7 +34,7 @@
 #include "Core/Utils/SystemUtils.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/i18n/Translator.h"
 
 
@@ -152,8 +152,7 @@ CString CUpdateInfo::getHash() const
     return m_Hash;
 }
 
-bool CUpdateInfo::operator< (const CUpdateInfo& p)
-{
+bool CUpdateInfo::operator< (const CUpdateInfo& p) const {
     return m_TimeStamp < p.m_TimeStamp;
 }
 
@@ -276,7 +275,7 @@ bool CUpdateManager::internal_load_update(CString name)
     CString url = localPackage.updateUrl();
     Json::Value request;
 
-    const AppParams::AppVersionInfo* ver = AppParams::instance()->GetAppVersion();
+    const AppRuntimeInfo::AppVersionInfo* ver = AppRuntimeInfo::instance()->GetAppVersion();
     Json::Value version;
     version["FullString"] = ver->FullVersion;
     version["Minor"] = ver->Minor;
@@ -443,23 +442,26 @@ CUpdatePackage::CUpdatePackage()
     m_TimeStamp = 0;
 }
 
-bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
-{
-    if(!IuCoreUtils::FileExists(W2U(filename))) return false;
-    if(!m_xml.LoadFromFile(W2U(filename))) {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), CString(_T("Failed to load update file \'")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
+bool CUpdatePackage::LoadUpdateFromFile(const CString& filename) {
+    if (!IuCoreUtils::FileExists(W2U(filename))) {
+        return false;
+    }
+
+    if (!m_xml.LoadFromFile(W2U(filename))) {
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"),
+                                                    CString(_T("Failed to load update file \'")) +
+                                                    WinUtils::DoExtractFileName(filename));
         return false;
     }
 
     m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(W2U(filename))).c_str();
     m_PackageFolder += "\\";
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
-    if(root.IsNull()) return false;
+    if (root.IsNull()) return false;
 
-    //CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
-    m_TimeStamp =  root.AttributeInt("TimeStamp");
+    m_TimeStamp = root.AttributeInt("TimeStamp");
 
-    int core=root.AttributeInt("CoreUpdate");
+    int core = root.AttributeInt("CoreUpdate");
 
     m_CoreUpdate = (core != 0);
 
@@ -467,17 +469,17 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
     std::vector<SimpleXmlNode> entries;
     entry.GetChilds("Entry", entries);
 
-    for(size_t i=0; i< entries.size(); i++){
+    for (size_t i = 0; i < entries.size(); i++) {
         CUpdateItem ui;
         ui.name = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Name")).c_str();
         ui.hash = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Hash")).c_str();
         ui.saveTo = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("SaveTo")).c_str();
         ui.action = IuCoreUtils::Utf8ToWstring(entries[i].Attribute("Action")).c_str();
         ui.flags = entries[i].Attribute("Flags");
-        if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
+        if (ui.name.IsEmpty() || (ui.hash.IsEmpty() && ui.action != _T("delete")) || ui.saveTo.IsEmpty())
             continue;
         m_entries.push_back(ui);
-        }
+    }
     return true;
 }
 
@@ -501,9 +503,6 @@ bool CUpdatePackage::doUpdate()
         copyTo = ue.saveTo;
         if (ue.action != _T("delete") && (ue.hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))).c_str() || ue.hash.IsEmpty()))
         {
-            /*std::cout << std::endl << IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom)<<std::endl;
-            std::cout <<  IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)copyFrom))<<std::endl;
-            std::cout << IuCoreUtils::WstringToUtf8((LPCTSTR)ue.hash) << std::endl;*/
             setStatusText( CString(TR("MD5 check failed for file "))+IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
             return false;
         }
@@ -606,7 +605,7 @@ CUpdateManager::CUpdateManager(std::shared_ptr<INetworkClientFactory> networkCli
 CString CUpdateManager::generateReport(bool manualUpdates)
 {
     CString text;
-    std::vector<CUpdateInfo>& list = manualUpdates ? m_manualUpdatesList : m_updateList;
+    const std::vector<CUpdateInfo>& list = manualUpdates ? m_manualUpdatesList : m_updateList;
 
     for(const auto& item: list) {
         time_t t = item.timeStamp();
@@ -651,7 +650,7 @@ void CUpdateManager::updateStatus(int packageIndex, const CString& status)
 
 bool CUpdateManager::AreUpdatesAvailable() const
 {
-    return (m_updateList.size() != 0);
+    return !m_updateList.empty();
 }
 
 int CUpdateManager::progressCallback(INetworkClient* clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow) {
