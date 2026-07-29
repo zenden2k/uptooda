@@ -299,7 +299,9 @@ void ServerListSettingsStruct::removeServerFromBlacklist(const std::string& serv
 void ServerListSettingsStruct::bind(SettingsNode& node) {
     node.n_bind(FavoriteServers);
     node.n_bind(BlacklistedServers);
-    node.n_bind(ViewMode);
     node.n_bind(ShowFavoritesOnly);
     node.n_bind(HideBlackListed);
+#ifndef IU_QT
+    node.n_bind(ViewMode);
+#endif
 }
