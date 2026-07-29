@@ -20,9 +20,10 @@ struct ServerFilter {
     std::optional<int64_t> fileSize;
     std::optional<int> typeMask = CUploadEngineListBase::ALL_SERVERS;
     bool showFavoritesOnly = false;
+    bool hideBlacklisted = true;
 
     bool empty() const {
-        return query.empty() && !fileSize.has_value() && !typeMask.has_value() && !showFavoritesOnly;
+        return query.empty() && !fileSize.has_value() && !typeMask.has_value() && !showFavoritesOnly && !hideBlacklisted;
     }
 };
 

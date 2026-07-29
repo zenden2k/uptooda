@@ -26,10 +26,10 @@ bool LocalFileCache::parseHistory() {
     std::vector<std::string> files;
     auto settings = ServiceLocator::instance()->basicSettings();
     std::string historyFolder = settings->SettingsFolder + "/History/";
-    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
+    boost::filesystem::directory_iterator endItr; // Default ctor yields past-the-end
 
     pcrepp::Pcre regexp("^history.+\\.xml$");
-    for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
+    for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != endItr; ++i) {
         // Skip if not a file
         if (!boost::filesystem::is_regular_file(i->status())) {
             continue;
@@ -95,7 +95,7 @@ std::string LocalFileCache::get(const std::string& url){
             cache_.erase(foundItem);
         }
     }
-    return std::string();
+    return {};
 }
 
 bool LocalFileCache::addThumb(const std::string& url, const std::string& localFileName) {
@@ -116,5 +116,5 @@ std::string LocalFileCache::getThumb(const std::string& url) {
             thumbCache_.erase(foundItem);
         }
     }
-    return std::string();
+    return {};
 }

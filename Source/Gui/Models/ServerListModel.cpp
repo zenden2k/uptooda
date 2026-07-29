@@ -85,6 +85,11 @@ std::string ServerListModel::getItemText(int row, int column) const {
 uint32_t ServerListModel::getItemColor(int row) const {
     auto serverData = getDataByIndex(row);
     std::string name = serverData->ued->Name;
+
+    if (favoriteServers_->isServerBlacklisted(name)) {
+        return RGB(193, 18, 31); // Red
+    }
+
     if (favoriteServers_->isServerFavorite(name)) {
         return RGB(56,176, 0); // Green
     }
@@ -302,6 +307,10 @@ bool ServerData::acceptFilter(const ServerFilter& filter, IFavoriteServers* favo
     }
 
     if ((ued->TypeMask & filter.typeMask.value()) == 0) {
+        return false;
+    }
+
+    if (filter.hideBlacklisted && favoriteServers->isServerBlacklisted(ued->Name)) {
         return false;
     }
 

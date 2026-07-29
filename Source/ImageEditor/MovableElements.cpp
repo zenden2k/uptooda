@@ -19,6 +19,7 @@
 #include "MovableElements.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "3rdpart/GdiplusH.h"
 #include "Region.h"
@@ -168,15 +169,11 @@ TextElement::TextElement(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int
     startPoint_.y = startY;
     endPoint_.x   = endX;
     endPoint_.y   = endY;
-    inputBox_ = inputBox;
+    inputBox_ = std::move(inputBox);
     isEditing_ = false;
     firstEdit_ = true;
     fillBackground_ = filled;
     memset(&font_, 0, sizeof(font_));
-}
-
-TextElement::~TextElement()
-{
 }
 
 void TextElement::render(Painter* gr) {
@@ -218,7 +215,7 @@ void TextElement::resize(int width, int height)
 
 void TextElement::setInputBox(std::shared_ptr<InputBox> inputBox)
 {
-    inputBox_ = inputBox;
+    inputBox_ = std::move(inputBox);
     setTextColor();
     using namespace std::placeholders;
     inputBox_->onTextChanged.connect(std::bind(&TextElement::onTextChanged, this, _1));
@@ -887,7 +884,7 @@ void Ellipse::render(Painter* gr)
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
-bool Ellipse::containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
+bool Ellipse::containsPoint(Gdiplus::Rect ellipse, const Gdiplus::Point& location) {
     using namespace Gdiplus;
     Point center(
         ellipse.GetLeft() + (ellipse.Width / 2),

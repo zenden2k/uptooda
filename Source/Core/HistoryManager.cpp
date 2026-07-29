@@ -7,7 +7,7 @@ CHistorySession::CHistorySession(const std::string& filename, const std::string&
     deleteItems_ = true;
     m_historyXmlFileName = filename;
     m_sessId = sessionId;
-    time(&m_timeStamp);
+    m_timeStamp = 0;
     dbEntryCreated_ = false;
 }
 
@@ -31,9 +31,6 @@ bool CHistorySession::dbEntryCreated() const {
 
 void CHistorySession::setDbEntryCreated(bool created) {
     dbEntryCreated_ = created;
-}
-
-CHistorySession::~CHistorySession() {
 }
 
 void CHistorySession::sortByOrderIndex() {

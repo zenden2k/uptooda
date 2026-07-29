@@ -118,7 +118,7 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
             myFromString(text, *value_ );
         }
 
-        virtual ~SettingsNodeVariant() = default;
+        ~SettingsNodeVariant() override = default;
 };
 
 class SettingsNode
@@ -128,15 +128,14 @@ class SettingsNode
         virtual ~SettingsNode();
         template<class T> void bind(T& var)
         {
-            delete binded_value_;
-            binded_value_ = new SettingsNodeVariant<T>(&var);
+            boundValue_ = std::make_unique<SettingsNodeVariant<T>>(&var);
         }
         SettingsNode& operator[](const std::string&);
         void saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
         void loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
     protected:
-        SettingsNodeBase * binded_value_;
-        std::map<std::string, SettingsNode*> childs_;
+        std::unique_ptr<SettingsNodeBase> boundValue_;
+        std::map<std::string, std::unique_ptr<SettingsNode>> childs_;
         DISALLOW_COPY_AND_ASSIGN(SettingsNode);
 };
 
@@ -146,8 +145,8 @@ class SettingsManager
         SettingsManager();
         SettingsNode& operator[](const std::string&);
         SettingsNode& root();
-        void saveToXmlNode(SimpleXmlNode parentNode) const;
-        void loadFromXmlNode(SimpleXmlNode parentNode);
+        void saveToXmlNode(const SimpleXmlNode& parentNode) const;
+        void loadFromXmlNode(const SimpleXmlNode& parentNode);
     protected:
         SettingsNode root_;
         DISALLOW_COPY_AND_ASSIGN(SettingsManager);

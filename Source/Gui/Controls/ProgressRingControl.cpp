@@ -97,7 +97,7 @@ LRESULT CProgressRingControl::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 }
 
 BOOL CProgressRingControl::SubclassWindow(HWND hWnd) {
-    if (!CWindowImpl<CProgressRingControl>::SubclassWindow(hWnd)) {
+    if (!CWindowImpl::SubclassWindow(hWnd)) {
         return FALSE;
     }
     initControl();

@@ -54,13 +54,14 @@ Name: "hr"; MessagesFile: "Languages\Croatian.isl"
 Name: "ro"; MessagesFile: "Languages\Romanian.isl"
 Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
-Name: "sv"; MessagesFile: "Languages\Swedish.isl"
+Name: "sv"; MessagesFile: "compiler:Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
-Name: "ko"; MessagesFile: "Languages\Korean.isl"
-Name: "hu"; MessagesFile: "Languages\Hungarian.isl"
+Name: "ko"; MessagesFile: "compiler:Languages\Korean.isl"
+Name: "hu"; MessagesFile: "compiler:Languages\Hungarian.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
-Name: "ar"; MessagesFile: "Languages\Arabic.isl"
+Name: "ar"; MessagesFile: "compiler:Languages\Arabic.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+Name: "bg"; MessagesFile: "compiler:Languages\Bulgarian.isl"
 
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (for better video formats support)

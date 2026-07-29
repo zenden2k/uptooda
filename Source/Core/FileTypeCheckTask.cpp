@@ -1,6 +1,7 @@
 #include "FileTypeCheckTask.h"
 
 #include <boost/format.hpp>
+#include <utility>
 
 #include "Core/i18n/Translator.h"
 #include "Core/Upload/UploadEngine.h"
@@ -10,10 +11,10 @@
 
 constexpr auto MAX_BAD_ITEMS = std::numeric_limits<size_t>::max();
 
-FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer, ImageUploadParams defaultImageUploadParams) :
+FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, ServerProfileGroup sessionImageServer, ServerProfileGroup sessionFileServer, ImageUploadParams defaultImageUploadParams) :
     fileList_(fileList)
-    , sessionImageServer_(sessionImageServer)
-    , sessionFileServer_(sessionFileServer)
+    , sessionImageServer_(std::move(sessionImageServer))
+    , sessionFileServer_(std::move(sessionFileServer))
     , defaultImageUploadParams_(std::move(defaultImageUploadParams)) {
 
 }

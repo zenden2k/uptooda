@@ -80,7 +80,11 @@ void CFileDownloader::memberThreadFunc()
 
     // Providing callback function to stop downloading
     using namespace std::placeholders;
-    nm->setProgressCallback(std::bind(&CFileDownloader::ProgressFunc, this, _1, _2, _3, _4, _5));
+    nm->setProgressCallback([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4, auto && PH5) {
+        return ProgressFunc(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4), std::forward<decltype(PH5)>(PH5)
+            );
+    });
     {
         std::lock_guard<std::mutex> lk(mutex_);
         if (onConfigureNetworkClient_) {

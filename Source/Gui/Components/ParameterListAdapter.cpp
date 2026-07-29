@@ -175,7 +175,6 @@ void ParameterListAdapter::browseFileDialog(HPROPERTY prop) {
             return;
         }
         vart.bstrVal = dlg->getFile().AllocSysString();
-        
     } else {
         CString initialDir = U2W(fileNameParameter->getValueAsString());
         CNewStyleFolderDialog dlg(control_->m_hWnd, initialDir, TR("Choose folder"), true);

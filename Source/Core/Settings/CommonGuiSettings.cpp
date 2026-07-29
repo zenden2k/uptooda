@@ -181,21 +181,6 @@ void CommonGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
     }
 }
 
-bool CommonGuiSettings::isServerFavorite(const std::string& server) {
-    return FavoriteServers.find(server) != FavoriteServers.end();
-}
-
-void CommonGuiSettings::addServerToFavorites(const std::string& serverId) {
-    FavoriteServers.insert(serverId);
-}
-
-void CommonGuiSettings::removeServerFromFavorites(const std::string& serverId) {
-    auto it = FavoriteServers.find(serverId);
-    if (it != FavoriteServers.end()) {
-        FavoriteServers.erase(it);
-    }
-}
-
 void CommonGuiSettings::BindToManager() {
     BasicSettings::BindToManager();
     SettingsNode& upload = mgr_["Uploading"];
@@ -203,7 +188,7 @@ void CommonGuiSettings::BindToManager() {
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);
     DefaultImageUploadParams.bind(upload["DefaultImageUploadParams"]);
-    upload.n_bind(FavoriteServers);
+    ServerListSettings.bind(upload["ServerList"]);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);
@@ -277,4 +262,44 @@ ThumbCreatingParams ImageUploadParams::getThumb() const {
 
 void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp) {
     Thumb = tcp;
+}
+
+bool ServerListSettingsStruct::isServerFavorite(const std::string& server) {
+    return FavoriteServers.find(server) != FavoriteServers.end();
+}
+
+bool ServerListSettingsStruct::isServerBlacklisted(const std::string& server) {
+    return BlacklistedServers.find(server) != BlacklistedServers.end();
+}
+
+void ServerListSettingsStruct::addServerToFavorites(const std::string& serverId) {
+    removeServerFromBlacklist(serverId);
+    FavoriteServers.insert(serverId);
+}
+
+void ServerListSettingsStruct::removeServerFromFavorites(const std::string& serverId) {
+    auto it = FavoriteServers.find(serverId);
+    if (it != FavoriteServers.end()) {
+        FavoriteServers.erase(it);
+    }
+}
+
+void ServerListSettingsStruct::addServerToBlacklist(const std::string& serverId) {
+    removeServerFromFavorites(serverId);
+    BlacklistedServers.insert(serverId);
+}
+
+void ServerListSettingsStruct::removeServerFromBlacklist(const std::string& serverId) {
+    auto it = BlacklistedServers.find(serverId);
+    if (it != BlacklistedServers.end()) {
+        BlacklistedServers.erase(it);
+    }
+}
+
+void ServerListSettingsStruct::bind(SettingsNode& node) {
+    node.n_bind(FavoriteServers);
+    node.n_bind(BlacklistedServers);
+    node.n_bind(ViewMode);
+    node.n_bind(ShowFavoritesOnly);
+    node.n_bind(HideBlackListed);
 }

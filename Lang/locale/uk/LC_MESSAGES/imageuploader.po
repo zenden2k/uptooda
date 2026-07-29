@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 17:53+0300\n"
+"POT-Creation-Date: 2026-07-29 14:08+0300\n"
 "PO-Revision-Date: 2026-07-03 16:04+0300\n"
 "Last-Translator: Максим Горпиніч <gorpinicmaksim0@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -45,7 +45,7 @@ msgstr " (музика, дуже висока)"
 msgid " (speech)"
 msgstr " (промова)"
 
-#: ../Source/Core/FileTypeCheckTask.cpp:79
+#: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
 "\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' "
 "extension)\n"
@@ -53,7 +53,7 @@ msgstr ""
 "\"%1%\": сервер %2% не підтримує цей тип файлу (%3% %4% з розширенням '."
 "%5%')\n"
 
-#: ../Source/Core/FileTypeCheckTask.cpp:78
+#: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr "\"%1%\": сервер %2% не підтримує цей тип файлу (%3% %4%)\n"
 
@@ -153,7 +153,7 @@ msgstr "%s Оновлення"
 msgid "%s of %s (%d%%) %s"
 msgstr "%s з %s (%d%%) %s"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:68
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:67
 #, c-format
 msgid "%s server settings"
 msgstr "Налаштування сервера %s"
@@ -202,7 +202,7 @@ msgstr "(посилання скопійовано до буфера обмін�
 msgid "< Back"
 msgstr "< Назад"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:421
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:419
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:874
 msgid "<no authentication>"
 msgstr "<без автентифікації>"
@@ -216,7 +216,7 @@ msgstr "Доступна нова версія:"
 msgid "About %s"
 msgstr "Про %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2880
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2875
 msgid "About..."
 msgstr "Про програму ..."
 
@@ -237,7 +237,7 @@ msgstr "Обліковий запис не ввімкнено"
 msgid "Account with such name already exists."
 msgstr "Обліковий запис із таким іменем уже існує."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:259
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:257
 msgid "Account..."
 msgstr "Обліковий запис..."
 
@@ -258,7 +258,7 @@ msgstr "Активне з'єднання"
 msgid "Add"
 msgstr "Додати"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:616
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:617
 #, c-format
 msgid "Add %s server..."
 msgstr "Додати %s сервер..."
@@ -287,7 +287,7 @@ msgstr "Додати елемент"
 msgid "Add Menu Item"
 msgstr "Додати елемент меню"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:442
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:440
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:892
 msgid "Add account..."
 msgstr "Додати обліковий запис..."
@@ -300,7 +300,7 @@ msgstr "Додати елемент до контекстного меню пр�
 msgid "Add files..."
 msgstr "Додати файли..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:618
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:619
 msgid "Add folder as new server..."
 msgstr "Додати папку як новий сервер..."
 
@@ -336,15 +336,21 @@ msgstr "Додавати текст до зображення"
 msgid "Add to Wizard"
 msgstr "Додати до майстра"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:732
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:742
+#, fuzzy
+#| msgid "Add to the list"
+msgid "Add to blacklist"
+msgstr "Додати до списку"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Add to favorites"
 msgstr "Додати до списку"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:536
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:984
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:985
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:986
 msgid "Add to the list"
 msgstr "Додати до списку"
 
@@ -411,7 +417,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1793
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2084
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1584
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1583
 msgid "All files"
 msgstr "Усі файли"
 
@@ -492,7 +498,7 @@ msgstr "Ви дійсно хочете вийти?"
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr "Ви впевнені, що хочете видалити профіль '%s'?"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:433
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:430
 #, c-format
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr "Ви впевнені, що хочете видалити файл '%s' із сервера?"
@@ -504,7 +510,7 @@ msgstr ""
 "Ви впевнені, що хочете видалити цей обліковий запис із внутрішнього списку "
 "%s?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
 msgid "Arrow"
 msgstr "Стрілка"
 
@@ -559,7 +565,7 @@ msgid "Authorization on proxy"
 msgstr "Необхідна авторизація"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:247
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
 msgid "Authorize"
 msgstr "Авторизувати"
 
@@ -585,7 +591,7 @@ msgstr "Бекенд:"
 msgid "Background color:"
 msgstr "Колір тла:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:370
+#: ../Source/Core/Upload/UploadTask.cpp:369
 msgid "Begin upload"
 msgstr "Початок відвантаження"
 
@@ -608,9 +614,9 @@ msgstr "Бітрейт:"
 msgid "Blur radius"
 msgstr "Радіус розмиття"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:131
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1069
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:130
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1068
 msgid "Blurring rectangle"
 msgstr "Розмивання у прямокутнику"
 
@@ -640,7 +646,7 @@ msgstr "Переносити вікно на передній план при в
 msgid "Browse..."
 msgstr "Огляд..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1058
 msgid "Brush"
 msgstr "Пензель"
 
@@ -661,7 +667,7 @@ msgstr "Пензель"
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
@@ -701,7 +707,7 @@ msgstr "Не вдається завантажити ескіз зображен
 msgid "Cannot open documentation: "
 msgstr "Не вдається відкрити документацію: "
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:677
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:679
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -801,12 +807,12 @@ msgstr "Змінювати ширину:"
 msgid "Check file types before upload"
 msgstr "Перевірте типи файлів перед завантаженням"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2877
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2872
 msgid "Check for Updates"
 msgstr "Перевірити наявність оновлень"
 
-#: ../Source/Core/FileTypeCheckTask.cpp:29
-#: ../Source/Core/FileTypeCheckTask.cpp:35
+#: ../Source/Core/FileTypeCheckTask.cpp:30
+#: ../Source/Core/FileTypeCheckTask.cpp:36
 msgid "Checking file formats..."
 msgstr "Перевірка форматів файлів..."
 
@@ -822,7 +828,7 @@ msgstr "Виберіть виконуваний файл"
 msgid "Choose files"
 msgstr "Виберіть файли"
 
-#: ../Source/Gui/Components/ParameterListAdapter.cpp:181
+#: ../Source/Gui/Components/ParameterListAdapter.cpp:180
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1917
 msgid "Choose folder"
 msgstr "Вибрати папку"
@@ -852,7 +858,7 @@ msgstr "Виберіть більше серверів..."
 msgid "Choose program"
 msgstr "Виберіть програму"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:329
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:675
@@ -945,7 +951,7 @@ msgstr "Інтерактивні ескізи"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:260
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1039
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1038
 msgid "Close"
 msgstr "Закрити"
 
@@ -964,7 +970,7 @@ msgstr "Тип коду:"
 msgid "Collecting files..."
 msgstr "Збір файлів..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1072
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1071
 msgid "Color chooser"
 msgstr "Селектор кольору"
 
@@ -1012,8 +1018,8 @@ msgstr "Користувацькі елементи контекстного м�
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:205
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:989
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:990
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:991
 msgid "Continue"
 msgstr "Продовжити"
 
@@ -1037,7 +1043,7 @@ msgstr "Конвертація..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1019
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1018
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr "Копіювати"
@@ -1075,11 +1081,11 @@ msgstr "Копіювати повний шлях"
 msgid "Copy image"
 msgstr "Скопіювати зображення"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:887
 msgid "Copy in data:URI format"
 msgstr "Копіювати у форматі data:URI"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:889
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
 msgid "Copy in data:URI format (html)"
 msgstr "Копіювати у форматі data:URI (HTML)"
 
@@ -1108,12 +1114,12 @@ msgstr "Копіювати до буфера обміну"
 msgid "Copy to clipboard"
 msgstr "Копіювати до буфера"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1011
 #, c-format
 msgid "Copy to clipboard (%s)"
 msgstr "Копіювати в буфер обміну (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1012
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1011
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr "Скопіювати до буфера обміну і закрити (%s)"
@@ -1143,7 +1149,7 @@ msgstr "Не вдалося знайти виконуваний файл ffmpeg!
 msgid "Could not find links in the given text!"
 msgstr "У цьому тексті знайти посилання не вдалося!"
 
-#: ../Source/Func/UpdatePackage.cpp:420
+#: ../Source/Func/UpdatePackage.cpp:419
 #, c-format
 msgid "Could not read package %s"
 msgstr "Не вдалося прочитати пакет %s"
@@ -1210,7 +1216,7 @@ msgstr "Створювати ескізи"
 msgid "Creating new thumbnail preset"
 msgstr "Створення нового шаблона ескізу"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1058
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Crop"
 msgstr "Обрізати"
 
@@ -1276,7 +1282,7 @@ msgstr "Видалити обліковий запис"
 msgid "Delete file from server"
 msgstr "Видалити файл із сервера"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:436
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:433
 msgid "Deleting the file from the server"
 msgstr "Видалити файл із сервера"
 
@@ -1297,7 +1303,7 @@ msgid "Display video file information on resulting picture"
 msgstr "Відображати інформацію про відеофайл на зображенні"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1984
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:336
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:335
 msgid "Do not ask again"
 msgstr "Більше не питати"
 
@@ -1309,7 +1315,7 @@ msgstr "Не запускати нові копії програми з трею
 msgid "Do nothing"
 msgstr "Нічого не робити"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2879
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2874
 msgid "Documentation"
 msgstr "Документація (російською)"
 
@@ -1327,7 +1333,7 @@ msgstr "Не змінювати розмір"
 msgid "Download URL cannot be empty."
 msgstr "URL-адреса завантаження не може бути порожньою."
 
-#: ../Source/Func/UpdatePackage.cpp:667
+#: ../Source/Func/UpdatePackage.cpp:666
 #, c-format
 msgid "Downloaded %s of %s (%d %%)"
 msgstr "Завантажено %s із %s (%d %%)"
@@ -1336,7 +1342,7 @@ msgstr "Завантажено %s із %s (%d %%)"
 msgid "Downloaded: "
 msgstr "Завантажено: "
 
-#: ../Source/Func/UpdatePackage.cpp:385
+#: ../Source/Func/UpdatePackage.cpp:384
 msgid "Downloading file "
 msgstr "Завантаження файлу "
 
@@ -1376,13 +1382,13 @@ msgstr "Редагувати папку"
 msgid "Edit hotkey..."
 msgstr "Редагувати..."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:370
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:368
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:811
 msgid "Edit login credentials..."
 msgstr "Редагувати облікові дані для входу..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:107
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:840
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:106
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:839
 msgid "Ellipse"
 msgstr "Еліпс"
 
@@ -1394,7 +1400,7 @@ msgstr "Увімкнути спливаючі сповіщення (Windows 8+)"
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr "Введіть URL-адреси (http:// або ftp://, одне посилання на рядок)"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:260
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:258
 msgid "Enter account information"
 msgstr "Ввести облікові дані"
 
@@ -1421,7 +1427,7 @@ msgstr "Введіть інформацію про обліковий запис
 msgid "Enter your text:"
 msgstr "Введіть текст:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:379 ../Source/Func/Common.cpp:314
+#: ../Source/Core/Upload/UploadTask.cpp:378 ../Source/Func/Common.cpp:314
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:93
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:101
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:122
@@ -1446,7 +1452,7 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:184
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:202
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:680
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:682
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1488,7 +1494,7 @@ msgstr "Журнал помилок"
 msgid "Error while file format checking"
 msgstr "Помилка під час перевірки формату файлу"
 
-#: ../Source/Func/UpdatePackage.cpp:395
+#: ../Source/Func/UpdatePackage.cpp:394
 msgid "Error while updating component "
 msgstr "Помилка під час оновлення компонентів "
 
@@ -1682,14 +1688,14 @@ msgstr "Розмір файлу: "
 msgid "Fill background"
 msgstr "Заповнити тло"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:853
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:122
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
 msgid "Filled ellipse"
 msgstr "Зафарбований еліпс"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:112
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1065
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:111
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:850
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1064
 msgid "Filled rectangle"
 msgstr "Зафарбований прямокутник"
 
@@ -1711,7 +1717,7 @@ msgstr "Готово >"
 msgid "Finish Screen Recording"
 msgstr "Завершити запис екрана"
 
-#: ../Source/Core/Upload/UploadTask.cpp:376
+#: ../Source/Core/Upload/UploadTask.cpp:375
 #: ../Source/Gui/Models/UploadListModel.cpp:160
 msgid "Finished"
 msgstr "Завершено"
@@ -1720,11 +1726,11 @@ msgstr "Завершено"
 msgid "Fit"
 msgstr "Припасувати"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1933
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1932
 msgid "Flip horizontal"
 msgstr "Відобразити горизонтально"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1934
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1933
 msgid "Flip vertical"
 msgstr "Відобразити вертикально"
 
@@ -1750,7 +1756,7 @@ msgstr "Список папок на сервері %s для обліковог
 msgid "Folder name:"
 msgstr "Ім'я папки:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:58
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
 msgid "Folder/album:"
 msgstr "Папка/альбом:"
 
@@ -1824,7 +1830,7 @@ msgctxt "settings.menu"
 msgid "General"
 msgstr "Загальні"
 
-#: ../Source/Func/ImageGenerator.cpp:45 ../Source/Func/ImageGenerator.cpp:95
+#: ../Source/Func/ImageGenerator.cpp:47 ../Source/Func/ImageGenerator.cpp:97
 msgid "Generating image..."
 msgstr "Створення зображення..."
 
@@ -1834,7 +1840,7 @@ msgstr "Створення зображення..."
 msgid "Get color's code..."
 msgstr "Отримання коду кольору..."
 
-#: ../Source/Func/ImageGenerator.cpp:28
+#: ../Source/Func/ImageGenerator.cpp:30
 msgid "Getting info about file..."
 msgstr "Отримання інформації про файл..."
 
@@ -1846,7 +1852,7 @@ msgstr "Глобальні"
 msgid "Global hotkey:"
 msgstr "Глобальне сполучення клавіш:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:746
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "Перейти до сторінки підписки"
@@ -1896,16 +1902,20 @@ msgstr "Довідка"
 msgid "Hide"
 msgstr "Сховати"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
+msgid "Hide blacklisted"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
 msgid "Highlight"
 msgstr "Виділення кольором"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:668
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2862
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2857
 msgid "History"
 msgstr "Історія"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:554
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:551
 msgid "History has been cleared successfully."
 msgstr "Історію успішно очищено."
 
@@ -1922,7 +1932,7 @@ msgstr "Сполучення клавіш"
 msgid "I have an account on this server"
 msgstr "У мене є обліковий запис на цьому сервері"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:626
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:627
 msgid "Icons"
 msgstr ""
 
@@ -1944,8 +1954,8 @@ msgstr "Зображенням"
 msgid "Image Downloader"
 msgstr "Завантажувач зображень"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:340
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:617
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:339
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:616
 msgid "Image Editor"
 msgstr "Редактор зображень"
 
@@ -1954,15 +1964,15 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Редактор зображень"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1846
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1845
 msgid "Image Editor  (%1%x%2%)"
 msgstr "Редактор зображень  (%1%x%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1852
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1851
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr "Редактор зображень - %1% (%2%x%3%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:338
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:337
 msgid ""
 "Image Editor cannot deal with animated images. If you edit this file, "
 "animation will be lost. Do you wish to continue?"
@@ -2030,7 +2040,7 @@ msgstr "Неявний"
 msgid "Import Video File"
 msgstr "Імпортувати відеофайл"
 
-#: ../Source/Core/Upload/UploadTask.cpp:382
+#: ../Source/Core/Upload/UploadTask.cpp:381
 #: ../Source/Gui/Models/UploadListModel.cpp:21
 msgid "In queue"
 msgstr "У черзі"
@@ -2109,7 +2119,7 @@ msgstr ""
 "Просто перетягніть ваші файли до вікна Image Uploader, і програма обробить "
 "їх."
 
-#: ../Source/Func/LangClass.cpp:106
+#: ../Source/Func/LangClass.cpp:107
 msgid "LAYOUT_DIRECTION"
 msgstr "НАПРЯМОК_МАКЕТУВАННЯ"
 
@@ -2138,7 +2148,7 @@ msgstr "Одне лівою кнопкою:"
 msgid "Libraries:"
 msgstr "Бібліотеки:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1060
 msgid "Line"
 msgstr "Лінія"
 
@@ -2207,7 +2217,7 @@ msgstr "Ім'я"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:206
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:251
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 msgid "Login:"
 msgstr "Ім'я:"
 
@@ -2219,11 +2229,11 @@ msgstr "Вийти з облікового запису"
 msgid "Logout successfully."
 msgstr "Ви успішно вийшли зі свого облікового запису."
 
-#: ../Source/Func/UpdatePackage.cpp:507
+#: ../Source/Func/UpdatePackage.cpp:506
 msgid "MD5 check failed for file "
 msgstr "Помилка перевірки MD5 для файлу "
 
-#: ../Source/Func/UpdatePackage.cpp:403
+#: ../Source/Func/UpdatePackage.cpp:402
 msgid "MD5 check of the update package failed "
 msgstr "Помилка перевірки MD5 пакету оновлення "
 
@@ -2273,7 +2283,7 @@ msgstr "Більше кольорів..."
 msgid "Mouse clicks handlers"
 msgstr "Обробка клацань мишею"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1055
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Move"
 msgstr "Перемістити"
 
@@ -2299,7 +2309,7 @@ msgid "Name:"
 msgstr "Ім'я:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:21
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2868
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2863
 msgid "Network Debugger"
 msgstr "Мережевий налагоджувач"
 
@@ -2381,7 +2391,7 @@ msgstr "Кількість кадрів:"
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:81
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
@@ -2432,11 +2442,11 @@ msgstr "Відкрити знімок у редакторі"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:662
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:221
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2864
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2859
 msgid "Open screenshots folder"
 msgstr "Відкрити папку зі знімками екрана"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:619
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:620
 msgid "Open servers folder"
 msgstr "Відкрити папку серверів"
 
@@ -2445,7 +2455,7 @@ msgid "Open system connection settings"
 msgstr "Відкрити налаштування системного підключення"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:735
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:745
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr "Відкрийте веб-сайт"
@@ -2454,7 +2464,7 @@ msgstr "Відкрийте веб-сайт"
 msgid "Open with..."
 msgstr "Відкрити за допомогою..."
 
-#: ../Source/Core/Upload/DefaultUploadEngine.cpp:75
+#: ../Source/Core/Upload/DefaultUploadEngine.cpp:76
 #: ../Source/Core/Upload/ScriptUploadEngine.cpp:398
 #: ../Source/Core/Upload/ScriptUploadEngine.cpp:423
 msgid "Operation was cancelled by user."
@@ -2470,7 +2480,7 @@ msgstr "Параметри"
 msgid "Overall bitrate: "
 msgstr "Загальний бітрейт: "
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
 msgid "Parameters:"
 msgstr "Параметри:"
 
@@ -2479,7 +2489,7 @@ msgstr "Параметри:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:207
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Password:"
 msgstr "Пароль:"
 
@@ -2508,8 +2518,8 @@ msgstr "Введіть посилання, яке слід скоротити:"
 msgid "Pause"
 msgstr "Пауза"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:136
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:866
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:135
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
 msgid "Pixelation"
 msgstr "Пікселізація"
 
@@ -2546,7 +2556,7 @@ msgstr "Зачекайте, поки історія конвертується..
 msgid "Port:"
 msgstr "Порт:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:385
+#: ../Source/Core/Upload/UploadTask.cpp:384
 msgid "Postponed"
 msgstr "Відкладено"
 
@@ -2563,11 +2573,11 @@ msgstr "Зберегти метадані (наприклад, EXIF)"
 msgid "Preset:"
 msgstr "Попередньо налаштовано:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1001
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1000
 msgid "Pressing this button while holding Shift will close the window."
 msgstr "Натискання цієї кнопки з утримуванням клавіші Shift закриє вікно."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1001
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1000
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 "Натискання цієї кнопки з утриманням Shift не призведе до закриття вікна."
@@ -2581,7 +2591,7 @@ msgid "Preview Window"
 msgstr "Вікно попереднього перегляду"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1037
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1036
 msgid "Print..."
 msgstr "Друк..."
 
@@ -2673,13 +2683,13 @@ msgstr "У режимі реального часу (найшвидший)"
 msgid "Reason:"
 msgstr "Причина:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1021
 msgid "Record"
 msgstr "Запис"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:97
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:838
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1064
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:96
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:837
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1063
 msgid "Rectangle"
 msgstr "Прямокутник"
 
@@ -2711,7 +2721,13 @@ msgstr "Видалити елемент"
 msgid "Remove all"
 msgstr "Видалити все"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:730
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:740
+#, fuzzy
+#| msgid "Remove from list"
+msgid "Remove from blacklist"
+msgstr "Видалити зі списку"
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:734
 #, fuzzy
 #| msgid "Remove from list"
 msgid "Remove from favorites"
@@ -2760,22 +2776,22 @@ msgstr ""
 msgid "Right button click:"
 msgstr "Правою кнопкою:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1931
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1930
 msgid "Rotate clockwise (90°)"
 msgstr "Повернути за годинниковою стрілкою (90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1932
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1931
 msgid "Rotate counter clockwise (-90°)"
 msgstr "Повернути проти годинникової стрілки (-90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1035
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1034
 msgid "Rotate or flip"
 msgstr "Повернути або перевернути"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:102
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:118
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:839
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:852
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:101
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:117
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:838
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
 msgid "Rounded rectangle"
 msgstr "Прямокутник із закругленими кутами"
 
@@ -2794,11 +2810,11 @@ msgid "Same format as image"
 msgstr "Такий, як і зображення"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:736
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1010
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
 msgid "Save"
 msgstr "Зберегти"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1003
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1002
 #, fuzzy, c-format
 #| msgid "Save as"
 msgid "Save (%s)"
@@ -2808,14 +2824,14 @@ msgstr "Зберегти як"
 msgid "Save Profile"
 msgstr "Зберегти профіль"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1003
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1002
 #, fuzzy, c-format
 #| msgid "Search on %1% and close (%2%)"
 msgid "Save and close (%s)"
 msgstr "Пошук на %1% та закриття (%2%)"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:876
 msgid "Save as..."
 msgstr "Зберегти як..."
 
@@ -2823,7 +2839,7 @@ msgstr "Зберегти як..."
 msgid "Save as:"
 msgstr "Зберегти як:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1386
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1385
 msgid "Save changes?"
 msgstr "Зберегти зміни?"
 
@@ -2835,7 +2851,7 @@ msgstr "Зберегти файл журналу"
 msgid "Save to file"
 msgstr "Зберегти у файл"
 
-#: ../Source/Func/ImageGenerator.cpp:114
+#: ../Source/Func/ImageGenerator.cpp:116
 msgid "Saving image..."
 msgstr "Збереження зображення..."
 
@@ -2906,13 +2922,13 @@ msgstr "Знімок екрана"
 msgid "Screenshot Action"
 msgstr "Дія зі знімком екрана"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2523
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2518
 #, fuzzy
 #| msgid "Screenshot has been copied to clipboard."
 msgid "Screenshot has been copied to the clipboard."
 msgstr "Знімок екрана збережено до буфера обміну."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2523
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2518
 #, fuzzy
 #| msgid "Screenshot has been copied to clipboard."
 msgid "Screenshot has been saved and copied to the clipboard."
@@ -2936,21 +2952,21 @@ msgstr "Скрипт: "
 msgid "Search by image"
 msgstr "Пошук за зображенням"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:908
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:907
 #, c-format
 msgid "Search by image (%s)"
 msgstr "Пошук за зображенням (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
 msgid "Search on %1% (%2%)"
 msgstr "Пошук на %1% (%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1026
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
 msgid "Search on %1% and close (%2%)"
 msgstr "Пошук на %1% та закриття (%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1299
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1024
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1298
 #, c-format
 msgid "Search on %s"
 msgstr "Пошук у %s"
@@ -2982,7 +2998,7 @@ msgstr "Виділити все"
 msgid "Select folder"
 msgstr "Виберіть папку"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1557
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1556
 msgid "Select region"
 msgstr "Виберіть область"
 
@@ -2994,7 +3010,7 @@ msgstr "Виберіть регіон..."
 msgid "Select window..."
 msgstr "Вибрати вікно..."
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:58
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:58
 msgid "Select..."
 msgstr "Огляд..."
@@ -3015,7 +3031,7 @@ msgstr "Сервер"
 msgid "Server [:port]:"
 msgstr "Сервер [:порт]:"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:540
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:538
 msgid "Server and authentication settings"
 msgstr "Налаштування сервера та параметри автентифікації"
 
@@ -3024,7 +3040,7 @@ msgid "Server for other file types"
 msgstr "Сервер для інших типів файлів"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:939
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:938
 msgid "Server for quick screenshot uploading"
 msgstr "Сервер для швидкого відвантаження знімків екрана"
 
@@ -3087,7 +3103,7 @@ msgstr "Усього за сесію:"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:667
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:222
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2861
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2856
 msgid "Settings"
 msgstr "Налаштування"
 
@@ -3154,7 +3170,7 @@ msgstr "Знімок вибраної прямокутної ділянки..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2873
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2868
 msgid "Show Error Log"
 msgstr "Показати журнал помилок"
 
@@ -3162,7 +3178,7 @@ msgstr "Показати журнал помилок"
 msgid "Show automatically log window in case of error"
 msgstr "У разі помилки, автоматично показувати вікно журналу помилок"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:628
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:629
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Show favorites only"
@@ -3248,7 +3264,7 @@ msgstr "Початок відвантаження"
 msgid "Status"
 msgstr "Статус"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1066
 msgid "Step"
 msgstr "Крок"
 
@@ -3264,7 +3280,7 @@ msgstr "Зупинити"
 msgid "Stop uploading"
 msgstr "Припинити відвантаження"
 
-#: ../Source/Core/Upload/UploadTask.cpp:373
+#: ../Source/Core/Upload/UploadTask.cpp:372
 msgid "Stopped"
 msgstr "Зупинено"
 
@@ -3302,7 +3318,7 @@ msgstr "Короткий зміст:"
 msgid "Swap colors"
 msgstr "Поміняти кольори"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:625
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:626
 msgid "Table"
 msgstr ""
 
@@ -3319,7 +3335,7 @@ msgid "Test failed"
 msgstr "Тест не пройшов"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1066
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1065
 msgid "Text"
 msgstr "Текст"
 
@@ -3538,7 +3554,7 @@ msgstr "URL:"
 msgid "Unable to load picture"
 msgstr "Неможливо відвантажити зображення"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2503
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2498
 msgid "Unable to make screenshot!"
 msgstr "Не вдається зробити знімок екрана!"
 
@@ -3546,17 +3562,17 @@ msgstr "Не вдається зробити знімок екрана!"
 msgid "Unable to shorten the link..."
 msgstr "Не вдалося скоротити посилання..."
 
-#: ../Source/Func/UpdatePackage.cpp:411
+#: ../Source/Func/UpdatePackage.cpp:410
 #, c-format
 msgid "Unable to unpack archive %s"
 msgstr "Не вдалося розпакувати архів %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1074
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1073
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr "Скасувати"
 
-#: ../Source/Core/Upload/UploadTask.cpp:392
+#: ../Source/Core/Upload/UploadTask.cpp:391
 msgid "Unknown status"
 msgstr "Невідомий статус"
 
@@ -3564,7 +3580,7 @@ msgstr "Невідомий статус"
 msgid "Update components"
 msgstr "Оновити компоненти"
 
-#: ../Source/Func/UpdatePackage.cpp:428
+#: ../Source/Func/UpdatePackage.cpp:427
 #, c-format
 msgid "Update finished. Updated %d of %d files "
 msgstr "Оновлення завершено. Оновлено %d із %d файлів "
@@ -3623,13 +3639,13 @@ msgid "Upload speed limit per thread:"
 msgstr "Обмеження швидкості завантаження (на потік):"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1995
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1994
 #, c-format
 msgid "Upload to %s"
 msgstr "Відвантажити на %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1992
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1991
 msgid "Upload to Web"
 msgstr "Відвантажити до Інтернету"
 
@@ -3779,7 +3795,7 @@ msgstr "Переглянути BBCode/HTML-коди"
 msgid "View Media File Information"
 msgstr "Інформація про медіафайл"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:627
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:628
 #, fuzzy
 #| msgid "View HTML/BBCode"
 msgid "View Mode"
@@ -3790,7 +3806,7 @@ msgstr "Переглянути HTML/BBCode"
 msgid "View log for details."
 msgstr "Щоб отримати додаткову інформацію, перегляньте журнал помилок."
 
-#: ../Source/Core/Upload/UploadTask.cpp:388
+#: ../Source/Core/Upload/UploadTask.cpp:387
 msgid "Waiting for child tasks"
 msgstr "Очікування дочірніх завдань"
 
@@ -3839,7 +3855,7 @@ msgstr "Вікно"
 msgid "Windows Explorer integration"
 msgstr "Інтеграція до провідника Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2716
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2711
 msgid "Work in progress"
 msgstr "Робота триває"
 
@@ -3958,12 +3974,12 @@ msgstr "мс"
 msgid "multiple files"
 msgstr "кілька файлів"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:114
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:228
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:113
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:227
 msgid "not selected"
 msgstr "не вибрано"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:287
+#: ../Source/Gui/Models/ServerListModel.cpp:291
 msgctxt "serverlist.account"
 msgid "required"
 msgstr "обов'язковий"

@@ -75,7 +75,7 @@ public:
     int AddString(LPCTSTR szTitle,LPCTSTR szTip,int idCommand,HICON hIcon=NULL,bool Visible = true, int Align=0, bool LineBreak = false);
     LRESULT OnMouseMove(UINT Flags, CPoint Pt);
     bool MouseSel,Track;
-    LRESULT OnMouseLeave(void);
+    LRESULT OnMouseLeave();
     LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnKillFocus(HWND hwndNewFocus);
     LRESULT OnSetFocus(HWND hwndOldFocus);
@@ -118,7 +118,7 @@ protected:
     COLORREF m_BkColor;
     int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
-    void CreateDoubleBuffer();
+    void createDoubleBuffer();
     CDC dcMem_;
     CBitmap bmMem_;
     HBITMAP bmpOld_;

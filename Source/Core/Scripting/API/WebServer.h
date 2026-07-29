@@ -23,7 +23,7 @@ class WebServer {
 		 * @brief Bind a port. Pass 0 as argument to use random port.
 		 * 
 		 * @param port 
-		 * @return int Binded port 
+		 * @return int Bound port
 		 */
 		int bind(int port);
 		void start();

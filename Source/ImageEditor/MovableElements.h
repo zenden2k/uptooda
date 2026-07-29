@@ -25,7 +25,6 @@ class Line: public MovableElement {
 class TextElement: public MovableElement{
     public:
         TextElement( Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX,int endY, bool filled = false);
-        ~TextElement();
         void render(Painter* gr) override;
         void getAffectedSegments(AffectedSegments* segments) override;
         void resize(int width, int height) override;
@@ -168,7 +167,7 @@ public:
 
 protected:
     bool filled_;
-    bool containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
+    static bool containsPoint(Gdiplus::Rect ellipse, const Gdiplus::Point& location);
     void createGrips() override;
     DISALLOW_COPY_AND_ASSIGN(Ellipse);
 };

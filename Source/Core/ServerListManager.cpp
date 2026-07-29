@@ -23,14 +23,15 @@ limitations under the License.
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <utility>
 
 #include "Core/Utils/SimpleXml.h"
 #include "UploadEngineList.h"
 #include "Core/Utils/StringUtils.h"
 
-ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings):
+ServerListManager::ServerListManager(std::string serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings):
     serversSettings_(serversSettings),
-    serversDirectory_(serversDirectory),
+    serversDirectory_(std::move(serversDirectory)),
     uploadEngineList_(uel)
 {
 }

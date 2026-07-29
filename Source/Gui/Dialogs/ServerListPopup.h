@@ -57,6 +57,7 @@ public:
     static constexpr auto IDM_VIEW_MODE_REPORT = 10003;
     static constexpr auto IDM_VIEW_MODE_ICONS = 10004;
     static constexpr auto IDM_SHOW_FAVORITE_ONLY = 10005;
+    static constexpr auto IDM_HIDE_BLACKLISTED = 10006;
 
     BEGIN_MSG_MAP(CServerListPopup)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -79,6 +80,7 @@ public:
         COMMAND_ID_HANDLER_EX(IDM_VIEW_MODE_REPORT, OnViewModeReport)
         COMMAND_ID_HANDLER_EX(IDM_VIEW_MODE_ICONS, OnViewModeIcons)
         COMMAND_ID_HANDLER_EX(IDM_SHOW_FAVORITE_ONLY, OnShowFavoriteServersOnly)
+        COMMAND_ID_HANDLER_EX(IDM_HIDE_BLACKLISTED, OnHideBlacklisted)
         COMMAND_ID_HANDLER_EX(IDC_HELPBUTTON, OnHelpButton)
         NOTIFY_HANDLER(IDC_ADDBUTTON, BCN_DROPDOWN, OnBnDropdownAddServerButton)
         NOTIFY_HANDLER(IDC_SERVERLISTCONTROL, NM_DBLCLK, OnListViewDblClick)
@@ -132,6 +134,7 @@ public:
     LRESULT OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     LRESULT OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     LRESULT OnShowFavoriteServersOnly(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnHideBlacklisted(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void TranslateUI();
 
     void setServerProfile(const ServerProfile& serverProfile);
@@ -166,7 +169,6 @@ private:
     CMyImage searchIconCtrl_;
 
     int serversMask_, serverIndex_, selectedServerType_;
-    bool showFavoriteServersOnly_ = false;
     int ret_ = 0;
     CAccelerator hotkeys_;
     void serverChanged();

@@ -46,7 +46,7 @@ constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_I
 CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType, int serverIndex, bool isChildWindow)
     : engineList_(engineList)
     , settings_(ServiceLocator::instance()->settings<WtlGuiSettings>())
-    , serverListModel_(std::make_unique<ServerListModel>(engineList, settings_))
+    , serverListModel_(std::make_unique<ServerListModel>(engineList, &settings_->ServerListSettings))
     , listView_(serverListModel_.get(), serverIconCache)
     , serversMask_(serverMask)
     , selectedServerType_(selectedServerType)
@@ -58,7 +58,6 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
         // Fix current server type to ensure that current server is visible
         selectedServerType_ = ued->TypeMask & serverMask;
     }
-    showFavoriteServersOnly_ = settings_->ServerListPopupShowFavoritesOnly;
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     isChildWindow_ = isChildWindow;
     hMyDlgTemplate_ = nullptr;
@@ -94,7 +93,7 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
-    listView_.SetView(settings_->ServerListPopupViewMode);
+    listView_.SetView(settings_->ServerListSettings.ViewMode);
 
     // Creating tooltip control. We will use subclassing of controls to intercept their messages
     toolTip_.Create(m_hWnd);
@@ -580,7 +579,9 @@ void CServerListPopup::applyFilter(bool selectItem) {
 
     filter.query = W2U(query);
     filter.typeMask = mask;
-    filter.showFavoritesOnly = showFavoriteServersOnly_;
+    filter.hideBlacklisted = settings_->ServerListSettings.HideBlackListed;
+    filter.showFavoritesOnly = settings_->ServerListSettings.ShowFavoritesOnly;
+
     serverListModel_->applyFilter(filter);
     if (selectItem) {
         listView_.SelectItem(0);
@@ -625,7 +626,8 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
     subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_DETAILS ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_REPORT, TR("Table"));
     subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_ICON ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_ICONS, TR("Icons"));
     popupMenu.AppendMenu(MF_STRING, subMenu, TR("View Mode"));
-    popupMenu.AppendMenu(MF_STRING | (showFavoriteServersOnly_ ? MF_CHECKED : MF_UNCHECKED), IDM_SHOW_FAVORITE_ONLY, TR("Show favorites only"));
+    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.ShowFavoritesOnly ? MF_CHECKED : MF_UNCHECKED), IDM_SHOW_FAVORITE_ONLY, TR("Show favorites only"));
+    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.HideBlackListed ? MF_CHECKED : MF_UNCHECKED), IDM_HIDE_BLACKLISTED, TR("Hide blacklisted"));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -718,6 +720,8 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
         constexpr auto ID_OPENWEBSITE = 11001;
         constexpr auto ID_ADDTOFAVORITES = 11002;
         constexpr auto ID_REMOVEFROMFAVORITES = 11003;
+        constexpr auto ID_ADDTOBLACKLIST = 11004;
+        constexpr auto ID_REMOVEFROMBLACKLIST = 11005;
 
         auto data = serverListModel_->getDataByIndex(hti.iItem);
         if (!data->ued) {
@@ -726,10 +730,16 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
 
-        if (settings->isServerFavorite(data->ued->Name)) {
+        if (settings->ServerListSettings.isServerFavorite(data->ued->Name)) {
             contextMenu.AppendMenu(MF_STRING, ID_REMOVEFROMFAVORITES, TR("Remove from favorites"));
         } else {
             contextMenu.AppendMenu(MF_STRING, ID_ADDTOFAVORITES, TR("Add to favorites"));
+        }
+
+        if (settings->ServerListSettings.isServerBlacklisted(data->ued->Name)) {
+            contextMenu.AppendMenu(MF_STRING, ID_REMOVEFROMBLACKLIST, TR("Remove from blacklist"));
+        } else {
+            contextMenu.AppendMenu(MF_STRING, ID_ADDTOBLACKLIST, TR("Add to blacklist"));
         }
 
         contextMenu.AppendMenu(MF_STRING | (data->ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
@@ -745,7 +755,7 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
                 WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->RegistrationUrl), m_hWnd);
                 break;
             case ID_ADDTOFAVORITES:
-                settings->addServerToFavorites(data->ued->Name);
+                settings->ServerListSettings.addServerToFavorites(data->ued->Name);
                 serverListModel_->updateEngineList();
                 applyFilter(false);
                 index = serverListModel_->getIndexByServerName(data->ued->Name);
@@ -754,10 +764,26 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
                 }
                 break;
             case ID_REMOVEFROMFAVORITES:
-                settings->removeServerFromFavorites(data->ued->Name);
+                settings->ServerListSettings.removeServerFromFavorites(data->ued->Name);
                 serverListModel_->updateEngineList();
                 applyFilter(false);
                 break;
+            case ID_ADDTOBLACKLIST:
+                settings->ServerListSettings.addServerToBlacklist(data->ued->Name);
+                serverListModel_->updateEngineList();
+                applyFilter(settings_->ServerListSettings.HideBlackListed);
+                if (!settings_->ServerListSettings.HideBlackListed) {
+                    index = serverListModel_->getIndexByServerName(data->ued->Name);
+                    if (index.has_value()) {
+                        listView_.SelectItem(*index);
+                    }
+                }
+            break;
+            case ID_REMOVEFROMBLACKLIST:
+                settings->ServerListSettings.removeServerFromBlacklist(data->ued->Name);
+                serverListModel_->updateEngineList();
+                applyFilter(false);
+            break;
         }
     }
     return 0;
@@ -770,18 +796,24 @@ LRESULT CServerListPopup::OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 LRESULT CServerListPopup::OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     listView_.SetView(LV_VIEW_DETAILS);
-    settings_->ServerListPopupViewMode = LV_VIEW_DETAILS;
+    settings_->ServerListSettings.ViewMode = LV_VIEW_DETAILS;
     return 0;
 }
 
 LRESULT CServerListPopup::OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     listView_.SetView(LV_VIEW_ICON);
-    settings_->ServerListPopupViewMode = LV_VIEW_ICON;
+    settings_->ServerListSettings.ViewMode = LV_VIEW_ICON;
     return 0;
 }
 
 LRESULT CServerListPopup::OnShowFavoriteServersOnly(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
-    settings_->ServerListPopupShowFavoritesOnly = showFavoriteServersOnly_ = !showFavoriteServersOnly_;
+    settings_->ServerListSettings.ShowFavoritesOnly = !settings_->ServerListSettings.ShowFavoritesOnly;
+    applyFilter();
+    return 0;
+}
+
+LRESULT CServerListPopup::OnHideBlacklisted(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    settings_->ServerListSettings.HideBlackListed = !settings_->ServerListSettings.HideBlackListed;
     applyFilter();
     return 0;
 }

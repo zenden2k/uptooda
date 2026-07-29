@@ -62,6 +62,7 @@ struct ScreenshotSettingsStruct {
     int MonitorMode;
 };
 
+
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
@@ -140,9 +141,6 @@ public:
     bool SendToContextMenu_changed;
 
     std::string testFileName, testUrl;
-
-    int ServerListPopupViewMode = LV_VIEW_DETAILS;
-    bool ServerListPopupShowFavoritesOnly = false;
 
 
     CString getServerName();

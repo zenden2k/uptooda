@@ -4,7 +4,7 @@
 
 ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     penSize_ = settings->ImageEditorSettings.PenSize;
     foregroundColor_ = settings->ImageEditorSettings.ForegroundColor;
     backgroundColor_ = settings->ImageEditorSettings.BackgroundColor;
@@ -24,7 +24,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->ImageEditorSettings.PenSize = penSize_;
     settings->ImageEditorSettings.ForegroundColor = foregroundColor_;
     settings->ImageEditorSettings.BackgroundColor = backgroundColor_;

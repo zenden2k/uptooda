@@ -271,7 +271,7 @@ bool CMyImage::drawFrame() {
         framePosition_ = 0;
     }
 
-    long lPause = ((long*)propertyItem_->value)[framePosition_] * 10;
+    long lPause = static_cast<long*>(propertyItem_->value)[framePosition_] * 10;
     if (lPause < 50) {
         lPause = 100;
     }

@@ -89,7 +89,7 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         IProgramWindow* appWindow = ServiceLocator::instance()->programWindow();
         HWND hwndParent = appWindow ? appWindow->getNativeHandle() : GetActiveWindow();
 
-        IMyFileDialog::FileFilterArray filters = {
+        const IMyFileDialog::FileFilterArray filters = {
             { TR("HTML files"), CString(_T("*.html;*.htm")) },
             { TR("Text files"), CString(_T("*.txt")) },
             { TR("JSON files"), CString(_T("*.json")) },

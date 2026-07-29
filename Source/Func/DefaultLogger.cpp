@@ -146,11 +146,11 @@ std::mutex& DefaultLogger::getEntryMutex() {
 }
 
 std::vector<DefaultLogger::LogEntry>::const_iterator DefaultLogger::begin() const {
-    return entries_.begin();
+    return entries_.cbegin();
 }
 
 std::vector<DefaultLogger::LogEntry>::const_iterator DefaultLogger::end() const {
-    return entries_.end();
+    return entries_.cend();
 }
 
 void DefaultLogger::clear() {

@@ -102,6 +102,26 @@ struct ScreenRecordingStruct {
     DXGISettingsStruct DXGISettings;
 };
 
+struct ServerListSettingsStruct: IFavoriteServers {
+public:
+#ifndef IU_QT
+    int ViewMode = LV_VIEW_DETAILS;
+#endif
+    bool ShowFavoritesOnly = false;
+    bool HideBlackListed = false;
+    std::unordered_set<std::string> FavoriteServers;
+    std::unordered_set<std::string> BlacklistedServers;
+
+    bool isServerFavorite(const std::string& serverId) override;
+    bool isServerBlacklisted(const std::string& serverId) override;
+    void addServerToFavorites(const std::string& serverId);
+    void removeServerFromFavorites(const std::string& serverId);
+    void addServerToBlacklist(const std::string& serverId);
+    void removeServerFromBlacklist(const std::string& serverId);
+
+    void bind(SettingsNode& node);
+};
+
 #ifndef IU_QT
 struct MediaInfoSettingsStruct {
     int InfoType = 0; // 0 - short summary, 1 - full info
@@ -114,7 +134,7 @@ struct HistorySettingsStruct {
 };
 #endif
 
-class CommonGuiSettings : public BasicSettings, public IFavoriteServers {
+class CommonGuiSettings : public BasicSettings {
     public:   
         CommonGuiSettings();
         ~CommonGuiSettings() override;
@@ -127,7 +147,9 @@ class CommonGuiSettings : public BasicSettings, public IFavoriteServers {
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
         ImageUploadParams DefaultImageUploadParams;
-        std::unordered_set<std::string> FavoriteServers;
+
+        ServerListSettingsStruct ServerListSettings;
+
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -189,8 +211,5 @@ class CommonGuiSettings : public BasicSettings, public IFavoriteServers {
         };
 
         static bool IsFFmpegAvailable();
-        bool isServerFavorite(const std::string& serverId) override;
-        void addServerToFavorites(const std::string& serverId);
-        void removeServerFromFavorites(const std::string& serverId);
     };
 #endif

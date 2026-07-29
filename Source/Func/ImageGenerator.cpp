@@ -22,10 +22,11 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     RectF TextRect;
     int infoHeight = 0;
-    CString Report, fullInfo;
+    CString Report;
 #ifdef IU_ENABLE_MEDIAINFO
     if (Settings.VideoSettings.ShowMediaInfo)
     {
+        CString fullInfo;
         onProgress(this, -1, -1, _("Getting info about file..."));
         /*bool bMediaInfoResult = */
         MediaInfoHelper::GetMediaFileInfo(mediaFile_, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
@@ -101,7 +102,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         StringFormat format;
         format.SetAlignment(StringAlignmentNear);
         format.SetLineAlignment(StringAlignmentNear);
-        auto font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
+        std::unique_ptr<Gdiplus::Font> font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
 
         SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
         RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));

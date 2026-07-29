@@ -87,7 +87,6 @@ void MovableElement::renderGrips(Painter* gr)
 
         createGrips();
 
-
         for (size_t i = 0; i < grips_.size(); i++) {
             int x = grips_[i].pt.x;
             int y = grips_[i].pt.y;

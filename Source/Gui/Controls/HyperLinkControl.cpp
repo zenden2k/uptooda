@@ -77,7 +77,7 @@ void CHyperLinkControl::Init(COLORREF BkColor)
     createGdiResources();
     m_BkColor = BkColor;
     OpenThemeData();
-    CreateDoubleBuffer();
+    createDoubleBuffer();
 }
 
 size_t CHyperLinkControl::ItemCount() const {
@@ -295,7 +295,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
     return 0;
 }
 
-LRESULT CHyperLinkControl::OnMouseLeave(void)
+LRESULT CHyperLinkControl::OnMouseLeave()
 {
     HoverItem(-1);
     Track = false;
@@ -425,11 +425,11 @@ int CHyperLinkControl::NotifyParent(int nItem)
 }
 
 LRESULT CHyperLinkControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    CreateDoubleBuffer();
+    createDoubleBuffer();
     return 0;
 }
 
-void CHyperLinkControl::CreateDoubleBuffer() {
+void CHyperLinkControl::createDoubleBuffer() {
     if (dcMem_.m_hDC) {
         SelectObject(dcMem_, bmpOld_);
         dcMem_.DeleteDC();
@@ -743,6 +743,6 @@ LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 LRESULT CHyperLinkControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     createGdiResources();
-    CreateDoubleBuffer();
+    createDoubleBuffer();
     return 0;
 }

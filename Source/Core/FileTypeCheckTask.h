@@ -15,7 +15,7 @@ struct BadFileFormat {
 
 class FileTypeCheckTask: public BackgroundTask {
 public:
-    explicit FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer, ImageUploadParams defaultImageUploadParams);
+    explicit FileTypeCheckTask(IFileList* fileList, ServerProfileGroup sessionImageServer, ServerProfileGroup sessionFileServer, ImageUploadParams defaultImageUploadParams);
 	
 	BackgroundTaskResult doJob() override;
 

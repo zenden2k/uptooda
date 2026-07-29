@@ -21,7 +21,7 @@ bool CopyFileAndImageToClipboard(LPCTSTR fileName, HWND hwnd) {
 
 bool CopyFilesToClipboard(const std::vector<CString>& fileNames, HWND hwnd, bool clearClipboard) {
     size_t argc = fileNames.size();
-    std::unique_ptr<WCHAR[]> pFullNames = std::make_unique<WCHAR[]>(argc * MAX_PATH + 1);
+    auto pFullNames = std::make_unique<WCHAR[]>(argc * MAX_PATH + 1);
     WCHAR *p = pFullNames.get();
     for (size_t i = 0; i < argc; i++ ) {
         LPTSTR end = nullptr;

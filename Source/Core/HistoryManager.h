@@ -64,7 +64,6 @@ class CHistorySession
 {
     public:
         explicit CHistorySession(const std::string& filename, const std::string& sessionId);
-        ~CHistorySession();
         size_t entriesCount() const;
         const HistoryItem& entry(size_t index) const;
         std::string serverName() const;

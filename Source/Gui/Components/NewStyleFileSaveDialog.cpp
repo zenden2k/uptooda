@@ -85,7 +85,7 @@ void CNewStyleFileSaveDialog::setFileName(LPCWSTR fileName) {
 }
 
 void CNewStyleFileSaveDialog::getFiles(std::vector<CString>& arr) {
-    // If the user chose any files, loop thru the array of files.
+    // If the user chose any files, loop through the array of files.
 
     CComPtr<IShellItem> pItem;
 

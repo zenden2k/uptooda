@@ -21,10 +21,10 @@ void ConfigureNetworkClient(INetworkClient* nm)
     } else
 #endif
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {
-        int ProxyTypeList[6] = { CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME, CURLPROXY_HTTPS };
-        if (Settings.ConnectionSettings.ProxyType >= 0 && Settings.ConnectionSettings.ProxyType < ARRAY_SIZE(ProxyTypeList) ) {
+        int proxyTypeList[] = { CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME, CURLPROXY_HTTPS };
+        if (Settings.ConnectionSettings.ProxyType >= 0 && Settings.ConnectionSettings.ProxyType < std::size(proxyTypeList) ) {
             nm->setProxy(Settings.ConnectionSettings.ServerAddress, Settings.ConnectionSettings.ProxyPort,
-                ProxyTypeList[Settings.ConnectionSettings.ProxyType]);
+                proxyTypeList[Settings.ConnectionSettings.ProxyType]);
 
             if (Settings.ConnectionSettings.NeedsAuth) {
                 nm->setProxyUserPassword(Settings.ConnectionSettings.ProxyUser,
@@ -33,9 +33,7 @@ void ConfigureNetworkClient(INetworkClient* nm)
         }
     }
     nm->setUploadBufferSize(Settings.UploadBufferSize);
-    nm->setMaxUploadSpeed(Settings.MaxUploadSpeed*1024);
-    /* curl_easy_setopt(nm->getCurlHandle(), CURLOPT_STDERR, fopen("d:/curl_log.txt", "w"));
-    curl_easy_setopt(nm->getCurlHandle(), CURLOPT_VERBOSE, 1L);*/
+    nm->setMaxUploadSpeed(Settings.MaxUploadSpeed * 1024);
 }
 
 }

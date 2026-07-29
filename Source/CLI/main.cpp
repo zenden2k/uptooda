@@ -110,7 +110,7 @@ std::shared_ptr<UploadSession> session;
 
 std::mutex finishSignalMutex;
 std::condition_variable finishSignal;
-bool finished = false;
+volatile bool finished = false;
 int funcResult = 0;
 struct TaskUserData {
     int index;
@@ -156,10 +156,10 @@ void PrintServerList() {
         {CUploadEngineData::TypeVideoServer, "Video"},
     };
 
-    for (const auto& serverType : serverTypes) {
-        std::cout << termcolor::green << serverType.second << " servers:" << termcolor::reset << std::endl;
+    for (const auto& [serverType, typeString] : serverTypes) {
+        std::cout << termcolor::green << typeString << " servers:" << termcolor::reset << std::endl;
         for (const auto& ued : *list) {
-            if (!ued->hasType(serverType.first)) {
+            if (!ued->hasType(serverType)) {
                 continue;
             }
             std::cout << ued->Name;
@@ -283,28 +283,27 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     auto* userData = static_cast<TaskUserData*>(task->userData());
-    bool finished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
+    bool taskFinished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
 
     if (termcolor::_internal::is_atty(std::cerr)) {
         ConsoleUtils::instance()->clearLine(stderr);
         fprintf(stderr, "\r#%d ", userData->index);
     } else {
         fprintf(stderr, "\n#%d ", userData->index);
-        if (finished) {
+        if (taskFinished) {
             PrintProgress(task);
             fprintf(stderr, "\n#%d ", userData->index);
         }
     }
 
     std::string statusText = progress->statusText;
-    if (finished) {
+    if (taskFinished) {
         if (task->status() == UploadTask::StatusFinished) {
             std::cerr << termcolor::green;
         } else {
             std::cerr << termcolor::red;
         }
         std::cerr << statusText << termcolor::reset << " ";
-
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
@@ -331,7 +330,7 @@ int func() {
     if (!dFolder.empty() && dFolder.back() == '\\') {
         dFolder.pop_back();
     }
-    char* cacheDir = strdup(dFolder.c_str());
+    char* cacheDir = _strdup(dFolder.c_str());
     if (cacheDir) {
         const char* dirs[2]
             = { cacheDir, nullptr };
@@ -360,17 +359,16 @@ int func() {
     uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
     std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
-    std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
-
+    auto uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
 
     if (useSystemProxy) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
-    } else if ( !proxy.empty()) {
+    } else if (!proxy.empty()) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
         Settings.ConnectionSettings.ServerAddress= proxy;
         Settings.ConnectionSettings.ProxyPort = proxyPort;
 
-        if( !proxyUser.empty()) {
+        if(!proxyUser.empty()) {
             Settings.ConnectionSettings.NeedsAuth = true;
             Settings.ConnectionSettings.ProxyUser = proxyUser;
             Settings.ConnectionSettings.ProxyPassword.fromPlainText(proxyPassword);
@@ -378,17 +376,15 @@ int func() {
     }
 
     CUploadEngineData* uploadEngineData = nullptr;
-    if(!serverName.empty()) {
+    if (!serverName.empty()) {
         uploadEngineData = getServerByName(serverName);
-        if(!uploadEngineData) {
-            std::cerr<<"No such server '"<<serverName<<"'!"<<std::endl;
+        if (!uploadEngineData) {
+            std::cerr << "No such server '" << serverName << "'!" << std::endl;
             return 0;
         }
     } else {
         std::cerr << "Server not set " << std::endl;
         return -1;
-        //int index = list.getRandomImageServer();
-        //uploadEngineData = list.byIndex(index);
     }
 
     if (uploadEngineData->NeedAuthorization == CUploadEngineData::naObligatory && login.empty())
@@ -455,9 +451,7 @@ int func() {
         return funcResult;
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
-    //ConsoleUtils::instance()->InitScreen();
-    //ConsoleUtils::instance()->Clear();
-    //PrintWelcomeMessage();
+
     uploadManager->setOnQueueFinishedCallback(OnQueueFinished);
     uploadManager->addSession(session);
 
@@ -469,13 +463,12 @@ int func() {
 	return funcResult;
 }
 
-
 void PrintServerParamList()
 {
     if (serverName.empty()) {
         throw std::invalid_argument("Server name is empty");
     }
-    CUploadEngineData* ued = getServerByName(serverName);
+    const CUploadEngineData* ued = getServerByName(serverName);
     if (!ued) {
         throw std::invalid_argument("No such server");
     }
@@ -514,7 +507,7 @@ void PrintServerParamList()
 #ifdef _WIN32
 class Updater: public CUpdateStatusCallback {
 public:
-    Updater(const CString& tempDirectory) :m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
+    explicit Updater(const CString& tempDirectory): m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
         m_UpdateManager.setUpdateStatusCallback(this);
     }
 
@@ -528,25 +521,25 @@ public:
         Settings.LastUpdateTime = static_cast<int>(time(0));
         if (m_UpdateManager.AreUpdatesAvailable())
         {
-            for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
+            for (const auto & i : m_UpdateManager.m_updateList)
             {
-                std::cerr<<"Beginning to update: "<< IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[i].displayName())<<std::endl;
+                std::wcerr << "Beginning to update: "<< i.displayName() << std::endl;
             }
 
             m_UpdateManager.DoUpdates();
             if (m_UpdateManager.successPackageUpdatesCount())
             {
-                std::cerr<<"Succesfully updated!";
+                std::cerr << "Successfully updated!";
             }
         }
         else
         {
-            std::cerr<<"All is up-to-date"<<std::endl;
+            std::cerr << "All is up-to-date" << std::endl;
         }
-
     }
+
     void updateStatus(int packageIndex, const CString& status) override {
-        if ( m_UpdateManager.m_updateList.size() > packageIndex+1) {
+        if (m_UpdateManager.m_updateList.size() > packageIndex+1) {
             fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8(m_UpdateManager.m_updateList[packageIndex].displayName().GetString()).c_str(), IuCoreUtils::WstringToUtf8(status.GetString()).c_str());
             fprintf(stderr, "\r");
             fflush(stderr);
@@ -835,12 +828,12 @@ int main(int argc, char *argv[]){
 #else
     appParams->setTempDirectory("/var/tmp/");
 #endif
-    //PrintWelcomeMessage();
-    if(! list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
+
+    if (!list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list!"<<std::endl;
     }
 
-    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
+    if (IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");

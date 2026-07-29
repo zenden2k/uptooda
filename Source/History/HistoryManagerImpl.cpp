@@ -38,7 +38,7 @@ class CHistoryReader_impl
     public:
         SimpleXml m_xml;
         std::vector<std::unique_ptr<CHistorySession>> m_sessions;
-        std::map<std::string, int> keyToIndex_;
+        std::map<std::string, size_t> keyToIndex_;
         CHistoryManager* mgr_{};
 };
 
@@ -263,12 +263,12 @@ bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
 bool CHistoryManager::convertHistory() {
     IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
     std::string historyFolder = m_historyFilePath;
-    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
     std::uniform_int_distribution<int> dist(1000000);
     pcrepp::Pcre regexp(R"(^history_(\d+)_(\d+)\.xml$)");
     try {
+        boost::filesystem::directory_iterator endItr;
 
-        for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
+        for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != endItr; ++i) {
             // Skip if not a file
             if (!boost::filesystem::is_regular_file(i->status())) {
                 continue;
@@ -433,7 +433,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
     }
 
     pthis->d_ptr->m_sessions.push_back(std::move(session));
-    int index = pthis->d_ptr->m_sessions.size() - 1;
+    size_t index = pthis->d_ptr->m_sessions.size() - 1;
     pthis->d_ptr->keyToIndex_[sessionId] = index;
     return 0;
 }
@@ -450,7 +450,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
         }
     }
 
-    auto it = pthis->d_ptr->keyToIndex_.find(sessionId);
+    const auto it = pthis->d_ptr->keyToIndex_.find(sessionId);
     if (it == pthis->d_ptr->keyToIndex_.end()) {
         return 0; // No session with such id
     }

@@ -33,7 +33,7 @@ void CResultsListView::SetModel(UploadListModel* model) {
 
 LRESULT CResultsListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
-    LV_ITEM* pItem = &(pDispInfo)->item;
+    LV_ITEM* pItem = &pDispInfo->item;
     DWORD n = pItem->iItem;
 
     if (pItem->mask & LVIF_TEXT) {
