@@ -18,14 +18,6 @@ public:
     {
     }
 
-    virtual ~FFmpegVideoCodec() = default;
-
-
-    std::string extension() const {
-        return extension_;
-    }
-
-    virtual void apply(const FFmpegOptions& settings, FFmpegOutputArgs& outputArgs) = 0;
 private:
     std::string extension_;
 

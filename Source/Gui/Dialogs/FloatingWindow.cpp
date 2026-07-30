@@ -874,17 +874,16 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     m_bIsUploading = true;
     uploadManager_->addSession(currentUploadSession_);
 
-    CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
-    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
-        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName()).c_str()));
+    const std::wstring serverName = IuCoreUtils::Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName());
+    const std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Uploading file \"%1%\" to server \"%2%\"...")) % onlyFileName.GetString() % serverName);
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {
-        ShowBaloonTip(msg, TR("Uploading screenshot"), 6000);
+        ShowBaloonTip(msg.c_str(), TR("Uploading screenshot"), 6000);
     }
 
-    setStatusText(msg);
+    setStatusText(msg.c_str());
     startIconAnimation();
 }
 

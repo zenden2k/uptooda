@@ -322,6 +322,10 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
     askBeforeClose_ = ask;
 }
 
+CString ImageEditorWindow::outFileName() const {
+    return outFileName_;
+}
+
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode, bool forceShowParent) {
     if (currentDoc_->isNull()) {
         GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APP_NAME, MB_ICONERROR);
@@ -1611,7 +1615,7 @@ bool ImageEditorWindow::onSaveAs(bool closeFlag)
         /*setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
             CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));*/
         if (canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
-            EndDialog(drCopiedToClipboard);
+            EndDialog(drSave);
         }
     }
     return true;
@@ -1643,7 +1647,7 @@ bool ImageEditorWindow::copyBitmapToClipboard(ClipboardFormat format, bool close
     }
     const bool res = saveDocument(format);
     if (res && canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
-        EndDialog(drCopiedToClipboard);
+        EndDialog(drCopyToClipboard);
     }
     return res;
 }
@@ -1696,7 +1700,7 @@ bool ImageEditorWindow::onSave(bool closeFlag) {
     bool res = saveDocument();
 
     if (res && canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
-        EndDialog(drCopiedToClipboard);
+        EndDialog(drSave);
     }
 
     return res;

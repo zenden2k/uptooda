@@ -83,7 +83,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen, drContinue
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopyToClipboard, drPrintRequested, drSearch, drRecordScreen, drContinue
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -103,6 +103,7 @@ public:
     Gdiplus::Rect lastAppliedCrop() const;
     CRect getSelectedRect() const;
     void setAskBeforeClose(bool ask);
+    CString outFileName() const;
 
     DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto, bool forceShowParent = false);
 
