@@ -745,7 +745,6 @@ void WtlGuiSettings::BindToManager() {
     /*general.n_bind(ExplorerVideoContextMenu);
     general.n_bind(ExplorerCascadedMenu);*/
 
-
     general.n_bind(ConfirmOnExit);
     general.n_bind(SendToContextMenu);
     general.n_bind(ParseSubDirs);
@@ -1122,12 +1121,12 @@ CString WtlGuiSettings::getFileServerName()  {
 
 CString WtlGuiSettings::getSettingsFileName() const
 {
-    return IuCoreUtils::Utf8ToWstring(fileName_).c_str();
+    return U2WC(fileName_);
 }
 
 ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name)
 {
-    return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)].begin()->second;
+    return ServersSettings[W2U(name)].begin()->second;
 }
 
 ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
