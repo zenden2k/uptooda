@@ -33,7 +33,7 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     CComPtr<IShellItem> psiFolder;
 
 
-    hr = SHCreateItemFromParsingName(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
+    hr = SHCreateItemFromParsingName(initialFolder, nullptr, IID_PPV_ARGS(&psiFolder));
 
     if (SUCCEEDED(hr)) {
         newStyleDialog_->SetDefaultFolder(psiFolder);
@@ -64,7 +64,7 @@ CString CNewStyleFileDialog::getFolderPath() {
     CComPtr<IShellItem> pFolderItem;
     HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
     if (SUCCEEDED(hr)) {
-        LPOLESTR pwsz = NULL;
+        LPOLESTR pwsz = nullptr;
 
         // Get its file system path.
         hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
@@ -116,13 +116,13 @@ void CNewStyleFileDialog::getFiles(std::vector<CString>& arr) {
                 hr = pItemArray->GetItemAt(j, &pItem);
 
                 if (SUCCEEDED(hr)) {
-                    LPOLESTR pwsz = NULL;
+                    LPOLESTR pwsz = nullptr;
 
                     // Get its file system path.
                     hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
                     if (SUCCEEDED(hr)) {
-                        arr.push_back(pwsz);
+                        arr.emplace_back(pwsz);
                         CoTaskMemFree(pwsz);
                     }
                 }

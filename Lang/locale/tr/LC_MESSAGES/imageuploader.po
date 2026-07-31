@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-30 12:25+0300\n"
+"POT-Creation-Date: 2026-07-31 14:45+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/image-uploader/"
@@ -107,24 +107,6 @@ msgstr[1] "Klasör seçilmedi"
 msgid "%d%%"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
-msgid ""
-"%f% - name of videofile without extension, \n"
-"%fe% -  name of videofile, \n"
-"%ext% - extension, \n"
-"%y% - year, %m% - month, %d% - day\n"
-"%h% - hour, %n% - minute, %s% - second\n"
-" %i% - file counter,\n"
-"%cx% - width,  %cy% - height"
-msgstr ""
-"%f% - Uzantısız video adı, \n"
-"%fe% -  Video adı,\n"
-"%ext% - Uzantı, \n"
-"%y% - Yıl, %m% - Ay, %d% - Gün\n"
-"%h% - Saat, %n% - Dakika, %s% - Saniye\n"
-" %i% - Dosya sırası,\n"
-"%cx% - Genişlik,  %cy% - Yükseklik"
-
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
@@ -163,18 +145,6 @@ msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
 msgstr[0] ""
 msgstr[1] ""
-
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
-msgid ""
-"%y - year, %m - month, %d - day\n"
-"%h - hour, %n - minute, %s - seconds\n"
-" %i - image index,\n"
-"%width% - width of image,  %height% - height of image"
-msgstr ""
-"%y - yıl, %m - ay, %d - gün\n"
-"%h saat, %n - dakika, %s - saniye\n"
-" %i - resim sırası, \n"
-"%width% görüntü genişliği, %height% - görüntü yüksekliği"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
@@ -392,7 +362,7 @@ msgstr "Ek ayarlar"
 msgid "Additional params"
 msgstr "Ek bilgiler"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:33
 msgid "Additional settings"
 msgstr "Ek ayarlar"
 
@@ -404,7 +374,7 @@ msgstr "Adres:"
 msgid "Advice:"
 msgstr "Tavsiye:"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Aero only (Windows Vista or later)"
 msgstr "Sadece aero (Windows Vista veya üstü)"
 
@@ -459,7 +429,7 @@ msgstr "Tam Ekran Düzenleyicide Alt+Tab'a izin ver"
 msgid "Allow opening existing images in fullscreen mode"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Always copy captured image to clipboard"
 msgstr "Yakalanan görüntüyü her zaman panoya kopyala"
 
@@ -488,7 +458,7 @@ msgstr ""
 msgid "Any file"
 msgstr "Herhangi bir dosya"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
 msgid "Appearance options"
 msgstr "Görünüm seçenekleri"
 
@@ -655,13 +625,13 @@ msgstr "Alt sol köşe"
 msgid "Bottom right corner"
 msgstr "Alt sağ köşe"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "Bring window to foreground when selected by mouse"
 msgstr "Fare ile seçilen pencereyi ön plana getir"
 
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:39
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
 msgstr "Gözat..."
@@ -778,7 +748,7 @@ msgstr "Etkin Pencere Yakalama"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:97
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
 #, fuzzy
 #| msgid "Capture with shadow"
 msgid "Capture cursor"
@@ -798,7 +768,7 @@ msgstr "Etkin Pencere Yakalama"
 msgid "Capture the Entire Screen"
 msgstr "Tam Ekran Yakalama"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "Capture with shadow"
 msgstr "Gölgeli yakalama"
 
@@ -954,11 +924,11 @@ msgstr "Tümünü temizle"
 msgid "Clear server settings"
 msgstr "%s sunucu ayarları"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
 msgid "Clear window transparent corners"
 msgstr "Pencere köşelerini temizle"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 msgid "Clear window's background"
 msgstr "Pencere arka planını temizle"
 
@@ -1317,7 +1287,7 @@ msgstr "Varsayılan Ayarlar"
 msgid "Deinterlace"
 msgstr "Ayrıştırma"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 msgid "Delay when hiding window:"
 msgstr "Pencereyi gizle:"
 
@@ -1347,7 +1317,7 @@ msgstr "Sunucudaki dosyayı sil"
 msgid "Developer mode"
 msgstr "Geliştirici Modu"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:40
 msgid "Directory to save screenshots:"
 msgstr "Ekran görüntülerinin kaydedileceği dizin:"
 
@@ -1355,7 +1325,7 @@ msgstr "Ekran görüntülerinin kaydedileceği dizin:"
 msgid "Disable localization"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
 msgid "Display video file information on resulting picture"
 msgstr "Video dosyasının bilgilerini resim üzerinde göster"
 
@@ -1540,7 +1510,7 @@ msgstr ""
 msgid "Error in the field '%s': value should be between %d and %d."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:85
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:95
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr ""
@@ -1710,7 +1680,7 @@ msgid "File: "
 msgstr "Dosya:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:23
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:55
 #, fuzzy
 #| msgid "Filename format:"
@@ -1828,12 +1798,12 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
 msgid "Font..."
 msgstr "Yazı Tipi..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:185
@@ -1860,7 +1830,7 @@ msgstr "Çerçeve rengi:"
 msgid "Frame rate:"
 msgstr "Çerçeve rengi:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
 msgid "Frames layout"
 msgstr "Çerçeve düzeni"
 
@@ -1985,7 +1955,7 @@ msgstr "Geçmiş"
 msgid "History has been cleared successfully."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
 msgid "Horizontal interval:"
 msgstr "Yatay aralık:"
 
@@ -2320,7 +2290,9 @@ msgid "MD5 check of the update package failed "
 msgstr "Güncelleştirme paketi MD5 kontrolü başarısız oldu"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:128
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:64
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:64
 #, fuzzy
 #| msgid "Clear list"
 msgid "Macros list"
@@ -2457,7 +2429,7 @@ msgstr "Dosya başına eylem  sayısı"
 msgid "Num of retries per file:"
 msgstr "Dosya başına tekrar sayısı"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
 msgid "Number of columns:"
 msgstr "Sütun sayısı:"
 
@@ -2745,7 +2717,7 @@ msgstr "Proxy türü:"
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:186
@@ -2948,7 +2920,7 @@ msgstr "Profili Kaydet"
 msgid "Saving image..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 msgid "Saving parameters"
 msgstr "Kayıt parametreleri"
 
@@ -3113,8 +3085,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:156
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:135
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:155
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:145
 msgid "Select folder"
 msgstr "Klasör seç"
 
@@ -3481,7 +3453,7 @@ msgstr "Metin Ayarları:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
 msgid "Text color:"
 msgstr "Metin rengi:"
 
@@ -3536,16 +3508,16 @@ msgid "The file name contains forbidden characters."
 msgstr "Dosya adı yasak karakter içeremez!"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:161
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:93
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:118
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:103
 #, fuzzy
 #| msgid "Server's name cannot be empty"
 msgid "The filename template cannot be empty!"
 msgstr "Sunucu adı boş olamaz"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:165
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:97
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:122
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:107
 #, fuzzy
 #| msgid "File name cannot contains forbidden characters!"
 msgid "The filename template contains forbidden characters!"
@@ -3601,7 +3573,7 @@ msgstr "Öngörüntü ayarları"
 msgid "Thumbnail text:"
 msgstr "Öngörüntü metni:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
 msgid "Thumbnail width:"
 msgstr "Öngörüntü genişliği:"
 
@@ -3626,7 +3598,7 @@ msgstr "Zaman aşımı:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:95
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:35
 msgid "Timeout:"
 msgstr "Zaman aşımı:"
 
@@ -3861,7 +3833,7 @@ msgstr "Varsayılan öngörüntü ayarlarını kullan"
 msgid "Use direct links"
 msgstr "Direkt link kullan"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Use old method of rectangular area selection"
 msgstr "Eski yöntem diktörtgen alan seçimini kullan"
 
@@ -3891,7 +3863,7 @@ msgstr "Kullanıcı adı"
 msgid "VIDEO %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
 msgid "Vertical interval:"
 msgstr "Dikey aralık:"
 
@@ -4075,13 +4047,9 @@ msgstr "Tam ekran veya seçilen bir bölgenin resmini yakala"
 msgid "and/or height:"
 msgstr "ve/veya yükseklik:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
-#, fuzzy
-#| msgid "Account..."
-msgid "counter"
-msgstr "Hesap..."
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
 msgid "day"
 msgstr ""
 
@@ -4112,20 +4080,30 @@ msgid "high quality (100)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:174
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
 msgid "hour"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:179
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
 #, fuzzy
 #| msgid "By height"
 msgid "image height"
 msgstr "Yükseklik"
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:178
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
 #, fuzzy
 #| msgid "Change width:"
 msgid "image width"
 msgstr "Genişlik değiştir:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:177
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
+msgid "index"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
@@ -4133,14 +4111,18 @@ msgid "low quality (0)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:175
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
 msgid "minute"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:172
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
 msgid "month"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:38
 msgid "msec"
 msgstr ""
 
@@ -4162,11 +4144,13 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:37
 msgid "sec"
 msgstr "saniye"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:176
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
 msgid "second"
 msgstr ""
 
@@ -4190,21 +4174,84 @@ msgstr "Tahir YILMAZ"
 msgid "unknown server"
 msgstr "Rasgele sunucu"
 
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
+#, fuzzy
+#| msgid "Filesize: "
+msgid "video file extension"
+msgstr "Dosya Boyutu:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:160
+#, fuzzy
+#| msgid "Video files"
+msgid "video file name"
+msgstr "Video dosyaları"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:159
+msgid "video file name without extension"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:256
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
 #, fuzzy
 #| msgid "By height"
 msgid "video height"
 msgstr "Yükseklik"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
 #, fuzzy
 #| msgid "Change width:"
 msgid "video width"
 msgstr "Genişlik değiştir:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:171
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 msgid "year"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Height:"
+#~ msgid "height"
+#~ msgstr "Yükseklik:"
+
+#, fuzzy
+#~| msgid "By width"
+#~ msgid "width"
+#~ msgstr "Genişlik"
+
+#~ msgid ""
+#~ "%f% - name of videofile without extension, \n"
+#~ "%fe% -  name of videofile, \n"
+#~ "%ext% - extension, \n"
+#~ "%y% - year, %m% - month, %d% - day\n"
+#~ "%h% - hour, %n% - minute, %s% - second\n"
+#~ " %i% - file counter,\n"
+#~ "%cx% - width,  %cy% - height"
+#~ msgstr ""
+#~ "%f% - Uzantısız video adı, \n"
+#~ "%fe% -  Video adı,\n"
+#~ "%ext% - Uzantı, \n"
+#~ "%y% - Yıl, %m% - Ay, %d% - Gün\n"
+#~ "%h% - Saat, %n% - Dakika, %s% - Saniye\n"
+#~ " %i% - Dosya sırası,\n"
+#~ "%cx% - Genişlik,  %cy% - Yükseklik"
+
+#~ msgid ""
+#~ "%y - year, %m - month, %d - day\n"
+#~ "%h - hour, %n - minute, %s - seconds\n"
+#~ " %i - image index,\n"
+#~ "%width% - width of image,  %height% - height of image"
+#~ msgstr ""
+#~ "%y - yıl, %m - ay, %d - gün\n"
+#~ "%h saat, %n - dakika, %s - saniye\n"
+#~ " %i - resim sırası, \n"
+#~ "%width% görüntü genişliği, %height% - görüntü yüksekliği"
+
+#, fuzzy
+#~| msgid "Account..."
+#~ msgid "counter"
+#~ msgstr "Hesap..."
 
 #, c-format
 #~ msgid "File \"%s\" is beeing uploaded to server %s.."
@@ -4275,9 +4322,6 @@ msgstr ""
 
 #~ msgid "By larger side"
 #~ msgstr "Geniş yan"
-
-#~ msgid "By width"
-#~ msgstr "Genişlik"
 
 #~ msgid "Copy URL"
 #~ msgstr "Link'i Kopyala"

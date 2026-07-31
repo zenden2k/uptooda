@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-30 12:25+0300\n"
+"POT-Creation-Date: 2026-07-31 14:45+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/image-uploader/"
@@ -112,17 +112,6 @@ msgstr[2] "Фасцикла није одабрана"
 msgid "%d%%"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
-msgid ""
-"%f% - name of videofile without extension, \n"
-"%fe% -  name of videofile, \n"
-"%ext% - extension, \n"
-"%y% - year, %m% - month, %d% - day\n"
-"%h% - hour, %n% - minute, %s% - second\n"
-" %i% - file counter,\n"
-"%cx% - width,  %cy% - height"
-msgstr ""
-
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
@@ -161,18 +150,6 @@ msgid_plural "%u errors have not been fixed."
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
-msgid ""
-"%y - year, %m - month, %d - day\n"
-"%h - hour, %n - minute, %s - seconds\n"
-" %i - image index,\n"
-"%width% - width of image,  %height% - height of image"
-msgstr ""
-"%y - година, %m - месец, %d - дан\n"
-"%h - сати, %n - минути, %s - секунди\n"
-" %i - индекс слике,\n"
-"%width% - ширина слике,  %height% - висина слике"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
@@ -378,7 +355,7 @@ msgstr "Додатне поставке..."
 msgid "Additional params"
 msgstr "Додатни параметри"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:33
 msgid "Additional settings"
 msgstr "Додатне поставке"
 
@@ -390,7 +367,7 @@ msgstr "Адреса:"
 msgid "Advice:"
 msgstr "Савет:"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
@@ -445,7 +422,7 @@ msgstr ""
 msgid "Allow opening existing images in fullscreen mode"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Always copy captured image to clipboard"
 msgstr "Увек копирај ухвачену слику у оставу"
 
@@ -474,7 +451,7 @@ msgstr ""
 msgid "Any file"
 msgstr "Било шта"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
 msgid "Appearance options"
 msgstr "Опције изгледа"
 
@@ -632,13 +609,13 @@ msgstr "Доњи леви угао"
 msgid "Bottom right corner"
 msgstr "Доњи десни угао"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "Bring window to foreground when selected by mouse"
 msgstr "Постави прозор испред ако је одабран мишем"
 
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:39
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
 msgstr "Тражи..."
@@ -749,7 +726,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:97
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
 #, fuzzy
 #| msgid "Capture Rectangular Region"
 msgid "Capture cursor"
@@ -769,7 +746,7 @@ msgstr "Ухвати актини прозор"
 msgid "Capture the Entire Screen"
 msgstr "Ухвати цео екран"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "Capture with shadow"
 msgstr ""
 
@@ -919,11 +896,11 @@ msgstr "Обриши све"
 msgid "Clear server settings"
 msgstr "Поставке сервера %s"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
 msgid "Clear window transparent corners"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 msgid "Clear window's background"
 msgstr ""
 
@@ -1271,7 +1248,7 @@ msgstr ""
 msgid "Deinterlace"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 msgid "Delay when hiding window:"
 msgstr "чекање на сакривање прозора:"
 
@@ -1299,7 +1276,7 @@ msgstr ""
 msgid "Developer mode"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:40
 msgid "Directory to save screenshots:"
 msgstr "фасцикла за сачувавање усликавања:"
 
@@ -1307,7 +1284,7 @@ msgstr "фасцикла за сачувавање усликавања:"
 msgid "Disable localization"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
 msgid "Display video file information on resulting picture"
 msgstr "Покажи инфо видеа на резултатну слику"
 
@@ -1488,7 +1465,7 @@ msgstr ""
 msgid "Error in the field '%s': value should be between %d and %d."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:85
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:95
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr ""
@@ -1658,7 +1635,7 @@ msgid "File: "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:23
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:55
 #, fuzzy
 #| msgid "Filename format:"
@@ -1776,12 +1753,12 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
 msgid "Font..."
 msgstr "Фонт..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:185
@@ -1806,7 +1783,7 @@ msgstr ""
 msgid "Frame rate:"
 msgstr "Модел фрејмова"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
 msgid "Frames layout"
 msgstr "Модел фрејмова"
 
@@ -1929,7 +1906,7 @@ msgstr ""
 msgid "History has been cleared successfully."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
 msgid "Horizontal interval:"
 msgstr "Хоризонтални интервал:"
 
@@ -2255,7 +2232,9 @@ msgid "MD5 check of the update package failed "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:128
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:64
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:64
 #, fuzzy
 #| msgid "Clear list"
 msgid "Macros list"
@@ -2392,7 +2371,7 @@ msgstr "Понављање по акцији:"
 msgid "Num of retries per file:"
 msgstr "Понављање по датотеку:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
 msgid "Number of columns:"
 msgstr "Број колона:"
 
@@ -2678,7 +2657,7 @@ msgstr "Тип проксија:"
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:186
@@ -2879,7 +2858,7 @@ msgstr "Видео датотеке"
 msgid "Saving image..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 msgid "Saving parameters"
 msgstr "Сачувавање параметра"
 
@@ -3044,8 +3023,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:156
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:135
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:155
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:145
 msgid "Select folder"
 msgstr "Одабир фасцикле"
 
@@ -3408,7 +3387,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
 msgid "Text color:"
 msgstr "Боја текста:"
 
@@ -3458,14 +3437,14 @@ msgid "The file name contains forbidden characters."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:161
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:93
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:118
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:103
 msgid "The filename template cannot be empty!"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:165
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:97
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:122
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:107
 msgid "The filename template contains forbidden characters!"
 msgstr ""
 
@@ -3517,7 +3496,7 @@ msgstr ""
 msgid "Thumbnail text:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
 msgid "Thumbnail width:"
 msgstr "Ширина сличице:"
 
@@ -3544,7 +3523,7 @@ msgstr "Тајмаут:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:95
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:35
 msgid "Timeout:"
 msgstr "Тајмаут:"
 
@@ -3780,7 +3759,7 @@ msgstr ""
 msgid "Use direct links"
 msgstr "Користи директни линкови"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Use old method of rectangular area selection"
 msgstr ""
 
@@ -3810,7 +3789,7 @@ msgstr ""
 msgid "VIDEO %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
 msgid "Vertical interval:"
 msgstr "вертикални интервал:"
 
@@ -3993,13 +3972,9 @@ msgstr "слика целог екрана или одабране зоне"
 msgid "and/or height:"
 msgstr "и/или висину:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
-#, fuzzy
-#| msgid "Specify account..."
-msgid "counter"
-msgstr "Унети налог..."
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
 msgid "day"
 msgstr ""
 
@@ -4030,20 +4005,30 @@ msgid "high quality (100)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:174
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
 msgid "hour"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:179
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
 #, fuzzy
 #| msgid "Highlight"
 msgid "image height"
 msgstr "Marker"
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:178
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
 #, fuzzy
 #| msgid "Change width:"
 msgid "image width"
 msgstr "Промени ширину:"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:177
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
+msgid "index"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
@@ -4051,14 +4036,18 @@ msgid "low quality (0)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:175
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
 msgid "minute"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:172
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
 msgid "month"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:38
 msgid "msec"
 msgstr "мсек"
 
@@ -4080,11 +4069,13 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:37
 msgid "sec"
 msgstr "сек"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:176
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
 msgid "second"
 msgstr ""
 
@@ -4106,21 +4097,67 @@ msgstr ""
 msgid "unknown server"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
+#, fuzzy
+#| msgid "Filesize: "
+msgid "video file extension"
+msgstr "Величина:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:160
+#, fuzzy
+#| msgid "Video files"
+msgid "video file name"
+msgstr "Видео датотеке"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:159
+msgid "video file name without extension"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:256
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
 #, fuzzy
 #| msgid "Highlight"
 msgid "video height"
 msgstr "Marker"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
 #, fuzzy
 #| msgid "Change width:"
 msgid "video width"
 msgstr "Промени ширину:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:171
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 msgid "year"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Highlight"
+#~ msgid "height"
+#~ msgstr "Marker"
+
+#, fuzzy
+#~| msgid "Change width:"
+#~ msgid "width"
+#~ msgstr "Промени ширину:"
+
+#~ msgid ""
+#~ "%y - year, %m - month, %d - day\n"
+#~ "%h - hour, %n - minute, %s - seconds\n"
+#~ " %i - image index,\n"
+#~ "%width% - width of image,  %height% - height of image"
+#~ msgstr ""
+#~ "%y - година, %m - месец, %d - дан\n"
+#~ "%h - сати, %n - минути, %s - секунди\n"
+#~ " %i - индекс слике,\n"
+#~ "%width% - ширина слике,  %height% - висина слике"
+
+#, fuzzy
+#~| msgid "Specify account..."
+#~ msgid "counter"
+#~ msgstr "Унети налог..."
 
 #, c-format
 #~ msgid "File \"%s\" is beeing uploaded to server %s.."

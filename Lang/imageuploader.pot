@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-30 12:25+0300\n"
+"POT-Creation-Date: 2026-07-31 14:45+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,17 +105,6 @@ msgstr[1] ""
 msgid "%d%%"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
-msgid ""
-"%f% - name of videofile without extension, \n"
-"%fe% -  name of videofile, \n"
-"%ext% - extension, \n"
-"%y% - year, %m% - month, %d% - day\n"
-"%h% - hour, %n% - minute, %s% - second\n"
-" %i% - file counter,\n"
-"%cx% - width,  %cy% - height"
-msgstr ""
-
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, c-format
 msgid "%s (screen recording)"
@@ -152,14 +141,6 @@ msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
 msgstr[0] ""
 msgstr[1] ""
-
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
-msgid ""
-"%y - year, %m - month, %d - day\n"
-"%h - hour, %n - minute, %s - seconds\n"
-" %i - image index,\n"
-"%width% - width of image,  %height% - height of image"
-msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
@@ -353,7 +334,7 @@ msgstr ""
 msgid "Additional params"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:33
 msgid "Additional settings"
 msgstr ""
 
@@ -365,7 +346,7 @@ msgstr ""
 msgid "Advice:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
@@ -420,7 +401,7 @@ msgstr ""
 msgid "Allow opening existing images in fullscreen mode"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Always copy captured image to clipboard"
 msgstr ""
 
@@ -447,7 +428,7 @@ msgstr ""
 msgid "Any file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
 msgid "Appearance options"
 msgstr ""
 
@@ -603,13 +584,13 @@ msgstr ""
 msgid "Bottom right corner"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "Bring window to foreground when selected by mouse"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:39
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
 msgstr ""
@@ -717,7 +698,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:97
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
 msgid "Capture cursor"
 msgstr ""
 
@@ -735,7 +716,7 @@ msgstr ""
 msgid "Capture the Entire Screen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "Capture with shadow"
 msgstr ""
 
@@ -879,11 +860,11 @@ msgstr ""
 msgid "Clear server settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
 msgid "Clear window transparent corners"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 msgid "Clear window's background"
 msgstr ""
 
@@ -1211,7 +1192,7 @@ msgstr ""
 msgid "Deinterlace"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 msgid "Delay when hiding window:"
 msgstr ""
 
@@ -1239,7 +1220,7 @@ msgstr ""
 msgid "Developer mode"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:40
 msgid "Directory to save screenshots:"
 msgstr ""
 
@@ -1247,7 +1228,7 @@ msgstr ""
 msgid "Disable localization"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
 msgid "Display video file information on resulting picture"
 msgstr ""
 
@@ -1426,7 +1407,7 @@ msgstr ""
 msgid "Error in the field '%s': value should be between %d and %d."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:85
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:95
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr ""
@@ -1590,7 +1571,7 @@ msgid "File: "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:23
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:55
 msgid "Filename and path template:"
 msgstr ""
@@ -1703,12 +1684,12 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
 msgid "Font..."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:185
@@ -1731,7 +1712,7 @@ msgstr ""
 msgid "Frame rate:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
 msgid "Frames layout"
 msgstr ""
 
@@ -1852,7 +1833,7 @@ msgstr ""
 msgid "History has been cleared successfully."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
 msgid "Horizontal interval:"
 msgstr ""
 
@@ -2165,7 +2146,9 @@ msgid "MD5 check of the update package failed "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:128
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:64
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:64
 msgid "Macros list"
 msgstr ""
 
@@ -2293,7 +2276,7 @@ msgstr ""
 msgid "Num of retries per file:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
 msgid "Number of columns:"
 msgstr ""
 
@@ -2571,7 +2554,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:186
@@ -2765,7 +2748,7 @@ msgstr ""
 msgid "Saving image..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 msgid "Saving parameters"
 msgstr ""
 
@@ -2903,8 +2886,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:156
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:135
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:155
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:145
 msgid "Select folder"
 msgstr ""
 
@@ -3257,7 +3240,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
 msgid "Text color:"
 msgstr ""
 
@@ -3305,14 +3288,14 @@ msgid "The file name contains forbidden characters."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:161
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:93
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:118
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:103
 msgid "The filename template cannot be empty!"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:165
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:97
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:122
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:107
 msgid "The filename template contains forbidden characters!"
 msgstr ""
 
@@ -3362,7 +3345,7 @@ msgstr ""
 msgid "Thumbnail text:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
 msgid "Thumbnail width:"
 msgstr ""
 
@@ -3385,7 +3368,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:95
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:35
 msgid "Timeout:"
 msgstr ""
 
@@ -3614,7 +3597,7 @@ msgstr ""
 msgid "Use direct links"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Use old method of rectangular area selection"
 msgstr ""
 
@@ -3644,7 +3627,7 @@ msgstr ""
 msgid "VIDEO %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
 msgid "Vertical interval:"
 msgstr ""
 
@@ -3810,11 +3793,9 @@ msgstr ""
 msgid "and/or height:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
-msgid "counter"
-msgstr ""
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
 msgid "day"
 msgstr ""
 
@@ -3841,15 +3822,25 @@ msgid "high quality (100)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:174
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
 msgid "hour"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:179
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
 msgid "image height"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:178
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
 msgid "image width"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:177
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
+msgid "index"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
@@ -3858,14 +3849,18 @@ msgid "low quality (0)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:175
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
 msgid "minute"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:172
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
 msgid "month"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:38
 msgid "msec"
 msgstr ""
 
@@ -3885,11 +3880,13 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:37
 msgid "sec"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:176
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
 msgid "second"
 msgstr ""
 
@@ -3909,14 +3906,30 @@ msgstr ""
 msgid "unknown server"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
+msgid "video file extension"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:160
+msgid "video file name"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:159
+msgid "video file name without extension"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:256
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
 msgid "video height"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
 msgid "video width"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:171
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 msgid "year"
 msgstr ""

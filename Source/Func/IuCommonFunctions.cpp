@@ -30,7 +30,7 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder) {
         lstrcpy(TempPath, ShortPath);
     }
     DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
-    IUCommonTempFolder.Format(_T("%stmd_iu_temp"), static_cast<LPCTSTR>(TempPath));
+    IUCommonTempFolder.Format(_T("%stmd_iu_temp"), TempPath);
 
     if (!CreateDirectory(IUCommonTempFolder, 0)) {
         DWORD errorCode = GetLastError();

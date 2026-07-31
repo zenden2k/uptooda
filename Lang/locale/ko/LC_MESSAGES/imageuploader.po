@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-30 12:25+0300\n"
+"POT-Creation-Date: 2026-07-31 14:45+0300\n"
 "PO-Revision-Date: 2025-08-24 20:38+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -99,24 +99,6 @@ msgstr[0] "전체에서 %d 서버 선택..."
 msgid "%d%%"
 msgstr "%d%%"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
-msgid ""
-"%f% - name of videofile without extension, \n"
-"%fe% -  name of videofile, \n"
-"%ext% - extension, \n"
-"%y% - year, %m% - month, %d% - day\n"
-"%h% - hour, %n% - minute, %s% - second\n"
-" %i% - file counter,\n"
-"%cx% - width,  %cy% - height"
-msgstr ""
-"%f% - 확장자 없는 비디오 파일의 이름, \n"
-"%fe% - 비디오 파일의 이름, \n"
-"%ext% - 확장자, \n"
-"%y% - 년, %m% - 월, %d% - 일\n"
-"%h% - 시, %n% - 분, %s% - 초\n"
-" %i% - 파일 카운터,\n"
-"%cx% - 너비, %cy% - 높이"
-
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
 #, c-format
 msgid "%s (screen recording)"
@@ -152,18 +134,6 @@ msgstr "%s 서버 설정"
 msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
 msgstr[0] "%u 오류가 수정되었습니다."
-
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
-msgid ""
-"%y - year, %m - month, %d - day\n"
-"%h - hour, %n - minute, %s - seconds\n"
-" %i - image index,\n"
-"%width% - width of image,  %height% - height of image"
-msgstr ""
-"%y - 년, %m - 월, %d - 일\n"
-"%h - 시, %n - 분, %s - 초\n"
-" %i - 이미지 색인\n"
-"%width% - 이미지 너비, %height% - 이미지 높이"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
@@ -361,7 +331,7 @@ msgstr "추가 옵션..."
 msgid "Additional params"
 msgstr "추가 매개 변수"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:33
 msgid "Additional settings"
 msgstr "추가 설정"
 
@@ -373,7 +343,7 @@ msgstr "주소:"
 msgid "Advice:"
 msgstr "팁:"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Aero only (Windows Vista or later)"
 msgstr "에어로 전용 (Windows Vista 이상)"
 
@@ -432,7 +402,7 @@ msgstr "전체 화면 편집기에서 Alt+Tab 키 허용"
 msgid "Allow opening existing images in fullscreen mode"
 msgstr "전체 화면 모드에서 이미지 편집 허용"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Always copy captured image to clipboard"
 msgstr "항상 캡처한 이미지를 클립보드에 복사"
 
@@ -460,7 +430,7 @@ msgstr ""
 msgid "Any file"
 msgstr "모든 파일"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
 msgid "Appearance options"
 msgstr "모양 옵션"
 
@@ -618,13 +588,13 @@ msgstr "좌측 하단 모서리"
 msgid "Bottom right corner"
 msgstr "우측 하단 모서리"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "Bring window to foreground when selected by mouse"
 msgstr "마우스로 선택 시 창을 맨 앞으로 가져오기"
 
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:39
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
 msgstr "찾아보기..."
@@ -739,7 +709,7 @@ msgstr "선택한 창 캡처"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:97
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
 msgid "Capture cursor"
 msgstr "커서 캡처"
 
@@ -757,7 +727,7 @@ msgstr "활성 창 캡처"
 msgid "Capture the Entire Screen"
 msgstr "전체 화면 캡처"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "Capture with shadow"
 msgstr "그림자 포함 캡처"
 
@@ -903,11 +873,11 @@ msgstr "로그 지우기"
 msgid "Clear server settings"
 msgstr "서버 설정 지우기"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
 msgid "Clear window transparent corners"
 msgstr "창 투명 모서리 지우기"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 msgid "Clear window's background"
 msgstr "창 배경 지우기"
 
@@ -1242,7 +1212,7 @@ msgstr "기본 설정"
 msgid "Deinterlace"
 msgstr "디인터레이스"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 msgid "Delay when hiding window:"
 msgstr "창 숨길 때 지연:"
 
@@ -1270,7 +1240,7 @@ msgstr "서버에서 파일 삭제 중"
 msgid "Developer mode"
 msgstr "개발자 모드"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:40
 msgid "Directory to save screenshots:"
 msgstr "스크린샷 저장 디렉터리:"
 
@@ -1278,7 +1248,7 @@ msgstr "스크린샷 저장 디렉터리:"
 msgid "Disable localization"
 msgstr "비디오 정보에서 번역 비활성화"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
 msgid "Display video file information on resulting picture"
 msgstr "결과 사진에 비디오 파일 정보 표시"
 
@@ -1459,7 +1429,7 @@ msgstr "'%s' 필드에서 오류:\n"
 msgid "Error in the field '%s': value should be between %d and %d."
 msgstr "'%s' 필드에서 오류: 값은 %d~%d 사이여야 합니다."
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:85
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:95
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr "'%s' 필드에서 오류: 값은 0보다 커야 함"
@@ -1628,7 +1598,7 @@ msgid "File: "
 msgstr "파일: "
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:23
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:55
 #, fuzzy
 #| msgid "Filename format:"
@@ -1743,12 +1713,12 @@ msgstr "글꼴 크기:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
 msgid "Font..."
 msgstr "글꼴..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:185
@@ -1771,7 +1741,7 @@ msgstr "프레임 색상:"
 msgid "Frame rate:"
 msgstr "프레임 레이트:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:51
 msgid "Frames layout"
 msgstr "프레임 레이아웃"
 
@@ -1892,7 +1862,7 @@ msgstr "작업 기록"
 msgid "History has been cleared successfully."
 msgstr "작업 기록이 성공적으로 삭제되었습니다."
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
 msgid "Horizontal interval:"
 msgstr "수평 간격:"
 
@@ -2210,7 +2180,9 @@ msgid "MD5 check of the update package failed "
 msgstr "업데이트 패키지의 MD5 검사 실패 "
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:128
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:64
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:64
 #, fuzzy
 #| msgid "Clear list"
 msgid "Macros list"
@@ -2342,7 +2314,7 @@ msgstr "작업당 재시도 횟수:"
 msgid "Num of retries per file:"
 msgstr "파일당 재시도 횟수:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
 msgid "Number of columns:"
 msgstr "열 수:"
 
@@ -2623,7 +2595,7 @@ msgstr "프록시 유형:"
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:186
@@ -2823,7 +2795,7 @@ msgstr "파일로 저장"
 msgid "Saving image..."
 msgstr "이미지 저장 중..."
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 msgid "Saving parameters"
 msgstr "매개 변수 저장"
 
@@ -2967,8 +2939,8 @@ msgstr "모두 선택"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:156
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:135
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:155
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:145
 msgid "Select folder"
 msgstr "폴더 선택"
 
@@ -3323,7 +3295,7 @@ msgstr "텍스트 설정:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
 msgid "Text color:"
 msgstr "택스트 색상:"
 
@@ -3371,16 +3343,16 @@ msgid "The file name contains forbidden characters."
 msgstr "파일 이름에 금지된 문자가 포함되어 있습니다."
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:161
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:93
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:118
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:103
 #, fuzzy
 #| msgid "The file name cannot be empty."
 msgid "The filename template cannot be empty!"
 msgstr "파일 이름은 비워둘 수 없습니다."
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:165
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:123
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:97
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:122
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:107
 #, fuzzy
 #| msgid "The file name contains forbidden characters."
 msgid "The filename template contains forbidden characters!"
@@ -3432,7 +3404,7 @@ msgstr "썸네일 설정"
 msgid "Thumbnail text:"
 msgstr "썸네일 텍스트:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:48
 msgid "Thumbnail width:"
 msgstr "썸네일 너비:"
 
@@ -3455,7 +3427,7 @@ msgstr "시간"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:95
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:35
 msgid "Timeout:"
 msgstr "시작 지연:"
 
@@ -3688,7 +3660,7 @@ msgstr "기본 썸네일 설정 사용"
 msgid "Use direct links"
 msgstr "직접 링크 사용"
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Use old method of rectangular area selection"
 msgstr "사각형 영역 선택 시 기존(예전) 방식 사용"
 
@@ -3718,7 +3690,7 @@ msgstr "사용자명"
 msgid "VIDEO %s"
 msgstr "비디오 %s"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:50
 msgid "Vertical interval:"
 msgstr "수직 간격:"
 
@@ -3888,13 +3860,9 @@ msgstr "전체 화면 또는 선택된 영역의 사진"
 msgid "and/or height:"
 msgstr "및/또는 높이:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
-#, fuzzy
-#| msgid "Account"
-msgid "counter"
-msgstr "계정"
-
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
 msgid "day"
 msgstr ""
 
@@ -3921,16 +3889,26 @@ msgid "high quality (100)"
 msgstr "고품질 (100)"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:174
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
 msgid "hour"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:179
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
 msgid "image height"
 msgstr "이미지 높이"
 
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:178
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
 msgid "image width"
 msgstr "이미지 너비"
+
+#: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:177
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
+msgid "index"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
@@ -3938,14 +3916,18 @@ msgid "low quality (0)"
 msgstr "저품질 (0)"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:175
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
 msgid "minute"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:172
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
 msgid "month"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:38
 msgid "msec"
 msgstr "밀리초"
 
@@ -3965,11 +3947,13 @@ msgstr "필수"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
-#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:37
 msgid "sec"
 msgstr "초"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:176
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
 msgid "second"
 msgstr ""
 
@@ -3989,21 +3973,84 @@ msgstr "비너스걸: https://venusgirls.tistory.com/"
 msgid "unknown server"
 msgstr "알 수 없는 서버"
 
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
+#, fuzzy
+#| msgid "Extension"
+msgid "video file extension"
+msgstr "확장자"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:160
+#, fuzzy
+#| msgid "Video files"
+msgid "video file name"
+msgstr "비디오 파일"
+
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:159
+msgid "video file name without extension"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:256
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
 #, fuzzy
 #| msgid "image height"
 msgid "video height"
 msgstr "이미지 높이"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
 #, fuzzy
 #| msgid "image width"
 msgid "video width"
 msgstr "이미지 너비"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:171
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 msgid "year"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Height:"
+#~ msgid "height"
+#~ msgstr "높이:"
+
+#, fuzzy
+#~| msgid "By width"
+#~ msgid "width"
+#~ msgstr "너비별"
+
+#~ msgid ""
+#~ "%f% - name of videofile without extension, \n"
+#~ "%fe% -  name of videofile, \n"
+#~ "%ext% - extension, \n"
+#~ "%y% - year, %m% - month, %d% - day\n"
+#~ "%h% - hour, %n% - minute, %s% - second\n"
+#~ " %i% - file counter,\n"
+#~ "%cx% - width,  %cy% - height"
+#~ msgstr ""
+#~ "%f% - 확장자 없는 비디오 파일의 이름, \n"
+#~ "%fe% - 비디오 파일의 이름, \n"
+#~ "%ext% - 확장자, \n"
+#~ "%y% - 년, %m% - 월, %d% - 일\n"
+#~ "%h% - 시, %n% - 분, %s% - 초\n"
+#~ " %i% - 파일 카운터,\n"
+#~ "%cx% - 너비, %cy% - 높이"
+
+#~ msgid ""
+#~ "%y - year, %m - month, %d - day\n"
+#~ "%h - hour, %n - minute, %s - seconds\n"
+#~ " %i - image index,\n"
+#~ "%width% - width of image,  %height% - height of image"
+#~ msgstr ""
+#~ "%y - 년, %m - 월, %d - 일\n"
+#~ "%h - 시, %n - 분, %s - 초\n"
+#~ " %i - 이미지 색인\n"
+#~ "%width% - 이미지 너비, %height% - 이미지 높이"
+
+#, fuzzy
+#~| msgid "Account"
+#~ msgid "counter"
+#~ msgstr "계정"
 
 #, c-format
 #~ msgid "File \"%s\" is beeing uploaded to server %s.."
@@ -4203,9 +4250,6 @@ msgstr ""
 
 #~ msgid "Capture entire screen"
 #~ msgstr "전체 화면 캡처"
-
-#~ msgid "By width"
-#~ msgstr "너비별"
 
 #~ msgid "By larger side"
 #~ msgstr "큰 면에 의해"

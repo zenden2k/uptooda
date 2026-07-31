@@ -31,22 +31,31 @@ class CScreenshotSettingsPage :    public CDialogImpl<CScreenshotSettingsPage>,
                                      public CSettingsPage
 {
     public:
-        CScreenshotSettingsPage();
-        ~CScreenshotSettingsPage();
+        CScreenshotSettingsPage() = default;
         enum { IDD = IDD_SCREENSHOTSETTINGSPAGE};
 
     protected:
         BEGIN_MSG_MAP(CScreenshotSettingsPage)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDC_SCREENSHOTSFOLDERSELECT, BN_CLICKED, OnScreenshotsFolderSelect)
+            COMMAND_HANDLER(IDC_SCREENSHOTMACROSBUTTON, BN_CLICKED, OnMacrosButtonClicked)
         END_MSG_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        bool apply() override;
+        LRESULT OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+        bool apply() override;
+        void createResources();
+        CEdit filepathTemplateEdit_;
+        CButton filepathMacrosButton_;
+        CToolTipCtrl tooltipControl_;
+        CIcon iconInfo_;
 };
 
 

@@ -251,7 +251,7 @@ LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotify
             { _T("%h"), TR("hour")},
             { _T("%n"), TR("minute")},
             { _T("%s"), TR("second")},
-            { _T("%i"), TR("counter")},
+            { _T("%i"), TR("index")},
             { _T("%width%"), TR("video width")},
             { _T("%height%"), TR("video height") }
         };

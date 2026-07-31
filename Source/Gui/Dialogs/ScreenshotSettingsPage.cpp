@@ -25,16 +25,7 @@
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Func/MyUtils.h"
 #include "Gui/Constants.h"
-
-// CScreenshotSettingsPagePage
-CScreenshotSettingsPage::CScreenshotSettingsPage()
-{
-
-}
-
-CScreenshotSettingsPage::~CScreenshotSettingsPage()
-{
-}
+#include "Gui/Helpers/DPIHelper.h"
 
 LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -52,7 +43,6 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_ALWAYSCOPYTOCLIPBOARD, "Always copy captured image to clipboard");
     TRC(IDC_SCREENSHOTSAVINGPARAMS, "Saving parameters");
     TRC(IDC_FOREGROUNDWHENSHOOTING, "Bring window to foreground when selected by mouse");
-    TRC(IDC_PARAMETERSHINTLABEL, "%y - year, %m - month, %d - day\n%h - hour, %n - minute, %s - seconds\n %i - image index,\n%width% - width of image,  %height% - height of image");
     TRC(IDC_ADDSHADOW, "Capture with shadow");
     CString removeCornersText = TR("Clear window transparent corners")+CString(_T(" (Windows Vista/7)"));
     SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
@@ -60,6 +50,7 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
+    tooltipControl_.Create(m_hWnd);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
@@ -67,6 +58,14 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
         LONG styleEx = ::GetWindowLong(screenshotFolderEditHwnd, GWL_EXSTYLE);
         ::SetWindowLong(screenshotFolderEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
     }
+
+    filepathTemplateEdit_.Attach(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
+    filepathMacrosButton_.Attach(GetDlgItem(IDC_SCREENSHOTMACROSBUTTON));
+    CString tooltipText = TR("Macros list");
+    CToolInfo tip(TTF_SUBCLASS, filepathMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    tooltipControl_.AddTool(tip);
+
+    createResources();
 
     SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
 
@@ -163,5 +162,65 @@ LRESULT CScreenshotSettingsPage::OnScreenshotsFolderSelect(WORD wNotifyCode, WOR
         return true;
     }
 
+    return 0;
+}
+
+LRESULT CScreenshotSettingsPage::OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    const std::vector<std::pair<CString, CString>> items{
+        {_T("%y"), TR("year")},
+        {_T("%m"), TR("month")},
+        {_T("%d"), TR("day")},
+        {_T("%h"), TR("hour")},
+        {_T("%n"), TR("minute")},
+        {_T("%s"), TR("second")},
+        {_T("%i"), TR("index")},
+        {_T("%width%"), TR("image width")},
+        {_T("%height%"), TR("image height")},
+    };
+
+    RECT rc {};
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu macrosMenu;
+
+    int id = 1;
+    macrosMenu.CreatePopupMenu();
+
+    for (const auto& item : items) {
+        CString title = item.first + _T(" - ") + item.second;
+        macrosMenu.AppendMenu(MF_STRING, id++, title);
+    }
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    if (result && (result - 1 < items.size())) {
+        filepathTemplateEdit_.ReplaceSel(items[result - 1].first, TRUE);
+    }
+
+    return 0;
+}
+
+void CScreenshotSettingsPage::createResources() {
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
+    }
+
+    if (SUCCEEDED(iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight))) {
+        filepathMacrosButton_.SetIcon(iconInfo_);
+    }
+}
+
+LRESULT CScreenshotSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
     return 0;
 }

@@ -41,6 +41,8 @@ public:
 
     BEGIN_MSG_MAP(CVideoGrabberParams)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
+        COMMAND_HANDLER(IDC_VIDEOGRABBERMACROSBUTTON, BN_CLICKED, OnMacrosButtonClicked)
         COMMAND_ID_HANDLER_EX(IDC_MEDIAINFOFONT, OnMediaInfoFontClicked)
         COMMAND_HANDLER(IDC_MEDIAINFOONIMAGE,BN_CLICKED, OnShowMediaInfoTextBnClicked)
         COMMAND_HANDLER(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, BN_CLICKED, OnVideoSnapshotsFolderButtonClicked);
@@ -51,13 +53,22 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    bool apply() override;
+    LRESULT OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnMediaInfoFontClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnShowMediaInfoTextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnVideoSnapshotsFolderButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+    bool apply() override;
 private:
     LOGFONT m_Font;
     CColorButton textColorButton_;
+    CEdit filepathTemplateEdit_;
+    CButton filepathMacrosButton_;
+    CToolTipCtrl tooltipControl_;
+    CIcon iconInfo_;
+
+    void createResources();
 };
 
 

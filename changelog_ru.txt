@@ -534,7 +534,7 @@ build 4299
 --v1.2 build 1449 [06.08.2009]--
 [F] Shell context menu integration in Vista's with UAC turned on (probably fixed)
 [F] Index of audio streams
-[c] PNG by default for screenshoting
+[c] PNG by default for screenshooting
 
 --v1.2 build 1424 [07.27.2009]--
 [+] Custom output templates support (templates.xml)

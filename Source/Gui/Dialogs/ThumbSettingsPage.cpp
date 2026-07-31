@@ -142,7 +142,7 @@ bool CThumbSettingsPage::apply()
     settings->DefaultImageUploadParams.setThumb(params_);
 
 
-    for (const auto& it: thumb_cache_) {
+    for (const auto& it: thumbCache_) {
         it.second->saveToFile();
     }
     return TRUE;
@@ -175,8 +175,8 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     fileName = getSelectedThumbnailFileName();
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail *thumb = nullptr;
-    const auto it = thumb_cache_.find(fileName);
-    if (it != thumb_cache_.end()) {
+    const auto it = thumbCache_.find(fileName);
+    if (it != thumbCache_.end()) {
         thumb = it->second.get();
     }
 
@@ -193,7 +193,7 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     if(dlg.DoModal(m_hWnd) == IDOK)
     {
         if (autoPtrThumb) {
-            thumb_cache_[fileName] = std::move(autoPtrThumb);
+            thumbCache_[fileName] = std::move(autoPtrThumb);
         }
 
         showSelectedThumbnailPreview();
@@ -238,9 +238,9 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = nullptr;
-    const auto it = thumb_cache_.find(fileName);
+    const auto it = thumbCache_.find(fileName);
 
-    if (it != thumb_cache_.end()) {
+    if (it != thumbCache_.end()) {
         thumb = it->second.get();
     }
     if(!thumb)
@@ -332,8 +332,8 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     }
     Thumbnail* thumb = nullptr;
     std::unique_ptr<Thumbnail> thumbPtr;
-    if (thumb_cache_.count(fileName)) {
-        thumb = thumb_cache_[fileName].get();
+    if (thumbCache_.count(fileName)) {
+        thumb = thumbCache_[fileName].get();
     } else {
         thumbPtr = std::make_unique<Thumbnail>();
         thumb = thumbPtr.get();

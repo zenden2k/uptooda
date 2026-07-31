@@ -24,6 +24,7 @@
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Constants.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CVideoGrabberParams
 CVideoGrabberSettingsPage::CVideoGrabberSettingsPage() : m_Font()
@@ -51,11 +52,20 @@ LRESULT CVideoGrabberSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_MEDIAINFOONIMAGE, "Display video file information on resulting picture");
     TRC(IDC_MEDIAINFOFONT, "Font...");
     TRC(IDC_TEXTCOLORLABEL, "Text color:");
-    TRC(IDC_PARAMETERSHINTLABEL, "%f% - name of videofile without extension, \n%fe% -  name of videofile, \n%ext% - extension, \n%y% - year, %m% - month, %d% - day\n%h% - hour, %n% - minute, %s% - second\n %i% - file counter,\n%cx% - width,  %cy% - height");
     TRC(IDC_SNAPSHOTFILENAMELABEL, "Filename and path template:");
 
     TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Folder for snapshots:");
     TRC(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, "Select...");
+
+    tooltipControl_.Create(m_hWnd);
+
+    filepathTemplateEdit_.Attach(GetDlgItem(IDC_SNAPSHOTFILENAMEEDIT));
+    filepathMacrosButton_.Attach(GetDlgItem(IDC_VIDEOGRABBERMACROSBUTTON));
+    CString tooltipText = TR("Macros list");
+    CToolInfo tip(TTF_SUBCLASS, filepathMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    tooltipControl_.AddTool(tip);
+
+    createResources();
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
@@ -140,5 +150,68 @@ LRESULT CVideoGrabberSettingsPage::OnVideoSnapshotsFolderButtonClicked(WORD wNot
         SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT,fd.GetFolderPath());
         return true;
     }
+    return 0;
+}
+
+LRESULT CVideoGrabberSettingsPage::OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    const std::vector<std::pair<CString, CString>> items{
+        {_T("%f%"),   TR("video file name without extension")},
+        {_T("%fe%"),  TR("video file name")},
+        {_T("%ext%"), TR("video file extension")},
+        {_T("%y%"),   TR("year")},
+        {_T("%m%"),   TR("month")},
+        {_T("%d%"),   TR("day")},
+        {_T("%h%"),   TR("hour")},
+        {_T("%n%"),   TR("minute")},
+        {_T("%s%"),   TR("second")},
+        {_T("%i%"),   TR("index")},
+        {_T("%cx%"),  TR("video width")},
+        {_T("%cy%"),  TR("video height")},
+    };
+
+    RECT rc {};
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu macrosMenu;
+
+    int id = 1;
+    macrosMenu.CreatePopupMenu();
+
+    for (const auto& item : items) {
+        CString title = item.first + _T(" - ") + item.second;
+        macrosMenu.AppendMenu(MF_STRING, id++, title);
+    }
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    if (result && (result - 1 < items.size())) {
+        filepathTemplateEdit_.ReplaceSel(items[result - 1].first, TRUE);
+    }
+
+    return 0;
+}
+
+void CVideoGrabberSettingsPage::createResources() {
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
+    }
+
+    if (SUCCEEDED(iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight))) {
+        filepathMacrosButton_.SetIcon(iconInfo_);
+    }
+}
+
+LRESULT CVideoGrabberSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
     return 0;
 }

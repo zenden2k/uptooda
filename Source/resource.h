@@ -877,6 +877,7 @@
 #define IDC_SEARCHSTATIC                1377
 #define IDC_FILENAMETEMPLATELABEL       1378
 #define IDC_FILENAMEMACROSBUTTON        1379
+#define IDC_SCREENSHOTMACROSBUTTON      1380
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -899,6 +900,7 @@
 #define ID_0_32787                      32787
 #define ID_0_32789                      32789
 #define IC_DELETEALL                    32791
+#define IDC_VIDEOGRABBERMACROSBUTTON    32791
 #define ID_0_OPENINOLDER                32793
 #define ID_0_OPENFINOLDER               32794
 #define IDM_OPENFINOLDER                32795
@@ -924,7 +926,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        360
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1380
+#define _APS_NEXT_CONTROL_VALUE         1382
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif
