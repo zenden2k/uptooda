@@ -2,8 +2,6 @@
 
 #include "Core/CommonDefs.h"
 #include "WizardDlg.h"
-#include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "ScreenCapture/ScreenRecorder/DXGIOptionsManager.h"
 #include "Gui/Components/MyFileDialog.h"

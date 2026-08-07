@@ -1,5 +1,5 @@
-#ifndef MarkerTool_h__
-#define MarkerTool_h__
+#ifndef MarkerTool_h_
+#define MarkerTool_h_
 
 #include <memory>
 
@@ -15,9 +15,8 @@ namespace ImageEditor {
 class MarkerTool: public AbstractDrawingTool  {
 public:
     explicit MarkerTool( Canvas* canvas );
-    ~MarkerTool();
     void beginDraw( int x, int y ) override;
-    void continueDraw( int x, int y, DWORD flags = 0) override;
+    void continueDraw( int x, int y, DWORD flags) override;
     void endDraw( int x, int y ) override;
     void render( Painter* gr ) override;
     CursorType getCursor(int x, int y) override;
@@ -36,4 +35,4 @@ protected:
 };
 }
 
-#endif // MarkerTool_h__
+#endif // MarkerTool_h_

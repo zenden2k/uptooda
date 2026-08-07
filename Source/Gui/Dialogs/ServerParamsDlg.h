@@ -76,7 +76,7 @@ class CServerParamsDlg :
     protected:
         CPropertyListCtrl m_wndParamList;
         ParameterList m_paramNameList;
-        CUploadEngineData *m_ue;
+        const CUploadEngineData *m_ue;
         bool focusOnLoginControl_;
         std::shared_ptr<CAdvancedUploadEngine> m_pluginLoader;
         CString oldLogin_;

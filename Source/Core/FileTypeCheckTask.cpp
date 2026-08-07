@@ -59,7 +59,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             std::string onlyName = IuCoreUtils::ExtractFileName(sf.fileName);
             std::string extension = IuCoreUtils::ExtractFileExt(sf.fileName);
 
-            CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
+            const CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
             ServerSettingsStruct* sss = settings->getServerSettings(serverProfile, false);
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
             std::string userType { isAuthorized ? UserTypes::REGISTERED : UserTypes::ANONYMOUS };

@@ -997,9 +997,9 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         message = TR("(the link has been copied to the clipboard)");
         code = url;
     } else if (settings->TrayResult == WtlGuiSettings::trLastCodeType) {
-        GeneratorID generatorId = static_cast<GeneratorID>(settings->CodeLang);
+        auto generatorId = static_cast<GeneratorID>(settings->CodeLang);
         //CodeLang lang = clBBCode;
-        CodeType codeType = static_cast<CodeType>(settings->CodeType);
+        auto codeType = static_cast<CodeType>(settings->CodeType);
         OutputGeneratorFactory factory;
         std::vector<UploadObject> objects { *obj };
         auto generator = factory.createOutputGenerator(generatorId, codeType);

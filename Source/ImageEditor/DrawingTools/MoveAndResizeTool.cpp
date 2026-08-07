@@ -33,7 +33,7 @@ bool PointsEqual(const POINT& a, const POINT& b) {
     return a.x == b.x && a.y == b.y;
 }
 
-CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
+CropOverlay* MoveAndResizeTool::cropOverlay_ = nullptr;
 
 MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
     currentElement_       = nullptr;

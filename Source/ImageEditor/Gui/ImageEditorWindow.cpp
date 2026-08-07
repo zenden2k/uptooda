@@ -1313,7 +1313,7 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource
     if (!resize) {
         return bm;
     }
-    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -1335,7 +1335,7 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadMenuIcon(int resource, b
     if (!resize) {
         return bm;
     }
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -1372,7 +1372,7 @@ LRESULT ImageEditorWindow::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    canvas_->setDrawingToolType(DrawingToolType::dtText );
+    canvas_->setDrawingToolType(DrawingToolType::dtText);
     updateToolbarDrawingTool(DrawingToolType::dtText);
     return 0;
 }
@@ -1431,7 +1431,7 @@ LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if ( saveDocument() ) {
+    if (saveDocument()) {
         EndDialog(drShare);
     }
     return 0;
@@ -1688,7 +1688,7 @@ bool ImageEditorWindow::onSave(bool closeFlag) {
     if (!sourceFileName_.IsEmpty()) {
         outFileName_ = sourceFileName_;
     } else if (openedAfterScreenshot()) {
-        CString fileName =  makeFileName();
+        CString fileName = makeFileName();
         if (WinUtils::GetFilePath(fileName).IsEmpty()) {
             return onSaveAs(closeFlag);
         }
@@ -2025,7 +2025,7 @@ CString ImageEditorWindow::makeFileName() const {
     CString fileExt = suggestingFileName.Mid(dotPos + 1);
     fileExt.MakeLower();
 
-    std::wstring_view imgTypes[5] = {_T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
+    std::wstring_view imgTypes[] = {_T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
     int format = screenshotSettings.Format;
     if (format >= 0 && format < std::size(imgTypes)) {
         fileExt = imgTypes[format].data();

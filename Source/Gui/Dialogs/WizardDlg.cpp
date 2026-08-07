@@ -80,7 +80,7 @@
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     #include "Gui/Dialogs/NetworkDebugDlg.h"
 #endif
-#include "ScreenCapture/WindowsHider.h"
+
 #include "Gui/Helpers/DPIHelper.h"
 #include "History/HistoryManagerImpl.h"
 #include "Gui/IconBitmapUtils.h"
@@ -366,7 +366,6 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
     RECT clientRect;
     GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();
@@ -398,7 +397,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 #endif
     SetWindowText(APP_NAME);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
@@ -447,9 +446,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
-    for(size_t i=0; i<list.size(); i++)
+    for(const auto & i : list)
     {
-        LoadUploadEngines(serversFolder+list[i], ErrorStr);
+        LoadUploadEngines(serversFolder+i, ErrorStr);
     }
     list.clear();
 
@@ -460,9 +459,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         if (boost::filesystem::exists(userServersFolderPath) && boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
             WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
 
-            for (size_t i = 0; i < list.size(); i++)
+            for (const auto & fileName : list)
             {
-                LoadUploadEngines(userServersFolder + list[i], ErrorStr);
+                LoadUploadEngines(userServersFolder + fileName, ErrorStr);
             }
         }
     } catch (const std::exception& ex) {
@@ -645,7 +644,7 @@ bool CWizardDlg::ParseCmdLine()
                 CmdLine.RemoveOption(_T("quick"));
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
-                CUploadEngineData *ued = sp.uploadEngineData();
+                const CUploadEngineData *ued = sp.uploadEngineData();
                 if ( ued ) {
                     if ( ued ->hasType(CUploadEngineData::TypeFileServer) ) {
                         sessionImageServer_ = sp;
@@ -672,7 +671,7 @@ bool CWizardDlg::ParseCmdLine()
 
 	if (CmdLine.IsOption(_T("importvideo")) && CmdLine.GetNextFile(FileName, nIndex)) {
         ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
-        CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
+        auto* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
         dlg->SetFileName(FileName);
         return true;
     }
@@ -1176,7 +1175,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
         }
 
         if (!enableDragndropOverlay_) {
-            queryDropFiledescriptors(pDataObj, &enableDragndropOverlay_);
+            queryDropFileDescriptors(pDataObj, &enableDragndropOverlay_);
         }
     }
 
@@ -1206,13 +1205,13 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
     return S_OK;
 }
 
-STDMETHODIMP CWizardDlg::DragLeave( void)
+STDMETHODIMP CWizardDlg::DragLeave()
 {
     dragndropOverlay_.ShowWindow(SW_HIDE);
     return S_OK;
 }
 
-bool CWizardDlg::queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay) {
+bool CWizardDlg::queryDropFileDescriptors(IDataObject* pDataObj, bool* enableOverlay) {
     FORMATETC tc2 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     if (pDataObj->QueryGetData(&tc2) == S_OK)
     {
@@ -1234,7 +1233,7 @@ bool CWizardDlg::queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOve
     return false;
 }
 
-bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
+bool CWizardDlg::HandleDropFileDescriptors(IDataObject *pDataObj)
 {
     FORMATETC fileDescriptorFormat = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
    
@@ -1394,7 +1393,7 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
     if (!hasBitmap && HandleDropHDROP(pDataObj))
         return S_OK;
 
-    if (HandleDropFiledescriptors(pDataObj))
+    if (HandleDropFileDescriptors(pDataObj))
         return S_OK;
 
     if(HandleDropBitmap(pDataObj))
@@ -1465,7 +1464,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
         try {
             if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, ImageUtils::sifPNG, 100)) {
                 CreatePage(wpMainPage);
-                CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+                auto* MainDlg = getPage<CMainDlg>(wpMainPage);
                 MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
                 ShowPage(wpMainPage);
             }
@@ -1489,7 +1488,7 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
     CreatePage(wpMainPage);
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return false;
     }
@@ -1515,8 +1514,7 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    int PageIndex = wParam;
-    ShowPage(static_cast<WizardPageId>(PageIndex));
+    ShowPage(static_cast<WizardPageId>(wParam));
     return 0;
 }
 
@@ -2011,14 +2009,14 @@ void CWizardDlg::CloseWizard(bool force)
 
 bool CWizardDlg::RegisterLocalHotkeys() {
     m_hotkeys = Settings.Hotkeys;
-    int n = m_hotkeys.size();
-    constexpr auto PREDEFINED_ACCEL_COUNT = 2;
+    size_t n = m_hotkeys.size();
+    constexpr size_t PREDEFINED_ACCEL_COUNT = 2;
     auto accels = std::make_unique<ACCEL[]>(n + PREDEFINED_ACCEL_COUNT);
     accels[0] = {FVIRTKEY, VK_F1, IDC_DOCUMENTATION};
     accels[1] = {FVIRTKEY | FCONTROL | FSHIFT, 'L', IDC_SHOWLOG};
 
-    int j = PREDEFINED_ACCEL_COUNT;
-    for (int i = 0; i < n; i++) {
+    size_t j = PREDEFINED_ACCEL_COUNT;
+    for (size_t i = 0; i < n; i++) {
         if (!m_hotkeys[i].localKey.keyCode) {
             continue;
         }
@@ -2028,7 +2026,7 @@ bool CWizardDlg::RegisterLocalHotkeys() {
     }
 
     localHotkeys_.DestroyObject();
-    localHotkeys_.CreateAcceleratorTable(accels.get(), j);
+    localHotkeys_.CreateAcceleratorTable(accels.get(), static_cast<int>(j));
     return true;
 }
 
@@ -2123,7 +2121,7 @@ bool CWizardDlg::funcAddFiles()
 
     if (!files.empty()) {
         CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        auto* mainDlg = getPage<CMainDlg>(wpMainPage);
         int nCount = 0;
         for (const auto& fileName : files) {
             if (mainDlg->AddToFileList(fileName)) {
@@ -2173,7 +2171,7 @@ void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreens
     }
 }
 
-void CWizardDlg::addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb) {
+void CWizardDlg::addLastRegionAvailabilityChangeCallback(const std::function<void(bool)>& cb) {
     lastRegionAvailabilityChangeCallbacks_.push_back(cb);
 }
 
@@ -2216,7 +2214,7 @@ bool CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params
 
     if (screenRecorderWindow->doModal(m_hWnd, params, forceShowWizardAfter) == ScreenRecorderWindow::drSuccess) {
         CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        auto* mainDlg = getPage<CMainDlg>(wpMainPage);
         mainDlg->AddToFileList(screenRecorderWindow->outFileName());
         mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
         mainDlg->ThumbsView.SelectLastItem();
@@ -2588,10 +2586,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
         {
             CString text;
             WinUtils::GetClipboardText(text, m_hWnd);
-            if (text.Left(5) == _T("data:")) {
-                IsClipboard = true;
-            }
-            else if(CImageDownloaderDlg::LinksAvailableInText(text))
+            if (text.Left(5) == _T("data:") || CImageDownloaderDlg::LinksAvailableInText(text))
             {
                 IsClipboard = true;
             }
@@ -2789,7 +2784,7 @@ bool CWizardDlg::acceptsDragnDrop() const {
 
 void CWizardDlg::beginAddFiles() {
     CreatePage(wpMainPage);
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return;
     }
@@ -2798,7 +2793,7 @@ void CWizardDlg::beginAddFiles() {
 }
 
 void  CWizardDlg::endAddFiles() {
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return;
     }
@@ -2848,7 +2843,7 @@ void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin = { rc.left, rc.bottom };
 
-    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
@@ -2922,7 +2917,7 @@ bool CWizardDlg::canExitApp() const {
 }
 
 void CWizardDlg::createIcons() {
-    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     if (windowIcon_) {
         windowIcon_.DestroyIcon();
     }

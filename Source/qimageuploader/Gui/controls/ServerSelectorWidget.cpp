@@ -100,7 +100,7 @@ void ServerSelectorWidget::updateServerList() {
             serverListComboBox->insertSeparator(addedItems);
         }
         for (int i = 0; i < myEngineList->count(); i++) {
-            CUploadEngineData* ue = myEngineList->byIndex(i);
+            const CUploadEngineData* ue = myEngineList->byIndex(i);
 
             if (serversMask != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(
                 CUploadEngineData::TypeImageServer)) {

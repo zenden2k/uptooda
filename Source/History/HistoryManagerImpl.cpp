@@ -90,7 +90,7 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     if (session->dbEntryCreated()) {
         return true;
     }
-    IuCoreUtils::ZGlobalMutex mutex(CHistoryManager::globalMutexName);
+    IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
     if (session->dbEntryCreated()) {
         return true;
     }

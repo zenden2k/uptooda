@@ -107,10 +107,6 @@ bool CLang::isRTL() const {
     return std::string(_("LAYOUT_DIRECTION")) == "RTL";
 }
 
-CLang::~CLang()
-{
-}
-
 CString CLang::getCurrentLanguageFile() const {
     return currentLanguageFile_;
 }

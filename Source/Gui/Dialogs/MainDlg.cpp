@@ -331,7 +331,6 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showUploadButton(false);
     imageEditor.showAddToWizardButton(false);
 
-    /*ImageEditorWindow::DialogResult dr = */
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, settings->ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
 

@@ -52,7 +52,7 @@ std::shared_ptr<CAbstractUploadEngine> UploadEngineManager::getUploadEngine(cons
         LOG(ERROR) << "UploadEngineManager::getUploadEngine" << " empty server name";
         return nullptr;
     }
-    CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
+    const CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
     if (!ue) {
         LOG(ERROR) << "No such server " << serverProfile.serverName();
         return nullptr;

@@ -25,7 +25,7 @@ bool SizeExceedFilter::PreUpload(UploadTask* task) {
         if (!fileTask || !fileTask->session()) {
             return true;
         }
-        CUploadEngineData* ue = fileTask->serverProfile().uploadEngineData();
+        const CUploadEngineData* ue = fileTask->serverProfile().uploadEngineData();
         if (ue && ue->MaxFileSize > 0 && fileTask->getFileSize() > ue->MaxFileSize) {
             std::lock_guard<std::mutex> g(uploadSessionDataMapMutex_);
             auto it = uploadSessionDataMap_.find(fileTask->session());

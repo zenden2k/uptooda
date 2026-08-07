@@ -195,8 +195,8 @@ CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 {
 }
 
-CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) {
-    if ( index < m_list.size() ) {
+const CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) const {
+    if (index < m_list.size()) {
         return m_list[index].get();
     }
     return nullptr;
@@ -207,7 +207,7 @@ int CUploadEngineListBase::count() const
     return m_list.size();
 }
 
-CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
+const CUploadEngineData* CUploadEngineListBase::byName(const std::string& name) const
 {
     auto index = getUploadEngineIndex(name);
 
@@ -218,7 +218,7 @@ CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
     return m_list[index].get();
 }
 
-CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) {
+const CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) const {
     for (size_t i = 0; i < m_list.size(); i++)
     {
         if ( m_list[i]->hasType(type)) {
@@ -372,7 +372,7 @@ void CAbstractUploadEngine::setNetworkClient(INetworkClient* nm)
     m_NetworkClient->setCurlShare(serverSync_->getCurlShare());
 }
 
-void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
+void CAbstractUploadEngine::setUploadData(const CUploadEngineData* data)
 {
     m_UploadData = data;
 }
@@ -389,7 +389,7 @@ CAbstractUploadEngine::CAbstractUploadEngine(std::shared_ptr<ServerSync> serverS
 }
 
 
-CUploadEngineData* CAbstractUploadEngine::getUploadData() const
+const CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {
     return m_UploadData;
 }

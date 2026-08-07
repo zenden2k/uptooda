@@ -391,9 +391,9 @@ class CUploadEngineListBase
 public:
     CUploadEngineListBase();
     virtual ~CUploadEngineListBase() = default;
-    CUploadEngineData* byIndex(size_t index);
-    CUploadEngineData* byName(const std::string& name);
-    CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
+    const CUploadEngineData* byIndex(size_t index) const;
+    const CUploadEngineData* byName(const std::string& name) const;
+    const CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type) const;
     void removeServer(const std::string& name);
     int count() const;
     int getRandomImageServer();
@@ -441,13 +441,13 @@ class CAbstractUploadEngine
         ServerSettingsStruct * serverSettings() const;
         virtual int RetryLimit()=0;
         virtual void setNetworkClient(INetworkClient* nm);
-        void setUploadData(CUploadEngineData* data);
+        void setUploadData(const CUploadEngineData* data);
         void setServerSync(std::shared_ptr<ServerSync> sync);
         void setCurrentUploader(CUploader *uploader);
         CUploader * currentUploader() const;
         virtual void stop();
         std::shared_ptr<ServerSync> serverSync() const;
-        CUploadEngineData* getUploadData() const;
+        const CUploadEngineData* getUploadData() const;
         // Events
         void setOnNeedStopCallback(std::function<bool()> cb);
         void setOnProgressCallback(std::function<void(InfoProgress)> cb);
@@ -458,7 +458,7 @@ class CAbstractUploadEngine
     protected:
         bool m_bShouldStop;
         INetworkClient * m_NetworkClient;
-        CUploadEngineData * m_UploadData;
+        const CUploadEngineData * m_UploadData;
         CUploader * currUploader_;
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;

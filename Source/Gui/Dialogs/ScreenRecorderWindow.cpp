@@ -98,8 +98,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
      CRect rect = captureRect_;
      bool isPrimaryMonitor = true;
-     MONITORINFO monitorInfo;
-     memset(&monitorInfo, 0, sizeof(monitorInfo));
+     MONITORINFO monitorInfo = {};
      monitorInfo.cbSize = sizeof(MONITORINFO);
      bool monitorInfoSuccess = GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
      if (monitorInfoSuccess) {
@@ -150,7 +149,6 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
                 }
                 options.outputIdx = outputIndex;
             }
-
 
             std::string fileName = prepareFileName(rect.right - rect.left, rect.bottom - rect.top);
 

@@ -405,7 +405,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     for(size_t i=0; i<m_Servers.size(); i++)
     {
         const auto& server = m_Servers[i];
-        CUploadEngineData* ue = server.uploadEngineData();
+        const CUploadEngineData* ue = server.uploadEngineData();
         if (!ue) {
             continue;
         }
@@ -467,7 +467,7 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 {
     int index = wID - IDC_COPYFOLDERURL;
 
-    CUploadEngineData *ue = m_Servers[index].uploadEngineData();
+    const CUploadEngineData *ue = m_Servers[index].uploadEngineData();
     if(!ue) return 0;
     CString folderUrl = Utf8ToWCstring( m_Servers[index].folderUrl());
     WinUtils::CopyTextToClipboard(folderUrl);

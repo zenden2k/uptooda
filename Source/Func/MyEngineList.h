@@ -42,12 +42,12 @@ class CMyEngineList: public CUploadEngineList
 
             }
         };
-        CMyEngineList();
-        ~CMyEngineList() override;
+        CMyEngineList() = default;
+
         CString errorStr() const;
 
         using CUploadEngineListBase::byName;
-        CUploadEngineData* byName(const CString &name);
+        const CUploadEngineData* byName(const CString &name) const;
 
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);

@@ -67,10 +67,6 @@ CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg) :
     delayedLoad_ = false;
 }
 
-CHistoryWindow::~CHistoryWindow()
-{
-}
-
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     GuiTools::SetWindowPointer(m_hWnd, this);
@@ -491,7 +487,7 @@ void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
     if (!historyItem) {
         return;
     }
-    std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
+    std::string url = !historyItem->directUrl.empty() ? historyItem->directUrl : historyItem->viewUrl;
     WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
 }
 

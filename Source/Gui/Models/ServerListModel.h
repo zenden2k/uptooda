@@ -31,7 +31,7 @@ class ServerData {
 public:
     uint32_t color;
     std::string data;
-    CUploadEngineData* ued {};
+    const CUploadEngineData* ued {};
     CMyEngineList* engineList {};
     int uedIndex = -1;
 

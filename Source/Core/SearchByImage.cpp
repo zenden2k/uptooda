@@ -15,7 +15,7 @@ std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName
     uploadParams.CreateThumbs = false;
     uploadParams.ProcessImages = false;
 
-    CUploadEngineData* ued = server.uploadEngineData();
+    const CUploadEngineData* ued = server.uploadEngineData();
     if (!ued->hasType(CUploadEngineData::TypeSearchByImageServer)) {
         return {};
     }

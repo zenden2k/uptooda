@@ -186,7 +186,7 @@ void CServerSelectorControl::addAccount()
 }
 
 void CServerSelectorControl::serverChanged() {
-    CUploadEngineData * uploadEngineData = nullptr;
+    const CUploadEngineData * uploadEngineData = nullptr;
     std::string serverName = serverProfile_.serverName();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (!serverName.empty()) {
@@ -223,7 +223,6 @@ void CServerSelectorControl::serverChanged() {
 }
 
 void CServerSelectorControl::updateInfoLabel() {
-
     std::string serverName = serverProfile_.serverName();
     currentUserName_.Empty();
 
@@ -240,7 +239,7 @@ void CServerSelectorControl::updateInfoLabel() {
     //GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
 //    GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    CUploadEngineData* uploadEngineData = myEngineList->byName(Utf8ToWCstring(serverName));
+    const CUploadEngineData* uploadEngineData = myEngineList->byName(Utf8ToWCstring(serverName));
     if ( ! uploadEngineData ) {
         return;
     }
@@ -281,17 +280,13 @@ void CServerSelectorControl::updateInfoLabel() {
 
     RECT rect;
     int settingsBtnPlaceHolderId = ( showFolder || showAccount ) ? IDC_SETTINGSBUTTONPLACEHOLDER : IDC_SETTINGSBUTTONPLACEHOLDER2;
-    ::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
+    GetDlgItem(settingsBtnPlaceHolderId).GetWindowRect(&rect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&rect), 2);
     settingsButtonToolbar_.SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
     settingsButtonToolbar_.ShowWindow(showServerParams ? SW_SHOW : SW_HIDE);
 
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showFolder );
-    /*RECT accountLabelRect = */GuiTools::AutoSizeStaticControl(GetDlgItem(IDC_ACCOUNTINFO));
-    //int folderIconX = accountLabelRect.right + GuiTools::dlgX(10);
-    //::SetWindowPos(GetDlgItem(IDC_FOLDERICON), 0, folderIconX, accountLabelRect.top, 0, 0, SWP_NOSIZE );
-    //::SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), 0, folderIconX + 16 + GuiTools::dlgX(3), accountLabelRect.top, 0, 0, SWP_NOSIZE );
 }
 
 void CServerSelectorControl::setShowDefaultServerItem(bool show) {
@@ -321,10 +316,10 @@ void CServerSelectorControl::notifyServerListChanged()
 }
 
 void CServerSelectorControl::updateServerButton() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconCache = ServiceLocator::instance()->serverIconCache();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
+    const CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
     HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi, true) : nullptr;
     serverButton_.SetWindowText(ued ? U2WC(myEngineList->getServerDisplayName(ued)) : TR("Choose server"));
     serverButton_.SetIcon(serverIcon);
@@ -332,7 +327,7 @@ void CServerSelectorControl::updateServerButton() {
 
 bool CServerSelectorControl::isAccountChosen() const
 {
-    CUploadEngineData* ued = serverProfile_.uploadEngineData();
+    const CUploadEngineData* ued = serverProfile_.uploadEngineData();
     return !serverProfile_.profileName().empty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
 }
 
@@ -347,7 +342,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
-    CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
+    const CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
 
     if (!uploadEngine) {
         return 0;
@@ -916,7 +911,7 @@ void CServerSelectorControl::showServerButtonPopup() {
     if (serverListPopup.showPopup(m_hWnd, buttonRect) == IDOK) {
         int newServerIndex = serverListPopup.serverIndex();
         if (newServerIndex != -1) {
-            CUploadEngineData * ued = myEngineList->byIndex(newServerIndex);
+            const CUploadEngineData * ued = myEngineList->byIndex(newServerIndex);
             if (ued) {
                 serverProfile_.setServerName(ued->Name);
             }

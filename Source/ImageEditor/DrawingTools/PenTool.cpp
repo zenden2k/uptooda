@@ -28,48 +28,42 @@
 
 namespace ImageEditor {
 
-/*
- Pen Tool
-*/
-
-PenTool::PenTool( Canvas* canvas ): AbstractDrawingTool( canvas )  {
-    oldPoint_ = { 0, 0 };
+PenTool::PenTool(Canvas* canvas) : AbstractDrawingTool(canvas) {
+    oldPoint_ = {0, 0};
 }
 
-void PenTool::beginDraw( int x, int y ) {
+void PenTool::beginDraw(int x, int y) {
     canvas_->beginDocDrawing();
     oldPoint_.x = x;
     oldPoint_.y = y;
 }
 
-void PenTool::continueDraw( int x, int y, DWORD flags ) {
-    if ( flags & MK_CONTROL ) {
+void PenTool::continueDraw(int x, int y, DWORD flags) {
+    if (flags & MK_CONTROL) {
         y = oldPoint_.y;
     }
-    Line * line =  new Line( canvas_, oldPoint_.x, oldPoint_.y, x, y) ;
+    Line* line = new Line(canvas_, oldPoint_.x, oldPoint_.y, x, y);
 
-    line->setPenSize(1 );
+    line->setPenSize(1);
     line->setColor(foregroundColor_);
     line->setBackgroundColor(backgroundColor_);
 
     line->setCanvas(canvas_);
-    canvas_->currentDocument()->addDrawingElement( line );
+    canvas_->currentDocument()->addDrawingElement(line);
 
     oldPoint_.x = x;
     oldPoint_.y = y;
     canvas_->updateView();
 }
 
-void PenTool::endDraw( int x, int y ) {
+void PenTool::endDraw(int x, int y) {
     canvas_->endDocDrawing();
 }
 
-void PenTool::render( Painter* gr ) {
-
+void PenTool::render(Painter* gr) {
 }
 
-CursorType PenTool::getCursor(int x, int y)
-{
+CursorType PenTool::getCursor(int x, int y) {
     return CursorType::ctCross;
 }
 

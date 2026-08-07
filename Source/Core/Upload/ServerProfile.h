@@ -48,7 +48,7 @@ public:
     explicit ServerProfile();
     explicit ServerProfile(const std::string& serverName);
 
-    CUploadEngineData* uploadEngineData() const;
+    const CUploadEngineData* uploadEngineData() const;
 
     void setProfileName(const std::string& newProfileName);
     std::string profileName() const;

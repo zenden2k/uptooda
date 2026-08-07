@@ -28,13 +28,13 @@ public:
     std::atomic<int> filesChecked;
     std::chrono::milliseconds::rep timeElapsed;
     std::atomic_bool finished;
-    CUploadEngineData* ued;
+    const CUploadEngineData* ued;
     int serverType;
 protected:
     std::string directUrl_;
     std::string directUrlInfo_;
     std::string viewurl_;
-    std::string viewurlInfo_;
+    std::string viewUrlInfo_;
     std::string thumbUrl_;
     std::string thumbUrlInfo_;
     std::string statusText_;
@@ -62,7 +62,7 @@ public:
         } else if (columnId == 1) {
             thumbUrlInfo_ = info;
         } else if (columnId == 2) {
-            viewurlInfo_ = info;
+            viewUrlInfo_ = info;
         }
     }
 
@@ -76,7 +76,7 @@ public:
         directUrl_.clear();
         directUrlInfo_.clear();
         viewurl_.clear();
-        viewurlInfo_.clear();
+        viewUrlInfo_.clear();
         thumbUrl_.clear();
         thumbUrlInfo_.clear();
         statusText_.clear();
@@ -115,14 +115,14 @@ public:
         viewurl_ = viewUrl;
     }
 
-    std::string viewurlInfo() const {
+    std::string viewUrlInfo() const {
         std::lock_guard<std::mutex> lk(dataMutex);
-        return viewurlInfo_;
+        return viewUrlInfo_;
     }
 
     void setViewUrlInfo(const std::string& info) {
         std::lock_guard<std::mutex> lk(dataMutex);
-        viewurlInfo_ = info;
+        viewUrlInfo_ = info;
     }
 
     std::string thumbUrl() const {

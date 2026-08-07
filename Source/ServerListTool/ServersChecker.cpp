@@ -40,7 +40,7 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
     uploadSession_ = std::make_shared<UploadSession>(false);
 
     using namespace std::placeholders;
-    uploadSession_->addSessionFinishedCallback(std::bind(&ServersChecker::onSessionFinished, this, _1));
+    uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
     int taskCount = 0;
     for (size_t i = 0; i < model_->getCount(); i++) {
         ServerData* item = model_->getDataByIndex(i);
@@ -49,7 +49,7 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
         }
 
         //uploader.ShouldStop = &m_NeedStop;
-        CUploadEngineData *ue = item->ued;
+        const CUploadEngineData *ue = item->ued;
         if (!(item->serverType == CUploadEngineData::TypeImageServer && checkImageServers_) &&
             !(item->serverType == CUploadEngineData::TypeFileServer && checkFileServers_) &&
             !(item->serverType == CUploadEngineData::TypeUrlShorteningServer && checkURLShorteners_)) {
@@ -103,8 +103,8 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
 
         if (task) {
             task->setServerProfile(serverProfile);
-            task->setOnStatusChangedCallback(std::bind(&ServersChecker::onTaskStatusChanged, this, _1));
-            task->addTaskFinishedCallback(std::bind(&ServersChecker::onTaskFinished, this, _1, _2));
+            task->setOnStatusChangedCallback([this](auto && PH1) { onTaskStatusChanged(std::forward<decltype(PH1)>(PH1)); });
+            task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
             auto userData = std::make_unique<UploadTaskUserData>();
             userData->rowIndex = i;
             task->setUserData(userData.get());
@@ -167,8 +167,8 @@ void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
 
 void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
 {
-    int serverId = reinterpret_cast<size_t>(it.id) / 10;
-    int fileId = reinterpret_cast<size_t>(it.id) % 10;
+    size_t serverId = reinterpret_cast<size_t>(it.id) / 10;
+    size_t fileId = reinterpret_cast<size_t>(it.id) % 10;
 
     ServerData& serverData = *model_->getDataByIndex(serverId);
     serverData.filesChecked++;
@@ -177,13 +177,13 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 
     if (!ok) {
         serverData.stars[fileId] = 1;
-        serverData.setLinkInfo(fileId, "Cannot download file");
+        serverData.setLinkInfo(static_cast<int>(fileId), "Cannot download file");
     }
     if (IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)) == srcFileHash_) {
         if (fileId == 0)
             serverData.stars[fileId] = 5;
         else serverData.stars[fileId] = 4;
-        serverData.setLinkInfo(fileId, "Identical file");
+        serverData.setLinkInfo(static_cast<int>(fileId), "Identical file");
     } else {
         Helpers::MyFileInfo mfi;
 
@@ -199,7 +199,7 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
             } else serverData.stars[fileId] = 1;
         } else serverData.stars[fileId] = 5;
 
-        serverData.setLinkInfo(fileId, W2U(report));
+        serverData.setLinkInfo(static_cast<int>(fileId), W2U(report));
     }
     if (serverData.fileToCheck == 0) {
         serverData.finished = true;
@@ -212,11 +212,11 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 }
 
 void ServersChecker::checkShortUrl(UploadTask* task) {
-    UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
+    auto* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     if (!urlTask) {
         return;
     }
-    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
+    auto* userData = static_cast<UploadTaskUserData*>(task->userData());
     ServerData* data = model_->getDataByIndex(userData->rowIndex);
 
     auto checkTask = std::make_shared<CheckShortUrlTask>(networkClientFactory_, task->uploadResult()->directUrl, urlTask->getUrl());
@@ -241,9 +241,9 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
 }
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
-    CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
-    int i = userData->rowIndex;
+    const CUploadEngineData* ue = task->serverProfile().uploadEngineData();
+    auto* userData = static_cast<UploadTaskUserData*>(task->userData());
+    size_t i = userData->rowIndex;
     ServerData& data = *model_->getDataByIndex(i);
     if (task->status() == UploadTask::StatusStopped) {
         data.setStatusText(std::string());
@@ -334,8 +334,7 @@ void ServersChecker::onSessionFinished(UploadSession* session) {
 }
 
 void ServersChecker::onTaskStatusChanged(UploadTask* task) {
-    CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
+    auto* userData = static_cast<UploadTaskUserData*>(task->userData());
     size_t i = userData->rowIndex;
     if (task->status() == UploadTask::StatusRunning) {
         userData->startTime = std::chrono::steady_clock::now();
@@ -364,7 +363,7 @@ void ServersChecker::markServer(size_t id)
         }
 
         CString timeLabel;
-        timeLabel.Format(_T("%02d:%02d"), (int)(serverData.timeElapsed / 60000), (int)(serverData.timeElapsed / 1000 % 60));
+        timeLabel.Format(_T("%02d:%02d"), static_cast<int>(serverData.timeElapsed / 60000), static_cast<int>(serverData.timeElapsed / 1000 % 60));
         serverData.setTimeStr(W2U(timeLabel));
 
         if (mark == 5) {

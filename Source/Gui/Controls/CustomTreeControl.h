@@ -73,8 +73,8 @@ public:
 
     virtual ~TreeItem() {
         if (m_callback) m_callback->OnTreeItemDelete(this);
-        for (size_t i = 0; i < m_subItems.size(); i++) {
-            delete m_subItems[i];
+        for (auto & m_subItem : m_subItems) {
+            delete m_subItem;
         }
     }
 

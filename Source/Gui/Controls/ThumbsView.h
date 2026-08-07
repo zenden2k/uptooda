@@ -30,9 +30,6 @@
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ImageView.h"
 
-
-// CThumbsView
-
 struct ThumbsViewItem
 {
     CString FileName;

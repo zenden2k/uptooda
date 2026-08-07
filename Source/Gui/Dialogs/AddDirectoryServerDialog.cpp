@@ -49,11 +49,11 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
-    const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
+    const CString addFileProtocolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
 
-    SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
+    SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProtocolLabelText);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON), dpi);
     presetButton_ = GetDlgItem(IDC_PRESETSBUTTON);
@@ -219,7 +219,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 }
 
 LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    if ( GetFocus() == hWndCtl ) {
+    if (GetFocus() == hWndCtl) {
         downloadUrlEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT).IsEmpty();
         GenerateExampleUrl();
     }

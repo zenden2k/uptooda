@@ -114,7 +114,7 @@ void CServersCheckerDlg::validateSettings() {
 
     bool checkUrlShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
     CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
-    if (checkUrlShorteners ){
+    if (checkUrlShorteners){
         if (url.IsEmpty()) {
             throw ValidationException(_T("URL should not be empty!"));
         }
@@ -282,7 +282,7 @@ LRESULT CServersCheckerDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
     return 0;
 }
 
-LRESULT CServersCheckerDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnBnClickedStopButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     serversChecker_->stop();
 

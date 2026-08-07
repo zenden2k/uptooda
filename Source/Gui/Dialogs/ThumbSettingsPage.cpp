@@ -42,7 +42,6 @@ CThumbSettingsPage::CThumbSettingsPage()
     m_CatchFormChanges = false;
 }
 
-
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // Translating controls
@@ -115,7 +114,7 @@ LRESULT CThumbSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 bool CThumbSettingsPage::apply()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
@@ -366,7 +365,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
 }
 
 void CThumbSettingsPage::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 

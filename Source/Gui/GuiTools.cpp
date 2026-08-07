@@ -625,7 +625,7 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     return lf;
 }
 
-HICON LoadSmallIcon(int resourceId, int dpi) {
+HICON LoadSmallIcon(int resourceId, UINT dpi) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
@@ -634,7 +634,7 @@ HICON LoadSmallIcon(int resourceId, int dpi) {
     return result;
 }
 
-HICON LoadBigIcon(int resourceId, int dpi) {
+HICON LoadBigIcon(int resourceId, UINT dpi) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpi);
 
@@ -849,7 +849,7 @@ std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int iconWid
     return bmp;
 }
 
-HICON CreateDropDownArrowIcon(HWND wnd, int dpi, ArrowOrientation orientation) {
+HICON CreateDropDownArrowIcon(HWND wnd, UINT dpi, ArrowOrientation orientation) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     auto bmp = CreateDropDownArrowBitmap(wnd, iconWidth, iconHeight, orientation);

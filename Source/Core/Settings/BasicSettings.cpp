@@ -130,7 +130,7 @@ serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 CEncodedPassword login(sss.authData.Login);
 serverNode.SetAttribute("Login", login.toEncodedData());
 
-CUploadEngineData* ued = engineList_->byName(it->first);
+const CUploadEngineData* ued = engineList_->byName(it->first);
 if (!ued || ued->NeedPassword) {
     CEncodedPassword pass(it->second.authData.Password);
     serverNode.SetAttribute("Password", pass.toEncodedData());
@@ -235,7 +235,7 @@ void BasicSettings::clearServerSettings() {
         std::lock_guard<std::mutex> lock(serverSettingsMutex_);
 
         for (auto& [serverName, serverMap] : ServersSettings) {
-            CUploadEngineData *ued = engineList_->byName(serverName);
+            //const CUploadEngineData* ued = engineList_->byName(serverName);
 
             // Maybe we should skip profiles related to these scripts ?
             // bool isBuiltInScript = ued  && !ued->PluginName.empty() &&

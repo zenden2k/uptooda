@@ -83,7 +83,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->treeView->addAction(copyDirectLinkAction_);
     ui->treeView->addAction(copyFilePathAction_);
 
-    const ServerProfile imageProfile = settings->imageServer.getByIndex(0);
+    const ServerProfile& imageProfile = settings->imageServer.getByIndex(0);
 
     imageServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
     imageServerWidget_->setTitle(tr("Server for images:"));
@@ -94,7 +94,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     fileServerWidget_->setServersMask(ServerSelectorWidget::smFileServers);
     fileServerWidget_->updateServerList();
 
-    const ServerProfile fileServerProfile = settings->fileServer.getByIndex(0);
+    const ServerProfile& fileServerProfile = settings->fileServer.getByIndex(0);
     fileServerWidget_->setServerProfile(fileServerProfile);
     ui->verticalLayout->insertWidget(2, fileServerWidget_);
 

@@ -42,7 +42,6 @@ class CLang
 {
     public:
         CLang();
-        ~CLang() ITRANLATOR_OVERRIDE;
         void SetDirectory(LPCTSTR Directory);
         bool LoadLanguage(LPCTSTR Lang);
         CString GetLanguageName() const;

@@ -30,10 +30,6 @@ CThumbEditor::CThumbEditor(Thumbnail *thumb)
     memset(&ThumbFont, 0, sizeof(ThumbFont));
 }
 
-CThumbEditor::~CThumbEditor()
-{
-}
-
 LRESULT CThumbEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     TRC(IDCANCEL, "Cancel");
@@ -87,15 +83,14 @@ LRESULT CThumbEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
     return 0;
 }
 
-
 void CThumbEditor::LoadParams()
 {
     WinUtils::StringToFont(_T("Tahoma,7,b,204"), &ThumbFont);
     if(thumb_->existsParam("Font"))
     {
         std::string font = thumb_->getParamString("Font");
-        CString wide_text = Utf8ToWCstring(font);
-        WinUtils::StringToFont(wide_text, &ThumbFont);
+        CString wideText = Utf8ToWCstring(font);
+        WinUtils::StringToFont(wideText, &ThumbFont);
     }
 
     if(thumb_->existsParam("FrameWidth"))
@@ -226,7 +221,6 @@ void CThumbEditor::DrawFrameCheckboxChanged()
     bool bChecked = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
     GuiTools::EnableNextN(GetDlgItem(IDC_DRAWFRAME), 3, bChecked);
 }
-
 
 LRESULT CThumbEditor::OnFontSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {

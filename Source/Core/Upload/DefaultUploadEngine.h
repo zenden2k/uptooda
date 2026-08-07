@@ -41,18 +41,18 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
     protected:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
-        bool DoAction(UploadAction &Action);
-        bool DoUploadAction(UploadAction &Action, bool bUpload);
-        bool DoGetAction(UploadAction &Action);
-        bool ParseAnswer(UploadAction &Action, const std::string& Body);
+        bool DoAction(const UploadAction &Action);
+        bool DoUploadAction(const UploadAction &Action, bool bUpload);
+        bool DoGetAction(const UploadAction &Action);
+        bool ParseAnswer(const UploadAction &Action, const std::string& Body);
         std::string ReplaceVars(const std::string& Text);
         int RetryLimit() override;
-        void AddQueryPostParams(UploadAction& Action);
-        bool ReadServerResponse(UploadAction& Action);
-        void AddCustomHeaders(UploadAction& Action);
+        void AddQueryPostParams(const UploadAction& Action);
+        bool ReadServerResponse(const UploadAction& Action);
+        void AddCustomHeaders(const UploadAction& Action);
         void SetStatus(StatusType status, const std::string& param = "") override;
         bool needStop() override;
-        void UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
+        void UploadError(bool error, const std::string& errorStr, const UploadAction* m_CurrentAction, bool writeToBuffer = true);
         bool doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params);
         bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params);
         bool doSearchImageByUrl(std::shared_ptr<SearchByImageUrlTask> task, UploadParams& params);

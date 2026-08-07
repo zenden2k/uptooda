@@ -8,7 +8,7 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
     auto builtInScripts = CUploadEngineListBase::builtInScripts();
 
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
         
         if (std::find(builtInScripts.begin(), builtInScripts.end(), ued->PluginName) != builtInScripts.end()) {
             continue;
@@ -67,9 +67,9 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
         return thumbUrlCellText;
     } else if (column == 5) {
         std::string viewUrlCellText = serverData.viewurl();
-        std::string viewurlInfo = serverData.viewurlInfo();
-        if (!viewurlInfo.empty()) {
-            viewUrlCellText = viewurlInfo + " [" + viewUrlCellText + "]";
+        std::string viewUrlInfo = serverData.viewUrlInfo();
+        if (!viewUrlInfo.empty()) {
+            viewUrlCellText = viewUrlInfo + " [" + viewUrlCellText + "]";
         }
         return viewUrlCellText;
     } else if (column == 6) {

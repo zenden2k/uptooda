@@ -113,7 +113,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
         signupLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(signupLink_);
-        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(myEngineList->getServerDisplayName(m_UploadEngine)));
+        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(CUploadEngineListBase::getServerDisplayName(m_UploadEngine)));
         signupLink_.SetLabel(linkText.c_str());
         signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
         signupLink_.ShowWindow(SW_SHOW);
@@ -241,7 +241,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         using namespace std::placeholders;
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
-        authTask->addTaskFinishedCallback(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
+        authTask->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { authTaskFinishedCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
         auto* uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
         currentTask_ = authTask;

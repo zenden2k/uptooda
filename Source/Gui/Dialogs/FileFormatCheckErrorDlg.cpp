@@ -31,11 +31,9 @@ LRESULT CFileFormatCheckErrorDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     DoDataExchange(FALSE);
 
     // set icons
-    icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
+    icon_.LoadIcon(MAKEINTRESOURCE(IDR_MAINFRAME), ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
     SetIcon(icon_, TRUE);
-    iconSmall_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
+    iconSmall_.LoadIcon(MAKEINTRESOURCE(IDR_MAINFRAME),::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
     SetIcon(iconSmall_, FALSE);
 
     labelBoldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILESCANNOTBEUPLOADED));
@@ -220,16 +218,3 @@ LRESULT CFileFormatCheckErrorDlg::OnListViewItemChanged(int idCtrl, LPNMHDR /*pn
 const FileFormatCheckResult& CFileFormatCheckErrorDlg::result() const {
     return result_;
 }
-
-/*
-LRESULT CFileFormatCheckErrorDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
-    ServerData* sd = model_.getDataByIndex(contextMenuItemId);
-    if (sd) {
-        std::string directUrl = sd->directUrl();
-        if (!directUrl.empty()) {
-            WinUtils::CopyTextToClipboard(U2W(directUrl));
-        }
-    }
-
-    return 0;
-}*/

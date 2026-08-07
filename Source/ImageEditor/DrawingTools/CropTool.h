@@ -1,5 +1,5 @@
-#ifndef CropTool_h__
-#define CropTool_h__
+#ifndef CropTool_h_
+#define CropTool_h_
 
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
@@ -12,13 +12,13 @@ class Canvas;
 class CropTool : public MoveAndResizeTool {
 public:
     explicit CropTool(Canvas* canvas);
-    void beginDraw( int x, int y ) override;
-    void continueDraw( int x, int y, DWORD flags ) override;
-    void endDraw( int x, int y ) override;
+    void beginDraw(int x, int y) override;
+    void continueDraw(int x, int y, DWORD flags) override;
+    void endDraw(int x, int y) override;
     void applyOperation() override;
     void cancelOperation() override;
 };
 
 }
 
-#endif // CropTool_h__
+#endif // CropTool_h_

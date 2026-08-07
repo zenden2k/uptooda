@@ -336,7 +336,7 @@ void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
 
-    CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
+    const CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
     if (!defaultImageUED) {
         defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
         if (!defaultImageUED) {
@@ -345,7 +345,7 @@ void WtlGuiSettings::fixInvalidServers() {
             defaultImageServer = defaultImageUED->Name;
         }
     }
-    CUploadEngineData* ue = {};
+    const CUploadEngineData* ue = {};
 
     auto& imageServerItem = imageServer.getByIndex(0);
     ue = imageServerItem.uploadEngineData();
@@ -375,7 +375,7 @@ void WtlGuiSettings::fixInvalidServers() {
     }
 
     std::string defaultFileServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
-    CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
+    const CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
 
     if (!uploadEngineData) {
         uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
@@ -397,7 +397,7 @@ void WtlGuiSettings::fixInvalidServers() {
     if (!ue) {
         std::string defaultServerName = engineList_->getDefaultServerNameForType(
             CUploadEngineData::TypeUrlShorteningServer);
-        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+        const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             urlShorteningServer.setServerName(defaultServerName);
             urlShorteningServer.setProfileName("");
@@ -415,7 +415,7 @@ void WtlGuiSettings::fixInvalidServers() {
     ue = imageSearchServer.uploadEngineData();
     if (!ue) {
         std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
-        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+        const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
 
         if (uploadEngineData) {
             imageSearchServer.setServerName(defaultServerName);

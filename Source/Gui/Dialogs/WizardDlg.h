@@ -254,8 +254,8 @@ public:
     bool executeFunc(CString funcName, bool fromCmdLine = false);
     void executeFuncLater(CString funcName);
     bool importVideoFile(const CString& fileName, int prevPage = 0);
-    bool queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
-    bool HandleDropFiledescriptors(IDataObject *pDataObj);
+    bool queryDropFileDescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
+    bool HandleDropFileDescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);
     void setIsFirstRun(bool isFirstRun);
@@ -280,7 +280,7 @@ public:
         /* [in] */ POINTL pt,
         /* [out][in] */ DWORD *pdwEffect) override;
 
-    STDMETHODIMP DragLeave(void) override;
+    STDMETHODIMP DragLeave() override;
     STDMETHODIMP Drop(
         /* [unique][in] */ IDataObject *pDataObj,
         /* [in] */ DWORD grfKeyState,
@@ -300,7 +300,7 @@ public:
     void showLogWindowForFileName(CString fileName);
     bool hasLastScreenshotRegion() const;
     void setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreenshotRegion> region, HMONITOR monitor);
-    void addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb);
+    void addLastRegionAvailabilityChangeCallback(const std::function<void(bool)>& cb);
     bool getQuickUploadMarker() const;
     void setQuickUploadMarker(bool val);
     CString getLastVideoFile() const;

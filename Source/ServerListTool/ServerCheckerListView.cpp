@@ -38,7 +38,7 @@ void CServerCheckerListView::Init() {
 
 LRESULT CServerCheckerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
-    LV_ITEM* pItem = &(pDispInfo)->item;
+    LV_ITEM* pItem = &pDispInfo->item;
 
     if (pItem->mask & LVIF_TEXT)  {
         std::string str = model_->getItemText(pItem->iItem, pItem->iSubItem);

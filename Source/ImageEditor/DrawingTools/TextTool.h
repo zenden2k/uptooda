@@ -1,5 +1,5 @@
-#ifndef TextTool_h__
-#define TextTool_h__
+#ifndef TextTool_h_
+#define TextTool_h_
 
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
@@ -7,19 +7,18 @@
 #include "MoveAndResizeTool.h"
 
 namespace ImageEditor {
+class Canvas;
 
-    class Canvas;
-
-class TextTool: public MoveAndResizeTool  {
+class TextTool : public MoveAndResizeTool {
 public:
-    explicit TextTool( Canvas* canvas );
-    void beginDraw( int x, int y ) override;
-    void continueDraw( int x, int y, DWORD flags = 0) override;
-    void endDraw( int x, int y ) override;
-    void render( Painter* gr ) override;
+    explicit TextTool(Canvas* canvas);
+    void beginDraw(int x, int y) override;
+    void continueDraw(int x, int y, DWORD flags) override;
+    void endDraw(int x, int y) override;
+    void render(Painter* gr) override;
     CursorType getCursor(int x, int y) override;
-private:
 
+private:
 };
 }
-#endif // TextTool_h__
+#endif // TextTool_h_

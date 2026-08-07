@@ -223,7 +223,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
     /*if (serverSelectors_.size() < 2) {
         return 0;
     }*/
-    assert(buttonIndex >= 0 && buttonIndex < serverSelectors_.size());
+    assert(buttonIndex < serverSelectors_.size());
     serverSelectors_[buttonIndex]->DestroyWindow();
     serverSelectors_.erase(serverSelectors_.begin() + buttonIndex);
     deleteButtons_[buttonIndex]->DestroyWindow();

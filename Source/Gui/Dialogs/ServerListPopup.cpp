@@ -128,7 +128,7 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     applyFilter(false);
 
-    CUploadEngineData* ued = engineList_->byIndex(serverIndex_);
+    const CUploadEngineData* ued = engineList_->byIndex(serverIndex_);
 
     if (ued) {
         selectServerByName(U2W(ued->Name));

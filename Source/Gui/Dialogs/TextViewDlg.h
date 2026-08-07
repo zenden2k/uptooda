@@ -37,8 +37,6 @@ class CTextViewDlg :
                            "OK"), const CString& cancelCaption = TR("Cancel"));
 
         void setFileDialogOptions(IMyFileDialog::FileFilterArray filters, CString suggestedFileName);
-
-        ~CTextViewDlg();
         enum { IDD = IDD_TEXTVIEWDLG };
 
     protected:

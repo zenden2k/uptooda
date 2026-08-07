@@ -172,9 +172,9 @@ void PrintServerList() {
     }
 }
 
-CUploadEngineData* getServerByName(const std::string& name)
+const CUploadEngineData* getServerByName(const std::string& name)
 {
-    CUploadEngineData* uploadEngineData = list->byName(serverName);
+    const CUploadEngineData* uploadEngineData = list->byName(serverName);
     if (!uploadEngineData) {
         for (int i = 0; i < list->count(); i++) {
             if ((IuStringUtils::ToLower(list->byIndex(i)->Name).find(IuStringUtils::ToLower((name)))) != std::string::npos)
@@ -375,7 +375,7 @@ int func() {
         }
     }
 
-    CUploadEngineData* uploadEngineData = nullptr;
+    const CUploadEngineData* uploadEngineData = nullptr;
     if (!serverName.empty()) {
         uploadEngineData = getServerByName(serverName);
         if (!uploadEngineData) {

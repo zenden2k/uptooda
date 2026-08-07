@@ -10,8 +10,6 @@ namespace ImageEditor {
 
     class Canvas;
 
-
-
 #if GDIPVER >= 0x0110 
 class BlurTool: public BrushTool  {
 public:

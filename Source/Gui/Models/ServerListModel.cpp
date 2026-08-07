@@ -36,7 +36,7 @@ void ServerListModel::updateEngineList() {
     items_.clear();
 
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
 
         auto sd = std::make_shared<ServerData>();
         sd->ued = ued;

@@ -67,7 +67,7 @@ class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>, public CWinDataEx
         LRESULT OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnLogoutClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        CUploadEngineData *m_UploadEngine;
+        const CUploadEngineData *m_UploadEngine;
         CString accountName() const;
         void startAuthentication(AuthActionType actionType);
         void OnProcessFinished();

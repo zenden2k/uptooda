@@ -70,11 +70,11 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    int Index = langListCombo_.GetCurSel();
-    if (Index < 0) {
+    int index = langListCombo_.GetCurSel();
+    if (index < 0) {
         return 0;
     }
-    char* key = static_cast<char*>(langListCombo_.GetItemDataPtr(Index));
+    auto key = static_cast<char*>(langListCombo_.GetItemDataPtr(index));
     if (key) {
         language_ = U2W(key);
     }

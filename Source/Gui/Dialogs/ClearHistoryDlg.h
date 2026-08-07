@@ -58,4 +58,4 @@ class CClearHistoryDlg :
         HistoryClearPeriod value_;
 };
 
-#endif // ClearHistoryDlg_H
+#endif // GUI_DIALOGS_CLEARHISTORYDIALOG_H

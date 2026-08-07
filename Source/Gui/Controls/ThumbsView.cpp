@@ -22,7 +22,6 @@
 
 #include "Func/MyDropSource.h"
 #include "Func/MyDataObject.h"
-#include "Func/Common.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
@@ -76,7 +75,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
 
     AddItem(n, 0, Title, 0);
 
-    ThumbsViewItem * TVI = new ThumbsViewItem;
+    auto * TVI = new ThumbsViewItem;
 
     TVI->ThumbOutDate = FALSE;
     TVI->FileName = FileName;
@@ -117,7 +116,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 {
     POINT p = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
-    int ItemIndex = HitTest(p, 0); //Getting the index of item was clicked (by middle button)
+    int ItemIndex = HitTest(p, nullptr); //Getting the index of item was clicked (by middle button)
     if(ItemIndex < 0) return 0;
 
     if(GetItemState(ItemIndex, LVIS_SELECTED) != LVIS_SELECTED)
@@ -134,7 +133,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
     return 0;
 }
 
-int CThumbsView::DeleteSelected(void)
+int CThumbsView::DeleteSelected()
 {
     if(GetItemCount() < 1) return 0;
 
@@ -178,14 +177,14 @@ void CThumbsView::MyDeleteAllItems()
 
 bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 {
-    auto *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
+    auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
 
-    if (deletePhysicalFiles_ && deleteFile && !TVI->FileName.IsEmpty()) {
-        DeleteFile(TVI->FileName); // delete file from disk (enabled only on videograbber page)
+    if (deletePhysicalFiles_ && deleteFile && !tvi->FileName.IsEmpty()) {
+        DeleteFile(tvi->FileName); // delete file from disk (enabled only on video grabber page)
     }
 
     SetItemData(ItemIndex, 0);
-    delete TVI;
+    delete tvi;
 
     return true;
 }
@@ -239,7 +238,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         filename = /*GetFileName(ItemID);*/tvi->FileName;
     }
 
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     float dpiScale = dpi / 96.0f;
     int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
     width = thumbnailWidth_/*rc.right-2*/;
@@ -448,7 +447,7 @@ DWORD CThumbsView::Run()
             itemIndex = thumbQueue_.front();
             thumbQueue_.pop_front();
         }
-        ThumbsViewItem* item = reinterpret_cast<ThumbsViewItem*>(GetItemData(itemIndex));
+        auto* item = reinterpret_cast<ThumbsViewItem*>(GetItemData(itemIndex));
         if (!item) {
             continue;
         }

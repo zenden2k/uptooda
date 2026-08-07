@@ -163,8 +163,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     CString targetPlatform = BOOST_PLATFORM;
     targetPlatform += _T(" ");
-#if defined(_M_ARM64) || defined(_M_ARM)
-    targetPlatform += "ARM";
+#if defined(_M_ARM64)
+    targetPlatform += "ARM64";
 #endif
     targetPlatform += _T(" \u200E(");
     targetPlatform += WinUtils::IntToStr(sizeof(void*) * CHAR_BIT);
@@ -246,7 +246,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
 
     CString buildInfo;
-    buildInfo.Format(_T("\u200Ebuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
+    buildInfo.Format(_T("\u200Ebuild %lu (%zu bit)"), ver->Build, sizeof(void*) * 8);
 
 /*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");

@@ -146,7 +146,7 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 }
 
 // TODO: Remove this method
-CUploadEngineData* ServerProfile::uploadEngineData() const {
+const CUploadEngineData* ServerProfile::uploadEngineData() const {
     return ServiceLocator::instance()->engineList()->byName(serverName_);
 }
 

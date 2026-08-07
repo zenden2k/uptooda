@@ -114,7 +114,7 @@ void WinServerIconCache::loadIcons(int dpi, bool smallIcons) {
     imageList->Create(iconWidth, iconHeight, ILC_COLOR32, 3, 3);
     std::unordered_map<std::string, int> indexes(engineList_->count());
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
         [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi, smallIcons);
         int iconIndex = imageList->AddIcon(icon);
         indexes[ued->Name] = i;

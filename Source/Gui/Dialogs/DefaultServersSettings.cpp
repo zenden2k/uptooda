@@ -153,21 +153,24 @@ bool CDefaultServersSettings::apply()
             return false;
         }
     }
+
     CServerSelectorControl* controls[] = { trayServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
-    for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
-        if (controls[i]->serverProfile().serverName().empty()) {
+
+    for(auto & control : controls) {
+        if (control->serverProfile().serverName().empty()) {
             CString message;
-            message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle().GetString());
+            message.Format(TR("You have not selected \"%s\""), control->getTitle().GetString());
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return false;
         }
-        if ( !controls[i]->isAccountChosen() ) {
+        if (!control->isAccountChosen()) {
             CString message;
-            message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
+            message.Format(TR("You have not selected account for server \"%s\""), U2WC(control->serverProfile().serverName()));
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return false;
         }
     }
+
     settings->fileServer = fileServerSelector_->serverProfileGroup();
     settings->imageServer = imageServerSelector_->serverProfileGroup();
     settings->quickScreenshotServer = trayServerSelector_->serverProfile();

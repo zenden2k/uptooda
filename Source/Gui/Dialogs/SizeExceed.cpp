@@ -82,7 +82,6 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     WCHAR buf2[25];
     WinUtils::NewBytesToString(fileSize, buf2, 25);
 
-
     CString params;
     CString onlyFileName = WinUtils::TrimString(WinUtils::DoExtractFileName(m_szFileName), 40);
     if (isImage) {

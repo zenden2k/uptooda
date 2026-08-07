@@ -36,8 +36,8 @@ class CThumbEditor :
     public CCustomDialogIndirectImpl<CThumbEditor>
 {
 public:
-    CThumbEditor(Thumbnail *thumb);
-    ~CThumbEditor();
+    explicit CThumbEditor(Thumbnail *thumb);
+
     enum { IDD = IDD_THUMBEDITOR };
 
     BEGIN_MSG_MAP(CThumbEditor)

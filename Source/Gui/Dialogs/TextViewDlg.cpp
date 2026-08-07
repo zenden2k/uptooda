@@ -40,10 +40,6 @@ void CTextViewDlg::setFileDialogOptions(IMyFileDialog::FileFilterArray filters, 
     suggestedFileName_ = suggestedFileName;
 }
 
-CTextViewDlg::~CTextViewDlg()
-{
-}
-
 LRESULT CTextViewDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     DlgResize_Init();

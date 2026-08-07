@@ -34,9 +34,9 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     translateUI();
-    SetWindowText( APP_NAME );
+    SetWindowText(APP_NAME);
     CString titleText;
-    titleText.Format(TR("%s - Quick Setup"), APP_NAME );
+    titleText.Format(TR("%s - Quick Setup"), APP_NAME);
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
@@ -138,7 +138,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
-        CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
+        const CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
         Settings.imageServer.getByIndex(0).setServerName(uploadEngineData->Name) ;
         bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
         if ( needAuth ) {
@@ -237,7 +237,7 @@ void  CQuickSetupDlg::serverChanged() {
             return;
         }
         std::string serverNameA = serverName;
-        CUploadEngineData* uploadEngineData = myEngineList->byName(serverNameA);
+        const CUploadEngineData* uploadEngineData = myEngineList->byName(serverNameA);
         if ( !uploadEngineData ) {
             return ;
         }

@@ -38,7 +38,7 @@ BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam)
 {
     if(IsWindowVisible(hwnd)){
         EnumChildWindows(hwnd, EnumChildProc, 0);
-        WindowsListItem newItem;
+        WindowsListItem newItem{};
         newItem.handle = hwnd;
         GetWindowRect(hwnd, &newItem.rect);
         windowsList.push_back(newItem);
@@ -54,7 +54,7 @@ BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam)
         if (!onlyTopWindows) {
             EnumChildWindows(hwnd, EnumChildProc, 0);
         }
-        WindowsListItem newItem;
+        WindowsListItem newItem{};
         newItem.handle = hwnd;
         GetWindowRect(hwnd, &newItem.rect);
         windowsList.push_back(newItem);

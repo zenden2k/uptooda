@@ -225,7 +225,7 @@ void CDefaultUploadEngine::logNetworkError(bool error, const std::string& msg) {
     UploadError(error, msg, nullptr);
 }
 
-bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
+bool CDefaultUploadEngine::DoUploadAction(const UploadAction& Action, bool bUpload)
 {
     try {
 
@@ -254,7 +254,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
     }
 }
 
-bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
+bool CDefaultUploadEngine::DoGetAction(const UploadAction& Action)
 {
     bool Result = false;
 
@@ -286,20 +286,20 @@ bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const st
     return false;
 }
 
-bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& Body)
+bool CDefaultUploadEngine::ParseAnswer(const UploadAction& Action, const std::string& Body)
 {
     std::string DebugVars;
     if (!Action.FunctionCalls.empty() && m_UploadData->Debug) {
         DebugMessage(Body, true);
     }
 
-    auto assignVars = [&](ActionFunc& actionRegExp, auto callback) {
+    auto assignVars = [&](const ActionFunc& actionRegExp, auto callback) {
         if (actionRegExp.Variables.empty()) {
             DebugVars += "Variables list is empty!\r\n";
         }
 
         for (size_t i = 0; i < actionRegExp.Variables.size(); i++) {
-            ActionVariable& v = actionRegExp.Variables[i];
+            const ActionVariable& v = actionRegExp.Variables[i];
             std::string temp;
             temp = callback(v.nIndex);
             if (!v.Name.empty()) {
@@ -316,7 +316,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
 
         }
     };
-    for (auto& actionRegExp : Action.FunctionCalls)
+    for (const auto& actionRegExp : Action.FunctionCalls)
     {
         if (!actionRegExp.getArg(1).empty()) {
             std::string codePage;
@@ -410,7 +410,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
     return true;
 }
 
-bool CDefaultUploadEngine::DoAction(UploadAction& Action)
+bool CDefaultUploadEngine::DoAction(const UploadAction& Action)
 {
     bool Result = true;
 
@@ -496,7 +496,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         return Result;
 }
 
-bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
+bool CDefaultUploadEngine::ReadServerResponse(const UploadAction& Action)
 {
     bool Result = false;
     bool Exit = false;
@@ -553,7 +553,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
     return Result;
 }
 
-void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
+void CDefaultUploadEngine::AddQueryPostParams(const UploadAction& Action)
 {
     std::string Txt = Action.PostParams;
     std::string _Post = "Post Request to URL: " + Action.Url + "\r\n";
@@ -598,7 +598,7 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
         DebugMessage(_Post);
 }
 
-void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
+void CDefaultUploadEngine::AddCustomHeaders(const UploadAction& Action)
 {
     m_NetworkClient->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
 
@@ -716,7 +716,7 @@ int CDefaultUploadEngine::RetryLimit()
     return m_UploadData->RetryLimit;
 }
 
-void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction,
+void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, const UploadAction* m_CurrentAction,
                                        bool writeToBuffer )
 {
     m_LastError.ServerName = m_UploadData->Name;

@@ -60,7 +60,6 @@ void CLogoSettings::TranslateUI()
     SetWindowText(TR("Additional params"));
 }
 
-
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -274,7 +273,7 @@ void CLogoSettings::UpdateProfileList() {
     profileCombobox_.ResetContent();
 
     bool found = false;
-    for (auto it: convert_profiles_) {
+    for (const auto& it: convert_profiles_) {
         profileCombobox_.AddString(it.first);
         if (it.first == CurrentProfileName) {
             found = true;

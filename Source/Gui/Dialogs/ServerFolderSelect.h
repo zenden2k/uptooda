@@ -107,7 +107,7 @@ protected:
     CProgressRingControl m_wndAnimation;
     std::mutex runningScriptMutex_;
     UploadEngineManager * uploadEngineManager_;
-    CUploadEngineData *m_UploadEngine;
+    const CUploadEngineData *m_UploadEngine;
     CFolderList m_FolderList;
     CFolderItem m_newFolder;
     std::shared_ptr<UploadSession> uploadSession_;

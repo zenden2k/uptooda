@@ -163,7 +163,7 @@ void CServerParamsDlg::doAuthChanged() {
 }
 
 void CServerParamsDlg::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
