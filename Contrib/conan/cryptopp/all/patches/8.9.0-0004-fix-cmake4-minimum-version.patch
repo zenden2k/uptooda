@@ -1,0 +1,5 @@
+--- a/cryptopp-cmake/cmake/cmake_minimum_required.cmake
++++ b/cryptopp-cmake/cmake/cmake_minimum_required.cmake
+@@ -1 +1 @@
+-set(CRYPTOPP_MINIMUM_CMAKE_VERSION 3.20)
++set(CRYPTOPP_MINIMUM_CMAKE_VERSION 4.0)
