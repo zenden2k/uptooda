@@ -30,7 +30,7 @@ void QtServerIconCache::preLoadIcons(int dpi) {
     iconsPreload_ = true;
 
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
         [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi);
     }
 }
