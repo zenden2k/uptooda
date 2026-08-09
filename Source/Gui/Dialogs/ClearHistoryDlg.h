@@ -35,7 +35,6 @@ class CClearHistoryDlg :
 {
     public:
         CClearHistoryDlg();
-        ~CClearHistoryDlg();
         enum { IDD = IDD_CLEARHISTORYDLG };
 
         BEGIN_MSG_MAP(CClearHistoryDlg)

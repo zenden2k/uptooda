@@ -50,7 +50,7 @@ void Script::CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQC
 
 void Script::InitScriptEngine()
 {
-    ScriptAPI::SetPrintCallback(vm_, std::bind(&Script::PrintCallback, this, std::placeholders::_1));
+    ScriptAPI::SetPrintCallback(vm_, [this](auto && PH1) { PrintCallback(std::forward<decltype(PH1)>(PH1)); });
     sqstd_seterrorhandlers(vm_.GetVM());
     ScriptAPI::SetScriptName(vm_, fileName_);
     sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);

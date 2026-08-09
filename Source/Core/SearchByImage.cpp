@@ -9,7 +9,7 @@
 std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager, std::function<void(const std::string&)> statusCallback)
 {
     ServerProfile server = imageSearchServer;
-    server.UseDefaultSettings = false;
+    server.setUseDefaultSettings(false);
     server.setShortenLinks(false);
     auto& uploadParams = server.getImageUploadParamsRef();
     uploadParams.CreateThumbs = false;

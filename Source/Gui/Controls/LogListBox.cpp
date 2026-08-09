@@ -242,7 +242,7 @@ LRESULT CLogListBox::OnKillFocus(HWND hwndNewFocus)
     return 0;
 }
 
-BOOL  CLogListBox::SubclassWindow(HWND hWnd)
+BOOL CLogListBox::SubclassWindow(HWND hWnd)
 {
     BOOL Result = CWindowImpl<CLogListBox, CListBox,CControlWinTraits>::SubclassWindow(hWnd);
     Init();

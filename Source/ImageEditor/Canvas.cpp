@@ -229,8 +229,8 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
     BitmapData bitmapData;
     Rect lockRect(0,0, getWidth(),getHeigth());
     // I hope Gdiplus does not copy data in LockBits
-    if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
-        uint8_t * source = (uint8_t *) bitmapData.Scan0;
+    if (buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
+        auto * source = static_cast<uint8_t*>(bitmapData.Scan0);
         unsigned int stride;
         if ( bitmapData.Stride > 0) {
             stride = bitmapData.Stride;
@@ -251,7 +251,6 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
         buffer_->UnlockBits(&bitmapData);
     }
     //gr->DrawImage( &*buffer_, rectInWindowCoordinates.left, rectInWindowCoordinates.top, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
-
 }
 
 Gdiplus::Rect Canvas::currentRenderingRect() const
@@ -301,7 +300,6 @@ void Canvas::setPenSize(int size) {
             updateView(paintRect);
         }
     }
-
 }
 
 int Canvas::getPenSize() const
@@ -363,7 +361,6 @@ void Canvas::setRoundingRadius(int radius) {
             updateView(paintRect);
         }
     }
-
 }
 
 int Canvas::getRoundingRadius() const
@@ -464,7 +461,7 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
             updatedElementsCount++;
         }
     }
-    if ( updatedElementsCount ) {
+    if (updatedElementsCount) {
         addUndoHistoryItem(std::move(uhi));
         updateView();
     }
@@ -645,7 +642,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 
 void Canvas::setPreviousDrawingTool()
 {
-    if ( previousDrawingTool_ != DrawingToolType::dtNone ) {
+    if (previousDrawingTool_ != DrawingToolType::dtNone) {
         setDrawingToolType(previousDrawingTool_, true);
     }
 }
@@ -1088,7 +1085,6 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
             }
         }
     }
-
 
     return nullptr;
 }

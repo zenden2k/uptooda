@@ -61,7 +61,7 @@ void CHistorySession::setTimeStamp(time_t timeStamp) {
     m_timeStamp = timeStamp;
 }
 
-std::string  CHistorySession::sessionId() const {
+std::string CHistorySession::sessionId() const {
     return m_sessId;
 }
 

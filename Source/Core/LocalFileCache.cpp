@@ -13,7 +13,7 @@ LocalFileCache::LocalFileCache() {
 }
 
 bool LocalFileCache::ensureHistoryParsed() {
-    if ( !historyParsed ) {
+    if (!historyParsed) {
         parseHistory();
         historyParsed = true;
     }
@@ -29,7 +29,9 @@ bool LocalFileCache::parseHistory() {
     boost::filesystem::directory_iterator endItr; // Default ctor yields past-the-end
 
     pcrepp::Pcre regexp("^history.+\\.xml$");
-    for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != endItr; ++i) {
+    for (boost::filesystem::directory_iterator i(historyFolder,
+                                                 boost::filesystem::directory_options::skip_permission_denied); i !=
+         endItr; ++i) {
         // Skip if not a file
         if (!boost::filesystem::is_regular_file(i->status())) {
             continue;
@@ -45,13 +47,13 @@ bool LocalFileCache::parseHistory() {
     }
     //WinUtils::GetFolderFileList(files, historyFolder , _T("history*.xml"));
 
-    for(const auto& file: files) {
+    for (const auto& file : files) {
         parseHistoryFile(historyFolder + file);
     }
     return true;
 }
 
-bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
+bool LocalFileCache::parseHistoryFile(const std::string& fileName) {
     /* CHistoryReader m_historyReader(ServiceLocator::instance()->historyManager());
     if ( !m_historyReader.loadFromFile(fileName) ) {
         return false;
@@ -79,16 +81,16 @@ bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
 
 bool LocalFileCache::addFile(const std::string& url, const std::string& localFileName) {
     std::lock_guard<std::recursive_mutex> guard(mutex_);
-    cache_[url] = localFileName; 
+    cache_[url] = localFileName;
     return true;
 }
 
-std::string LocalFileCache::get(const std::string& url){
+std::string LocalFileCache::get(const std::string& url) {
     std::lock_guard<std::mutex> guard(cacheMutex_);
     std::map<std::string, std::string>::const_iterator foundItem = cache_.find(url);
 
-    if ( foundItem != cache_.end() ) {
-        if ( IuCoreUtils::FileExists(foundItem->second) ) {
+    if (foundItem != cache_.end()) {
+        if (IuCoreUtils::FileExists(foundItem->second)) {
             return foundItem->second;
         } else {
             // if file not found on disk, delete it from cache
@@ -100,7 +102,7 @@ std::string LocalFileCache::get(const std::string& url){
 
 bool LocalFileCache::addThumb(const std::string& url, const std::string& localFileName) {
     std::lock_guard<std::recursive_mutex> guard(mutex_);
-    thumbCache_[url] = localFileName; 
+    thumbCache_[url] = localFileName;
     return true;
 }
 
@@ -108,8 +110,8 @@ std::string LocalFileCache::getThumb(const std::string& url) {
     std::lock_guard<std::mutex> guard(cacheMutex_);
     std::map<std::string, std::string>::const_iterator foundItem = thumbCache_.find(url);
 
-    if ( foundItem != thumbCache_.end() ) {
-        if ( IuCoreUtils::FileExists(foundItem->second) ) {
+    if (foundItem != thumbCache_.end()) {
+        if (IuCoreUtils::FileExists(foundItem->second)) {
             return foundItem->second;
         } else {
             // if file not found on disk, delete it from cache

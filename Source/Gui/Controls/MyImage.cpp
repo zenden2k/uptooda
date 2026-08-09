@@ -253,9 +253,6 @@ bool CMyImage::drawFrame() {
 
     GUID pageGuid = FrameDimensionTime;
 
-    long hmWidth = animatedImage_->GetWidth();
-    long hmHeight = animatedImage_->GetHeight();
-
     Graphics graphics(backBufferDc_);
     Color backgroundColor(255, 210, 210, 210);
     Rect rc(clientRect.left, clientRect.top, clientRect.Width()-1, clientRect.Height()-1);

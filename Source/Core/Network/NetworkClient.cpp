@@ -630,8 +630,8 @@ bool NetworkClient::doPost(const std::string& data)
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, static_cast<long>(postData.length()));
     }
     else {
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, (const char*)data.data());
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, (long)data.length());
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, static_cast<const char*>(data.data()));
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, static_cast<long>(data.length()));
     }
 
     m_currentActionType = ActionType::atPost;
@@ -640,7 +640,7 @@ bool NetworkClient::doPost(const std::string& data)
 }
 
 std::string NetworkClient::urlEncode(const std::string& str) {
-    char* encoded = curl_easy_escape(curl_handle, str.c_str(), str.length());
+    char* encoded = curl_easy_escape(curl_handle, str.c_str(), static_cast<int>(str.length()));
     if (!encoded) {
         return {};
     }
@@ -650,7 +650,7 @@ std::string NetworkClient::urlEncode(const std::string& str) {
 }
 
 std::string NetworkClient::urlDecode(const std::string& str) {
-    char* decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
+    char* decoded = curl_easy_unescape(curl_handle, str.c_str(), static_cast<int>(str.length()), nullptr);
     if (!decoded) {
         return {};
     }
@@ -767,11 +767,10 @@ void NetworkClient::private_parse_headers()
 std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
     std::string lowerName = IuStringUtils::ToLower(name);
-    std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
 
-    for(it = m_ResponseHeaders.begin(); it!=end; ++it) {
-        if (IuStringUtils::ToLower(it->name) == lowerName) {
-            return it->value;
+    for(const auto& header: m_ResponseHeaders) {
+        if (IuStringUtils::ToLower(header.name) == lowerName) {
+            return header.value;
         }
     }
     return {};
@@ -779,7 +778,7 @@ std::string NetworkClient::responseHeaderByName(const std::string& name)
 
 int NetworkClient::responseHeaderCount()
 {
-    return m_ResponseHeaders.size();
+    return static_cast<int>(m_ResponseHeaders.size());
 }
 
 std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)

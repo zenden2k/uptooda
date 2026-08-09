@@ -28,7 +28,6 @@ void AppRuntimeInfo::setVersionInfo(const AppVersionInfo& info) {
 #endif
 }
 
-
 std::string AppRuntimeInfo::dataDirectory() const
 {
     return dataDirectory_;

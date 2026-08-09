@@ -22,8 +22,8 @@ bool CopyFileAndImageToClipboard(LPCTSTR fileName, HWND hwnd) {
 bool CopyFilesToClipboard(const std::vector<CString>& fileNames, HWND hwnd, bool clearClipboard) {
     size_t argc = fileNames.size();
     auto pFullNames = std::make_unique<WCHAR[]>(argc * MAX_PATH + 1);
-    WCHAR *p = pFullNames.get();
-    for (size_t i = 0; i < argc; i++ ) {
+    WCHAR* p = pFullNames.get();
+    for (size_t i = 0; i < argc; i++) {
         LPTSTR end = nullptr;
         StringCchCopyEx(p, MAX_PATH, fileNames[i], &end, nullptr, 0);
         if (!end) {
@@ -31,23 +31,24 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, HWND hwnd, bool
         }
         p = end + 1;
     }
-    *p++ = 0; 
+    *p++ = 0;
     DWORD dwDataBytes = sizeof(WCHAR) * (p - pFullNames.get());
     DROPFILES df = {sizeof(DROPFILES), {0, 0}, 0, TRUE};
-    HGLOBAL hMem = GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(DROPFILES) + dwDataBytes);
+    HGLOBAL hMem = GlobalAlloc(GMEM_ZEROINIT | GMEM_MOVEABLE | GMEM_DDESHARE, sizeof(DROPFILES) + dwDataBytes);
     if (!hMem) {
         return false;
     }
-    char *pGlobal = static_cast<char*>(GlobalLock(hMem));
+    char* pGlobal = static_cast<char*>(GlobalLock(hMem));
     if (!pGlobal) {
         GlobalFree(hMem);
         return false;
     }
     CopyMemory(pGlobal, &df, sizeof(DROPFILES));
-    CopyMemory(pGlobal + sizeof(DROPFILES), pFullNames.get(), dwDataBytes); // that's pGlobal + 20 bytes (the size of DROPFILES);
+    CopyMemory(pGlobal + sizeof(DROPFILES), pFullNames.get(), dwDataBytes);
+    // that's pGlobal + 20 bytes (the size of DROPFILES);
     GlobalUnlock(hMem);
-    if ( OpenClipboard(hwnd) ) {
-        if ( clearClipboard ) {
+    if (OpenClipboard(hwnd)) {
+        if (clearClipboard) {
             EmptyClipboard();
         }
         SetClipboardData(CF_HDROP, hMem);

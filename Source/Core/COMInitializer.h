@@ -12,7 +12,7 @@ struct COMInitializer
 {
 	COMInitializer(COMInitializerType type)
 	{
-		hr_ = CoInitializeEx(NULL, type);
+		hr_ = CoInitializeEx(nullptr, type);
 	}
 
 	~COMInitializer()
@@ -23,7 +23,7 @@ struct COMInitializer
 		}
 	}
 
-	BOOL isCOMInitialized()
+	BOOL isCOMInitialized() const
 	{
 		//Checks if COM was initialized
 		//RETURN:

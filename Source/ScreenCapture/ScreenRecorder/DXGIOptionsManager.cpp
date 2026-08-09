@@ -51,7 +51,6 @@ DXGIOptionsManager::DXGIOptionsManager() {
 }
 
 std::optional<DXGIOptionsManager::VideoCodecInfo> DXGIOptionsManager::getVideoCodecInfo(const std::string& codecId) {
-
     VideoCodecInfo info;
     info.CodecId = codecId;
     return info;

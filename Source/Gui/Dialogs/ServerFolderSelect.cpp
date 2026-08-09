@@ -191,14 +191,14 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
     } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
         m_FolderOperationType = FolderOperationType::foGetFolders;
         m_SelectedFolder = folderTask->folder();
-        refreshList(folderTask->folder().parentid);
+        refreshList(folderTask->folder().parentId);
         return;
     } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) {
         // Modifying an existing folder
         m_FolderOperationType = FolderOperationType::foGetFolders;
         m_newFolder.setId(folderTask->folder().getId());
         m_SelectedFolder = m_newFolder;
-        refreshList(folderTask->folder().parentid);
+        refreshList(folderTask->folder().parentId);
         return;
     }
 
@@ -265,7 +265,7 @@ void CServerFolderSelect::NewFolder(const CFolderItem& parentFolder)
     if (dlg.DoModal(m_hWnd) == IDOK)
     {
         m_newFolder = newFolder;
-        m_newFolder.parentid = parentFolder.getId();
+        m_newFolder.parentId = parentFolder.getId();
         m_FolderOperationType = FolderOperationType::foCreateFolder;
         if (!isRunning_){
             auto task = std::make_shared<FolderTask>(FolderOperationType::foCreateFolder);
@@ -494,7 +494,7 @@ void CServerFolderSelect::BuildFolderTree(TreeItemData* treeItemData, const std:
     for (size_t i = 0; i < list.size(); i++)
     {
         const CFolderItem& cur = list[i];
-        if (cur.parentid == parentFolderId)
+        if (cur.parentId == parentFolderId)
         {
             if (treeItemData) {
                 treeItemData->childrenLoaded = true;
@@ -503,7 +503,7 @@ void CServerFolderSelect::BuildFolderTree(TreeItemData* treeItemData, const std:
             /*if (cur.itemCount != -1)
                 title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");*/
             TVINSERTSTRUCT tvis = {};
-            tvis.hParent = m_FolderMap[cur.parentid];
+            tvis.hParent = m_FolderMap[cur.parentId];
             tvis.hInsertAfter = TVI_SORT;
             tvis.item.mask = TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_CHILDREN;
             tvis.item.pszText = const_cast<LPTSTR>(title.GetString());

@@ -20,15 +20,6 @@
 
 #include "SettingsManager.h"
 
-SettingsNode::SettingsNode()
-{
-    boundValue_ = nullptr;
-}
-
-SettingsManager::SettingsManager()
-{
-}
-
 SettingsNode& SettingsManager::operator[](const std::string& name)
 {
     return root_[name];
@@ -44,8 +35,8 @@ SettingsNode& SettingsNode::operator[](const std::string& name)
 }
 
 void SettingsNode::saveToXmlNode(SimpleXmlNode parentNode, const std::string &name, bool isRoot) const {
-    int namelen = name.length();
-    if (namelen > 0 && name[0] == '@') {
+    size_t namelen = name.length();
+    if (namelen && name[0] == '@') {
         parentNode.SetAttribute(name.substr(1, namelen - 1), boundValue_->getValue());
     } else {
         SimpleXmlNode child = parentNode;
@@ -63,8 +54,8 @@ void SettingsNode::saveToXmlNode(SimpleXmlNode parentNode, const std::string &na
 }
 
 void SettingsNode::loadFromXmlNode(SimpleXmlNode parentNode, const std::string &name, bool isRoot) {
-    int namelen = name.length();
-    if (namelen > 0 && name[0] == '@') {
+    size_t namelen = name.length();
+    if (namelen && name[0] == '@') {
         std::string attribValue;
         if (parentNode.GetAttribute(name.substr(1, namelen - 1), attribValue))
             boundValue_->setValue(attribValue);
@@ -81,10 +72,6 @@ void SettingsNode::loadFromXmlNode(SimpleXmlNode parentNode, const std::string &
             }
         }
     }
-}
-
-SettingsNode::~SettingsNode()
-{
 }
 
 SettingsNode& SettingsManager::root()

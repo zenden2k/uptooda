@@ -143,7 +143,6 @@ void CFileDownloader::memberThreadFunc()
         }
     }
 
-
     {
         std::lock_guard<std::mutex> lk(threadsStatusMutex_);
         // otherwise we may get a deadlock

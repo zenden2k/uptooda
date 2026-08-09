@@ -36,7 +36,6 @@ ServerListManager::ServerListManager(std::string serversDirectory, CUploadEngine
 {
 }
 
-
 std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl,
     const std::string& privateKeyFile, int securedConnection, const std::string& activeConnectionPort)
 {

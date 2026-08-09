@@ -124,8 +124,8 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
 class SettingsNode
 {
     public:
-        SettingsNode();
-        virtual ~SettingsNode();
+        SettingsNode() = default;
+        virtual ~SettingsNode() = default;
         template<class T> void bind(T& var)
         {
             boundValue_ = std::make_unique<SettingsNodeVariant<T>>(&var);
@@ -142,7 +142,7 @@ class SettingsNode
 class SettingsManager
 {
     public:
-        SettingsManager();
+        SettingsManager() = default;
         SettingsNode& operator[](const std::string&);
         SettingsNode& root();
         void saveToXmlNode(const SimpleXmlNode& parentNode) const;

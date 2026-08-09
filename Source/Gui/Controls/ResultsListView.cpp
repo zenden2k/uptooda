@@ -8,10 +8,10 @@
 CResultsListView::CResultsListView() :  model_(nullptr) {
 }
 
-bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
+bool CResultsListView::AttachToDlgItem(HWND parent, int dlgID) {
 
-    HWND hWnd = ::GetDlgItem(parent,dlgID);
-    bool res = SubclassWindow(hWnd)!=FALSE;
+    HWND hWnd = ::GetDlgItem(parent, dlgID);
+    bool res = SubclassWindow(hWnd) != FALSE;
     Init();
     return res;
 }
@@ -73,5 +73,5 @@ LRESULT CResultsListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL&
 
 // Called from the worker thread
 void CResultsListView::onRowChanged(size_t index) {
-    PostMessage(LVM_REDRAWITEMS, index, index);
+    PostMessage(LVM_REDRAWITEMS, index, static_cast<LPARAM>(index));
 }

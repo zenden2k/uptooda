@@ -101,7 +101,7 @@ std::string ServerSync::getConstVar(const std::string& name)
     {
         return it->second;
     }
-    return std::string();
+    return {};
 }
 
 std::mutex& ServerSync::folderMutex() {

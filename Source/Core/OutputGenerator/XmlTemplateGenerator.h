@@ -16,7 +16,7 @@ public:
     GeneratorID id() const override;
     void setTemplateIndex(size_t index);
 private:
-    std::string replaceVars(const std::string& text, const std::unordered_map<std::string, std::string>& vars);
+    static std::string replaceVars(const std::string& text, const std::unordered_map<std::string, std::string>& vars);
     XmlTemplateList* templateList_;
     size_t templateIndex_ = 0;
     std::string doGenerate(const std::vector<UploadObject>& items) override;

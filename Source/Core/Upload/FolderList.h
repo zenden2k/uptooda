@@ -19,8 +19,6 @@ class CFolderList
         CFolderItem parent_;
         /*! @endcond */
 
-
-
         /**
         @since 1.3.2
         */
@@ -29,7 +27,7 @@ class CFolderList
         CFolderItem& operator [] (size_t index) {  return m_folderItems[index]; }
         void Clear() { m_folderItems.clear(); }
         /*! @endcond */
-        void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);
+        void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentId, int accessType);
         void AddFolderItem(const CFolderItem& item);
 
         void setParentFolder(const CFolderItem& parent) {

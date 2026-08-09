@@ -37,7 +37,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, siz
         return nullptr;
     }
 
-    Gdiplus::Bitmap* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
+    auto* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
     std::unique_ptr<GdiPlusImage> img = std::make_unique<GdiPlusImage>(bm);
     //std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(pic.width, pic.height, PixelFormat32bppARGB);
     BitmapData dstData;

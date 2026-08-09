@@ -85,7 +85,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
     return TRUE;
 }
 
-void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
+void AveragePolyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
 enum ChannelARGB {
     Blue = 0,
@@ -96,22 +96,19 @@ enum ChannelARGB {
 
 // hack for stupid GDIplus
 void TransferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, ChannelARGB sourceChannel,
-                                                  ChannelARGB destChannel )
-{
+                                                  ChannelARGB destChannel) {
     Rect r(0, 0, static_cast<int>(source.GetWidth()), static_cast<int>(source.GetHeight()));
     BitmapData bdSrc{};
     BitmapData bdDst{};
-    if (source.LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
-        if (dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst) == Ok) {
+    if (source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
+        if (dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst) == Ok) {
             BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
             BYTE* bpDst = static_cast<BYTE*>(bdDst.Scan0);
             bpSrc += sourceChannel;
             bpDst += destChannel;
-            for ( int i = r.Height * r.Width; i > 0; i-- )
-            {
+            for (int i = r.Height * r.Width; i > 0; i--) {
                 *bpDst = *bpSrc;
-                if (*bpDst == 0)
-                {
+                if (*bpDst == 0) {
                     bpDst -= destChannel;
                     *bpDst = 0;
                     *(bpDst + 1) = 0;
@@ -121,13 +118,13 @@ void TransferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
                 bpSrc += 4;
                 bpDst += 4;
             }
-            dest.UnlockBits( &bdDst );
+            dest.UnlockBits(&bdDst);
         }
-        source.UnlockBits( &bdSrc );
+        source.UnlockBits(&bdSrc);
     }
 }
 
-void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n)
+void AveragePolyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n)
 {
     if (path.size() > 2)
     {
@@ -1010,7 +1007,7 @@ bool CFreeFormRegion::IsEmpty() {
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
-    average_polyline(m_curvePoints, curveAvgPoints, 29);
+    AveragePolyline(m_curvePoints, curveAvgPoints, 29);
     points.reserve(curveAvgPoints.size());
 
     for (const auto& [x, y] : curveAvgPoints) {
@@ -1033,7 +1030,7 @@ std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src) {
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
-    average_polyline(m_curvePoints, curveAvgPoints, 29);
+    AveragePolyline(m_curvePoints, curveAvgPoints, 29);
     points.reserve(curveAvgPoints.size());
 
     for (const auto& [x, y] : curveAvgPoints) {

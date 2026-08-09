@@ -26,8 +26,7 @@ limitations under the License.
 
 class SearchByImageUrlTask : public UploadTask {
     public:
-        SearchByImageUrlTask(const std::string& url, UploadTask* parentTask = nullptr);
-        ~SearchByImageUrlTask() override;
+        SearchByImageUrlTask(std::string url, UploadTask* parentTask = nullptr);
         Type type() const override;
         std::string getMimeType() const override;
         int64_t getDataLength() const override;

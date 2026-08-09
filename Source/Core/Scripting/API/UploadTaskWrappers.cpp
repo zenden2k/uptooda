@@ -1,6 +1,8 @@
 #include "UploadTaskWrappers.h"
 
 #include <boost/current_function.hpp>
+#include <memory>
+#include <utility>
 
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Upload/FileUploadTask.h"
@@ -131,7 +133,7 @@ void UploadTaskWrapper::checkNull(const char* func) const
 
 FileUploadTaskWrapper::FileUploadTaskWrapper(const std::string& fileName, const std::string& displayName)
 {
-    task_.reset(new FileUploadTask(fileName, displayName));
+    task_ = std::make_shared<FileUploadTask>(fileName, displayName);
 }
 
 
@@ -149,11 +151,11 @@ FileUploadTaskWrapper::FileUploadTaskWrapper(std::shared_ptr<FileUploadTask> tas
 std::string FileUploadTaskWrapper::getFileName() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
-        return std::string();
+        return {};
     }
     return fileTask->getFileName();
 }
@@ -161,7 +163,7 @@ std::string FileUploadTaskWrapper::getFileName() const
 int64_t FileUploadTaskWrapper::getFileSize() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
@@ -173,7 +175,7 @@ int64_t FileUploadTaskWrapper::getFileSize() const
 void FileUploadTaskWrapper::setFileName(const std::string& fileName)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
@@ -185,11 +187,11 @@ void FileUploadTaskWrapper::setFileName(const std::string& fileName)
 std::string FileUploadTaskWrapper::getDisplayName() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
-        return std::string();
+        return {};
     }
     return fileTask->getDisplayName();
 }
@@ -197,7 +199,7 @@ std::string FileUploadTaskWrapper::getDisplayName() const
 void FileUploadTaskWrapper::setDisplayName(const std::string& name)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
@@ -209,11 +211,11 @@ void FileUploadTaskWrapper::setDisplayName(const std::string& name)
 std::string FileUploadTaskWrapper::originalFileName() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a FileUploadTask";
-        return std::string();
+        return {};
     }
     return fileTask->originalFileName();
 }
@@ -221,7 +223,7 @@ std::string FileUploadTaskWrapper::originalFileName() const
 
 bool FileUploadTaskWrapper::isImage() const{
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask) {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
                    << "this is not a FileUploadTask";
@@ -232,7 +234,7 @@ bool FileUploadTaskWrapper::isImage() const{
 
 bool FileUploadTaskWrapper::isVideo() const {
     checkNull(BOOST_CURRENT_FUNCTION);
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
     if (!fileTask) {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
                    << "this is not a FileUploadTask";
@@ -255,11 +257,11 @@ UrlShorteningTaskWrapper::UrlShorteningTaskWrapper(std::shared_ptr<UrlShortening
 std::string UrlShorteningTaskWrapper::getUrl() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    UrlShorteningTask* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
+    auto* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
     if (!urlShorteningTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a UrlShorteningTask";
-        return std::string();
+        return {};
     }
     return urlShorteningTask->getUrl();
 }
@@ -267,7 +269,7 @@ std::string UrlShorteningTaskWrapper::getUrl() const
 void UrlShorteningTaskWrapper::setParentUrlType(const std::string& type)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    UrlShorteningTask* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
+    auto* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
     if (!urlShorteningTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a UrlShorteningTask";
@@ -279,11 +281,11 @@ void UrlShorteningTaskWrapper::setParentUrlType(const std::string& type)
 std::string UrlShorteningTaskWrapper::parentUrlType()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
-    UrlShorteningTask* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
+    auto* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
     if (!urlShorteningTask)
     {
         LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl << "this is not a UrlShorteningTask";
-        return std::string();
+        return {};
     }
     return UrlShorteningTask::EnumToString(urlShorteningTask->parentUrlType());
 }
@@ -368,7 +370,7 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
     );
 }
 
-UploadTaskUnion::UploadTaskUnion(std::shared_ptr<UploadTask> task) : task_(task) {
+UploadTaskUnion::UploadTaskUnion(std::shared_ptr<UploadTask> task) : task_(std::move(task)) {
 }
 
 UploadTaskUnion::UploadTaskUnion(UploadTask* task){

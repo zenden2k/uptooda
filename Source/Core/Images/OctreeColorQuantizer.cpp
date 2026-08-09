@@ -341,7 +341,7 @@ void OctreeColorQuantizer::reduceTree() {
         if (levels_[level].empty())
             continue;
 
-        // Sorting nodes of the current level (least significant ones first)
+        // Sorting nodes of the current level (the least significant ones first)
         // while merging them into their parents until we go under MaxColors
         auto& nodes = levels_[level];
         std::sort(nodes.begin(), nodes.end(), [](auto* a, auto* b) { return a->deepPixelCount() < b->deepPixelCount(); });

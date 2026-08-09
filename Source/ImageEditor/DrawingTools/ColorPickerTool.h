@@ -10,7 +10,7 @@ namespace ImageEditor {
 
 class ColorPickerTool : public AbstractDrawingTool {
 public:
-    ColorPickerTool(Canvas* canvas);
+    explicit ColorPickerTool(Canvas* canvas);
     void beginDraw(int x, int y) override;
     void continueDraw(int x, int y, DWORD flags) override;
     void endDraw(int x, int y) override;

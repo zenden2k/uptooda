@@ -51,13 +51,13 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
         if (myProxyConfig_.fAutoDetect) {
             autoProxy = true;
         }
-        if (myProxyConfig_.lpszAutoConfigUrl != NULL) {
+        if (myProxyConfig_.lpszAutoConfigUrl != nullptr) {
             autoProxy = TRUE;
             autoProxyOptions.lpszAutoConfigUrl = myProxyConfig_.lpszAutoConfigUrl;
         }
 
         if (autoProxy) {
-            if (autoProxyOptions.lpszAutoConfigUrl != NULL) {
+            if (autoProxyOptions.lpszAutoConfigUrl != nullptr) {
                 autoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
             } else {
                 autoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
@@ -109,7 +109,7 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
             }
         } else {
             // If autoproxy detection failed, we fallback to explicitly set proxies
-            if (myProxyConfig_.lpszProxy != NULL) {
+            if (myProxyConfig_.lpszProxy != nullptr) {
                 std::string proxyList = W2U(myProxyConfig_.lpszProxy);
                 std::string proxy = extractProxyForUrlFromList(proxyList, url);
                 if (!proxy.empty()) {

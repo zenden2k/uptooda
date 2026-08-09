@@ -43,11 +43,11 @@ bool Thumbnail::loadFromFile(const std::string& filename)
     SimpleXmlNode colorsNode = root["Definitions"]["Params"];
     std::vector<SimpleXmlNode> colorNodes;
     colorsNode.GetChilds("Param", colorNodes);
-    for (size_t i = 0; i < colorNodes.size(); i++)
+    for (const auto & colorNode : colorNodes)
     {
         std::string colorName;
-        colorName = colorNodes[i].Attribute("Name");
-        data_.colors_[colorName] =  colorNodes[i].Attribute("Value");
+        colorName = colorNode.Attribute("Name");
+        data_.colors_[colorName] =  colorNode.Attribute("Value");
     }
     SimpleXmlNode drawingNode = root["Drawing"];
     if (!drawingNode.IsNull())
@@ -56,18 +56,18 @@ bool Thumbnail::loadFromFile(const std::string& filename)
         data_.height_addition = drawingNode.Attribute("AddHeight");
         std::vector<SimpleXmlNode> drawOperations;
         drawingNode.GetChilds("Operation", drawOperations);
-        for (size_t i = 0; i < drawOperations.size(); i++)
+        for (const auto & drawOperation : drawOperations)
         {
             ThumbnailDrawOperation op;
-            op.brush = drawOperations[i].Attribute("Brush");
-            op.rect = drawOperations[i].Attribute("Rect");
-            op.source = drawOperations[i].Attribute("Source");
-            op.destination = drawOperations[i].Attribute("Destination");
-            op.source_rect = drawOperations[i].Attribute("SourceRect");
-            op.type = drawOperations[i].Attribute("Type");
-            op.pen = drawOperations[i].Attribute("Pen");
-            op.condition = drawOperations[i].Attribute("Condition");
-            op.text_colors = drawOperations[i].Attribute("TextColors");
+            op.brush = drawOperation.Attribute("Brush");
+            op.rect = drawOperation.Attribute("Rect");
+            op.source = drawOperation.Attribute("Source");
+            op.destination = drawOperation.Attribute("Destination");
+            op.source_rect = drawOperation.Attribute("SourceRect");
+            op.type = drawOperation.Attribute("Type");
+            op.pen = drawOperation.Attribute("Pen");
+            op.condition = drawOperation.Attribute("Condition");
+            op.text_colors = drawOperation.Attribute("TextColors");
             data_.drawing_operations_.push_back(op);
         }
     }

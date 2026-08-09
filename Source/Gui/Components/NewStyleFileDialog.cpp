@@ -2,7 +2,7 @@
 
 #include <vector>
 
-CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog){
+CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect){
     std::vector<COMDLG_FILTERSPEC> fileTypes;
     
     if (!filters.empty()) {
@@ -31,7 +31,6 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     }
 
     CComPtr<IShellItem> psiFolder;
-
 
     hr = SHCreateItemFromParsingName(initialFolder, nullptr, IID_PPV_ARGS(&psiFolder));
 

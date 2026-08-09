@@ -29,9 +29,6 @@ SearchByImageFileTask::SearchByImageFileTask(const std::string& fileName, const 
 {
 }
 
-SearchByImageFileTask::~SearchByImageFileTask() {
-
-}
 
 UploadTask::Type SearchByImageFileTask::type() const {
     return TypeSearchByImageFile;

@@ -22,6 +22,7 @@
 
 #include <chrono>
 #include <cassert>
+#include <memory>
 #include <thread>
 
 #include <megaapi.h>
@@ -55,7 +56,7 @@ public:
     bool getBitmapData(char *bitmapData, size_t size) override;
     void freeBitmap() override;
 
-    virtual ~MyGfxProcessor() override;
+    ~MyGfxProcessor() override;
 protected:
     std::unique_ptr<Gdiplus::Bitmap> bitmap_;
     HGLOBAL hGlobal_;
@@ -211,9 +212,9 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(std::shared_ptr<ServerSync> serverSync,
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
-    listener_.reset(new MyListener(this));
+    listener_ = std::make_unique<MyListener>(this);
     megaApi_->addListener(listener_.get());
-    proxy_.reset(new MegaProxy());
+    proxy_ = std::make_unique<MegaProxy>();
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {

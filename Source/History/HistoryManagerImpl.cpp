@@ -253,7 +253,7 @@ bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     std::string sql = str(boost::format("DELETE from uploads WHERE TRUE %1% ; DELETE from upload_sessions WHERE TRUE  %1%") % condition);
     char *err = nullptr;
     if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &err) != SQLITE_OK) {
-        LOG(ERROR) << "SQL error occured while clearing history: " << std::endl << err;
+        LOG(ERROR) << "SQL error occurred while clearing history: " << std::endl << err;
         sqlite3_free(err);
     }
 
@@ -290,7 +290,6 @@ bool CHistoryManager::convertHistory() {
                 LOG(ERROR) << "Failed to convert history file " << fileName;
                 continue;
             }
-
 
             for (auto& session : reader) {
                 for (auto& item : *session) {

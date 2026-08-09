@@ -42,7 +42,6 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
     public:
         CScriptUploadEngine(const std::string& pluginName, std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings,
             std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
-        ~CScriptUploadEngine() override;
 
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);

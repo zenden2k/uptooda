@@ -50,7 +50,7 @@ FrameGrabberDlg::~FrameGrabberDlg()
     delete ui;
 }
 
-void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std::shared_ptr<AbstractImage> image) {
+void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, const std::shared_ptr<AbstractImage>& image) {
 	if (!image) {
 		return;
 	}

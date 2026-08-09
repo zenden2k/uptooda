@@ -99,10 +99,10 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::SetCheck(m_hWnd, IDC_USESERVERTHUMBNAILS, params_.UseServerThumbs);
     GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
     if ( defaultServer_ ) {
-        serverProfile_.UseDefaultSettings = false;
+        serverProfile_.setUseDefaultSettings(false);
         GuiTools::ShowDialogItem(m_hWnd,IDC_DEFAULTSETTINGSCHECKBOX, false);
     }
-    GuiTools::SetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.UseDefaultSettings || !showImageProcessingParams_ );
+    GuiTools::SetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.useDefaultSettings() || !showImageProcessingParams_ );
     if (!showImageProcessingParams_)
     {
         GuiTools::EnableDialogItem(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, false);
@@ -138,7 +138,7 @@ LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         GuiTools::GetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
         GuiTools::GetCheck(m_hWnd, IDC_USESERVERTHUMBNAILS, params_.UseServerThumbs);
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
-        GuiTools::GetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.UseDefaultSettings);
+        serverProfile_.setUseDefaultSettings(GuiTools::IsChecked(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX));
         thumb.AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
         thumb.Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
 

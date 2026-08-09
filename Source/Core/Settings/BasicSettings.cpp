@@ -118,30 +118,30 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
 
             serverNode.SetAttribute("Name", it1->first);
 
-std::map <std::string, std::string>::iterator param;
-for (param = it->second.params.begin(); param != sss.params.end(); ++param) {
-    if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
-        continue;
-    }
-    serverNode.SetAttribute("_" + param->first, param->second);
-}
-serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
+            std::map <std::string, std::string>::iterator param;
+            for (param = it->second.params.begin(); param != sss.params.end(); ++param) {
+                if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
+                    continue;
+                }
+                serverNode.SetAttribute("_" + param->first, param->second);
+            }
+            serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
-CEncodedPassword login(sss.authData.Login);
-serverNode.SetAttribute("Login", login.toEncodedData());
+            CEncodedPassword login(sss.authData.Login);
+            serverNode.SetAttribute("Login", login.toEncodedData());
 
-const CUploadEngineData* ued = engineList_->byName(it->first);
-if (!ued || ued->NeedPassword) {
-    CEncodedPassword pass(it->second.authData.Password);
-    serverNode.SetAttribute("Password", pass.toEncodedData());
-}
+            const CUploadEngineData* ued = engineList_->byName(it->first);
+            if (!ued || ued->NeedPassword) {
+                CEncodedPassword pass(it->second.authData.Password);
+                serverNode.SetAttribute("Password", pass.toEncodedData());
+            }
 
-if (!it->second.defaultFolder.getId().empty()) {
-    serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
-    serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
-    serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
-    serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
-}
+            if (!it->second.defaultFolder.getId().empty()) {
+                serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
+                serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
+                serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
+                serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
+            }
 
         }
     }

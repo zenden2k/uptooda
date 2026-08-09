@@ -106,11 +106,6 @@ CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, std::share
     load(fileName);
 }
 
-CScriptUploadEngine::~CScriptUploadEngine()
-{
-
-}
-
 void CScriptUploadEngine::PrintCallback(const std::string& output)
 {
     Log(ErrorInfo::mtInformation, output);
@@ -127,7 +122,6 @@ int CScriptUploadEngine::doProcessTask(std::shared_ptr<UploadTask> task, UploadP
         return doUpload(task, params);
     }
 }
-
 
 int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
     SetStatus(stAuthorization);

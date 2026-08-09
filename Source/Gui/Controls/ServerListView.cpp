@@ -179,7 +179,6 @@ int CServerListView::FindItemByString(LPCWSTR searchText, int startIndex, DWORD 
         }
     }
 
-
     if (flags & LVFI_WRAP) {
         for (int i = 0; i < startIndex; ++i) {
             std::string itemText = model_->getItemText(i, 0);

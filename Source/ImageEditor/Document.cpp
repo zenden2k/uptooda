@@ -27,11 +27,11 @@
 #include "Core/Images/Utils.h"
 
 namespace ImageEditor {
-    using namespace Gdiplus;
+using namespace Gdiplus;
 
 Document::Document(int width, int height) {
     hasTransparentPixels_ = false;
-    currentImage_ = std::make_shared<Gdiplus::Bitmap>( width, height, PixelFormat32bppARGB );
+    currentImage_ = std::make_shared<Gdiplus::Bitmap>(width, height, PixelFormat32bppARGB);
     init(true);
 }
 
@@ -39,19 +39,18 @@ Document::Document(const wchar_t* fileName) {
     hasTransparentPixels_ = false;
     currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcMultiFrame_);
     init();
-    if ( currentImage_ ) {
+    if (currentImage_) {
         checkTransparentPixels();
     }
 }
 
-Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransparentPixels ) {
+Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels) {
     currentImage_ = std::move(sourceImage);
     hasTransparentPixels_ = hasTransparentPixels;
     init();
 }
 
-Document::~Document()
-{
+Document::~Document() {
     for (auto& i : history_) {
         delete[] i.data;
     }
@@ -61,10 +60,10 @@ void Document::init(bool clear) {
     currentPainter_.reset();
     drawStarted_ = false;
     originalImage_ = nullptr;
-    if ( currentImage_ ) {
-        currentPainter_ = std::make_unique<Gdiplus::Graphics>( currentImage_.get() );
+    if (currentImage_) {
+        currentPainter_ = std::make_unique<Graphics>(currentImage_.get());
         if (clear) {
-            currentPainter_->Clear(Gdiplus::Color::Transparent);
+            currentPainter_->Clear(Color::Transparent);
         }
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
@@ -72,39 +71,38 @@ void Document::init(bool clear) {
 
 void Document::beginDrawing(bool cloneImage) {
     drawStarted_ = true;
-    if ( cloneImage ) {
-        originalImage_ = currentImage_->Clone(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight(), PixelFormat32bppARGB );
+    if (cloneImage) {
+        originalImage_ = currentImage_->Clone(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight(),
+                                              PixelFormat32bppARGB);
     }
     changedSegments_.clear();
 }
 
-void Document::addDrawingElement(DrawingElement *element) {
-    currentPainter_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
-    currentPainter_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
+void Document::addDrawingElement(DrawingElement* element) {
+    currentPainter_->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    currentPainter_->SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
     AffectedSegments segments;
-    element->getAffectedSegments( &segments );
+    element->getAffectedSegments(&segments);
     changedSegments_ += segments;
-    if( !drawStarted_ ) {
-        saveDocumentState( );
+    if (!drawStarted_) {
+        saveDocumentState();
         changedSegments_.clear();
     }
-    element->render( currentPainter_.get());
+    element->render(currentPainter_.get());
 }
 
 void Document::endDrawing() {
     // save document state
-    saveDocumentState( );
+    saveDocumentState();
     drawStarted_ = false;
     changedSegments_.clear();
 }
 
-void Document::addAffectedSegments(const AffectedSegments& segments)
-{
+void Document::addAffectedSegments(const AffectedSegments& segments) {
     changedSegments_ += segments;
 }
 
-Gdiplus::Bitmap* Document::getBitmap() const
-{
+Gdiplus::Bitmap* Document::getBitmap() const {
     return currentImage_.get();
 }
 
@@ -117,16 +115,16 @@ void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
 void Document::saveDocumentState(bool full) {
     int pixelSize = 4;
     std::deque<RECT> rects;
-    Gdiplus::Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
+    Gdiplus::Bitmap* srcImage = (originalImage_) ? originalImage_ : currentImage_.get();
     int srcImageWidth = srcImage->GetWidth();
     int srcImageHeight = srcImage->GetHeight();
 
-    changedSegments_.getRects( rects, srcImageWidth, srcImageHeight ); // may contain invalid segments!
+    changedSegments_.getRects(rects, srcImageWidth, srcImageHeight); // may contain invalid segments!
     unsigned int pixels = 0;
 
     pixels = rects.size() * AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
 
-    unsigned int dataSize    = pixels * pixelSize;
+    unsigned int dataSize = pixels * pixelSize;
     unsigned char* imageData = nullptr;
 
     if (!full) {
@@ -166,74 +164,71 @@ void Document::saveDocumentState(bool full) {
                     //memset( pImageData, 255, rowSize );
                     pImageData += rowSize;
                 }
-
             }
         }
         currentImage_->UnlockBits(&bdSrc);
     }
 
     HistoryItem item;
-    item.data     = imageData;
+    item.data = imageData;
     item.segments = changedSegments_;
-    item.size     = dataSize;
+    item.size = dataSize;
     item.full = full;
     if (full) {
         item.width = srcImageWidth;
         item.height = srcImageHeight;
         item.bmp = currentImage_;
     }
-    history_.push_back( item );
+    history_.push_back(item);
     delete originalImage_;
     originalImage_ = 0;
     changedSegments_.clear();
 }
 
-void Document::checkTransparentPixels()
-{
+void Document::checkTransparentPixels() {
     using namespace Gdiplus;
     BitmapData bitmapData;
-    Rect lockRect(0,0, std::min<int>(10, currentImage_->GetWidth()), std::min<int>(10, currentImage_->GetHeight()));
-    if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
+    Rect lockRect(0, 0, std::min<int>(10, currentImage_->GetWidth()), std::min<int>(10, currentImage_->GetHeight()));
+    if (currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
         auto* source = static_cast<uint8_t*>(bitmapData.Scan0);
         unsigned int stride;
-        if ( bitmapData.Stride > 0) {
+        if (bitmapData.Stride > 0) {
             stride = bitmapData.Stride;
         } else {
-            stride = - bitmapData.Stride;
+            stride = -bitmapData.Stride;
         }
-        for( int i = 0; i < lockRect.Height; i++ ) {
-            for ( int j = 0; j < lockRect.Width; j++ ) {
-                if ( source[i * stride + j * 4 + 3 ] != 255 ) {
+        for (int i = 0; i < lockRect.Height; i++) {
+            for (int j = 0; j < lockRect.Width; j++) {
+                if (source[i * stride + j * 4 + 3] != 255) {
                     hasTransparentPixels_ = true;
                     currentImage_->UnlockBits(&bitmapData);
                     return;
                 }
-
             }
         }
         currentImage_->UnlockBits(&bitmapData);
     }
 }
 
-void Document::render(Painter *gr, Gdiplus::Rect rc) {
-    if (!gr || !currentImage_ ) return;
-    gr->DrawImage( currentImage_.get(),rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
+void Document::render(Painter* gr, Gdiplus::Rect rc) {
+    if (!gr || !currentImage_) return;
+    gr->DrawImage(currentImage_.get(), rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
 
 bool Document::undo() {
-    if ( history_.empty() ) {
+    if (history_.empty()) {
         return false;
     }
     HistoryItem undoItem = history_.back();
     history_.pop_back();
     std::deque<RECT> rects;
     auto image = currentImage_;
-    undoItem.segments.getRects( rects, image->GetWidth(), image->GetHeight() );
+    undoItem.segments.getRects(rects, image->GetWidth(), image->GetHeight());
 
     Gdiplus::BitmapData bdSrc;
-    Gdiplus::Rect r ( 0,0, image->GetWidth(), image->GetHeight() );
-    if (image->LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
-        return false ;
+    Gdiplus::Rect r(0, 0, image->GetWidth(), image->GetHeight());
+    if (image->LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok) {
+        return false;
     }
     BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
     unsigned char* pdata = undoItem.data;
@@ -262,28 +257,23 @@ bool Document::undo() {
     }
 
     delete[] undoItem.data;
-    image->UnlockBits( &bdSrc );
+    image->UnlockBits(&bdSrc);
     return true;
 }
 
-
-int Document::getWidth() const
-{
+int Document::getWidth() const {
     return currentImage_->GetWidth();
 }
 
-int Document::getHeight() const
-{
+int Document::getHeight() const {
     return currentImage_->GetHeight();
 }
 
-bool Document::isNull() const
-{
+bool Document::isNull() const {
     return !currentImage_;
 }
 
-bool Document::hasTransparentPixels() const
-{
+bool Document::hasTransparentPixels() const {
     return hasTransparentPixels_;
 }
 

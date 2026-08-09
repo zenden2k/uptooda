@@ -322,11 +322,11 @@ void FileQueueUploaderPrivate::run()
 
         CUploader uploader(networkClientFactory_);
         using namespace std::placeholders;
-        uploader.setOnConfigureNetworkClient(std::bind(&FileQueueUploaderPrivate::OnConfigureNetworkClient, this, _1, _2));
+        uploader.setOnConfigureNetworkClient([this](auto && PH1, auto && PH2) { OnConfigureNetworkClient(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
 
         // TODO
-        uploader.setOnErrorMessage(std::bind(&FileQueueUploaderPrivate::onErrorMessage, this, _1, _2));
-        uploader.setOnDebugMessage(std::bind(&FileQueueUploaderPrivate::onDebugMessage, this, _1, _2, _3));
+        uploader.setOnErrorMessage([this](auto && PH1, auto && PH2) { onErrorMessage(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+        uploader.setOnDebugMessage([this](auto && PH1, auto && PH2, auto && PH3) { onDebugMessage(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2), std::forward<decltype(PH3)>(PH3)); });
         auto fut = dynamic_cast<FileUploadTask*>(it.get());
 
         UploadTask* topLevelTask = it->parentTask() ? it->parentTask() : it.get();
@@ -341,8 +341,8 @@ void FileQueueUploaderPrivate::run()
         mutex_.unlock();
 
         bool res = true;
-        for (size_t i = 0; i < filters_.size(); i++) {
-            res = res && filters_[i]->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
+        for (auto & filter : filters_) {
+            res = res && filter->PreUpload(it.get()); // ServerProfile can be changed in PreUpload filters
         }
         if (!res)
         {
@@ -392,7 +392,7 @@ void FileQueueUploaderPrivate::run()
         }
         engine->serverSync()->incrementThreadCount();
         uploader.setUploadEngine(engine);
-        uploader.setOnNeedStopCallback(std::bind(&FileQueueUploaderPrivate::onNeedStopHandler, this));
+        uploader.setOnNeedStopCallback([this] { return onNeedStopHandler(); });
         it->setStatusText(_("Starting upload"));
         bool dec = false;
         try {
@@ -416,16 +416,14 @@ void FileQueueUploaderPrivate::run()
                 //serverThreads_[serverName].fatalError = true;
             }
 
-           
-
             //callMutex_.lock();
 
             UploadResult* result = it->uploadResult();
             result->serverName = serverName;
 
             if (res) {
-                for (size_t i = 0; i < filters_.size(); i++) {
-                    filters_[i]->PostUpload(it.get());
+                for (auto & filter : filters_) {
+                    filter->PostUpload(it.get());
                 }
             } else {
             }

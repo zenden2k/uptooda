@@ -39,7 +39,7 @@ IconBitmapUtils::IconBitmapUtils()
 
 IconBitmapUtils::~IconBitmapUtils()
 {
-    for (std::map<UINT, HBITMAP>::iterator it = bitmaps.begin(); it != bitmaps.end(); ++it)
+    for (auto it = bitmaps.begin(); it != bitmaps.end(); ++it)
     {
         ::DeleteObject(it->second);
     }

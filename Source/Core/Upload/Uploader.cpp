@@ -25,7 +25,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/BasicConstants.h"
 
-CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory)
+CUploader::CUploader(const std::shared_ptr<INetworkClientFactory>& networkClientFactory)
 {
     m_bShouldStop = false;
     m_CurrentStatus = stNone;
@@ -53,7 +53,7 @@ int CUploader::pluginProgressFunc(INetworkClient* nc, int64_t dltotal, int64_t d
     CUploader* uploader = this;
     auto networkClient = dynamic_cast<NetworkClient*>(nc);
 
-    if (!uploader || !networkClient)
+    if (!networkClient)
         return 0;
 
     if (uploader->needStop())
@@ -93,7 +93,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string& displ
     return Upload(std::make_shared<FileUploadTask>(FileName, displayFileName), maxRetries);
 }
 
-bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
+bool CUploader::Upload(const std::shared_ptr<UploadTask>& task, int maxRetries)
 {
     isFatalServerError_ = false;
     if (!m_CurrentEngine) {
@@ -110,7 +110,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
             return false;
         }
 
-        if ( ! IuCoreUtils::FileExists (FileName) ) {
+        if (!IuCoreUtils::FileExists (FileName) ) {
             Error(true, "File \""+FileName+"\" doesn't exist!");
             return false;
         }
@@ -133,10 +133,16 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
 
     m_CurrentEngine->setNetworkClient(m_NetworkClient.get());
     using namespace std::placeholders;
-    m_CurrentEngine->setOnDebugMessageCallback(std::bind(&CUploader::DebugMessage, this, _1, _2));
-    m_CurrentEngine->setOnNeedStopCallback(std::bind(&CUploader::needStop, this));
-    m_CurrentEngine->setOnStatusChangedCallback(std::bind(&CUploader::SetStatus, this, _1, _2, _3));
-    m_CurrentEngine->setOnErrorMessageCallback(std::bind(&CUploader::ErrorMessage, this, _1));
+    m_CurrentEngine->setOnDebugMessageCallback([this](auto && PH1, auto && PH2) {
+        DebugMessage(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
+    m_CurrentEngine->setOnNeedStopCallback([this] { return needStop(); });
+    m_CurrentEngine->setOnStatusChangedCallback([this](auto && PH1, auto && PH2, auto && PH3) {
+        SetStatus(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2), std::forward<decltype(PH3)>(PH3));
+    });
+    m_CurrentEngine->setOnErrorMessageCallback([this](auto && PH1) {
+        ErrorMessage(std::forward<decltype(PH1)>(PH1));
+    });
     m_CurrentEngine->setCurrentUploader(this);
 
     task->setCurrentUploadEngine(m_CurrentEngine);
@@ -159,7 +165,14 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
-    m_NetworkClient->setProgressCallback(std::bind(&CUploader::pluginProgressFunc, this, _1, _2, _3, _4, _5));
+    m_NetworkClient->setProgressCallback([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4, auto && PH5) {
+        return pluginProgressFunc(
+            std::forward<decltype(PH1)>(PH1),
+            std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3),
+            std::forward<decltype(PH4)>(PH4),
+            std::forward<decltype(PH5)>(PH5));
+    });
     ResultCode EngineRes = ResultCode::Failure;
     int retryLimit = IuCoreUtils::Coalesce(task->retryLimit(), maxRetries, m_CurrentEngine->RetryLimit(), MAX_RETRIES_PER_FILE);
 
@@ -224,12 +237,9 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
     }
 }
 
-bool CUploader::setUploadEngine(std::shared_ptr<CAbstractUploadEngine> UploadEngine)
+void CUploader::setUploadEngine(const std::shared_ptr<CAbstractUploadEngine>& uploadEngine)
 {
-    if (m_CurrentEngine == UploadEngine)
-        return true;
-    m_CurrentEngine = UploadEngine;
-    return true;
+    m_CurrentEngine = uploadEngine;
 }
 
 void CUploader::SetStatus(StatusType status, int param1, const std::string& param)
@@ -280,27 +290,27 @@ std::shared_ptr<UploadTask> CUploader::currentTask() const
     return currentTask_;
 }
 
-void CUploader::setOnNeedStopCallback(std::function<bool()> cb) {
+void CUploader::setOnNeedStopCallback(const std::function<bool()>& cb) {
     onNeedStop_ = cb;
 }
 
-void CUploader::setOnProgress(std::function<void(CUploader*, InfoProgress)> cb) {
+void CUploader::setOnProgress(const std::function<void(CUploader*, InfoProgress)>& cb) {
     onProgress_ = cb;
 }
 
-void CUploader::setOnStatusChanged(std::function<void(CUploader*, StatusType, int, std::string)> cb) {
+void CUploader::setOnStatusChanged(const std::function<void(CUploader*, StatusType, int, std::string)>& cb) {
     onStatusChanged_ = cb;
 }
 
-void CUploader::setOnDebugMessage(std::function<void(CUploader*, const std::string&, bool)> cb) {
+void CUploader::setOnDebugMessage(const std::function<void(CUploader*, const std::string&, bool)>& cb) {
     onDebugMessage_ = cb;
 }
 
-void CUploader::setOnErrorMessage(std::function<void(CUploader*, ErrorInfo)> cb) {
+void CUploader::setOnErrorMessage(const std::function<void(CUploader*, ErrorInfo)>& cb) {
     onErrorMessage_ = cb;
 }
 
-void CUploader::setOnConfigureNetworkClient(std::function<void(CUploader*, INetworkClient*)> cb) {
+void CUploader::setOnConfigureNetworkClient(const std::function<void(CUploader*, INetworkClient*)>& cb) {
     onConfigureNetworkClient_ = cb;
 }
 
@@ -318,7 +328,7 @@ void CUploader::ErrorMessage(const ErrorInfo& error)
     }
 }
 
-void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, UploadTask* uploadTask, const std::string& topLevelFileName)
+void CUploader::Error(bool error, const std::string& message, ErrorType type, int retryIndex, UploadTask* uploadTask, const std::string& topLevelFileName)
 {
     ErrorInfo err;
     err.ActionIndex  = -1;

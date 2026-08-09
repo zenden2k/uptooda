@@ -9,7 +9,7 @@ class CUploadEngineListBase;
 
 class ConsoleUploadErrorHandler : public IUploadErrorHandler {
 public:
-    ConsoleUploadErrorHandler(CUploadEngineListBase* engineList = nullptr);
+    ConsoleUploadErrorHandler() = default;
     void ErrorMessage(const ErrorInfo& errorInfo) override;
     void DebugMessage(const std::string& msg, bool isResponseBody) override;
 

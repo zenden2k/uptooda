@@ -13,9 +13,9 @@ class BasicSettings;
 
 class UploadManager : public CFileQueueUploader {
 public:
-    UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
+    UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
         std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int threadCount);
-    ~UploadManager();
+    ~UploadManager() override;
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter);
 protected:
     UploadEngineManager* uploadEngineManager_;

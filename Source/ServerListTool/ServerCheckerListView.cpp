@@ -75,6 +75,6 @@ LRESULT CServerCheckerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh,
 }
 
 void CServerCheckerListView::onRowChanged(size_t index) {
-    PostMessage(LVM_REDRAWITEMS, index, index);
+    PostMessage(LVM_REDRAWITEMS, index, static_cast<LPARAM>(index));
 }
 }

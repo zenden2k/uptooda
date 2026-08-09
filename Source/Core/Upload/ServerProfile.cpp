@@ -9,17 +9,18 @@
 
 ServerProfile::ServerProfile() {
     shortenLinks_ = false;
+    useDefaultSettings_ = false;
 }
 
 ServerProfile::ServerProfile(const std::string&  newServerName){
     serverName_ = newServerName;
-    UseDefaultSettings = false;
+    useDefaultSettings_ = false;
     shortenLinks_ = false;
 }
 
 void ServerProfile::setProfileName(const std::string& newProfileName) {
     profileName_ = newProfileName;
-    UseDefaultSettings = true;
+    useDefaultSettings_ = true;
 }
 
 std::string ServerProfile::profileName() const {
@@ -82,7 +83,7 @@ void ServerProfile::setShortenLinks(bool shorten)
     shortenLinks_ = shorten;
 }
 
-void ServerProfile::setParentIds(const std::vector<std::string> parentIds) {
+void ServerProfile::setParentIds(const std::vector<std::string>& parentIds) {
     folder_.parentIds = parentIds;
 }
 
@@ -104,8 +105,8 @@ ServerProfile ServerProfile::deepCopy()
 {
     ServerProfile res = *this;
     res.imageUploadParams = getImageUploadParams();
-    res.UseDefaultSettings = false;
-    UseDefaultSettings = false;
+    res.useDefaultSettings_ = false;
+    useDefaultSettings_ = false;
     return res;
 }
 
@@ -116,7 +117,7 @@ void ServerProfile::bind(SettingsNode& serverNode)
     serverNode["@FolderTitle"].bind(folder_.title);
     serverNode["@FolderUrl"].bind(folder_.viewUrl);
     serverNode["@ProfileName"].bind(profileName_);
-    serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
+    serverNode["@UseDefaultSettings"].bind(useDefaultSettings_);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
     serverNode["@ParentIds"].bind(folder_.parentIds);
 #ifdef _WIN32
@@ -128,7 +129,7 @@ ImageUploadParams ServerProfile::getImageUploadParams()
 {
 #ifdef _WIN32
     auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-    if (UseDefaultSettings && settings) {
+    if (useDefaultSettings_ && settings) {
         return settings->DefaultImageUploadParams;
     }
 #endif
@@ -143,6 +144,14 @@ ImageUploadParams& ServerProfile::getImageUploadParamsRef()
 void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 {
     imageUploadParams = std::move(iup);
+}
+
+bool ServerProfile::useDefaultSettings() const {
+    return useDefaultSettings_;
+}
+
+void ServerProfile::setUseDefaultSettings(bool useDefaultSettings) {
+    useDefaultSettings_ = useDefaultSettings;
 }
 
 // TODO: Remove this method

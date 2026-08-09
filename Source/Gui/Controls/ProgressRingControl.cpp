@@ -64,7 +64,7 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
     int arcWidth = std::min<>(clientRect.Width(), clientRect.Height())- penSize*2;
     //graphics.FillRectangle(&br, 0, 0, clientRect.Width(), clientRect.Height());
     LinearGradientBrush lgBrush(Rect(-1, -1, arcWidth+10, arcWidth + 10),
-        Color().Black, Color(0, 200, 200, 200), static_cast<REAL>(timerCounter_));
+        Color::Black, Color(0, 200, 200, 200), static_cast<REAL>(timerCounter_));
     Pen p(&lgBrush, penSize);
     graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, static_cast<REAL>(timerCounter_), 180);
 

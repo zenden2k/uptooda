@@ -281,7 +281,7 @@ void CAddFtpServerDialog::addServer(bool test) {
     if (serverType_ == ServerListManager::ServerType::stSFTP) {
         privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
 
-        if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
+        if (!privateKeyFile.empty() && !IuCoreUtils::FileExists(privateKeyFile)) {
             LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
             return;
         }
@@ -344,7 +344,7 @@ void CAddFtpServerDialog::enableControls(bool enable) {
 }
 
 void CAddFtpServerDialog::updateSecuredConnectionCombobox() {
-    ServerListManager::ServerType serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+    auto serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
 
     secureConnectionCombobox_.ResetContent();
     secureConnectionCombobox_.AddString(TR("No"));

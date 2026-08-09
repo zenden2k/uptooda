@@ -69,10 +69,10 @@ public:
     bool shortenLinks() const;
     void setShortenLinks(bool shorten);
 
-    void setParentIds(const std::vector<std::string> parentIds);
+    void setParentIds(const std::vector<std::string>& parentIds);
     const std::vector<std::string>& parentIds() const;
     bool isNull() const;
-    bool UseDefaultSettings;
+
     void clearFolderInfo();
     ServerProfile deepCopy();
     void bind(SettingsNode& n);
@@ -81,7 +81,11 @@ public:
     ImageUploadParams& getImageUploadParamsRef();
 
     void setImageUploadParams(ImageUploadParams iup);
+    bool useDefaultSettings() const;
+    void setUseDefaultSettings(bool useDefaultSettings);
+
     friend struct ImageUploadParams;
+
 
 protected:
     std::string serverName_;
@@ -89,6 +93,9 @@ protected:
     ImageUploadParams imageUploadParams;
     CFolderItem folder_;
     bool shortenLinks_;
+    bool useDefaultSettings_;
+
+protected:
     friend class CommonGuiSettings;
 };
 

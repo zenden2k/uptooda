@@ -45,7 +45,7 @@ int CUploadEngineData::addUserType(const std::string_view& name) {
     auto it = std::find(userTypes.begin(), userTypes.end(), name);
 
     if (it == userTypes.end()) {
-        userTypes.push_back(std::string(name));
+        userTypes.emplace_back(name);
         it = userTypes.end() - 1;
     }
     return std::distance(userTypes.begin(), it);

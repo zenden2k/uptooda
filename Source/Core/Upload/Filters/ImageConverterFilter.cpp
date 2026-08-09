@@ -93,7 +93,7 @@ bool ImageConverterFilter::PostUpload(UploadTask* task)
 bool ImageConverterFilter::supposedOutputFormat(SupposedFormat& fileFormat, ServerProfile serverProfile, const ImageUploadParams& defaultImageUploadParams) {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    ImageUploadParams imageUploadParams = serverProfile.UseDefaultSettings ? defaultImageUploadParams : serverProfile.getImageUploadParams();
+    ImageUploadParams imageUploadParams = serverProfile.useDefaultSettings() ? defaultImageUploadParams : serverProfile.getImageUploadParams();
     if (!imageUploadParams.ProcessImages) {
         return false;
     }

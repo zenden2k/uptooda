@@ -401,9 +401,9 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     popupMenu.CreatePopupMenu();
     int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
 
-    for( size_t i =0; i < sharedFolders_.size(); i++ ) {
+    for(const auto & sharedFolder : sharedFolders_) {
         // Adding Unicode Left-To-Right marks to text to be rendered correctly if RTL language is choosen
-        CString itemTitle = L"\u200E" + sharedFolders_[i];
+        CString itemTitle = L"\u200E" + sharedFolder;
         if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");
@@ -412,8 +412,8 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
 
     }
     id =  IDC_PRESETMENU_FIRST_ID;
-    for (size_t i = 0; i < addresses_.size(); i++) {
-        CString itemTitle = L"\u200E" +  addresses_[i];
+    for (const auto & address : addresses_) {
+        CString itemTitle = L"\u200E" +  address;
         if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");

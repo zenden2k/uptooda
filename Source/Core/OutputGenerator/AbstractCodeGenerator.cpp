@@ -7,8 +7,7 @@ std::string AbstractCodeGenerator::doGenerate(const std::vector<UploadObject>& i
     std::vector<std::string> groups;
     std::vector<std::string> fileNames;
     std::vector<int> counters;
-    for (size_t i = 0; i < items.size(); i++) {
-        auto& item = items[i];
+    for (const auto & item : items) {
         if (item.isNull()) {
             continue;
         }

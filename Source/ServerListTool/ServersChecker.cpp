@@ -171,8 +171,8 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
     size_t fileId = reinterpret_cast<size_t>(it.id) % 10;
 
     ServerData& serverData = *model_->getDataByIndex(serverId);
-    serverData.filesChecked++;
-    serverData.fileToCheck--;
+    ++serverData.filesChecked;
+    --serverData.fileToCheck;
     CString fileName = Utf8ToWstring(it.fileName).c_str();
 
     if (!ok) {

@@ -53,7 +53,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                         //CloseClipboard();
                     }
                 } else {
-                    LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
+                    auto lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
                     if (lpstr) {
                         text = lpstr;
                         GlobalUnlock(hglb);
@@ -64,7 +64,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                 CloseClipboard();
                 return false;
             }
-            LPCWSTR lpstr = static_cast<LPCWSTR>(GlobalLock(hglb));
+            auto lpstr = static_cast<LPCWSTR>(GlobalLock(hglb));
             if (lpstr) {
                 text = lpstr;
                 GlobalUnlock(hglb);

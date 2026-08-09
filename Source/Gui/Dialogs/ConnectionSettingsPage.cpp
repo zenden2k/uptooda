@@ -197,7 +197,7 @@ void CConnectionSettingsPage::proxyRadioChanged() {
 }
 
 void CConnectionSettingsPage::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     if (externalLink_) {

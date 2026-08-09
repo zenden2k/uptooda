@@ -189,7 +189,7 @@ public:
     uint32_t getItemColor(size_t row) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
-    ServerData* getDataByIndex(size_t row);
+    ServerData* getDataByIndex(size_t row) const;
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void resetData();
 protected:

@@ -18,7 +18,6 @@ class WebServerPrivate;
 class WebServer {
 	public:
 		WebServer();
-		~WebServer();
 		/**
 		 * @brief Bind a port. Pass 0 as argument to use random port.
 		 * 

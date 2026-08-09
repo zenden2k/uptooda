@@ -1,22 +1,22 @@
 #include "UploadManager.h"
 
+#include <utility>
+
 #include "Core/HistoryManager.h"
 #include "Core/ServiceLocator.h"
 #include "Core/LocalFileCache.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/Filters/UrlShorteningFilter.h"
-#include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings/BasicSettings.h"
 #include "UploadEngineManager.h"
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, 
-   CUploadEngineList* engineList, ScriptsManager* scriptsManager,
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager,
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int threadCount)
-    : CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, settings, threadCount)
+    : CFileQueueUploader(uploadEngineManager, scriptsManager, std::move(uploadErrorHandler), std::move(networkClientFactory), settings, threadCount)
 {
     uploadEngineManager_ = uploadEngineManager;
     using namespace std::placeholders;
-    settingsChangedConnection_ = settings->onChange.connect(std::bind(&UploadManager::settingsChanged, this, _1));
+    settingsChangedConnection_ = settings->onChange.connect([this](auto && PH1) { settingsChanged(std::forward<decltype(PH1)>(PH1)); });
 }
 
 UploadManager::~UploadManager() {
@@ -46,7 +46,7 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
 void UploadManager::sessionAdded(UploadSession* session)
 {
     CFileQueueUploader::sessionAdded(session);
-    session->addSessionFinishedCallback(std::bind(&UploadManager::onSessionFinished, this, std::placeholders::_1));
+    session->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
 }
 
 void UploadManager::onSessionFinished(UploadSession* uploadSession)
@@ -119,7 +119,7 @@ void UploadManager::taskAdded(UploadTask* task)
     if (task->parentTask()){
         return;
     }
-    task->addTaskFinishedCallback(std::bind(&UploadManager::onTaskFinished, this, std::placeholders::_1, std::placeholders::_2));
+    task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
 }
 
 void UploadManager::settingsChanged(BasicSettings* settings)

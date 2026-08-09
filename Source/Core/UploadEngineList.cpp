@@ -48,9 +48,6 @@ void SplitAssignVarsString(T & reg) {
     }
 }
 }
-CUploadEngineList::CUploadEngineList()
-{
-}
 
 bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings) {
     SimpleXml xml;

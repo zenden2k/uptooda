@@ -2,6 +2,8 @@
 
 #include <ComDef.h>
 
+#include <utility>
+
 #include "Core/UploadEngineList.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -9,7 +11,7 @@
 #include "Gui/Helpers/DPIHelper.h"
 
 WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir)
-    : AbstractServerIconCache(engineList, iconsDir)
+    : AbstractServerIconCache(engineList, std::move(iconsDir))
 {
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     engineList->onServerAdded.connect([this](CUploadEngineListBase*, const std::string& name) {
@@ -116,7 +118,7 @@ void WinServerIconCache::loadIcons(int dpi, bool smallIcons) {
     for (int i = 0; i < engineList_->count(); i++) {
         const CUploadEngineData* ued = engineList_->byIndex(i);
         [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi, smallIcons);
-        int iconIndex = imageList->AddIcon(icon);
+        [[maybe_unused]] int iconIndex = imageList->AddIcon(icon);
         indexes[ued->Name] = i;
     }
 

@@ -8,8 +8,7 @@
 
 class DownloadTaskTest : public ::testing::Test {
 public:
-    DownloadTaskTest() {
-    }
+    DownloadTaskTest() = default;
 protected:
 };
 

@@ -24,18 +24,18 @@
 namespace ScriptAPI {
 
 std::string ComVariantToString(const CComVariant& src) {
-    if ( src.vt == VT_BSTR ) {
-        if ( !src.bstrVal ) {
-            return std::string();
+    if (src.vt == VT_BSTR) {
+        if (!src.bstrVal) {
+            return {};
         }
         return IuCoreUtils::WstringToUtf8(src.bstrVal);
     }
+
     CComVariant vtBSTR;
-    if ( SUCCEEDED( vtBSTR.ChangeType( VT_BSTR, &src ) ) )
-    {
+    if (SUCCEEDED(vtBSTR.ChangeType(VT_BSTR, &src))) {
         return IuCoreUtils::WstringToUtf8(vtBSTR.bstrVal);
     }
-    return std::string();
+    return {};
 }
 
 };

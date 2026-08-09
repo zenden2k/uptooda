@@ -54,7 +54,7 @@ Sqrat::Array RegularExpression::split(const std::string& piece)
         return obj;
     } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 
@@ -70,7 +70,7 @@ Sqrat::Array RegularExpression::splitWithLimitOffset(const std::string& piece, i
     }
     catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 
@@ -86,7 +86,7 @@ Sqrat::Array RegularExpression::splitWithLimit(const std::string& piece, int lim
     }
     catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& piece, int limit, int start_offset, int end_offset)
@@ -101,7 +101,7 @@ Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& 
     }
     catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 
@@ -112,7 +112,7 @@ std::string RegularExpression::getMatch(int pos) const
     }
     catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return std::string();
+        return {};
     }
 }
 
@@ -142,7 +142,7 @@ std::string RegularExpression::replace(const std::string& piece, const std::stri
         return pcre_->replace(piece, with);
     } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return std::string();
+        return {};
     }
 }
 
@@ -191,7 +191,7 @@ Sqrat::Array RegularExpression::getSubStrings()
     try {
         std::vector<std::string>* substrings =  pcre_->get_sub_strings();
         if ( !substrings ) {
-            return Sqrat::Array();
+            return {};
         }
         Sqrat::Array res(GetCurrentThreadVM(), substrings->size());
         for ( size_t i = 0; i < substrings->size(); i++ ) {
@@ -200,7 +200,7 @@ Sqrat::Array RegularExpression::getSubStrings()
         return res;
     } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 
@@ -233,13 +233,13 @@ Sqrat::Array RegularExpression::findAll(const std::string& str)
         return res;
     } catch( Pcre::exception& ex ) {
         LOG(ERROR) << ex.what();
-        return Sqrat::Array();
+        return {};
     }
 }
 
 ScriptAPI::RegularExpression CreateRegExp(const std::string& expression, const std::string& flags)
 {
-    return RegularExpression(expression,flags);
+    return {expression,flags};
 }
 
 void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {

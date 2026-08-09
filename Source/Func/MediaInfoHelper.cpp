@@ -20,15 +20,13 @@
 
 #include "MediaInfoHelper.h"
 
-//#include <boost/lexical_cast.hpp>
 #include <strsafe.h>
+#include <MediaInfo/MediaInfo.h>
 
 #include "Core/CommonDefs.h"
 #include "Core/Utils/CoreUtils.h"
-#include <MediaInfo/MediaInfo.h>
 #include "Core/i18n/Translator.h"
 #include "WinUtils.h"
-
 #include "Core/AppRuntimeInfo.h"
 #include "Core/ServiceLocator.h"
 

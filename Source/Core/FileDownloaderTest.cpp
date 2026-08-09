@@ -5,7 +5,6 @@
 #include "Core/FileDownloader.h"
 #include "Core/Network/Tests/NetworkClientMock.h"
 
-
 class FileDownloaderTest : public ::testing::Test {
 public:
     FileDownloaderTest() {

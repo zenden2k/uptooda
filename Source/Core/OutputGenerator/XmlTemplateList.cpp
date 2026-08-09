@@ -23,13 +23,13 @@ void XmlTemplateList::loadFromFile(const std::string& fileName) {
     std::vector<SimpleXmlNode> templates;
     templatesNode.GetChilds("Template", templates);
 
-    for (size_t i = 0; i < templates.size(); i++) {
+    for (auto & templateNode : templates) {
         ResultTemplate Template;
-        Template.Name = templates[i].Attribute("Name");
+        Template.Name = templateNode.Attribute("Name");
 
-        Template.TemplateText = templates[i]["Text"].Text();
+        Template.TemplateText = templateNode["Text"].Text();
 
-        SimpleXmlNode itemsNode = templates[i]["Items"];
+        SimpleXmlNode itemsNode = templateNode["Items"];
         if (!itemsNode.IsNull())
         {
             Template.LineStart = itemsNode.Attribute("LineStart");
@@ -52,7 +52,7 @@ size_t XmlTemplateList::size() const {
     return templates_.size();
 }
 
-const Uptooda::Core::OutputGenerator::ResultTemplate& XmlTemplateList::at(size_t index) {
+const ResultTemplate& XmlTemplateList::at(size_t index) {
     return templates_.at(index);
 }
 

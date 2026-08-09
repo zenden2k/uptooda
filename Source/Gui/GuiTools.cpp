@@ -75,7 +75,7 @@ void SetCheck(HWND dlg, int id, bool check) {
 }
 
 HFONT MakeLabelBold(HWND Label) {
-    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+    auto Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
     if (!Font) return nullptr;
 
@@ -93,7 +93,7 @@ HFONT MakeLabelBold(HWND Label) {
 }
 
 HFONT MakeLabelItalic(HWND Label) {
-    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+    auto Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
     if (!Font) return nullptr;
 
@@ -556,7 +556,7 @@ void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text) {
 
 CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 {
-    CHARFORMAT cf;
+    CHARFORMAT cf{};
     cf.cbSize = sizeof(CHARFORMAT);
     cf.dwMask =  CFM_FACE | CFM_SIZE | CFM_CHARSET
         | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET;
@@ -597,7 +597,7 @@ CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 
 LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
 {
-    LOGFONT lf;
+    LOGFONT lf{};
     lf.lfCharSet = cf.bCharSet;
     lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
     lf.lfEscapement = 0;
@@ -900,15 +900,10 @@ HICON GetMenuArrowIcon() {
 }
 
 HICON GetWindowIcon(HWND hwnd) {
-    HICON hIcon {};
-    //hIcon  = (HICON)SendMessage(hwnd, WM_GETICON, ICON_BIG, 0);
+    auto hIcon  = reinterpret_cast<HICON>(SendMessage(hwnd, WM_GETICON, ICON_SMALL, 0));
 
     if (!hIcon) {
-        hIcon = (HICON)SendMessage(hwnd, WM_GETICON, ICON_SMALL, 0);
-    }
-
-    if (!hIcon) {
-        hIcon = (HICON)GetClassLongPtr(hwnd, GCLP_HICON);
+        hIcon = reinterpret_cast<HICON>(GetClassLongPtr(hwnd, GCLP_HICON));
     }
 
     return hIcon;

@@ -6,7 +6,6 @@
 #include "Gui/Models/NetworkDebugModel.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/i18n/Translator.h"
-#include "Core/ServiceLocator.h"
 #include "Core/TaskDispatcher.h"
 
 CNetworkDebugListView::CNetworkDebugListView(NetworkDebugModel* model)
@@ -99,18 +98,12 @@ LRESULT CNetworkDebugListView::OnHeaderFilterChange(int idCtrl, LPNMHDR pnmh, BO
 
 // This callback is called in the working thread
 void CNetworkDebugListView::onRowChanged(size_t index) {
-    //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
     PostMessage(LVM_REDRAWITEMS, index, index);
-    //RedrawItems(index, index);
-    //});
 }
 
 // This callback is called in the working thread
 void CNetworkDebugListView::onItemCountChanged(size_t index) {
-    //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-    //SetItemCount(index);
     PostMessage(LVM_SETITEMCOUNT, index, 0L);
-    //});
 }
 
 void CNetworkDebugListView::applyFilters() {

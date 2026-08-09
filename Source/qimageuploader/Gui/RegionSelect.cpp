@@ -173,9 +173,8 @@ QPixmap RegionSelect::getSelection()
     QPixmap sel;
     sel = desktopPixmapClr.copy(selectRect);
     return sel;
-}   
+}
 
- CScreenshotRegion*  RegionSelect::selectedRegion()
- {
-		return new CRectRegion(selectRect.x(), selectRect.y(), selectRect.width(), selectRect.height());
- }
+CScreenshotRegion* RegionSelect::selectedRegion() {
+    return new CRectRegion(selectRect.x(), selectRect.y(), selectRect.width(), selectRect.height());
+}

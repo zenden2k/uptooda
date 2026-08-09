@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _UPLOADER_H_
-#define _UPLOADER_H_
+#ifndef UPLOADER_H
+#define UPLOADER_H
 
 #include <functional>
 #include <string>
@@ -33,24 +33,24 @@ class BasicSettings;
 
 class CUploader {
     public:
-        explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
+        explicit CUploader(const std::shared_ptr<INetworkClientFactory>& networkClientFactory);
         ~CUploader();
 
-        bool setUploadEngine(std::shared_ptr<CAbstractUploadEngine> UploadEngine);
+        void setUploadEngine(const std::shared_ptr<CAbstractUploadEngine>& uploadEngine);
         std::shared_ptr<CAbstractUploadEngine> getUploadEngine() const;
 
         bool UploadFile(const std::string& FileName, const std::string& displayFileName, int maxRetries);
-        bool Upload(std::shared_ptr<UploadTask> task, int maxRetries);
+        bool Upload(const std::shared_ptr<UploadTask>& task, int maxRetries);
         void stop();
         bool needStop();
         std::shared_ptr<UploadTask> currentTask() const;
 
-        void setOnNeedStopCallback(std::function<bool()> cb);
-        void setOnProgress(std::function<void(CUploader*, InfoProgress)> cb);
-        void setOnStatusChanged(std::function<void(CUploader*, StatusType, int, std::string)> cb);
-        void setOnDebugMessage(std::function<void(CUploader*, const std::string&, bool)> cb);
-        void setOnErrorMessage(std::function<void(CUploader*, ErrorInfo)> cb);
-        void setOnConfigureNetworkClient(std::function<void(CUploader*, INetworkClient*)> cb);
+        void setOnNeedStopCallback(const std::function<bool()>& cb);
+        void setOnProgress(const std::function<void(CUploader*, InfoProgress)>& cb);
+        void setOnStatusChanged(const std::function<void(CUploader*, StatusType, int, std::string)>& cb);
+        void setOnDebugMessage(const std::function<void(CUploader*, const std::string&, bool)>& cb);
+        void setOnErrorMessage(const std::function<void(CUploader*, ErrorInfo)>& cb);
+        void setOnConfigureNetworkClient(const std::function<void(CUploader*, INetworkClient*)>& cb);
 
         void DebugMessage(const std::string& message, bool isServerResponseBody = false);
         void SetStatus(StatusType status, int param1=0, const std::string& param="");
@@ -67,7 +67,7 @@ class CUploader {
         std::string m_ErrorReason;
         bool isFatalServerError_;
 
-        void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
+        void Error(bool error, const std::string& message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
         void ErrorMessage(const ErrorInfo&);
         std::unique_ptr<INetworkClient> m_NetworkClient;
         std::shared_ptr<CAbstractUploadEngine> m_CurrentEngine;

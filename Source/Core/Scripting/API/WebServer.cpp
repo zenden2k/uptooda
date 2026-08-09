@@ -32,9 +32,6 @@ public:
 WebServer::WebServer(): d_(std::make_shared<WebServerPrivate>()){
 }
 
-WebServer::~WebServer() {
-	
-}
 
 void WebServer::resource(const std::string& path, const std::string& method, Sqrat::Function callBack, Sqrat::Object context) {
     d_->callbacks_.push_back(callBack);
@@ -126,7 +123,6 @@ int WebServer::bind(int port) {
     }
     return 0;
 }
-
 
 void RegisterWebServerClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;

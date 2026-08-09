@@ -8,16 +8,6 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-// CTransferSettingsPage
-CTransferSettingsPage::CTransferSettingsPage()
-{
-        
-}
-
-CTransferSettingsPage::~CTransferSettingsPage()
-{
-}
-
 void CTransferSettingsPage::TranslateUI()
 {
     TRC(IDC_AUTOCOPYTOCLIPBOARD, "Copy automatically results to clipboard");
@@ -141,12 +131,4 @@ LRESULT CTransferSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*
 void CTransferSettingsPage::executeScriptCheckboxChanged() {
     bool Checked = SendDlgItemMessage(IDC_EXECUTESCRIPTCHECKBOX, BM_GETCHECK) != 0;
     GuiTools::EnableNextN(GetDlgItem(IDC_EXECUTESCRIPTCHECKBOX), 2, Checked);
-}
-
-LRESULT CTransferSettingsPage::OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    HINSTANCE hinst = ShellExecute(0, _T("open"), _T("rundll32.exe"), _T("inetcpl.cpl,LaunchConnectionDialog"), NULL, SW_SHOWNORMAL);
-    if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
-        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<INT_PTR>(hinst);
-    }
-    return 0;
 }

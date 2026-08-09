@@ -41,11 +41,6 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
     fileIndex_ = 0;
 }
 
-FileUploadTask::~FileUploadTask()
-{
-
-}
-
 UploadTask::Type FileUploadTask::type() const {
     return TypeFile;
 }

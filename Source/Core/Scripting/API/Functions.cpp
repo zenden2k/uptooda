@@ -166,9 +166,9 @@ public:
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
         const Json::Value* root = &translationRoot_;
-        int count = tokens.size();
-        for (int i = 0; i < count; i++) {
-            std::string token = tokens[i];
+        size_t count = tokens.size();
+        for (size_t i = 0; i < count; i++) {
+            const std::string& token = tokens[i];
             if (!root->isMember(token)) {
                 break;
             }
@@ -301,9 +301,7 @@ std::string url_encode(const std::string &value) {
     escaped.fill('0');
     escaped << std::hex << std::uppercase;
 
-    for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
-        std::string::value_type c = (*i);
-
+    for (char c : value) {
         // Keep alphanumeric and other accepted characters intact
         if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
@@ -328,7 +326,7 @@ std::string MessageBox(const std::string& message, const std::string& title, con
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj);
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj);
 
-template<class T,class V> void setObjValues(T key, Json::Value::const_iterator it, V &obj) {
+template<class T,class V> void setObjValues(T key, const Json::Value::const_iterator& it, V &obj) {
     using namespace Json;
 
     try {
@@ -443,7 +441,7 @@ SQInteger ParseJSON(HSQUIRRELVM vm) {
 Json::Value sqValueToJson(const Sqrat::Object& obj ) {
     switch ( obj.GetType() ) {
         case OT_NULL:
-            return Json::Value(Json::nullValue);
+            return {Json::nullValue};
 
         case OT_INTEGER:
             return SQINT_TO_JSON_VALUE(obj.Cast<int>());
@@ -457,7 +455,7 @@ Json::Value sqValueToJson(const Sqrat::Object& obj ) {
         case OT_STRING:
             return obj.Cast<std::string>();
     }
-    return Json::Value(Json::nullValue);
+    return {Json::nullValue};
 }
 Json::Value sqObjToJson(const Sqrat::Object& obj ) {
     HSQUIRRELVM vm = obj.GetVM();
@@ -484,7 +482,7 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
                 }
                 return res;
     }
-    return Json::Value(Json::nullValue);
+    return {Json::nullValue};
 }
 
 std::string ToJSON(const Sqrat::Object&  obj) {

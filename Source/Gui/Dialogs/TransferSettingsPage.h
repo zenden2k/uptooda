@@ -17,8 +17,7 @@ class CTransferSettingsPage :
     public CSettingsPageTrait<CTransferSettingsPage>
 {
 public:
-    CTransferSettingsPage();
-    virtual ~CTransferSettingsPage();
+    CTransferSettingsPage() = default;
     enum { IDD = IDD_TRANSFERSETTINGSPAGE };
 
     BEGIN_MSG_MAP(CTransferSettingsPage)
@@ -27,7 +26,6 @@ public:
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_BROWSESCRIPTBUTTON, BN_CLICKED, OnBnClickedBrowseScriptButton)
         COMMAND_HANDLER(IDC_EXECUTESCRIPTCHECKBOX, BN_CLICKED, OnExecuteScriptCheckboxClicked)
-        COMMAND_HANDLER(IDC_OPENSYSTEMCONNECTION, BN_CLICKED, OnOpenSystemConnectionSettingsClicked)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CTransferSettingsPage)
@@ -42,7 +40,7 @@ public:
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    LRESULT OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
     bool apply() override;
     void TranslateUI();
     LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -68,14 +68,12 @@ EXTERN_GUID(CLSID_VideoProcessorMFT, 0x88753b26, 0x5b24, 0x49bd, 0xb2, 0xe7, 0xc
 #include "..\\ca\\vistamixers.hpp"
 #else
 
-
 class AHANDLE
 {
 private:
     HANDLE hX = INVALID_HANDLE_VALUE;
 
 public:
-
     AHANDLE()
     {
         hX = INVALID_HANDLE_VALUE;
@@ -128,8 +126,6 @@ public:
     {
         return hX;
     }
-
-
 };
 
 struct REBUFFERLOCK
@@ -145,8 +141,6 @@ struct REBUFFERLOCK
         mm->unlock();
     }
 };
-
-
 
 template <typename T = float>
 class MIXBUFFER
@@ -261,9 +255,6 @@ inline T Peak(T* d, size_t s)
     }
     return mm;
 }
-
-
-
 
 struct REBUFFER
 {
@@ -739,7 +730,6 @@ public:
             L++;
             a.push_back(lDxgiAdapter);
         }
-        return;
     }
 
     bool Get(IDXGIResource* lDesktopResource,bool Curs,RECT* rcx = 0)

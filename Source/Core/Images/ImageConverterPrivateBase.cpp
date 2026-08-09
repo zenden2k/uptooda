@@ -46,9 +46,9 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
 {
     std::string Result = expr;
 
-    pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
+    pcrepp::Pcre reg(R"(\$\(([A-z0-9_]*?)\))", "imc");
 
-    size_t pos = 0;
+    int pos = 0;
     while (pos < expr.length())
     {
         if (reg.search(expr, pos))
@@ -57,7 +57,7 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
             std::string vv = reg[1];
             std::string value = m_Vars[vv];
 
-            Result = IuStringUtils::Replace(Result, std::string("$(") + vv + std::string(")"), value);
+            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", value);
         }
         else
             break;
@@ -65,18 +65,18 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
 
     // Result  = IuStringUtils::Replace(Result,std::string("#"), "0x");
     {
-        pcrepp::Pcre reg("\\#([0-9A-Fa-f]+)", "imc");
+        pcrepp::Pcre reg2("\\#([0-9A-Fa-f]+)", "imc");
         std::string str = (Result);
-        size_t pos = 0;
+        pos = 0;
         while (pos < str.length())
         {
-            if (reg.search(str, pos))
+            if (reg2.search(str, pos))
             {
-                pos = reg.get_match_end() + 1;
-                std::string vv = reg[1];
+                pos = reg2.get_match_end() + 1;
+                std::string vv = reg2[1];
                 unsigned int res = strtoul(vv.c_str(), 0, 16);
 
-                Result = IuStringUtils::Replace(Result, std::string("#") + vv, std::to_string(res));
+                Result = IuStringUtils::Replace(Result, "#" + vv, std::to_string(res));
             }
             else
                 break;

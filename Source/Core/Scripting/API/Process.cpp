@@ -289,6 +289,6 @@ void RegisterProcessClass(Sqrat::SqratVM& vm)
         .Func("setHidden", &Process::setHidden)
         .Func("start", &Process::start)
     );
-
 }
+
 }

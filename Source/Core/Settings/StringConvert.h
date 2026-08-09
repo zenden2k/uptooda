@@ -8,7 +8,7 @@
 #include "atlheaders.h"
 inline std::string myToString(const CString& value)
 {
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)value);
+    return IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(value));
 }
 
 inline void myFromString(const std::string& text, CString& value)

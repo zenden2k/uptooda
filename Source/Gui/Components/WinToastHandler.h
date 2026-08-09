@@ -4,7 +4,7 @@
 
 class WinToastHandler : public WinToastLib::IWinToastHandler {
 public:
-    WinToastHandler();
+    WinToastHandler() = default;
     // Public interfaces
     void toastActivated() const override;
     void toastActivated(int actionIndex) const override;

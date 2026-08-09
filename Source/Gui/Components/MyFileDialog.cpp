@@ -37,7 +37,7 @@ std::unique_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent
     }
 
     if (openDialog) {
-        return std::make_unique<CNewStyleFileDialog>(parent, initialFolder, title, filters, multiselect, openDialog);
+        return std::make_unique<CNewStyleFileDialog>(parent, initialFolder, title, filters, multiselect);
     } 
     return std::make_unique<CNewStyleFileSaveDialog>(parent, initialFolder, title, filters);
 }

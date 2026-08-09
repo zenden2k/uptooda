@@ -31,7 +31,7 @@ class SimpleXmlNode;
 
 class CUploadEngineList : public CUploadEngineListBase {
     public:
-        CUploadEngineList();
+        CUploadEngineList() = default;
         bool loadFromFile(const std::string& filename, ServerSettingsMap&);
         void setNumOfRetries(int Engine, int Action);
         bool addServer(const CUploadEngineData& data);

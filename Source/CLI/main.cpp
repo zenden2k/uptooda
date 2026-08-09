@@ -201,7 +201,7 @@ void OnUploadSessionFinished(UploadSession* session) {
         uploadedList.push_back(uo);
     }
     OutputGenerator::OutputGeneratorFactory factory;
-    OutputGenerator::GeneratorID gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
+    auto gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
     auto generator = factory.createOutputGenerator(gid, codeType);
     generator->setPreferDirectLinks(true);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
@@ -342,7 +342,7 @@ int func() {
         xdg_mime_set_dirs(nullptr);
         xdg_mime_shutdown();
     });
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
@@ -359,7 +359,7 @@ int func() {
     uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
     std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
-    auto uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
+    auto uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
 
     if (useSystemProxy) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
@@ -474,7 +474,7 @@ void PrintServerParamList()
     }
 
     ServerProfile profile(ued->Name);
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
@@ -818,6 +818,7 @@ int main(int argc, char *argv[]){
     appParams->setIsGui(false);
     dotenv::init(dotenv::Preserve, (dataFolder + ".env").c_str());
 #ifdef _WIN32
+
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
     TCHAR TempPath[1024];
@@ -895,9 +896,6 @@ int main(int argc, char *argv[]){
     }
 
     CScriptUploadEngine::DestroyScriptEngine();
-#ifdef _WIN32
-    //SetConsoleOutputCP(oldcp);
-#endif
 
     return res;
 }

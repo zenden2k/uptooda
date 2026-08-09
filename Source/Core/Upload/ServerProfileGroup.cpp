@@ -4,7 +4,6 @@ ServerProfileGroup::ServerProfileGroup() {
 }
 
 ServerProfileGroup::ServerProfileGroup(const ServerProfile& profile) {
-
     addItem(profile);
 }
 

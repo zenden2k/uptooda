@@ -50,7 +50,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadErrorHandler = serviceLocator->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
+    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(), uploadErrorHandler,
                                        networkClientFactory, settings, 3);
     std::string dataDirectory = AppRuntimeInfo::instance()->dataDirectory();
     std::string iconsDir = dataDirectory + "Favicons/";

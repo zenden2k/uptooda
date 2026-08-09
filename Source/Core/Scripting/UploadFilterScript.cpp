@@ -21,11 +21,13 @@ limitations under the License.
 #include "UploadFilterScript.h"
 
 #include "Script.h"
+
+#include <utility>
 #include "API/ScriptAPI.h"
 #include "API/UploadTaskWrappers.h"
 
 UploadFilterScript::UploadFilterScript(const std::string& fileName, std::shared_ptr<ThreadSync> serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory)
-    : Script(fileName, serverSync, networkClientFactory)
+    : Script(fileName, std::move(serverSync), std::move(networkClientFactory))
 {
 }
 

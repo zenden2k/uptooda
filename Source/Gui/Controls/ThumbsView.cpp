@@ -254,7 +254,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         VideoGrabber grabber(false, false);
         grabber.setVideoEngine(VideoGrabber::veAvcodec);
         grabber.setFrameCount(1);
-        grabber.setOnFrameGrabbed([&](const std::string&, int64_t, std::shared_ptr<AbstractImage> frame) {
+        grabber.setOnFrameGrabbed([&](const std::string&, int64_t, const std::shared_ptr<AbstractImage>& frame) {
             grabbedFrame = std::dynamic_pointer_cast<GdiPlusImage>(frame);
             if (!grabbedFrame) {
                 LOG(WARNING) << "Frame is not an instance of GdiPlusImage";

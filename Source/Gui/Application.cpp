@@ -223,7 +223,7 @@ public:
         serviceLocator->setMyEngineList(engineList_.get());
         settings_.setEngineList(engineList_.get());
         uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList_.get(), uploadErrorHandler, serviceLocator->networkClientFactory());
-        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList_.get(), scriptsManager_.get(),
+        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(),
             uploadErrorHandler, serviceLocator->networkClientFactory(), &settings_, settings_.MaxThreads);
         serviceLocator->setUploadManager(uploadManager_.get());
 

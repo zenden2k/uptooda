@@ -92,7 +92,7 @@ void ServersCheckerModel::notifyRowChanged(size_t row) {
     }
 }
 
-ServerData* ServersCheckerModel::getDataByIndex(size_t row) {
+ServerData* ServersCheckerModel::getDataByIndex(size_t row) const {
     if (row >= items_.size()) {
         return nullptr;
     }

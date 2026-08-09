@@ -475,7 +475,7 @@ void CropOverlay::render(Painter* gr)
     Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
     RectF cropRect;
     bool isCropElementMoving = false;
-    for (auto& crop : crops) {
+    for (const auto& crop : crops) {
         rgn = rgn.subtracted(Region(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight()));
 
         isCropElementMoving = crop->isMoving();
@@ -796,7 +796,6 @@ void BlurringRectangle::render(Painter* gr)
             ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, blurRadius_, excludeRect);
 #endif
         }
-
     }
 }
 

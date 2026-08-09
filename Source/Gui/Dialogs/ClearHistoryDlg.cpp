@@ -26,10 +26,6 @@ CClearHistoryDlg::CClearHistoryDlg() : value_(HistoryClearPeriod::OlderThan30Day
 {
 }
 
-CClearHistoryDlg::~CClearHistoryDlg()
-{
-}
-
 LRESULT CClearHistoryDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     SetWindowText(TR("Clear History"));

@@ -87,9 +87,9 @@ void MovableElement::renderGrips(Painter* gr)
 
         createGrips();
 
-        for (size_t i = 0; i < grips_.size(); i++) {
-            int x = grips_[i].pt.x;
-            int y = grips_[i].pt.y;
+        for (const auto& grip: grips_) {
+            int x = grip.pt.x;
+            int y = grip.pt.y;
             gr->FillRectangle( &brush, x-halfSizeX, y-halfSizeY, rectSizeX, rectSizeY );
             gr->DrawRectangle( &pen2, x-halfSizeX-1, y-halfSizeY-1, rectSizeX+1, rectSizeY+1 );
         }

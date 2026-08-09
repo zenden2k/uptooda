@@ -26,7 +26,6 @@ class InputBox {
         boost::signals2::signal<void()> onEditFinished;
         boost::signals2::signal<void(int,int)> onResized;
         boost::signals2::signal<void(int,int,LOGFONT)> onSelectionChanged;
-
 };
 }
 

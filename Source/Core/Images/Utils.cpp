@@ -54,14 +54,14 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     UINT num = 0;           // number of image encoders
     UINT size = 0;          // size of the image encoder array in bytes
 
-    ImageCodecInfo* pImageCodecInfo = NULL;
+    ImageCodecInfo* pImageCodecInfo = nullptr;
 
     GetImageEncodersSize(&num, &size);
     if (size == 0)
         return -1;  // Failure
 
     pImageCodecInfo = static_cast<ImageCodecInfo*>(malloc(size));
-    if (pImageCodecInfo == NULL)
+    if (pImageCodecInfo == nullptr)
         return -1;  // Failure
 
     GetImageEncoders(num, size, pImageCodecInfo);
@@ -162,7 +162,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     BITMAP bmp;
     GetObject(ii.hbmColor, sizeof(bmp), &bmp);
 
-    Gdiplus::Bitmap temp(ii.hbmColor, NULL);
+    Gdiplus::Bitmap temp(ii.hbmColor, nullptr);
     Gdiplus::BitmapData lockedBitmapData;
     memset(&lockedBitmapData, 0, sizeof(lockedBitmapData));
     Gdiplus::Rect rc(0, 0, temp.GetWidth(), temp.GetHeight());
@@ -189,7 +189,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
 
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
-        uint8_t * source = static_cast<uint8_t *>(dataSource.Scan0);
+        auto * source = static_cast<uint8_t *>(dataSource.Scan0);
         assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) { stride = dataSource.Stride;
@@ -199,11 +199,11 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
 
         size_t myStride = 4 * (w /*& ~3*/);
         size_t bufSize = myStride * h;
-        uint8_t* buf = new uint8_t[bufSize];
+        auto* buf = new uint8_t[bufSize];
 
         uint8_t *bufCur = buf;
         uint8_t *sourceCur = source;
-        uint8_t * temp = new uint8_t[bufSize];
+        auto * temp = new uint8_t[bufSize];
         uint8_t* tempCur = temp;
         for (int i = 0; i < h; i++) {
             memcpy(bufCur, sourceCur, myStride);
@@ -250,7 +250,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
     if (bm->LockBits(&rc, ImageLockModeRead | ImageLockModeWrite, PixelFormat32bppARGB, &dataSource) == Ok)
     {
-        uint8_t * source = static_cast<uint8_t *>(dataSource.Scan0);
+        auto * source = static_cast<uint8_t *>(dataSource.Scan0);
         assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) {
@@ -315,8 +315,8 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
     if (src->LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
     {
         if ( dst->LockBits(& rc, ImageLockModeWrite, PixelFormat32bppARGB, & dstData) == Ok ) {
-            uint8_t * srcBits = static_cast<uint8_t *>(srcData.Scan0);
-            uint8_t * dstBits = static_cast<uint8_t *>(dstData.Scan0);
+            auto * srcBits = static_cast<uint8_t *>(srcData.Scan0);
+            auto * dstBits = static_cast<uint8_t *>(dstData.Scan0);
             unsigned int stride;
             if (srcData.Stride > 0) {
                 stride = srcData.Stride;
@@ -394,7 +394,7 @@ void RemoveAlphaFromBitmap(Gdiplus::Bitmap& source, Gdiplus::Color color) {
         //bpSrc += (int)sourceChannel;
 
         for (int i = r.Height * r.Width; i > 0; i--) {
-            BGRA_COLOR* c = reinterpret_cast<BGRA_COLOR*>(bpSrc);
+            auto* c = reinterpret_cast<BGRA_COLOR*>(bpSrc);
 
             if (c->a != 255) {
                 //c = 255;
