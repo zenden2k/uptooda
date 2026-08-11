@@ -8,7 +8,7 @@ function _GetSalt() {
     
     nm.setUrl("https://webshare.cz/api/salt/");
     nm.setUserAgent("Webshare klient/1.0 (Windows NT 10.0; Win64; x64)");
-    nm.addQueryParam("username_or_email", login);
+    nm.addPostField("username_or_email", login);
     
     if (!nm.doPost("")) {
         WriteLog("error", "Webshare.cz: Failed to get salt");
@@ -49,7 +49,7 @@ function _GetUploadUrl(token) {
 
     nm.setUrl("https://webshare.cz/api/upload_url/");
     nm.setUserAgent("Webshare klient/1.0 (Windows NT 10.0; Win64; x64)");
-    nm.addQueryParam("wst", token);
+    nm.addPostField("wst", token);
     
     if (!nm.doPost("")) {
         WriteLog("error", "Webshare.cz: Failed to get upload URL");
@@ -104,9 +104,9 @@ function Authenticate() {
     
     nm.setUrl("https://webshare.cz/api/login/");
     nm.setUserAgent("Webshare klient/1.0 (Windows NT 10.0; Win64; x64)");
-    nm.addQueryParam("username_or_email", login);
-    nm.addQueryParam("password", passwordHash);
-    nm.addQueryParam("keep_logged_in", "1");
+    nm.addPostField("username_or_email", login);
+    nm.addPostField("password", passwordHash);
+    nm.addPostField("keep_logged_in", "1");
     
     if (!nm.doPost("")) {
         WriteLog("error", "Webshare.cz: Authentication failed");
@@ -162,15 +162,15 @@ function UploadFile(fileName, options) {
     
     // Set form data parameters
     nm.addQueryHeader("Accept", "text/xml; charset=UTF-8");
-    nm.addQueryParam("name", name);
-    nm.addQueryParam("offset", "0");
-    nm.addQueryParam("ident", RandomString(10));
-    nm.addQueryParam("total", fileSize.tostring());
-    nm.addQueryParam("wst", token);
-    nm.addQueryParam("folder", "%2F"); // Root folder
-    nm.addQueryParam("private", "0");
-    nm.addQueryParam("adult", "0");
-    nm.addQueryParamFile("file", fileName, name, GetFileMimeType(fileName));
+    nm.addPostField("name", name);
+    nm.addPostField("offset", "0");
+    nm.addPostField("ident", RandomString(10));
+    nm.addPostField("total", fileSize.tostring());
+    nm.addPostField("wst", token);
+    nm.addPostField("folder", "%2F"); // Root folder
+    nm.addPostField("private", "0");
+    nm.addPostField("adult", "0");
+    nm.addPostFieldFile("file", fileName, name, GetFileMimeType(fileName));
     
     if (!nm.doUploadMultipartData()) {
         WriteLog("error", "Webshare.cz: File upload failed");

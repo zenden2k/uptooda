@@ -23,11 +23,11 @@ function Authenticate() {
 
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/index.php?mode=user");
-    nm.addQueryParam("benutzername", login);
-    nm.addQueryParam("csrf_token", csrfToken);
-    nm.addQueryParam("passwort", pass);
-    nm.addQueryParam("everlasting", "");
-    nm.addQueryParam("anmelden", "Einloggen"); 
+    nm.addPostField("benutzername", login);
+    nm.addPostField("csrf_token", csrfToken);
+    nm.addPostField("passwort", pass);
+    nm.addPostField("everlasting", "");
+    nm.addPostField("anmelden", "Einloggen");
     nm.doPost("");
 
     if (nm.responseCode() == 200 || nm.responseCode() == 302) {
@@ -48,9 +48,9 @@ function _AnonymousUpload(fileName, options) {
     local fname = ExtractFileName(fileName);
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/api/upload_http_resize.php");
-    nm.addQueryParam("file", "data:" + mimeType + ";base64," + Base64Encode(GetFileContents(fileName)));
-    nm.addQueryParam("filename", fname);
-    nm.addQueryParam("showtext", "0");
+    nm.addPostField("file", "data:" + mimeType + ";base64," + Base64Encode(GetFileContents(fileName)));
+    nm.addPostField("filename", fname);
+    nm.addPostField("showtext", "0");
     nm.setUploadAction();
     nm.doUploadMultipartData();
 
@@ -61,11 +61,11 @@ function _AnonymousUpload(fileName, options) {
     local imgId = nm.responseBody();
 
     nm.setUrl(BASE_HOST + "/upload_a2/");
-    nm.addQueryParam("img_id[]", imgId);
-    nm.addQueryParam("file_name[]", fname);
-    nm.addQueryParam("img_resize", "0");
-    nm.addQueryParam("autodel", "0");
-    nm.addQueryParam("showtext", "0");  
+    nm.addPostField("img_id[]", imgId);
+    nm.addPostField("file_name[]", fname);
+    nm.addPostField("img_resize", "0");
+    nm.addPostField("autodel", "0");
+    nm.addPostField("showtext", "0");
     
     nm.doPost("");
     if (nm.responseCode() == 200) {
@@ -116,15 +116,15 @@ function UploadFile(fileName, options) {
     nm.setUrl(BASE_HOST + "/api/upload_http_usrmulti.php");
 
     /*if (albumId == "") {
-        nm.addQueryParam("new_gallery_name", "New album");
+        nm.addPostField("new_gallery_name", "New album");
     }*/
 
-    nm.addQueryParam("file", "data:" + mimeType +";base64," + Base64Encode(GetFileContents(fileName)));
-    nm.addQueryParam("filename", task.getDisplayName());
-    nm.addQueryParam("showtext", thumbAddText? "1" : "0");
-    nm.addQueryParam("gal_id", albumId);
-    nm.addQueryParam("gal_nm", album.getTitle());
-    nm.addQueryParam("st_g", "0");
+    nm.addPostField("file", "data:" + mimeType +";base64," + Base64Encode(GetFileContents(fileName)));
+    nm.addPostField("filename", task.getDisplayName());
+    nm.addPostField("showtext", thumbAddText? "1" : "0");
+    nm.addPostField("gal_id", albumId);
+    nm.addPostField("gal_nm", album.getTitle());
+    nm.addPostField("st_g", "0");
     nm.setUploadAction();
     nm.doUploadMultipartData();
 
@@ -136,12 +136,12 @@ function UploadFile(fileName, options) {
     local imgId = nm.responseBody();
 
     nm.setUrl(BASE_HOST + "/index.php?mode=user&act=m_upload2");
-    nm.addQueryParam("img_id[]", imgId);
-    nm.addQueryParam("file_name[]", task.getDisplayName());
-    nm.addQueryParam("img_resize", "0");
-    nm.addQueryParam("showtext", thumbAddText? "1" : "0");  
-    nm.addQueryParam("gal_id", albumId);
-    nm.addQueryParam("new_gallery_name", album.getTitle());
+    nm.addPostField("img_id[]", imgId);
+    nm.addPostField("file_name[]", task.getDisplayName());
+    nm.addPostField("img_resize", "0");
+    nm.addPostField("showtext", thumbAddText? "1" : "0");
+    nm.addPostField("gal_id", albumId);
+    nm.addPostField("new_gallery_name", album.getTitle());
     nm.doPost("");
 
     if (nm.responseCode() != 200) {
@@ -201,8 +201,8 @@ function GetFolderList(list) {
 function CreateFolder(parentAlbum, album) {
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/index.php?mode=user&act=gal");
-    nm.addQueryParam("new_gal_name", album.getTitle());
-    nm.addQueryParam("new_gal", "Neues+Album+anlegen");
+    nm.addPostField("new_gal_name", album.getTitle());
+    nm.addPostField("new_gal", "Neues+Album+anlegen");
     nm.doPost("");
 
     if (nm.responseCode() != 200) {

@@ -24,6 +24,7 @@ namespace ImageEditor {
 
 const auto UPLOAD_BUTTON_MAX_LENGTH = 35;
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider,
     UploadEngineManager* uploadEngineManager, bool onlySelectRegion)
     : horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion)
@@ -41,6 +42,7 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
     init();
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):
     horizontalToolbar_(Toolbar::orHorizontal), verticalToolbar_(Toolbar::orVertical)
     , uploadEngineManager_(nullptr) {
@@ -212,7 +214,7 @@ CString ImageEditorWindow::saveToTempFile() {
     } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-    return CString();
+    return {};
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
@@ -378,7 +380,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
 
     CRect workArea;
-    MONITORINFO mi;
+    MONITORINFO mi{};
     mi.cbSize = sizeof(mi);
     ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
     workArea = mi.rcWork;
@@ -516,16 +518,26 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     using namespace std::placeholders;
 
     if (!onlySelectRegion_) {
-        canvas_->onDrawingToolChanged.connect(std::bind(&ImageEditorWindow::OnDrawingToolChanged, this, _1));
-        canvas_->onForegroundColorChanged.connect(std::bind(&ImageEditorWindow::OnForegroundColorChanged, this, _1));
-        canvas_->onBackgroundColorChanged.connect(std::bind(&ImageEditorWindow::OnBackgroundColorChanged, this, _1));
-        canvas_->onFontChanged.connect(std::bind(&ImageEditorWindow::onFontChanged, this, _1));
-        canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
-        canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
-        canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
+        canvas_->onDrawingToolChanged.connect([this](auto && PH1) { OnDrawingToolChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onForegroundColorChanged.connect([this](auto && PH1) { OnForegroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onBackgroundColorChanged.connect([this](auto && PH1) { OnBackgroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onFontChanged.connect([this](auto && PH1) { onFontChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextEditStarted.connect([this](auto && PH1) { OnTextEditStarted(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextEditFinished.connect([this](auto && PH1) { OnTextEditFinished(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onSelectionChanged.connect([this] { OnSelectionChanged(); });
     }
-    canvas_->onCropChanged.connect(std::bind(&ImageEditorWindow::OnCropChanged, this, _1, _2, _3, _4));
-    canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
+    canvas_->onCropChanged.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
+        OnCropChanged(
+            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
+        );
+    });
+    canvas_->onCropFinished.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
+        OnCropFinished(
+            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
+        );
+    });
     canvas_->onDocumentModified.connect([this] { updateWindowTitle();  });
 
     if (initialDrawingTool_ != DrawingToolType::dtCrop) {
@@ -540,7 +552,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         updateToolbarDrawingTool(initialDrawingTool_);
     }
     if (displayMode_ == wdmWindowed) {
-        MONITORINFO mi;
+        MONITORINFO mi{};
         mi.cbSize = sizeof(mi);
         ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
         workArea = mi.rcWork;

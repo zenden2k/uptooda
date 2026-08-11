@@ -87,10 +87,10 @@ function RefreshToken() {
         if (time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://api.imgur.com/oauth2/token");
-            nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", _GetClientId()); 
-            nm.addQueryParam("client_secret", _GetClientSecret()); 
-            nm.addQueryParam("grant_type", "refresh_token"); 
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", _GetClientId());
+            nm.addPostField("client_secret", _GetClientSecret());
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             if (checkResponse()) {
                 local data =  nm.responseBody();
@@ -163,7 +163,7 @@ function UploadFile(FileName, options) {
     local login = ServerParams.getParam("Login");
     nm.setUrl("https://api.imgur.com/3/image");
     nm.addQueryHeader("Authorization", GetAuthorizationString());
-    nm.addQueryParamFile("image", FileName, displayName, GetFileMimeType(FileName));
+    nm.addPostFieldFile("image", FileName, displayName, GetFileMimeType(FileName));
     nm.doUploadMultipartData();
     local code = checkResponse();
     if (code < 1) {

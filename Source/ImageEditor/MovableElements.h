@@ -43,7 +43,7 @@ class TextElement: public MovableElement{
         bool getFillBackground() const;
 protected:
     std::shared_ptr<InputBox> inputBox_;
-    LOGFONT font_;
+    LOGFONT font_{};
     bool isEditing_;
     bool firstEdit_;
     bool fillBackground_;

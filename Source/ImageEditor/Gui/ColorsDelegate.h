@@ -44,8 +44,8 @@ namespace ImageEditor {
         void OnForegroundButtonSelChanged(COLORREF color, BOOL valid );
 
         void OnBackgroundButtonSelChanged(COLORREF color, BOOL valid );
-        Gdiplus::Rect getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY) const;
-        Gdiplus::Rect getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY) const;
+        static Gdiplus::Rect getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY);
+        static Gdiplus::Rect getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY);
     };
 }
 

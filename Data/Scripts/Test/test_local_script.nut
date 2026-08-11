@@ -9,12 +9,12 @@ function regex_simple(data,regStr,start)
 	return resultStr;
 }
 
-function  UploadFile(FileName, options)
+function UploadFile(FileName, options)
 {
     print("hello");
 /*
 	nm.setUrl("http://localhost/ImageUploader/Web/upload.php");
-	nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
+	nm.addPostFieldFile("file",FileName, ExtractFileName(FileName),"");
 	local data = "";
 	nm.doUploadMultipartData();
 	data = nm.responseBody();

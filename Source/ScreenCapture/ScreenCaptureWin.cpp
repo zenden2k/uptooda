@@ -102,8 +102,8 @@ void TransferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
     BitmapData bdDst{};
     if (source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
         if (dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst) == Ok) {
-            BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
-            BYTE* bpDst = static_cast<BYTE*>(bdDst.Scan0);
+            auto bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+            auto bpDst = static_cast<BYTE*>(bdDst.Scan0);
             bpSrc += sourceChannel;
             bpDst += destChannel;
             for (int i = r.Height * r.Width; i > 0; i--) {
@@ -166,14 +166,6 @@ void AveragePolyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsign
             }
         }
     }
-}
-
-CRectRegion::CRectRegion()
-{
-}
-
-CRectRegion::~CRectRegion()
-{
 }
 
 CRectRegion::CRectRegion(int x, int y, int width, int height)
@@ -847,10 +839,6 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
     return resultBm;
 }
 
-CWindowHandlesRegion::~CWindowHandlesRegion()
-{
-}
-
 std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::const_iterator CWindowHandlesRegion::cbegin() const {
     return m_hWnds.cbegin();
 }
@@ -984,11 +972,6 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
     return !!m_capturedBitmap;
 }
 
-//bool CScreenCaptureEngine::capturedBitmapReleased_ = false;
-CFreeFormRegion::CFreeFormRegion()
-{
-}
-
 void CFreeFormRegion::AddPoint(POINT point)
 {
     m_curvePoints.push_back(point);
@@ -1068,14 +1051,6 @@ std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src) {
     Pen pn2(Color(40, 0, 255), 1.0f);
     TransferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalBitmap, Alpha, Alpha);
     return finalBitmap;
-}
-
-CFreeFormRegion::~CFreeFormRegion()
-{
-}
-
-CActiveWindowRegion::CActiveWindowRegion()
-{
 }
 
 std::shared_ptr<Gdiplus::Bitmap> CActiveWindowRegion::GetImage(HDC src)

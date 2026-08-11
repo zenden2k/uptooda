@@ -34,10 +34,10 @@ function UploadFile(pathToFile, options) {
     
     // Prepare upload request
     nm.setUrl(BASE_URL + "/en/uploads");
-    nm.addQueryParamFile("fileToUpload[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
-    nm.addQueryParam("upload_token", uploadToken);
-    nm.addQueryParam("photoSize", "original"); // Use original size as requested
-    nm.addQueryParam("submit", "Upload"); // Submit button value
+    nm.addPostFieldFile("fileToUpload[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostField("upload_token", uploadToken);
+    nm.addPostField("photoSize", "original"); // Use original size as requested
+    nm.addPostField("submit", "Upload"); // Submit button value
     nm.doUploadMultipartData();
     
     if (nm.responseCode() != 200) {
@@ -104,9 +104,9 @@ function Authenticate() {
     }
     
     nm.setUrl(BASE_URL + "/en/login");
-    nm.addQueryParam("username", username);
-    nm.addQueryParam("password", password);
-    nm.addQueryParam("submit", "Log In"); // Submit button value
+    nm.addPostField("username", username);
+    nm.addPostField("password", password);
+    nm.addPostField("submit", "Log In"); // Submit button value
     nm.doPost("");
     
     if (nm.responseCode() != 200) {

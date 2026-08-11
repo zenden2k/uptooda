@@ -16,9 +16,9 @@ function  UploadFile(filePath, options)
     
     nm.setUrl("https://api.imageban.ru/v1");
     nm.addQueryHeader("Authorization", "TOKEN " + clientId);
-    nm.addQueryParamFile("image", filePath, displayName, GetFileMimeType(filePath));
-    nm.addQueryParam("name", displayName);
-    nm.addQueryParam("secret_key", secretKey);
+    nm.addPostFieldFile("image", filePath, displayName, GetFileMimeType(filePath));
+    nm.addPostField("name", displayName);
+    nm.addPostField("secret_key", secretKey);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

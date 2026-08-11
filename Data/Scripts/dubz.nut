@@ -35,9 +35,9 @@ function Authenticate() {
 
     nm.setReferer(BASE_URL + "/");
     nm.setUrl(BASE_URL + "/login");
-    nm.addQueryParam("_token", csrfToken);
-    nm.addQueryParam("email", login);
-    nm.addQueryParam("password", pass);
+    nm.addPostField("_token", csrfToken);
+    nm.addPostField("email", login);
+    nm.addPostField("password", pass);
 
     nm.doPost("");
 
@@ -82,10 +82,10 @@ function _UploadToAccount(FileName, options) {
         //nm.addQueryHeader("X-CSRF-TOKEN", csrfToken);
         nm.setReferer(BASE_URL + "/manage");
         nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-        nm.addQueryParam("_token", token);
-        nm.addQueryParam("userId", userId);
-        nm.addQueryParamFile("video", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
-        nm.addQueryParam("video_url", videoUrl);
+        nm.addPostField("_token", token);
+        nm.addPostField("userId", userId);
+        nm.addPostFieldFile("video", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+        nm.addPostField("video_url", videoUrl);
         nm.setUrl(BASE_URL + "/upload");
         nm.doUploadMultipartData();
         local t = null;
@@ -126,10 +126,10 @@ function UploadFile(FileName, options) {
         
         nm.setReferer(BASE_URL + "/guest");
         nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-        nm.addQueryParam("_token", token);
-        nm.addQueryParam("video_id", videoId);
-        nm.addQueryParamFile("video", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
-        nm.addQueryParam("video_url", videoUrl);
+        nm.addPostField("_token", token);
+        nm.addPostField("video_id", videoId);
+        nm.addPostFieldFile("video", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+        nm.addPostField("video_url", videoUrl);
         nm.setUrl(BASE_URL + "/upload2");
         nm.doUploadMultipartData();
         local t = null;

@@ -3,9 +3,9 @@ function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
     nm.setUrl("https://2i.cz/api/1/upload");
-    nm.addQueryParam("key", "1cc098eb545eea3d78ea321a531e7eb0");
-    nm.addQueryParam("format", "json");
-    nm.addQueryParamFile("source", FileName, name, mime);
+    nm.addPostField("key", "1cc098eb545eea3d78ea321a531e7eb0");
+    nm.addPostField("format", "json");
+    nm.addPostFieldFile("source", FileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() > 0) {

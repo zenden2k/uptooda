@@ -18,14 +18,6 @@
                 %appdata%\Uptooda\user_templates.xml    (если вы использовали инсталлятор)
     --> 
 <Templates>
-	<Template Name="Torrentsmd (with spoiler)">
-		<Text>[spoiler=Screenshots]$(Items)[/spoiler]</Text>
-		<Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="   ">[iurl=$(ImageUrl)][img]$(ThumbUrl)[/img][/iurl]</Items>
-	</Template>
-	<Template Name="Torrentsmd (without spoiler)">
-		<Text>[center][color=#CC9933][b][size=4]Screens:[/size][/b][/color][/center]\n[center]$(Items)[/center]</Text>
-		<Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="   ">[iurl=$(ImageUrl)][img]$(ThumbUrl)[/img][/iurl]</Items>
-	</Template>
 	<Template Name="Generalfilm [thumbnails]">
 		<Text>$(Items)</Text>
 		<Items LineStart="" LineEnd="" LineSep=" \n\n" ItemSep="">[thumbnails]$(ImageUrl)[/thumbnails]</Items>

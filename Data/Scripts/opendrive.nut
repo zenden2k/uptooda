@@ -83,10 +83,10 @@ function Authenticate() {
     }
 
     nm.setUrl(API_BASE_URL + "/session/login.json");
-    nm.addQueryParam("username", login);
-    nm.addQueryParam("passwd", password);
-    nm.addQueryParam("version", "1.0");
-    nm.addQueryParam("partner_id", "");
+    nm.addPostField("username", login);
+    nm.addPostField("passwd", password);
+    nm.addPostField("version", "1.0");
+    nm.addPostField("partner_id", "");
     nm.doPost("");
 
     if (_CheckResponse("authentication") < 1) {
@@ -114,7 +114,7 @@ function DoLogout() {
     }
 
     nm.setUrl(API_BASE_URL + "/session/logout.json");
-    nm.addQueryParam("session_id", sessionId);
+    nm.addPostField("session_id", sessionId);
     nm.doPost("");
 
     _ClearAuthData();
@@ -141,7 +141,7 @@ function GetFolderList(list) {
     parentId = _FolderId(parentId);
 
     nm.setUrl(API_BASE_URL + "/folder/list.json/" + nm.urlEncode(sessionId) + "/" + nm.urlEncode(parentId));
-    nm.addQueryParam("only_subfolders", "true");
+    nm.addPostField("only_subfolders", "true");
     nm.doGet("");
 
     local code = _CheckResponse("folder list", -2);
@@ -174,15 +174,15 @@ function CreateFolder(parentFolder, folder) {
     local openDriveAccess = accessType == 1 ? 1 : 0;
 
     nm.setUrl(API_BASE_URL + "/folder.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("folder_name", folder.getTitle());
-    nm.addQueryParam("folder_sub_parent", parentId);
-    nm.addQueryParam("folder_is_public", openDriveAccess.tostring());
-    nm.addQueryParam("folder_public_upl", "0");
-    nm.addQueryParam("folder_public_display", accessType == 1 ? "1" : "0");
-    nm.addQueryParam("folder_public_dnl", accessType == 1 ? "1" : "0");
-    nm.addQueryParam("folder_display_subfolders", "1");
-    nm.addQueryParam("folder_description", folder.getSummary());
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("folder_name", folder.getTitle());
+    nm.addPostField("folder_sub_parent", parentId);
+    nm.addPostField("folder_is_public", openDriveAccess.tostring());
+    nm.addPostField("folder_public_upl", "0");
+    nm.addPostField("folder_public_display", accessType == 1 ? "1" : "0");
+    nm.addPostField("folder_public_dnl", accessType == 1 ? "1" : "0");
+    nm.addPostField("folder_display_subfolders", "1");
+    nm.addPostField("folder_description", folder.getSummary());
     nm.doPost("");
 
     if (_CheckResponse("folder creation") < 1) {
@@ -219,15 +219,15 @@ function ModifyFolder(folder) {
 
     nm.setMethod("PUT");
     nm.setUrl(API_BASE_URL + "/folder/foldersettings.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("folder_id", folderId);
-    nm.addQueryParam("folder_name", folder.getTitle());
-    nm.addQueryParam("folder_description", folder.getSummary());
-    nm.addQueryParam("folder_access", openDriveAccess.tostring());
-    nm.addQueryParam("folder_public_upl", "0");
-    nm.addQueryParam("folder_public_display", accessType == 1 ? "1" : "0");
-    nm.addQueryParam("folder_public_dnl", accessType == 1 ? "1" : "0");
-    nm.addQueryParam("folder_display_subfolders", "1");
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("folder_id", folderId);
+    nm.addPostField("folder_name", folder.getTitle());
+    nm.addPostField("folder_description", folder.getSummary());
+    nm.addPostField("folder_access", openDriveAccess.tostring());
+    nm.addPostField("folder_public_upl", "0");
+    nm.addPostField("folder_public_display", accessType == 1 ? "1" : "0");
+    nm.addPostField("folder_public_dnl", accessType == 1 ? "1" : "0");
+    nm.addPostField("folder_display_subfolders", "1");
     nm.doUpload("", "");
 
     if (_CheckResponse("folder modification") < 1) {
@@ -249,11 +249,11 @@ function ModifyFolder(folder) {
 
 function _CreateFile(sessionId, folderId, fileName, fileSize) {
     nm.setUrl(API_BASE_URL + "/upload/create_file.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("folder_id", folderId);
-    nm.addQueryParam("file_name", fileName);
-    nm.addQueryParam("file_size", fileSize.tostring());
-    nm.addQueryParam("open_if_exists", "0");
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("folder_id", folderId);
+    nm.addPostField("file_name", fileName);
+    nm.addPostField("file_size", fileSize.tostring());
+    nm.addPostField("open_if_exists", "0");
     nm.doPost("");
 
     if (_CheckResponse("file creation") < 1) {
@@ -265,9 +265,9 @@ function _CreateFile(sessionId, folderId, fileName, fileSize) {
 
 function _OpenFileUpload(sessionId, fileId, fileSize) {
     nm.setUrl(API_BASE_URL + "/upload/open_file_upload.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("file_id", fileId);
-    nm.addQueryParam("file_size", fileSize.tostring());
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("file_id", fileId);
+    nm.addPostField("file_size", fileSize.tostring());
     nm.doPost("");
 
     if (_CheckResponse("opening file upload") < 1) {
@@ -286,7 +286,7 @@ function _UploadChunk(fileName, displayName, sessionId, fileId, tempLocation, of
     nm.setUrl(url);
     nm.setChunkOffset(offset);
     nm.setChunkSize(size);
-    nm.addQueryParamFile("file_data", fileName, displayName, GetFileMimeType(fileName));
+    nm.addPostFieldFile("file_data", fileName, displayName, GetFileMimeType(fileName));
     nm.doUploadMultipartData();
 
     return _CheckResponse("chunk upload");
@@ -294,11 +294,11 @@ function _UploadChunk(fileName, displayName, sessionId, fileId, tempLocation, of
 
 function _CloseFileUpload(sessionId, fileId, fileSize, tempLocation) {
     nm.setUrl(API_BASE_URL + "/upload/close_file_upload.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("file_id", fileId);
-    nm.addQueryParam("file_size", fileSize.tostring());
-    nm.addQueryParam("temp_location", tempLocation);
-    nm.addQueryParam("file_time", time().tostring());
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("file_id", fileId);
+    nm.addPostField("file_size", fileSize.tostring());
+    nm.addPostField("temp_location", tempLocation);
+    nm.addPostField("file_time", time().tostring());
     nm.doPost("");
 
     if (_CheckResponse("closing file upload") < 1) {
@@ -310,9 +310,9 @@ function _CloseFileUpload(sessionId, fileId, fileSize, tempLocation) {
 
 function _SetFilePublic(sessionId, fileId) {
     nm.setUrl(API_BASE_URL + "/file/access.json");
-    nm.addQueryParam("session_id", sessionId);
-    nm.addQueryParam("file_id", fileId);
-    nm.addQueryParam("file_ispublic", "1");
+    nm.addPostField("session_id", sessionId);
+    nm.addPostField("file_id", fileId);
+    nm.addPostField("file_ispublic", "1");
     nm.doPost("");
 
     if (_CheckResponse("setting public file access") < 1) {

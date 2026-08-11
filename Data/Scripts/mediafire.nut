@@ -28,10 +28,10 @@ function Authenticate() {
     local securityToken = _GetSecurityToken();
 
     nm.setUrl("https://www.mediafire.com/dynamic/client_login/mediafire.php");
-    nm.addQueryParam("security", securityToken);
-    nm.addQueryParam("login_email", login);
-    nm.addQueryParam("login_pass", password);
-    nm.addQueryParam("login_remember", "on");
+    nm.addPostField("security", securityToken);
+    nm.addPostField("login_email", login);
+    nm.addPostField("login_pass", password);
+    nm.addPostField("login_remember", "on");
     nm.setReferer("https://www.mediafire.com/login/");
 
     nm.doPost("");
@@ -76,16 +76,16 @@ function GetFolderList(list) {
     local sessionToken = Sync.getValue("sessionToken");
     nm.setUrl("https://www.mediafire.com/api/1.5/folder/get_content.php");
     nm.setReferer("https://app.mediafire.com/");
-    nm.addQueryParam("session_token", sessionToken);
-    nm.addQueryParam("response_format", "json");
-    nm.addQueryParam("folder_key", "myfiles");
-    nm.addQueryParam("content_type", "folders");
-    nm.addQueryParam("chunk", 1);
-    nm.addQueryParam("chunk_size", 100);
-    nm.addQueryParam("details", "yes");
-    nm.addQueryParam("order_direction", "asc");
-    nm.addQueryParam("order_by", "name");
-    nm.addQueryParam("filter", "");
+    nm.addPostField("session_token", sessionToken);
+    nm.addPostField("response_format", "json");
+    nm.addPostField("folder_key", "myfiles");
+    nm.addPostField("content_type", "folders");
+    nm.addPostField("chunk", 1);
+    nm.addPostField("chunk_size", 100);
+    nm.addPostField("details", "yes");
+    nm.addPostField("order_direction", "asc");
+    nm.addPostField("order_by", "name");
+    nm.addPostField("filter", "");
     nm.doPost("");
 
     if (nm.responseCode() == 200) {
@@ -113,9 +113,9 @@ function _GetFileInfo(fileid) {
     local sessionToken =  Sync.getValue("sessionToken");
     nm.setUrl("https://www.mediafire.com/api/file/get_info.php");
     nm.setReferer("https://www.mediafire.com/");
-    nm.addQueryParam("session_token", sessionToken);
-    nm.addQueryParam("response_format", "json");
-    nm.addQueryParam("quick_key", fileid);
+    nm.addPostField("session_token", sessionToken);
+    nm.addPostField("response_format", "json");
+    nm.addPostField("quick_key", fileid);
     nm.doPost("");
 
     if (nm.responseCode() == 200) {
@@ -142,9 +142,9 @@ function _Check(folderkey, filebase, filesize, filehash) {
         upload
     ];
     local url = "https://www.mediafire.com/api/1.5/upload/check.php";
-    nm.addQueryParam("uploads", ToJSON(uploads)); 
-    nm.addQueryParam("response_format", "json");
-    nm.addQueryParam("session_token", sessionToken);
+    nm.addPostField("uploads", ToJSON(uploads));
+    nm.addPostField("response_format", "json");
+    nm.addPostField("session_token", sessionToken);
     nm.setUrl(url);
     nm.doPost("");
 
@@ -205,10 +205,10 @@ function _ChunkedUpload(sessionToken, folderId, FileName, fileNameBase, fileSize
 function _PollUpload(sessionToken, key, fileNameBase, options) {
     nm.setUrl("https://www.mediafire.com/api/upload/poll_upload.php");
     nm.setReferer("https://app.mediafire.com/");
-    nm.addQueryParam("session_token", sessionToken);
-    nm.addQueryParam("key", key);
-    nm.addQueryParam("filename", fileNameBase);    
-    nm.addQueryParam("response_format", "json");
+    nm.addPostField("session_token", sessionToken);
+    nm.addPostField("key", key);
+    nm.addPostField("filename", fileNameBase);
+    nm.addPostField("response_format", "json");
     nm.doPost("");
     if (nm.responseCode() == 200) {
         local t2 = ParseJSON(nm.responseBody());

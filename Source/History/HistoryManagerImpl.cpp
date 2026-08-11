@@ -501,9 +501,6 @@ std::vector<std::unique_ptr<CHistorySession>>::iterator CHistoryReader::end() {
     return d_ptr->m_sessions.end();
 }
 
-CHistoryReader::~CHistoryReader() {
-}
-
 void CHistoryReader::loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode) {
     session->m_timeStamp = sessionNode.AttributeInt("TimeStamp");
     session->m_serverName = sessionNode.Attribute("ServerName");

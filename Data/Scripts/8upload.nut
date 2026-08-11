@@ -43,12 +43,12 @@ function Authenticate() {
     // Step 2: Perform login
     nm.setUrl(BASE_URL + "/myaccount/ASEngine/ASAjax.php");
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-    nm.addQueryParam("_as_csrf_token", csrfToken);
-    nm.addQueryParam("action", "checkLogin");
-    nm.addQueryParam("username", username);
-    nm.addQueryParam("password", Sha512(password));
-    nm.addQueryParam("id[username]", "login-username");
-    nm.addQueryParam("id[password]", "login-password");
+    nm.addPostField("_as_csrf_token", csrfToken);
+    nm.addPostField("action", "checkLogin");
+    nm.addPostField("username", username);
+    nm.addPostField("password", Sha512(password));
+    nm.addPostField("id[username]", "login-username");
+    nm.addPostField("id[password]", "login-password");
     nm.doPost("");
     
     if (nm.responseCode() != 200) {
@@ -80,7 +80,7 @@ function UploadFile(pathToFile, options) {
     // Step 1: Upload file to 8upload.com
     nm.setUrl(BASE_URL + "/upload/mt/");
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-    nm.addQueryParamFile("images[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostFieldFile("images[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.doUploadMultipartData();
 
     // Parse JSON response even if response code is not 200

@@ -39,10 +39,10 @@ function Authenticate() {
         if ( time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-            nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", CLIENT_ID); 
-            nm.addQueryParam("client_secret", CLIENT_SECRET); 
-            nm.addQueryParam("grant_type", "refresh_token"); 
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", CLIENT_ID);
+            nm.addPostField("client_secret", CLIENT_SECRET);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             if ( _CheckResponse() ) {
                 local parsedData = ParseJSON(nm.responseBody());
@@ -101,11 +101,11 @@ function Authenticate() {
     }
     
     nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-    nm.addQueryParam("code", confirmCode); 
-    nm.addQueryParam("client_id", CLIENT_ID); 
-    nm.addQueryParam("client_secret", CLIENT_SECRET); 
-    nm.addQueryParam("redirect_uri", redirectUrl); 
-    nm.addQueryParam("grant_type", "authorization_code"); 
+    nm.addPostField("code", confirmCode);
+    nm.addPostField("client_id", CLIENT_ID);
+    nm.addPostField("client_secret", CLIENT_SECRET);
+    nm.addPostField("redirect_uri", redirectUrl);
+    nm.addPostField("grant_type", "authorization_code");
     nm.doPost("");
     if ( !_CheckResponse() ) {
         return 0;
@@ -155,10 +155,10 @@ function RefreshToken() {
         if (time() + 10 > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-            nm.addQueryParam("refresh_token", refreshToken);
-            nm.addQueryParam("client_id", CLIENT_ID);
-            nm.addQueryParam("client_secret", CLIENT_SECRET);
-            nm.addQueryParam("grant_type", "refresh_token");
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", CLIENT_ID);
+            nm.addPostField("client_secret", CLIENT_SECRET);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             if (_CheckResponse()) {
                 local data =  nm.responseBody();

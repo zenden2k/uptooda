@@ -108,17 +108,17 @@ function UploadFile(filePath, options){
     nm.addQueryHeader("sec-ch-ua", "\"Microsoft Edge\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"");
     nm.addQueryHeader("sec-ch-ua-mobile", "?0");
     nm.addQueryHeader("sec-ch-ua-platform", "\"Windows\"");
-    nm.addQueryParam("compmenu", "0");
-    nm.addQueryParam("albmenu", "0");
-    nm.addQueryParam("inf", thumbUseServerText ? "1" : "0");
-    nm.addQueryParam("cat", "0");
-    nm.addQueryParam("prew", options.getParam("THUMBWIDTH"));
-    nm.addQueryParam("ttl", "0");
-    nm.addQueryParam("ptext", "Увеличить");
-    nm.addQueryParam("itext", "");
-    nm.addQueryParam("grad", "0");
-    nm.addQueryParam("rsize", "1");
-    nm.addQueryParamFile("Filedata", filePath, displayName, GetFileMimeType(filePath));
+    nm.addPostField("compmenu", "0");
+    nm.addPostField("albmenu", "0");
+    nm.addPostField("inf", thumbUseServerText ? "1" : "0");
+    nm.addPostField("cat", "0");
+    nm.addPostField("prew", options.getParam("THUMBWIDTH"));
+    nm.addPostField("ttl", "0");
+    nm.addPostField("ptext", "Увеличить");
+    nm.addPostField("itext", "");
+    nm.addPostField("grad", "0");
+    nm.addPostField("rsize", "1");
+    nm.addPostFieldFile("Filedata", filePath, displayName, GetFileMimeType(filePath));
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

@@ -176,7 +176,7 @@ STDMETHODIMP CGrabInputPin::Receive(IMediaSample *pSample) {
     return m_pDumpFilter->Receive(pSample);
 }
 
-STDMETHODIMP CGrabInputPin::EndOfStream(void) {
+STDMETHODIMP CGrabInputPin::EndOfStream() {
     CAutoLock lock(m_pReceiveLock);
     return m_pDumpFilter->EndOfStream();
 }

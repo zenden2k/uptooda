@@ -21,11 +21,11 @@ function UploadFile(fileName, options) {
     local mimeType = GetFileMimeType(fileName);
 
     nm.setUrl(BASE_URL + "/image/upload-simple");
-    nm.addQueryParam("MAX_FILE_SIZE", "20971520");
-    nm.addQueryParamFile("file", fileName, displayName, mimeType);
-    nm.addQueryParam("captcha[id]", captchaId);
-    nm.addQueryParam("captcha[input]", captchaAnswer);
-    nm.addQueryParam("Залинковать", "Залинковать");
+    nm.addPostField("MAX_FILE_SIZE", "20971520");
+    nm.addPostFieldFile("file", fileName, displayName, mimeType);
+    nm.addPostField("captcha[id]", captchaId);
+    nm.addPostField("captcha[input]", captchaAnswer);
+    nm.addPostField("Залинковать", "Залинковать");
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

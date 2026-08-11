@@ -6,7 +6,7 @@ function UploadFile(fileName, options) {
     nm.setReferer("https://prnt.sc/");
     nm.addQueryHeader("Origin", "https://prnt.sc");
     nm.setUrl("https://prntscr.com/upload.php");
-    nm.addQueryParamFile("image", fileName, task.getDisplayName(), GetFileMimeType(fileName));
+    nm.addPostFieldFile("image", fileName, task.getDisplayName(), GetFileMimeType(fileName));
     nm.doUploadMultipartData();
     local t = ParseJSON(nm.responseBody());
     

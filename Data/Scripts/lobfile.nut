@@ -29,13 +29,13 @@ function UploadFile(pathToFile, options) {
     nm.addQueryHeader("X-API-Key", apiKey);
     
     // Add file as multipart form data
-    nm.addQueryParamFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostFieldFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     
     // Optional: Add SHA256 verification if enabled
     local enableSHA256 = ServerParams.getParam("enableSHA256");
     if (enableSHA256 == "1") {
         // Calculate SHA256 hash of the file if needed
-        nm.addQueryParam("sha_256", Sha256FromFile(pathToFile, 0, 0));
+        nm.addPostField("sha_256", Sha256FromFile(pathToFile, 0, 0));
     }
     
     // Perform multipart upload

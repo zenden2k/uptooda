@@ -97,7 +97,7 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
 	windowDc_ = GetDC();
-    auto enumerator = std::make_shared<FontEnumerator>(windowDc_, fonts_, std::bind(&TextParamsWindow::OnFontEnumerationFinished, this));
+    auto enumerator = std::make_shared<FontEnumerator>(windowDc_, fonts_, [this] { OnFontEnumerationFinished(); });
     fontEnumerationThread_ = std::thread(&FontEnumerator::run, enumerator);
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
         _T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")

@@ -35,7 +35,7 @@ bool PointsEqual(const POINT& a, const POINT& b) {
 
 CropOverlay* MoveAndResizeTool::cropOverlay_ = nullptr;
 
-MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
+MoveAndResizeTool::MoveAndResizeTool(Canvas* canvas, ElementType type) : AbstractDrawingTool( canvas ) {
     currentElement_       = nullptr;
     elementType_          = type;
 //    draggedBoundary_. = btNone;
@@ -53,7 +53,6 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
     elementJustCreated_ = false;
     startPoint_.x = -1;
     startPoint_.y = -1;
-
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {

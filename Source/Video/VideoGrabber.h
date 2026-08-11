@@ -40,4 +40,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 
-#endif // VIDEOGRABBER_H
+#endif // IU_CORE_VIDEO_VIDEOGRABBER_H

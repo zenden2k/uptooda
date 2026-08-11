@@ -16,9 +16,9 @@ function UploadFile(fileName, options) {
         timestamp = reg2.getMatch(1);
     }
     nm.setUrl(BASE_HOST + "/includes/upload.php");
-    nm.addQueryParamFile("Filedata", fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
-    nm.addQueryParam("timestamp", timestamp);
-    nm.addQueryParam("token", token);
+    nm.addPostFieldFile("Filedata", fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
+    nm.addPostField("timestamp", timestamp);
+    nm.addPostField("token", token);
     nm.doUploadMultipartData();
     
     if (nm.responseCode() == 200) {

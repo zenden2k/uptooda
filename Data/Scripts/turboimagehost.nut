@@ -12,10 +12,10 @@ function Authenticate() {
     nm.addQueryHeader("Origin", BASE_HOST);
     nm.addQueryHeader("Referer", BASE_HOST + "login.tu");
     
-    nm.addQueryParam("username", login);
-    nm.addQueryParam("password", password);
-    nm.addQueryParam("remember", "y");
-    nm.addQueryParam("login", "Login");
+    nm.addPostField("username", login);
+    nm.addPostField("password", password);
+    nm.addPostField("remember", "y");
+    nm.addPostField("login", "Login");
     nm.setUrl(BASE_HOST + "login.tu");
     nm.doPost("");
     
@@ -68,15 +68,15 @@ function UploadFile(fileName, options) {
 
     // Добавляем параметры формы
     if (albumId != "") {
-        nm.addQueryParam("album", albumId);
+        nm.addPostField("album", albumId);
     }
-    nm.addQueryParam("imcontent", "all");
-    nm.addQueryParam("thumb_size", options.getParam("THUMBWIDTH"));
-    nm.addQueryParam("upload_id", uploadId);
-    nm.addQueryParam("qquuid", qquuid);
-    nm.addQueryParam("qqfilename", ExtractFileName(fileName));
-    nm.addQueryParam("qqtotalfilesize", GetFileSize(fileName).tostring());
-    nm.addQueryParamFile("qqfile", fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
+    nm.addPostField("imcontent", "all");
+    nm.addPostField("thumb_size", options.getParam("THUMBWIDTH"));
+    nm.addPostField("upload_id", uploadId);
+    nm.addPostField("qquuid", qquuid);
+    nm.addPostField("qqfilename", ExtractFileName(fileName));
+    nm.addPostField("qqtotalfilesize", GetFileSize(fileName).tostring());
+    nm.addPostFieldFile("qqfile", fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
 
     // Отправляем запрос
     nm.doUploadMultipartData();
@@ -139,8 +139,8 @@ function GetFolderList(list) {
 
 function CreateFolder(parentAlbum, album) {
     nm.setUrl(BASE_HOST + "index.tu");
-    nm.addQueryParam("addalbum", album.getTitle());
-    nm.addQueryParam("newalbum", "Create a new gallery");
+    nm.addPostField("addalbum", album.getTitle());
+    nm.addPostField("newalbum", "Create a new gallery");
     nm.doPost("");
 
     if (nm.responseCode() == 200) {

@@ -49,7 +49,6 @@ void BrushTool::continueDraw(int x, int y, DWORD flags) {
         drawLine(oldPoint_.x, oldPoint_.y, x, y);
     }
 
-
     oldPoint_.x = x;
     oldPoint_.y = y;
 }

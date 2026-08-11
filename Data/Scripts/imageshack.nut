@@ -2,20 +2,6 @@ token <- "";
 username <- "";
 api_key <- "BXT1Z35V8f6ee0522939d8d7852dbe67b1eb9595";
 
-function reg_replace(str, pattern, replace_with)
-{
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function DoLogin()
 {
     if (token == "") {
@@ -26,9 +12,9 @@ function DoLogin()
         }
         nm.enableResponseCodeChecking(false);
         nm.setUrl("https://api.imageshack.com/v2/user/login");
-        nm.addQueryParam("user", login);
-        nm.addQueryParam("password", pass);
-        nm.addQueryParam("api_key", api_key);
+        nm.addPostField("user", login);
+        nm.addPostField("password", pass);
+        nm.addPostField("api_key", api_key);
         nm.doPost("");
         local res = ParseJSON(nm.responseBody());
         if (res != null) {
@@ -102,12 +88,12 @@ function CreateFolder(parentAlbum,album)
     local accessType = album.getAccessType();
 
     nm.enableResponseCodeChecking(false);
-    nm.addQueryParam("title", title);
-    nm.addQueryParam("description", summary);
-    nm.addQueryParam("public", accessType==0?"FALSE":"TRUE");
+    nm.addPostField("title", title);
+    nm.addPostField("description", summary);
+    nm.addPostField("public", accessType==0?"FALSE":"TRUE");
 
-    nm.addQueryParam("auth_token", token);
-    nm.addQueryParam("api_key", api_key);
+    nm.addPostField("auth_token", token);
+    nm.addPostField("api_key", api_key);
     nm.setUrl("https://api.imageshack.com/v2/albums");
 
     nm.doPost("");
@@ -146,12 +132,12 @@ function ModifyFolder(album)
     local accessType = album.getAccessType();
 
     nm.enableResponseCodeChecking(false);
-    nm.addQueryParam("title", title);
-    nm.addQueryParam("description", summary);
-    nm.addQueryParam("public", accessType==0?"FALSE":"TRUE");
+    nm.addPostField("title", title);
+    nm.addPostField("description", summary);
+    nm.addPostField("public", accessType==0?"FALSE":"TRUE");
 
-    nm.addQueryParam("auth_token", token);
-    nm.addQueryParam("api_key", api_key);
+    nm.addPostField("auth_token", token);
+    nm.addPostField("api_key", api_key);
     nm.setUrl("https://api.imageshack.com/v2/albums/"+id);
     nm.setMethod("PATCH");
     nm.doPost("");
@@ -179,12 +165,12 @@ function  UploadFile(FileName, options)
 
     nm.enableResponseCodeChecking(false);
     nm.setUrl("https://api.imageshack.com/v2/images");
-    nm.addQueryParam("auth_token", token);
-    nm.addQueryParam("api_key", api_key);
+    nm.addPostField("auth_token", token);
+    nm.addPostField("api_key", api_key);
     if (albumId!="" && albumId!="/") {
-        nm.addQueryParam("album", albumId);
+        nm.addPostField("album", albumId);
     }
-    nm.addQueryParamFile("file", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+    nm.addPostFieldFile("file", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
     local thumbwidth = options.getParam("THUMBWIDTH");
 
     nm.doUploadMultipartData();
@@ -194,7 +180,7 @@ function  UploadFile(FileName, options)
             local img = obj.result.images[0];
             local directUrl  = img.direct_link;
             if ( directUrl != "" ) {
-                directUrl = "https://" + reg_replace(directUrl, "\\", "");
+                directUrl = "https://" + StrReplace(directUrl, "\\", "");
                 options.setDirectUrl(directUrl);
                 return 1;
             }

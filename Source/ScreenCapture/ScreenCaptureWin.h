@@ -67,12 +67,11 @@ protected:
 
 class CRectRegion : public CScreenshotRegion {
 public:
-    CRectRegion();
+    CRectRegion() = default;
     CRectRegion(int x, int y, int width, int height);
     explicit CRectRegion(HRGN region);
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
-    ~CRectRegion() override;
 protected:
     CRgn m_ScreenRegion;
 };
@@ -99,7 +98,6 @@ public:
     void setWindowCapturingFlags(WindowCapturingFlags flags);
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
-    ~CWindowHandlesRegion() override;
     std::vector<CWindowHandlesRegionItem>::const_iterator cbegin() const;
     std::vector<CWindowHandlesRegionItem>::const_iterator cend() const;
     std::vector<CWindowHandlesRegionItem>::size_type size() const;
@@ -119,18 +117,17 @@ protected:
 
 class CActiveWindowRegion : public CWindowHandlesRegion {
 public:
-    CActiveWindowRegion();
+    CActiveWindowRegion() = default;
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
 };
 
 class CFreeFormRegion : public CRectRegion {
 public:
-    CFreeFormRegion();
+    CFreeFormRegion() = default;
     void AddPoint(POINT point);
     void Clear();
     bool IsEmpty() override;
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
-    ~CFreeFormRegion() override;
 protected:
     std::vector<POINT> m_curvePoints;
 };
@@ -138,7 +135,6 @@ protected:
 class CScreenCaptureEngine {
 public:
     CScreenCaptureEngine();
-    ~CScreenCaptureEngine() = default;
     bool captureScreen(bool drawCursor);
     void setSource(HBITMAP src);
     bool captureRegion(CScreenshotRegion* region);

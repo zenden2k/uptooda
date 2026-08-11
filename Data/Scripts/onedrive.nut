@@ -87,9 +87,9 @@ function RefreshToken() {
         if ( time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://login.microsoftonline.com/common/oauth2/v2.0/token");
-            nm.addQueryParam("refresh_token", refreshToken);
-            nm.addQueryParam("client_id", clientId);
-            nm.addQueryParam("grant_type", "refresh_token");
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", clientId);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             local code =  _CheckResponse();
             if (code < 1) {
@@ -153,10 +153,10 @@ function Authenticate() {
     }
 
     nm.setUrl("https://login.microsoftonline.com/common/oauth2/v2.0/token");
-    nm.addQueryParam("code", confirmCode);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("redirect_uri", redirectUri);
-    nm.addQueryParam("grant_type", "authorization_code");
+    nm.addPostField("code", confirmCode);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("redirect_uri", redirectUri);
+    nm.addPostField("grant_type", "authorization_code");
     nm.doPost("");
     if (!_CheckResponse()) {
         return 0;

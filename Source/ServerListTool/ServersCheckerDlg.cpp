@@ -76,8 +76,7 @@ LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM l
         ClientPoint = ScreenPoint;
         ::ScreenToClient(hwnd, &ClientPoint);
     }
-    LV_HITTESTINFO hti;
-    memset(&hti, 0, sizeof(hti));
+    LV_HITTESTINFO hti = {};
     hti.pt = ClientPoint;
     listView_.HitTest(&hti);
 

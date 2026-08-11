@@ -58,15 +58,15 @@ function UploadFile(FileName, options) {
             nm.setReferer(BASE_URL);
             nm.setUrl(BASE_URL + "/cgi-bin/ubr_upload.pl?X-Progress-ID=" + nm.urlEncode(uploadId)+ "&upload_id=" + nm.urlEncode(uploadId));
 
-            nm.addQueryParamFile("upfile_0", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
-            nm.addQueryParam("link", "");
-            nm.addQueryParam("email", "");
-            nm.addQueryParam("category", "cat_file");
+            nm.addPostFieldFile("upfile_0", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+            nm.addPostField("link", "");
+            nm.addPostField("email", "");
+            nm.addPostField("category", "cat_file");
             if (login != "") {
-                nm.addQueryParam("gallery_id", albumId);
+                nm.addPostField("gallery_id", albumId);
             }
-            nm.addQueryParam("big_resize", "none");
-            nm.addQueryParam("small_resize", "120x90");
+            nm.addPostField("big_resize", "none");
+            nm.addPostField("small_resize", "120x90");
             
             nm.doUploadMultipartData();
 

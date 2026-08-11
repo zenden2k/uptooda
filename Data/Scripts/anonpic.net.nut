@@ -18,8 +18,8 @@ function UploadFile(pathToFile, options) {
     
     // Set up the upload URL
     nm.setUrl(BASE_URL + "/");
-    nm.addQueryParamFile("image", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
-    nm.addQueryParam("csrf_token", csrfToken); 
+    nm.addPostFieldFile("image", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostField("csrf_token", csrfToken);
 
     nm.doUploadMultipartData();
     

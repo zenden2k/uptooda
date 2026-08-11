@@ -30,10 +30,10 @@ function Authenticate() {
 	}
 
 	nm.setUrl(BASE_URL + "/login");
-	nm.addQueryParam("utf8", "✓");
-	nm.addQueryParam("authenticity_token", csrfToken);
-	nm.addQueryParam("user[login]", username);
-	nm.addQueryParam("user[password]", password);
+	nm.addPostField("utf8", "✓");
+	nm.addPostField("authenticity_token", csrfToken);
+	nm.addPostField("user[login]", username);
+	nm.addPostField("user[password]", password);
 	nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
 	nm.doPost("");
 	nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 1);
@@ -92,15 +92,15 @@ function UploadFile(FileName, options) {
 		nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
 		nm.addQueryHeader("Referer", "https://imgbox.com/");
 
-		nm.addQueryParam("token_id", sTokenId);
-		nm.addQueryParam("token_secret", sTokenSecret);
-		nm.addQueryParam("content_type", "1");
-		nm.addQueryParam("thumbnail_size", "200c");
-		nm.addQueryParam("gallery_id", galleryId);
-		nm.addQueryParam("gallery_secret", gallerySecret);
-		nm.addQueryParam("comments_enabled", "0");
+		nm.addPostField("token_id", sTokenId);
+		nm.addPostField("token_secret", sTokenSecret);
+		nm.addPostField("content_type", "1");
+		nm.addPostField("thumbnail_size", "200c");
+		nm.addPostField("gallery_id", galleryId);
+		nm.addPostField("gallery_secret", gallerySecret);
+		nm.addPostField("comments_enabled", "0");
 		
-		nm.addQueryParamFile("files[]", FileName, ExtractFileName(FileName),"");
+		nm.addPostFieldFile("files[]", FileName, ExtractFileName(FileName),"");
 		nm.doUploadMultipartData();
 		if (nm.responseCode() != 200) {
 			WriteLog("warning", "[imgbox.com] Server response code is "+nm.responseCode()+" at \"upload\" stage.");

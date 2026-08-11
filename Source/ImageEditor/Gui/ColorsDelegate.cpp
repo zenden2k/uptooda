@@ -20,14 +20,18 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     foregroundButton_.SetFont(font_);
     foregroundColorButton_.SubclassWindow(foregroundButton_.m_hWnd);
     using namespace std::placeholders;
-    foregroundColorButton_.setOnSelChangeCallback(std::bind(&ColorsDelegate::OnForegroundButtonSelChanged, this, _1, _2));
+    foregroundColorButton_.setOnSelChangeCallback([this](auto && PH1, auto && PH2) {
+        OnForegroundButtonSelChanged(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
     foregroundColorButton_.SetCustomText(TR("More colors..."));
     foregroundColorButton_.SetColorCodeText(TR("Get color's code..."));
     foregroundColorButton_.SetListener(this);
     backgroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     backgroundButton_.SetFont(font_);
     backgroundColorButton_.SubclassWindow(backgroundButton_.m_hWnd);
-    backgroundColorButton_.setOnSelChangeCallback(std::bind(&ColorsDelegate::OnBackgroundButtonSelChanged, this, _1, _2));
+    backgroundColorButton_.setOnSelChangeCallback([this](auto && PH1, auto && PH2) {
+        OnBackgroundButtonSelChanged(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
     backgroundColorButton_.SetCustomText(TR("More colors..."));
     backgroundColorButton_.SetColorCodeText(TR("Get color's code..."));
     backgroundColorButton_.SetListener(this);
@@ -129,15 +133,20 @@ void ColorsDelegate::OnBackgroundButtonSelChanged(COLORREF color, BOOL valid ) {
 }
 
 
-Gdiplus::Rect ColorsDelegate::getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY) const
+Gdiplus::Rect ColorsDelegate::getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY)
 {
-    return Gdiplus::Rect(int(kPadding * dpiScaleX + x), int(y + dpiScaleY * 4), int(kSquareSize * dpiScaleX), int(kSquareSize * dpiScaleY));
+    return {
+        static_cast<int>(kPadding * dpiScaleX + x),
+        static_cast<int>(y + dpiScaleY * 4),
+        static_cast<int>(kSquareSize * dpiScaleX),
+        static_cast<int>(kSquareSize * dpiScaleY)
+    };
 }
 
-Gdiplus::Rect ColorsDelegate::getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY) const
+Gdiplus::Rect ColorsDelegate::getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY)
 {
     Gdiplus::Rect foregroundRect = getForegroundRect(x, y, dpiScaleX, dpiScaleY);
-    return Gdiplus::Rect(foregroundRect.GetRight() + 1, foregroundRect.Y - 5, static_cast<int>(12 * dpiScaleX), static_cast<int>(12 * dpiScaleY));
+    return {foregroundRect.GetRight() + 1, foregroundRect.Y - 5, static_cast<int>(12 * dpiScaleX), static_cast<int>(12 * dpiScaleY)};
 }
 
 void ColorsDelegate::swapColors() {

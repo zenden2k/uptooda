@@ -68,7 +68,7 @@ class INetworkClient {
 
         [[deprecated("Use addPostField() instead")]]
         virtual void addQueryParam(const std::string& name, const std::string& value){}
-        [[deprecated("Use addPostField() instead")]]
+        [[deprecated("Use addPostFieldFile() instead")]]
         virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType){};
 
         virtual void addPostField(const std::string& name, const std::string& value) { }
@@ -80,18 +80,18 @@ class INetworkClient {
         virtual bool doUploadMultipartData(){ return false; }
         virtual bool doUpload(const std::string& fileName, const std::string &data) { return false; }
         virtual bool doGet(const std::string &url){ return false; }
-        virtual std::string responseBody() { return std::string(); };
+        virtual std::string responseBody() { return {}; };
         virtual int responseCode(){ return 0; }
-        virtual std::string errorString(){ return std::string(); }
+        virtual std::string errorString(){ return {}; }
         virtual void setUserAgent(const std::string& userAgentStr) {}
-        virtual std::string responseHeaderText() { return std::string(); }
-        virtual std::string responseHeaderByName(const std::string& name){ return std::string(); }
-        virtual std::string responseHeaderByIndex(int index, std::string& name){ return std::string(); }
+        virtual std::string responseHeaderText() { return {}; }
+        virtual std::string responseHeaderByName(const std::string& name){ return {}; }
+        virtual std::string responseHeaderByIndex(int index, std::string& name){ return {}; }
         virtual int responseHeaderCount(){ return 0; }
-        virtual std::string getCurlResultString(){ return std::string(); }
+        virtual std::string getCurlResultString(){ return {}; }
         virtual void setCurlOption(int option, const std::string &value){}
         virtual void setCurlOptionInt(int option, long value){}
-        virtual std::string getCurlInfoString(int option){ return std::string(); }
+        virtual std::string getCurlInfoString(int option){ return {}; }
         virtual int getCurlInfoInt(int option){ return 0; };
         virtual double getCurlInfoDouble(int option){ return 0.0; }
         virtual void setMethod(const std::string &str){};
@@ -115,8 +115,8 @@ class INetworkClient {
         virtual void setProxyProvider(std::shared_ptr<ProxyProvider> provider){}
         virtual void setDebugger(std::shared_ptr<Debugger> debugger) {};
         virtual void setLogger(Logger* logger){}
-        virtual std::string urlEncode(const std::string& str){ return std::string(); }
-        virtual std::string urlDecode(const std::string& str){ return std::string(); }
+        virtual std::string urlEncode(const std::string& str){ return {}; }
+        virtual std::string urlDecode(const std::string& str){ return {}; }
         virtual void setMaxUploadSpeed(uint64_t speed){}
         virtual void setMaxDownloadSpeed(uint64_t speed) {}
         virtual void cleanupAfter() {}

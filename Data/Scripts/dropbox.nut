@@ -43,10 +43,10 @@ function RefreshToken() {
 
     if (time() > expiresIn && refreshToken != "") {
         nm.setUrl("https://api.dropboxapi.com/oauth2/token");
-        nm.addQueryParam("grant_type", "refresh_token");
-        nm.addQueryParam("client_id", appKey);
-        nm.addQueryParam("client_secret", appSecret);
-        nm.addQueryParam("refresh_token", refreshToken);
+        nm.addPostField("grant_type", "refresh_token");
+        nm.addPostField("client_id", appKey);
+        nm.addPostField("client_secret", appSecret);
+        nm.addPostField("refresh_token", refreshToken);
         nm.doPost("");
 
         if (nm.responseCode() == 200) {
@@ -66,11 +66,11 @@ function _ObtainAccessToken()  {
     if (authCode != ""){
         local url = "https://api.dropboxapi.com/oauth2/token";
         nm.setUrl(url);
-        nm.addQueryParam("code", authCode);
-        nm.addQueryParam("grant_type", "authorization_code");
-        nm.addQueryParam("redirect_uri", redirectUrl);
-        nm.addQueryParam("client_id", appKey);
-        nm.addQueryParam("client_secret", appSecret);
+        nm.addPostField("code", authCode);
+        nm.addPostField("grant_type", "authorization_code");
+        nm.addPostField("redirect_uri", redirectUrl);
+        nm.addPostField("client_id", appKey);
+        nm.addPostField("client_secret", appSecret);
         nm.doPost("");
 
         if (nm.responseCode() == 200) {

@@ -27,9 +27,9 @@ function UploadFile(FileName, options) {
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
     nm.addQueryHeader("X-CSRF-TOKEN", csrfToken);
 	
-    nm.addQueryParam("thumbnail_size", "2");
-    nm.addQueryParam("content_type", "sfw");
-    nm.addQueryParam("comments_enabled", "false");
+    nm.addPostField("thumbnail_size", "2");
+    nm.addPostField("content_type", "sfw");
+    nm.addPostField("comments_enabled", "false");
     
     nm.doPost("");
 
@@ -55,9 +55,9 @@ function UploadFile(FileName, options) {
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
     nm.setReferer(BASE_URL);
 
-    nm.addQueryParam("data", data);
-    nm.addQueryParam("_token", csrfToken);
-    nm.addQueryParamFile("files[0]", FileName, name, mime);
+    nm.addPostField("data", data);
+    nm.addPostField("_token", csrfToken);
+    nm.addPostFieldFile("files[0]", FileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {

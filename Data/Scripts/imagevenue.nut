@@ -17,9 +17,9 @@ function Authenticate() {
         }
         
         nm.setUrl("https://www.imagevenue.com/auth/login");
-        nm.addQueryParam("_token", token);
-        nm.addQueryParam("email", login);
-        nm.addQueryParam("password", pass);
+        nm.addPostField("_token", token);
+        nm.addPostField("email", login);
+        nm.addPostField("password", pass);
         nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION 
         nm.doPost("");
         
@@ -47,9 +47,9 @@ function UploadFile(FileName, options) {
         nm.addQueryHeader("X-CSRF-TOKEN", csrfToken);
         nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
 
-        nm.addQueryParam("thumbnail_size", "2");
-        nm.addQueryParam("content_type", "sfw");
-        nm.addQueryParam("comments_enabled", "false");
+        nm.addPostField("thumbnail_size", "2");
+        nm.addPostField("content_type", "sfw");
+        nm.addPostField("comments_enabled", "false");
         nm.doPost("");
         
         if (nm.responseCode() == 200) {
@@ -58,9 +58,9 @@ function UploadFile(FileName, options) {
             if ("data" in tt) {
                 nm.setUrl("https://www.imagevenue.com/upload");
                 nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-                nm.addQueryParam("data", tt.data);
-                nm.addQueryParam("_token", csrfToken);
-                nm.addQueryParamFile("files[0]", FileName, name, mime);
+                nm.addPostField("data", tt.data);
+                nm.addPostField("_token", csrfToken);
+                nm.addPostFieldFile("files[0]", FileName, name, mime);
                 nm.doUploadMultipartData();
                 if (nm.responseCode() == 200) {
                     local t = ParseJSON(nm.responseBody());

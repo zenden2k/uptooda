@@ -3,12 +3,12 @@ function UploadFile(FileName, options) {
 
     nm.setUrl("https://fastpic.org/upload?api=1");
     //nm.addQueryHeader("User-Agent","FPUploader");
-    nm.addQueryParam("method", "file");
-    nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName), "");
-    nm.addQueryParam("check_thumb", thumbUseServerText ? "size" : "no");
-    nm.addQueryParam("uploading", "1");
-    nm.addQueryParam("orig_rotate", "0");
-    nm.addQueryParam("thumb_size", options.getParam("THUMBWIDTH"));
+    nm.addPostField("method", "file");
+    nm.addPostFieldFile("file1", FileName, ExtractFileName(FileName), "");
+    nm.addPostField("check_thumb", thumbUseServerText ? "size" : "no");
+    nm.addPostField("uploading", "1");
+    nm.addPostField("orig_rotate", "0");
+    nm.addPostField("thumb_size", options.getParam("THUMBWIDTH"));
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

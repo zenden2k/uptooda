@@ -27,11 +27,11 @@ function _UploadToAccount(FileName, options) {
     } catch (ex) {
 
     }
-    nm.addQueryParam("key", apiKey);
+    nm.addPostField("key", apiKey);
     if (expiration) {
-        nm.addQueryParam("expiration", expiration);
+        nm.addPostField("expiration", expiration);
     }
-    nm.addQueryParamFile("image", FileName, ExtractFileName(FileName), "");
+    nm.addPostFieldFile("image", FileName, ExtractFileName(FileName), "");
     nm.setUrl("https://api.imgbb.com/1/upload?expiration=" + expiration);
     nm.doUploadMultipartData();
     local t = ParseJSON(nm.responseBody());
@@ -72,18 +72,18 @@ function UploadFile(FileName, options) {
         return ResultCode.Failure;
     }
     nm.setUrl("https://imgbb.com/json");
-    nm.addQueryParam("type", "file");
-    nm.addQueryParam("action", "upload");
-    nm.addQueryParam("privacy", "public");
-    nm.addQueryParam("timestamp", time() + "000");
-    nm.addQueryParam("auth_token", token);
-    nm.addQueryParam("category_id", "");
+    nm.addPostField("type", "file");
+    nm.addPostField("action", "upload");
+    nm.addPostField("privacy", "public");
+    nm.addPostField("timestamp", time() + "000");
+    nm.addPostField("auth_token", token);
+    nm.addPostField("category_id", "");
     if (expiration != "") {
-        nm.addQueryParam("expiration", expiration);
+        nm.addPostField("expiration", expiration);
     }
 
-    nm.addQueryParam("nswd", "");
-    nm.addQueryParamFile("source", FileName, name, mime);
+    nm.addPostField("nswd", "");
+    nm.addPostFieldFile("source", FileName, name, mime);
     nm.doUploadMultipartData();
     if (nm.responseCode() == 200) {
         local sJSON = nm.responseBody();

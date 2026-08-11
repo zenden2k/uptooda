@@ -67,10 +67,10 @@ function RefreshToken() {
         if (time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-            nm.addQueryParam("refresh_token", refreshToken);
-            nm.addQueryParam("client_id", clientId);
-            nm.addQueryParam("client_secret", clientSecret);
-            nm.addQueryParam("grant_type", "refresh_token");
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", clientId);
+            nm.addPostField("client_secret", clientSecret);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             local code = _CheckResponse();
             if (code < 1) {
@@ -145,11 +145,11 @@ function Authenticate() {
     }
 
     nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-    nm.addQueryParam("code", confirmCode);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("client_secret", clientSecret);
-    nm.addQueryParam("redirect_uri", redirectUrl);
-    nm.addQueryParam("grant_type", "authorization_code");
+    nm.addPostField("code", confirmCode);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("client_secret", clientSecret);
+    nm.addPostField("redirect_uri", redirectUrl);
+    nm.addPostField("grant_type", "authorization_code");
     nm.doPost("");
     local code = _CheckResponse();
     if (code < 1) {

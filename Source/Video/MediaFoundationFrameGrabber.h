@@ -57,7 +57,6 @@ class MFVideoFrame;
 class MediaFoundationFrameGrabber : public AbstractFrameGrabber {
 public:
     MediaFoundationFrameGrabber();
-    ~MediaFoundationFrameGrabber() override;
     bool open(const std::string& fileName) override;
     bool seek(int64_t time) override;
     AbstractVideoFrame* grabCurrentFrame() override;

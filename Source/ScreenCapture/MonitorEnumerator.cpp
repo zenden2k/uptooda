@@ -22,8 +22,7 @@ BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
     if (lprcMonitor) {
         info.rect = *lprcMonitor;
     }
-    MONITORINFOEX mi;
-    memset(&mi, 0, sizeof(mi));
+    MONITORINFOEX mi = {};
     mi.cbSize = sizeof(mi);
     GetMonitorInfo(hMonitor, &mi);
     info.deviceName = mi.szDevice;

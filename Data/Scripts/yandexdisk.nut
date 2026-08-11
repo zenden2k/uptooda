@@ -378,19 +378,19 @@ function Authenticate() {
         local confirmCode = InputDialog(tr("yandexdisk.confirmation.text", "You need to need to sign in to your Yandex.Disk account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
         if ( confirmCode != "" ) {
             nm.setUrl("https://oauth.yandex.ru/token");
-            nm.addQueryParam("grant_type", "authorization_code");
-            nm.addQueryParam("code", confirmCode);
-            //nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
-            //nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
-            nm.addQueryParam("client_id", clientId);
-            nm.addQueryParam("client_secret", clientSecret);
+            nm.addPostField("grant_type", "authorization_code");
+            nm.addPostField("code", confirmCode);
+            //nm.addPostField("client_id", "28d8d9c854554812ad8b60c150375462");
+            //nm.addPostField("client_secret", "7d6fee42d583498ea7740bcf8b753197");
+            nm.addPostField("client_id", clientId);
+            nm.addPostField("client_secret", clientSecret);
             local deviceId = GetDeviceId();
             if (deviceId != "") {
-                nm.addQueryParam("device_id", deviceId);
+                nm.addPostField("device_id", deviceId);
             }
             local deviceName = GetDeviceName();
             if (deviceName != "") {
-                nm.addQueryParam("device_name", deviceName);
+                nm.addPostField("device_name", deviceName);
             }
             nm.doPost("");
 
@@ -438,9 +438,9 @@ function DoLogout() {
     }
     local url = "https://oauth.yandex.ru/revoke_token";
     nm.setUrl(url);
-    nm.addQueryParam("access_token", token);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("client_secret", clientSecret);
+    nm.addPostField("access_token", token);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("client_secret", clientSecret);
 
     nm.doPost("");
 

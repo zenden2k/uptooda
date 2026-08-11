@@ -68,7 +68,7 @@ public:
     CGrabInputPin(CGrabFilter *pFilter, CCritSec *pLock, CCritSec *pReceiveLock, HRESULT *phr);
     // Do something with this media sample
     STDMETHODIMP Receive(IMediaSample *pSample) override;
-    STDMETHODIMP EndOfStream(void) override;
+    STDMETHODIMP EndOfStream() override;
     STDMETHODIMP ReceiveCanBlock() override;
 
     // Check if the pin can support this specific proposed type and format

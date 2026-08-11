@@ -194,26 +194,26 @@ function RefreshToken() {
     }
 
     nm.setUrl("https://id.vk.ru/oauth2/auth");
-    nm.addQueryParam("grant_type", "refresh_token");
-    nm.addQueryParam("refresh_token", refreshToken);
-    nm.addQueryParam("client_id", clientId);
+    nm.addPostField("grant_type", "refresh_token");
+    nm.addPostField("refresh_token", refreshToken);
+    nm.addPostField("client_id", clientId);
 
     local state = ServerParams.getParam("state");
     if ( state == "" ) {
         state = md5(RandomString(32) + time().tostring());
         ServerParams.setParam("state", state);
     }
-    nm.addQueryParam("state", state);
+    nm.addPostField("state", state);
 
     local savedScope = ServerParams.getParam("scope");
     if ( savedScope == "" ) {
         savedScope = scope;
     }
-    nm.addQueryParam("scope", savedScope);
+    nm.addPostField("scope", savedScope);
 
     local deviceId = ServerParams.getParam("deviceId");
     if ( deviceId != "" ) {
-        nm.addQueryParam("device_id", deviceId);
+        nm.addPostField("device_id", deviceId);
     } else {
         WriteLog("error", "vk.ru: unable to refresh token without device_id.");
         _ClearAuthData();
@@ -275,14 +275,14 @@ function Authenticate() {
     }
 
     nm.setUrl("https://id.vk.ru/oauth2/auth");
-    nm.addQueryParam("grant_type", "authorization_code");
-    nm.addQueryParam("code", authCode);
-    nm.addQueryParam("code_verifier", codeVerifier);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("redirect_uri", redirectUri);
-    nm.addQueryParam("state", authState);
+    nm.addPostField("grant_type", "authorization_code");
+    nm.addPostField("code", authCode);
+    nm.addPostField("code_verifier", codeVerifier);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("redirect_uri", redirectUri);
+    nm.addPostField("state", authState);
     if ( authDeviceId != "" ) {
-        nm.addQueryParam("device_id", authDeviceId);
+        nm.addPostField("device_id", authDeviceId);
     }
     nm.doPost("");
 
@@ -379,10 +379,10 @@ function CreateFolder(parentAlbum, album) {
     local summary = album.getSummary();
     local accessType = album.getAccessType();
 
-    nm.addQueryParam("title", title);
-    nm.addQueryParam("description", summary);
-    nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
-    nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
+    nm.addPostField("title", title);
+    nm.addPostField("description", summary);
+    nm.addPostField("privacy_view", AccessTypeToPrivacy(accessType));
+    nm.addPostField("privacy_comment", AccessTypeToPrivacy(accessType));
 
     nm.setUrl("https://api.vk.ru/method/photos.createAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
@@ -414,12 +414,12 @@ function ModifyFolder(album) {
     local accessType = album.getAccessType();
     local parentId = album.getParentId;
 
-    nm.addQueryParam("album_id", id);
-    nm.addQueryParam("title", title);
-    nm.addQueryParam("description", summary);
-    nm.addQueryParam("owner_id", userId);
-    nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
-    nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
+    nm.addPostField("album_id", id);
+    nm.addPostField("title", title);
+    nm.addPostField("description", summary);
+    nm.addPostField("owner_id", userId);
+    nm.addPostField("privacy_view", AccessTypeToPrivacy(accessType));
+    nm.addPostField("privacy_comment", AccessTypeToPrivacy(accessType));
     nm.setUrl("https://api.vk.ru/method/photos.editAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
     nm.doPost("");
@@ -464,19 +464,19 @@ function UploadFile(FileName, options) {
 
     local uploadUrl = t.response.upload_url;
 
-    nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName),GetFileMimeType(FileName));
+    nm.addPostFieldFile("file1", FileName, ExtractFileName(FileName),GetFileMimeType(FileName));
     nm.setUrl(uploadUrl);
     nm.doUploadMultipartData();
     if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {
         local resp = nm.responseBody();
         local json = ParseJSON(resp);
 
-        nm.addQueryParam("album_id", albumId);
-        nm.addQueryParam("server", json.server.tostring());
-        nm.addQueryParam("photos_list", json.photos_list);
-        nm.addQueryParam("hash", json.hash);
-        nm.addQueryParam("photo_sizes", "1");
-        nm.addQueryParam("https", "1");
+        nm.addPostField("album_id", albumId);
+        nm.addPostField("server", json.server.tostring());
+        nm.addPostField("photos_list", json.photos_list);
+        nm.addPostField("hash", json.hash);
+        nm.addPostField("photo_sizes", "1");
+        nm.addPostField("https", "1");
 
         nm.setUrl("https://api.vk.ru/method/photos.save?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 

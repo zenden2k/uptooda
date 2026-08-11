@@ -5,9 +5,9 @@ function UploadFile(FileName, options) {
     nm.addQueryHeader("MIME-Version", "1.0");
     nm.addQueryHeader("Accept-Language", "ru-RU,en,*");
     nm.setUserAgent("Mozilla/5.0 (Windows NT 6.3) Qt/4.8.6 Screenpic/0.14.3");
-    nm.addQueryParam("image", Base64Encode(GetFileContents(FileName)));
-    nm.addQueryParam("name", name);
-    nm.addQueryParam("description", name);
+    nm.addPostField("image", Base64Encode(GetFileContents(FileName)));
+    nm.addPostField("name", name);
+    nm.addPostField("description", name);
     nm.doUploadMultipartData();
     if (nm.responseCode() == 200) {
         local sJSON = nm.responseBody();

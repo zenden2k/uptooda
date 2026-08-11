@@ -3,9 +3,9 @@ function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
     nm.setUrl("https://freeimage.host/api/1/upload");
-    nm.addQueryParam("key", "6d207e02198a847aa98d0a2a901485a5");
-    nm.addQueryParam("format", "json");
-    nm.addQueryParamFile("source", FileName, name, mime);
+    nm.addPostField("key", "6d207e02198a847aa98d0a2a901485a5");
+    nm.addPostField("format", "json");
+    nm.addPostFieldFile("source", FileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() > 0) {

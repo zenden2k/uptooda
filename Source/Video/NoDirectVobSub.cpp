@@ -34,8 +34,8 @@ HRESULT STDMETHODCALLTYPE NoDirectVobSub::SelectedFilter( /* [in] */ IMoniker* p
         if (SUCCEEDED(pMon->GetDisplayName(bind, 0, &name)))
         {
             // thanks to http://rsdn.ru/forum/media/4970888.1
-            if (wcsstr((wchar_t*)name, L"93A22E7A-5091-45EF-BA61-6DA26156A5D0") != 0) ret = E_ABORT;    // DirectVobSub
-            if (wcsstr((wchar_t*)name, L"9852A670-F845-491B-9BE6-EBD841B8A613") != 0) ret = E_ABORT;    // DirectVobSub autoload
+            if (wcsstr(name, L"93A22E7A-5091-45EF-BA61-6DA26156A5D0") != 0) ret = E_ABORT;    // DirectVobSub
+            if (wcsstr(name, L"9852A670-F845-491B-9BE6-EBD841B8A613") != 0) ret = E_ABORT;    // DirectVobSub autoload
         }
         bind->Release();
     }

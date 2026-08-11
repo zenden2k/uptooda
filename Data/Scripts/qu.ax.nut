@@ -2,7 +2,7 @@ function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
     nm.setUrl("https://qu.ax/upload.php");
-    nm.addQueryParamFile("files[]", FileName, name, mime);
+    nm.addPostFieldFile("files[]", FileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

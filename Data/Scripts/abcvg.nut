@@ -3,7 +3,7 @@ function UploadFile(FileName, options) {
     local mime = GetFileMimeType(FileName);
 
     nm.setUrl("https://abcvg.org/server/php/");
-    nm.addQueryParamFile("files[]", FileName, name, mime);
+    nm.addPostFieldFile("files[]", FileName, name, mime);
     nm.doUploadMultipartData();
     if (nm.responseCode() == 200) {
         local sJSON = nm.responseBody();

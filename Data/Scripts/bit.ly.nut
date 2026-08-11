@@ -50,10 +50,10 @@ function Authenticate() {
 
     if (code != ""){
         nm.setUrl("https://api-ssl.bitly.com/oauth/access_token");
-        nm.addQueryParam("client_id", clientId);
-        nm.addQueryParam("client_secret", clientSecret);
-        nm.addQueryParam("code", code);
-        nm.addQueryParam("redirect_uri", redirectUri);
+        nm.addPostField("client_id", clientId);
+        nm.addPostField("client_secret", clientSecret);
+        nm.addPostField("code", code);
+        nm.addPostField("redirect_uri", redirectUri);
         nm.addQueryHeader("Accept", "application/json");
         nm.doPost("");
         if (nm.responseCode() == 200){

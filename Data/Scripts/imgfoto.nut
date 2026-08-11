@@ -10,9 +10,9 @@ function UploadFile(fileName, options) {
     local mime = GetFileMimeType(name);
     nm.setUrl("https://imgfoto.host/api/1/upload");
     nm.addQueryHeader("X-API-Key", apiKey);
-    nm.addQueryParam("format", "json");
-    nm.addQueryParam("expiration", expiration);
-    nm.addQueryParamFile("source", fileName, name, mime);
+    nm.addPostField("format", "json");
+    nm.addPostField("expiration", expiration);
+    nm.addPostFieldFile("source", fileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() > 0) {

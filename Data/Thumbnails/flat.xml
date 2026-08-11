@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Thumbnail>
     <Definitions>
-        <Sprite Source="flat.png" />
+        <Sprite Source="flat.png"/>
         <Params>
-            <Param Name="DrawText" Value="1" />
-            <Param Name="Font" Value="Segoe UI, 11, , 204" />
-            <Param Name="StrokeColor" Value="#ee000000" />
-            <Param Name="Text" Value="" />
-            <Param Name="TextColor" Value="#262626" />
+            <Param Name="DrawText" Value="1"/>
+            <Param Name="Font" Value="Segoe UI, 11, , 204"/>
+            <Param Name="StrokeColor" Value="#ee000000"/>
+            <Param Name="Text" Value=""/>
+            <Param Name="TextColor" Value="#262626"/>
         </Params>
     </Definitions>
     <Drawing AddWidth="18" AddHeight="33">
-        <Operation Type="blt" Rect="9;9;29; 29" Source="image" SourceRect="135;82;29;29" />
+        <Operation Type="blt" Rect="9;9;29; 29" Source="image" SourceRect="135;82;29;29"/>
 
-	<!-- top left corner -->
-        <Operation Type="blt" Rect="0;0; 9;9" SourceRect="1;1; 9;9" />
-	<!-- top right corner -->
-	<Operation Type="blt" Rect="$(Width)-9;0; 9;9" SourceRect="239;1; 9;9" />
-	<!-- bottom left corner -->
-        <Operation Type="blt" Rect="0;$(Height)-24; 15; 24" SourceRect="1;150;15;24" />
-		
-	 <!-- левая вертикальная полоска -->
-        <Operation Type="blt" Rect="0;9; 9;$(Height)-33" SourceRect="1;10; 9;173-33" />
-       <!-- верхняя полоска -->
-        <Operation Type="blt" Rect="9;0; $(Width)-18;9" SourceRect="10;1; 248-18;9" />
+        <!-- top left corner -->
+        <Operation Type="blt" Rect="0;0; 9;9" SourceRect="1;1; 9;9"/>
+        <!-- top right corner -->
+        <Operation Type="blt" Rect="$(Width)-9;0; 9;9" SourceRect="239;1; 9;9"/>
+        <!-- bottom left corner -->
+        <Operation Type="blt" Rect="0;$(Height)-24; 15; 24" SourceRect="1;150;15;24"/>
+
+        <!-- левая вертикальная полоска -->
+        <Operation Type="blt" Rect="0;9; 9;$(Height)-33" SourceRect="1;10; 9;173-33"/>
+        <!-- верхняя полоска -->
+        <Operation Type="blt" Rect="9;0; $(Width)-18;9" SourceRect="10;1; 248-18;9"/>
         <!--<Operation Type="blt" Rect="65;$(Height)-17; $(Width)-65-7;17" SourceRect="65;94;92;17" />-->
-		<!-- нижняя полоска -->
-        <Operation Type="blt" Rect="15;$(Height)-24; $(Width)-15-24;24" SourceRect="16;174 - 24; 248-15-24;24" />
-		<!-- bottom right corner -->
-        <Operation Type="blt" Rect="$(Width)-24;$(Height)-24;25;24" SourceRect="224;150;25;24" />
+        <!-- нижняя полоска -->
+        <Operation Type="blt" Rect="15;$(Height)-24; $(Width)-15-24;24" SourceRect="16;174 - 24; 248-15-24;24"/>
+        <!-- bottom right corner -->
+        <Operation Type="blt" Rect="$(Width)-24;$(Height)-24;25;24" SourceRect="224;150;25;24"/>
         <!-- правый верхний угол -->
-       
-        <Operation Type="blt" Rect="$(Width)-8;9; 9;$(Height)-33" SourceRect="240;10; 9;173-19" />
-        <Operation Type="text" Rect="9;$(Height)-24-1; $(Width)-40;24" Brush="gradient:#920D567D #9206AEFF vert" TextColors="$(TextColor) $(StrokeColor)" Condition="$(DrawText)" />
+
+        <Operation Type="blt" Rect="$(Width)-8;9; 9;$(Height)-33" SourceRect="240;10; 9;173-19"/>
+        <Operation Type="text" Rect="9;$(Height)-24-1; $(Width)-40;24" Brush="gradient:#920D567D #9206AEFF vert"
+                   TextColors="$(TextColor) $(StrokeColor)" Condition="$(DrawText)"/>
     </Drawing>
 </Thumbnail>

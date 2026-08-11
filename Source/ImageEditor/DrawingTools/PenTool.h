@@ -19,7 +19,7 @@ public:
     CursorType getCursor(int x, int y) override;
 
 private:
-    POINT oldPoint_;
+    POINT oldPoint_{};
 };
 }
 

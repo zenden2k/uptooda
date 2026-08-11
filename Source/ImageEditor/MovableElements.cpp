@@ -173,7 +173,6 @@ TextElement::TextElement(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int
     isEditing_ = false;
     firstEdit_ = true;
     fillBackground_ = filled;
-    memset(&font_, 0, sizeof(font_));
 }
 
 void TextElement::render(Painter* gr) {

@@ -8,7 +8,7 @@
 class DirectshowVideoFrame : public AbstractVideoFrame {
 public:
     DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height);
-    ~DirectshowVideoFrame();
+    ~DirectshowVideoFrame() override;
     bool saveToFile(const std::string& fileName) const override;
     std::unique_ptr<AbstractImage> toImage() const override;
 

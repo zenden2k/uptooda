@@ -1,18 +1,3 @@
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	res = resultStr.find(pattern,start);
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
 fileName <- "";
 siteRegexp <- CRegExp("http://.*vfl.ru/", "i");
 afterUploadRegexp <- CRegExp("index\\.sema?.*sa=kod", "");
@@ -33,7 +18,6 @@ function findUploadButton(el) {
 				return res;
 			}
 		}
-		
 	}
 	
 	return null;

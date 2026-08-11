@@ -69,7 +69,6 @@ class CHistoryManager: public IHistoryManager
 class CHistoryReader : public IHistoryReader {
     public:
         explicit CHistoryReader(CHistoryManager* mgr);
-        ~CHistoryReader() override;
         // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename) override;
         bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) override;

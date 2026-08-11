@@ -231,11 +231,11 @@ function UploadFile(FileName, options) {
     } 
         
     nm.setUrl(uploadUrl);
-    nm.addQueryParam("MAX_FILE_SIZE", maxFileSize);
-    nm.addQueryParam("UPLOAD_IDENTIFIER", uploadIdentifier);
-    nm.addQueryParam("extra_info", extraInfo);
-    nm.addQueryParam("folder_id", albumID);
-    nm.addQueryParamFile("userfile", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+    nm.addPostField("MAX_FILE_SIZE", maxFileSize);
+    nm.addPostField("UPLOAD_IDENTIFIER", uploadIdentifier);
+    nm.addPostField("extra_info", extraInfo);
+    nm.addPostField("folder_id", albumID);
+    nm.addPostFieldFile("userfile", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
 
     nm.doUploadMultipartData();
     if (nm.responseCode() != 200) {

@@ -4,9 +4,9 @@ function UploadFile(FileName, options) {
     local thumbWidth = options.getParam("THUMBWIDTH");
 
     nm.setUrl("https://api.pixhost.to/images");
-    nm.addQueryParamFile("img", FileName, name, mime);
-    nm.addQueryParam("content_type", "0");
-    nm.addQueryParam("max_th_size", thumbWidth);
+    nm.addPostFieldFile("img", FileName, name, mime);
+    nm.addPostField("content_type", "0");
+    nm.addPostField("max_th_size", thumbWidth);
 
     nm.doUploadMultipartData();
 
