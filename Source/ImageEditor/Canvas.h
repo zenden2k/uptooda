@@ -35,7 +35,7 @@ class Canvas {
             public:
                 virtual void updateView(Canvas* canvas, Gdiplus::Rect rect, bool fullRender) = 0;
                 virtual void canvasSizeChanged() = 0;
-                virtual ~Callback(){}
+                virtual ~Callback()= default;
         }; 
 
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 

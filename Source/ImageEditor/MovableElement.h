@@ -24,8 +24,7 @@ class MovableElement: public DrawingElement {
             BoundaryType bt;
             GripPointType gpt; 
             Grip() {
-                pt.x = -1;
-                pt.y = -1;
+                pt = {-1, -1};
                 bt = BoundaryType::btNone;
                 gpt = GripPointType::gptNone;
             }
@@ -43,7 +42,7 @@ class MovableElement: public DrawingElement {
         int getY();
         virtual RECT getPaintBoundingRect();
         virtual void setPos(int  x, int y);
-        virtual bool move(int  offsetX, int offsetY, bool checkBounds = true);
+        virtual bool move(int  offsetX, int offsetY, bool checkBounds);
         virtual bool isItemAtPos(int x, int y);
 
         void resize(int width, int height) override;

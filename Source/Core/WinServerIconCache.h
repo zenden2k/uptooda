@@ -47,23 +47,23 @@ public:
     WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir);
     ~WinServerIconCache() override;
 
-    NativeIcon getIconForServer(const std::string& name, int dpi, bool smallIcon = true) override;
+    NativeIcon getIconForServer(const std::string& name, unsigned int dpi, bool smallIcon) override;
 
     /**
     * The caller of this function is responsible for destroying
     * the icon when it is no longer needed.
     */
-    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, int dpi) override;
+    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, unsigned int dpi) override;
 
-    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi, bool smallIcon = true) override;
+    NativeBitmap getIconBitmapForServer(const std::string& name, unsigned int dpi, bool smallIcon) override;
 
     /**
     * @throws std::logic_error 
     */
-    void preLoadIcons(int dpi) override;
+    void preLoadIcons(unsigned int dpi) override;
 
     using ImageListWithIndexes = std::pair<HIMAGELIST, std::unordered_map<std::string,int>>;
-    ImageListWithIndexes getImageList(int dpi, bool smallIcons = true);
+    ImageListWithIndexes getImageList(unsigned int dpi, bool smallIcons = true);
 
 private :
     std::unordered_map<std::pair<int, std::string>, WinIcon> serverIcons_;
@@ -72,9 +72,9 @@ private :
     std::future<int> future_;
     bool iconsPreload_ = false;
     std::mutex imageListsMutex_;
-    std::unordered_map<std::pair<int,bool>, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::unordered_map<std::string, int>>> imageLists_;
-    WinIcon tryIconLoad(const std::string& name, int dpi, bool smallIcon = true);
-    void loadIcons(int dpi, bool smallIcons);
+    std::unordered_map<std::pair<unsigned int,bool>, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::unordered_map<std::string, int>>> imageLists_;
+    WinIcon tryIconLoad(const std::string& name, unsigned int dpi, bool smallIcon = true);
+    void loadIcons(unsigned int dpi, bool smallIcons);
     void onServerAdded(const std::string& name);
-    std::optional<ImageListWithIndexes> getCachedImageList(int dpi, bool smallIcons = true);
+    std::optional<ImageListWithIndexes> getCachedImageList(unsigned int dpi, bool smallIcons = true);
 };

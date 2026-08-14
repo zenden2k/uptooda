@@ -177,7 +177,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconSmallWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconSmallHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     const int iconBigWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);

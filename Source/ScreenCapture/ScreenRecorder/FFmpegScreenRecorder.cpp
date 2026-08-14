@@ -197,7 +197,7 @@ void FFmpegScreenRecorder::start() {
     });
 }
 
-std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish) {
+std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::string>& args, const std::function<void(int)>& onFinish) {
     namespace bp = boost::process::v2;
     namespace asio = boost::asio;
 

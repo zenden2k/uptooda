@@ -62,7 +62,7 @@ std::string ConsoleScriptDialogProvider::messageBox(const std::string& message, 
         std::cerr << ": ";
         char res;
         std::cin >> res;
-        res = toupper(res);
+        res = static_cast<char>(toupper(res));
         return buttonsMap[res];
     }
 }

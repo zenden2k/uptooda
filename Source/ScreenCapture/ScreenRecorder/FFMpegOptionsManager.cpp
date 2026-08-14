@@ -64,7 +64,7 @@ IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
             }
         }
 
-        hr = pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag, (void**)&pPropBag);
+        hr = pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag, reinterpret_cast<void**>(&pPropBag));
         if (SUCCEEDED(hr)) {
             CComVariant varName;
             

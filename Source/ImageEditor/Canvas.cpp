@@ -316,32 +316,31 @@ void Canvas::beginPenSizeChanging()
 
 void Canvas::endPenSizeChanging(int penSize) {
     penSize_ = penSize;
-    if ( originalPenSize_ == 0 || originalPenSize_ == penSize_ ) {
-        return ;
+    if (originalPenSize_ == 0 || originalPenSize_ == penSize_) {
+        return;
     }
     int updatedElementsCount = 0;
     auto uhi = std::make_unique<UndoHistoryItem>();
     uhi->type = UndoHistoryItemType::uitPenSizeChanged;
-    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected()) {
+    for (auto& element : elementsOnCanvas_) {
+        if (element->isSelected()) {
             UndoHistoryItemElement uhie;
             uhie.penSize = originalPenSize_;
-            RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-            uhie.movableElement = elementsOnCanvas_[i];
-            elementsOnCanvas_[i]->setPenSize(penSize);
-            RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+            RECT paintRect = element->getPaintBoundingRect();
+            uhie.movableElement = element;
+            element->setPenSize(penSize);
+            RECT newPaintRect = element->getPaintBoundingRect();
             uhi->elements.push_back(uhie);
             UnionRect(&paintRect, &paintRect, &newPaintRect);
             updatedElementsCount++;
             updateView(paintRect);
         }
     }
-    if ( updatedElementsCount ) {
+    if (updatedElementsCount) {
         addUndoHistoryItem(std::move(uhi));
     }
-    originalPenSize_= 0;
+    originalPenSize_ = 0;
 }
-
 
 void Canvas::setRoundingRadius(int radius) {
     if (radius < 1 || radius > kMaxRoundingRadius) {

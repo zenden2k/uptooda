@@ -425,11 +425,9 @@ void EnableDialogItem(HWND dlg, int itemId, bool enable) {
 
 IconInfo GetIconInfo(HICON hIcon)
 {
-    IconInfo myinfo;
-    ZeroMemory(&myinfo, sizeof(myinfo));
+    IconInfo myinfo{};
 
-    ICONINFO info;
-    ZeroMemory(&info, sizeof(info));
+    ICONINFO info{};
 
     BOOL bRes = FALSE;
 
@@ -643,7 +641,7 @@ HICON LoadBigIcon(int resourceId, UINT dpi) {
     return result;
 }
 
-void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx) {
+void RemoveWindowStyleEx(HWND hWnd, LONG styleEx) {
     LONG oldStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
     ::SetWindowLong(hWnd, GWL_EXSTYLE, oldStyle & ~styleEx);
 }
@@ -729,7 +727,6 @@ bool IsColorBright(COLORREF color) {
 
     return brightness > 128;
 }
-
 
 COLORREF AdjustColorBrightness(COLORREF color, int delta) {
     auto clamp = [](int val) -> BYTE {

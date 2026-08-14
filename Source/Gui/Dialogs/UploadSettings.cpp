@@ -556,11 +556,11 @@ void CUploadSettings::UpdateToolbarIcons()
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     if (!getSessionImageServerItem().isNull()) {
-        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi);
+        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi, true);
     }
 
     if (!getSessionFileServerItem().isNull()) {
-        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi);
+        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi, true);
     }
 
     if(hImageIcon)

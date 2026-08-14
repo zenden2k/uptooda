@@ -62,10 +62,10 @@ CLogListBox::~CLogListBox()
 
 LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
-    LPDRAWITEMSTRUCT dis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+    auto dis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
     if (!dis) return FALSE;
 
-    LogListBoxItem* item = reinterpret_cast<LogListBoxItem *>(dis->itemData);
+    auto* item = reinterpret_cast<LogListBoxItem *>(dis->itemData);
     if (!item) return FALSE;
 
     CDCHandle dc = dis->hDC;
@@ -154,7 +154,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 {
     auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
 
-    LogListBoxItem * item = reinterpret_cast<LogListBoxItem *>(lpmis->itemData);
+    auto * item = reinterpret_cast<LogListBoxItem *>(lpmis->itemData);
     if(!item) {
         return 0;
     }
@@ -213,7 +213,7 @@ LRESULT CLogListBox::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 int CLogListBox::AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo, const CString& Time)
 {
-    LogListBoxItem* item = new LogListBoxItem;
+    auto* item = new LogListBoxItem;
     item->Type = Type;
 
 
@@ -301,5 +301,5 @@ int CLogListBox::getFirstSelectedItem() const {
 
     int nActualCount = GetSelItems(nSelCount, selItems.data());
 
-    return (nActualCount > 0) ? selItems[0] : LB_ERR;
+    return nActualCount > 0 ? selItems[0] : LB_ERR;
 }

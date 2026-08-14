@@ -56,7 +56,7 @@ class AffectedSegments {
         HRGN createRegionFromSegments();
         void clear();
         void getRects( std::deque<RECT>& rects, int maxWidth = 0, int maxHeight = 0) const;
-        AffectedSegments& operator+= ( const AffectedSegments& segments_);
+        AffectedSegments& operator+= ( const AffectedSegments& segments);
     private:
         std::map<unsigned int, bool> segments_;
         int maxWidth_;

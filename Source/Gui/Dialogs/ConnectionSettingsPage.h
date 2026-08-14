@@ -1,14 +1,12 @@
-
 #ifndef IU_GUI_DIALOGS_CONNECTIONSETTINGSPAGE_H
 #define IU_GUI_DIALOGS_CONNECTIONSETTINGSPAGE_H
-
 
 #pragma once
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "settingspage.h"
-// CConnectionSettingsPage
+
 
 class CConnectionSettingsPage : 
     public CDialogImpl<CConnectionSettingsPage>,

@@ -220,7 +220,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
         startPoint_.x = x;
         startPoint_.y = y;
 
-        if (currentElement_->move(deltaX, deltaY) ) {
+        if (currentElement_->move(deltaX, deltaY, true) ) {
             RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
             RECT updateRect;
             UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
@@ -400,7 +400,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
     return {};
 }
 
-MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
+MovableElement::Grip MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
     for (size_t i = 0; i < element->grips_.size(); i++) {
         if ( abs (x - element->grips_[i].pt.x) <= element->gripWidth_ + 2 &&  abs (y - element->grips_[i].pt.y) <= element->gripHeight_ + 2 ) {
@@ -448,7 +448,6 @@ void MoveAndResizeTool::mouseDoubleClick(int x, int y)
         if ( dtool ) {
             dtool->beginDraw(x,y);
         }
-
     }
 }
 

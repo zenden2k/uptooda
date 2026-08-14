@@ -8,8 +8,6 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-// CConnectionSettingsPage
-
 void CConnectionSettingsPage::TranslateUI()
 {
     TRC(IDC_CONNECTIONSETTINGS, "Connection settings");

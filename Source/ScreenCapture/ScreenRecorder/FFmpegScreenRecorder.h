@@ -33,7 +33,7 @@ private:
     std::vector<std::string> parts_;
     std::shared_future<int> future_;
     void sendStopSignal();
-    std::future<int> launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish);
+    std::future<int> launchFFmpeg(const std::vector<std::string>& args, const std::function<void(int)>& onFinish);
     void cleanupAfter();
     const std::string stopData_ = "q\n";
     FFmpegOptions options_;

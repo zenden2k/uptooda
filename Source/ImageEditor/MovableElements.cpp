@@ -426,7 +426,7 @@ bool Crop::move(int offsetX, int offsetY, bool checkBounds) {
     if (offsetX == 0 && offsetY == 0) {
         return false;
     }
-    return MovableElement::move(offsetX, offsetY);
+    return MovableElement::move(offsetX, offsetY, true);
  }
 
 void Crop::resize(int width, int height) {

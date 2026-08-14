@@ -69,7 +69,6 @@ void CHistoryTreeControl::CreateDownloader() {
     }
 }
 
-
 LRESULT CHistoryTreeControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     Init();
     return 0;

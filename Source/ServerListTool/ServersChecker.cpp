@@ -29,7 +29,9 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     isRunning_ = false;
     using namespace std::placeholders;
     fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppRuntimeInfo::instance()->tempDirectory());
-    fileDownloader_->setOnFileFinishedCallback(std::bind(&ServersChecker::onFileFinished, this, _1, _2, _3));
+    fileDownloader_->setOnFileFinishedCallback([this](auto && PH1, auto && PH2, auto && PH3) {
+        onFileFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2), std::forward<decltype(PH3)>(PH3));
+    });
 }
 
 bool ServersChecker::start(const std::string& testFileName, const std::string& testUrl) {

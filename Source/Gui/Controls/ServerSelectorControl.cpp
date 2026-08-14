@@ -63,7 +63,11 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     auto serviceLocator = ServiceLocator::instance();
     BasicSettings* settings = serviceLocator->basicSettings();
     iconCache_ = dynamic_cast<WinServerIconCache*>(serviceLocator->serverIconCache());
-    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); } );
+    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) {
+        profileListChanged(std::forward<decltype(settings)>(settings),
+            std::forward<decltype(servers)>(servers)
+        );
+    } );
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -505,7 +509,7 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     CIcon ico;
@@ -534,7 +538,7 @@ void CServerSelectorControl::createSettingsButton() {
 }
 
 void CServerSelectorControl::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 

@@ -108,4 +108,5 @@ void ServersCheckerModel::resetData() {
         it->clearInfo();
     }
 }
+
 }

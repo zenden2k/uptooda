@@ -98,7 +98,7 @@ LRESULT CNetworkDebugListView::OnHeaderFilterChange(int idCtrl, LPNMHDR pnmh, BO
 
 // This callback is called in the working thread
 void CNetworkDebugListView::onRowChanged(size_t index) {
-    PostMessage(LVM_REDRAWITEMS, index, index);
+    PostMessage(LVM_REDRAWITEMS, index, static_cast<LPARAM>(index));
 }
 
 // This callback is called in the working thread

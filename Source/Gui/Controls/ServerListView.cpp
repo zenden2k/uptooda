@@ -70,8 +70,7 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
         const auto& serverName = model_->getDataByIndex(pItem->iItem)->ued->Name;
         auto it = serverIconImageListIndexes_.find(serverName);
 
-         pItem->iImage = serverIconImageListIndexes_[serverName];
-        
+        pItem->iImage = serverIconImageListIndexes_[serverName];
     }
 
     if (pItem->mask & LVIF_COLUMNS) {
@@ -142,7 +141,7 @@ void CServerListView::setColumnWidths() {
 }
 
 void CServerListView::createResources() {
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     bool smallIcons = GetView() == LV_VIEW_DETAILS;
     auto iconsWithIndexes = serverIconCache_->getImageList(dpi, smallIcons);
     serverIconImageList_ = iconsWithIndexes.first;

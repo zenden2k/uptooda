@@ -256,7 +256,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
                     mi.wID = MENUITEM_SEARCHBYIMG_START + i;
                     mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                     mi.cch = itemText.GetLength();
-                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name, dpi);
+                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name, dpi, true);
 
                     if (mi.hbmpItem) {
                         mi.fMask |= MIIM_BITMAP;

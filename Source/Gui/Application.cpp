@@ -354,7 +354,6 @@ public:
                     settings_.Language = U2W(it->first);
                 }
 
-
                 /*CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
                 if (!foundName.IsEmpty()) {
                     settings_.Language = foundName;

@@ -43,14 +43,13 @@ class CMultiServerSelectorControl :
 {
 public:
     explicit CMultiServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
-virtual ~CMultiServerSelectorControl();
+
     enum {
         IDD = IDD_MULTISERVERSELECTORCONTROL
     };
 
     BEGIN_MSG_MAP(CMultiServerSelectorControl)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         COMMAND_HANDLER(IDC_CHOOSESERVERS, BN_CLICKED, OnClickedChoose)
     END_MSG_MAP()
 
@@ -59,7 +58,7 @@ virtual ~CMultiServerSelectorControl();
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
     LRESULT OnClickedChoose(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void TranslateUI();
