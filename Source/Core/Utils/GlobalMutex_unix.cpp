@@ -21,6 +21,8 @@
 //#include <sys/types.h>
 //#include <sys/ipc.h>
 //#include <boost/filesystem.hpp>
+#include "GlobalMutex.h"
+
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 
