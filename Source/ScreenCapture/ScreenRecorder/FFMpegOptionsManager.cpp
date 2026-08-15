@@ -190,7 +190,7 @@ IdNameArray FFMpegOptionsManager::getVideoCodecs() {
         result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     });
 
     return result;
@@ -207,7 +207,7 @@ IdNameArray FFMpegOptionsManager::getAudioCodecs() {
         result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     });
 
     return result;
@@ -217,7 +217,7 @@ IdNameArray FFMpegOptionsManager::getVideoSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     for (const auto& [sourceId, v] : videoSourceFactories_) {
@@ -242,7 +242,7 @@ IdNameArray FFMpegOptionsManager::getAudioSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     for (const auto& [sourceId, v] : audioSourceFactories_) {

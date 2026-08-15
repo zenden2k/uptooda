@@ -294,7 +294,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
 bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2)
 {
-    return IuStringUtils::stricmp(elem1->Name.c_str(), elem2->Name.c_str()) < 0;
+    return IuStringUtils::StrCaseInsensitiveCompare(elem1->Name, elem2->Name) < 0;
 }
 
 void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out)

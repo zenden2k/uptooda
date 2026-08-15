@@ -30,62 +30,83 @@ protected:
 
 using namespace IuCoreUtils;
 
-TEST_F(CoreUtilsTest, ExtractFilePath) 
+TEST_F(CoreUtilsTest, ExtractFilePath)
 {
     std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
     std::string result = ExtractFilePath(fileName);
     EXPECT_EQ("c:\\Program Files (x86)\\Image Uploader\\", result);
+
     result = ExtractFilePath("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
     EXPECT_EQ("c:/Program Files (x86)\\Image Uploader/", result);
+
     result = ExtractFilePath("avcodec-56.dll");
     EXPECT_EQ("", result);
 }
 
-TEST_F(CoreUtilsTest, ExtractFileName) 
+TEST_F(CoreUtilsTest, ExtractFileName)
 {
-    std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
+    std::string fileName = R"(c:\Program Files (x86)\Image Uploader\Image Uploader.exe)";
     std::string result = ExtractFileName(fileName);
-    EXPECT_EQ(result, "Image Uploader.exe");
+    EXPECT_EQ("Image Uploader.exe", result);
+
     result = ExtractFileName("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
-    EXPECT_EQ(result, "ExplorerIntegration64.dll");
+    EXPECT_EQ("ExplorerIntegration64.dll", result);
+
     result = ExtractFileName("avcodec-56.dll");
-    EXPECT_EQ(result, "avcodec-56.dll");
+    EXPECT_EQ("avcodec-56.dll", result);
+
     result = ExtractFileName("/usr/bin/imgupload");
-    EXPECT_EQ(result, "imgupload");
+    EXPECT_EQ("imgupload", result);
+
     result = ExtractFileName(R"(\\?\e:\Video\test.mp4)");
-    EXPECT_EQ(result, "test.mp4");
-}
-    
-TEST_F(CoreUtilsTest, ExtractFileExt) 
-{
-    std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
-    std::string result = ExtractFileExt(fileName);
-    EXPECT_EQ(result, "exe");
-    result = ExtractFileExt("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
-    EXPECT_EQ(result, "dll");
-    result = ExtractFileExt("c:\\Program Files .(x86)\\Image Uploader.exe\\Image Uploader");
-    EXPECT_EQ(result, "");
-    result = ExtractFileExt("archive.tar.gz");
-    EXPECT_EQ(result, "gz");
-    result = ExtractFileExt("/usr/share/imgupload.png");
-    EXPECT_EQ(result, "png");
-    result = ExtractFileExt(R"(\\?\e:\Video\test.mp4)");
-    EXPECT_EQ(result, "mp4");
+    EXPECT_EQ("test.mp4", result);
+
+    result = ExtractFileName("");
+    EXPECT_EQ("", result);
 }
 
-TEST_F(CoreUtilsTest, ExtractFileNameNoExt) 
+TEST_F(CoreUtilsTest, ExtractFileExt)
 {
-    std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
+    std::string fileName = R"(c:\Program Files (x86)\Image Uploader\Image Uploader.exe)";
+    std::string result = ExtractFileExt(fileName);
+    EXPECT_EQ("exe", result);
+
+    result = ExtractFileExt("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
+    EXPECT_EQ("dll", result);
+
+    result = ExtractFileExt(R"(c:\Program Files .(x86)\Image Uploader.exe\Image Uploader)");
+    EXPECT_EQ("", result);
+
+    result = ExtractFileExt("archive.tar.gz");
+    EXPECT_EQ("gz", result);
+
+    result = ExtractFileExt("/usr/share/imgupload.png");
+    EXPECT_EQ("png", result);
+
+    result = ExtractFileExt(R"(\\?\e:\Video\test.mp4)");
+    EXPECT_EQ("mp4", result);
+
+    result = ExtractFileExt("");
+    EXPECT_EQ("", result);
+}
+
+TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
+{
+    std::string fileName = R"(c:\Program Files (x86)\Image Uploader\Image Uploader.exe)";
     std::string result = ExtractFileNameNoExt(fileName);
-    EXPECT_EQ(result, "Image Uploader");
+    EXPECT_EQ("Image Uploader", result);
+
     result = ExtractFileNameNoExt("c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
-    EXPECT_EQ(result, "ExplorerIntegration64");
-    result = ExtractFileNameNoExt("c:\\Program Files .(x86)\\Image Uploader.exe\\Image Uploader");
-    EXPECT_EQ(result, "Image Uploader");
+    EXPECT_EQ("ExplorerIntegration64", result);
+
+    result = ExtractFileNameNoExt(R"(c:\Program Files .(x86)\Image Uploader.exe\Image Uploader)");
+    EXPECT_EQ("Image Uploader", result);
+
     result = ExtractFileNameNoExt("archive.tar.gz");
-    EXPECT_EQ(result, "archive.tar");
+    EXPECT_EQ("archive.tar", result);
+
     result = ExtractFileNameNoExt(R"(\\?\e:\Video\test.mp4)");
-    EXPECT_EQ(result, "test");
+    EXPECT_EQ("test", result);
 }
 
 TEST_F(CoreUtilsTest, GenerateRandomFilename)
@@ -323,5 +344,4 @@ TEST_F(CoreUtilsTest, GetFileMimeType) {
         std::string type3 = GetFileMimeType(jpegFilePath);
         EXPECT_EQ("image/jpeg", type3);
     }
-   
 }

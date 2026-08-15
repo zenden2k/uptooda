@@ -63,6 +63,8 @@ TEST_F(CryptoUtilsTest, CalcSHA256HashFromString)
 {
     std::string result = CalcSHA256HashFromString("zenden");
     EXPECT_EQ("f8b1f55e96be17bd326d178a472a00918d30f68604ce5ce2d5faf6cc3790eee6", result);
+    result = CalcSHA256HashFromString("");
+    EXPECT_EQ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", result);
 }
 
 TEST_F(CryptoUtilsTest, CalcSHA256HashFromFile)

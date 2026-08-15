@@ -130,7 +130,6 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 }
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
-
     if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= BoundaryType::btNone ) {
         POINT* elementBasePoint = 0;
         if ( draggedBoundary_.gpt == MovableElement::GripPointType::gptStartPoint ) {

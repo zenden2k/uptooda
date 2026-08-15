@@ -120,7 +120,6 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             highlightRegion(rc);
 
-
             /*RectF sourceRect(rc.left, rc.top, rc.right-rc.left, rc.bottom - rc.top);
             GraphicsPath path;
             path.AddEllipse(sourceRect);

@@ -11,6 +11,7 @@ public:
     GlobalFFmpegArgs& globalArgs() {
         return globalArgs_;
     }
+
     FFmpegInputArgs& addInputFile(const std::string& fileName) {
         auto input = std::make_unique<FFmpegInputArgs>(fileName);
 

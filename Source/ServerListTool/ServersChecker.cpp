@@ -27,10 +27,14 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
 {
     needStop_ = false;
     isRunning_ = false;
-    using namespace std::placeholders;
+
     fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppRuntimeInfo::instance()->tempDirectory());
-    fileDownloader_->setOnFileFinishedCallback([this](auto && PH1, auto && PH2, auto && PH3) {
-        onFileFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2), std::forward<decltype(PH3)>(PH3));
+    fileDownloader_->setOnFileFinishedCallback([this](auto && ok, auto && statusCode, auto && downloadItem) {
+        onFileFinished(
+            std::forward<decltype(ok)>(ok),
+            std::forward<decltype(statusCode)>(statusCode),
+            std::forward<decltype(downloadItem)>(downloadItem)
+        );
     });
 }
 
@@ -42,7 +46,9 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
     uploadSession_ = std::make_shared<UploadSession>(false);
 
     using namespace std::placeholders;
-    uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
+    uploadSession_->addSessionFinishedCallback([this](auto && session) {
+        onSessionFinished(std::forward<decltype(session)>(session));
+    });
     int taskCount = 0;
     for (size_t i = 0; i < model_->getCount(); i++) {
         ServerData* item = model_->getDataByIndex(i);
@@ -105,8 +111,12 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
 
         if (task) {
             task->setServerProfile(serverProfile);
-            task->setOnStatusChangedCallback([this](auto && PH1) { onTaskStatusChanged(std::forward<decltype(PH1)>(PH1)); });
-            task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+            task->setOnStatusChangedCallback([this](auto && PH1) {
+                onTaskStatusChanged(std::forward<decltype(PH1)>(PH1));
+            });
+            task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) {
+                onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+            });
             auto userData = std::make_unique<UploadTaskUserData>();
             userData->rowIndex = i;
             task->setUserData(userData.get());
@@ -167,7 +177,7 @@ void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
     onFinishedCallback_ = std::move(callback);
 }
 
-void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
+void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, const CFileDownloader::DownloadFileListItem& it)
 {
     size_t serverId = reinterpret_cast<size_t>(it.id) / 10;
     size_t fileId = reinterpret_cast<size_t>(it.id) % 10;

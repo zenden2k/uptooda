@@ -102,12 +102,7 @@ namespace IuStringUtils
     std::string ToLower(const std::string& str);
     std::string ToUpper(const std::string& str);
 
-    //  The stricmp() function compares the two strings s1 and s2,
-    //  ignoring the case of the characters. It returns an integer less than,
-    //     equal to, or greater than zero if s1 is found, respectively, to be less than,
-    //     to match, or be greater than s2.
-    // IT WORKS ONLY WITH ANSI STRINGS!
-    int stricmp(const char *s1, const char *s2);
+    int StrCaseInsensitiveCompare(const std::string& s1, const std::string& s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);
     boost::format FormatNoExcept(const char* str);

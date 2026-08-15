@@ -154,16 +154,16 @@ bool InputBoxControl::isEmpty() {
 
 DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
-    std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
-    rtf->write((CHAR*)pbBuff, cb);
+    auto* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
+    rtf->write(reinterpret_cast<CHAR*>(pbBuff), cb);
     *pcb = cb;
     return 0;
 }
 
 DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
-    std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
-    *pcb = static_cast<LONG>(rtf->readsome((CHAR*)pbBuff, cb));
+    auto* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
+    *pcb = static_cast<LONG>(rtf->readsome(reinterpret_cast<CHAR*>(pbBuff), cb));
     return 0;
 }
 
@@ -200,7 +200,7 @@ LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     bHandled = true;
-    REQRESIZE * pReqResize = reinterpret_cast<REQRESIZE*>(pnmh);
+    auto * pReqResize = reinterpret_cast<REQRESIZE*>(pnmh);
 
     SIZE sz = {pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top};
     RECT windowRect;
@@ -213,7 +213,7 @@ LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 LRESULT InputBoxControl::OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    SELCHANGE* selChange = reinterpret_cast<SELCHANGE*>(pnmh);
+    auto* selChange = reinterpret_cast<SELCHANGE*>(pnmh);
     CHARFORMAT cf;
 
     GetSelectionCharFormat(cf);

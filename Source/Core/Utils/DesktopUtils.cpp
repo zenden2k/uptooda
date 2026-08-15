@@ -1,15 +1,28 @@
 #include "DesktopUtils.h"
 
-#include "CoreUtils.h"
 #ifdef _WIN32
-#include "Func/WinUtils.h"
+#include <windows.h>
+#include <shellapi.h>
 #endif
+
+#include "CoreUtils.h"
+#include "StringUtils.h"
 
 namespace DesktopUtils {
 
 bool ShellOpenUrl(const std::string& url) {
 #ifdef _WIN32
-    return WinUtils::ShellOpenFileOrUrl(U2W(url));
+    std::wstring wideUrl = IuCoreUtils::Utf8ToWstring(url);
+    SHELLEXECUTEINFO ShInfo;
+    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShInfo.nShow = SW_SHOWNORMAL;
+    ShInfo.fMask = SEE_MASK_DEFAULT;
+    ShInfo.lpVerb = TEXT("open");
+    ShInfo.lpFile = wideUrl.c_str();
+    ShInfo.lpDirectory = TEXT("");
+
+    return ShellExecuteEx(&ShInfo) == TRUE;
 #else
 #ifdef __APPLE__
     return system(("open \"" + url + "\"").c_str());

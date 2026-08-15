@@ -94,7 +94,7 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
     // Sort video engines alphabetically
     std::sort(videoEngines_.begin(), videoEngines_.end(), [](auto& l, auto& r) {
-        int res = IuStringUtils::stricmp(l.c_str(), r.c_str());
+        int res = IuStringUtils::StrCaseInsensitiveCompare(l, r);
         return res < 0;
     });
 

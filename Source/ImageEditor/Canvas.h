@@ -47,7 +47,7 @@ class Canvas {
 
         struct UndoHistoryItemElement {
             MovableElement* movableElement;
-            int pos;
+            size_t pos;
             POINT startPoint{};
             POINT endPoint{};
             Gdiplus::Color color;
@@ -58,7 +58,7 @@ class Canvas {
             std::string rawText;
 
             UndoHistoryItemElement() {
-                pos = -1;
+                pos = 0;
                 startPoint.x = -1;
                 startPoint.y = -1;
                 endPoint.x = -1;
@@ -142,7 +142,7 @@ class Canvas {
         std::shared_ptr<InputBox> getInputBox( const RECT& rect ); 
         TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
-        int unselectAllElements();
+        size_t unselectAllElements();
         bool unselectElement(MovableElement* element);
         HWND getRichEditControl() const;
         void updateView();

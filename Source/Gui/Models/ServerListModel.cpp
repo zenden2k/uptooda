@@ -54,7 +54,7 @@ void ServerListModel::updateEngineList() {
             return isFavoriteA; // favorite servers go first
         }
 
-        return IuStringUtils::stricmp(a->ued->Name.c_str(), b->ued->Name.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a->ued->Name, b->ued->Name) < 0;
     });
 
     if (iconsChangedCallback_) {

@@ -30,9 +30,10 @@
 #include "ImageEditor/Helpers/FontEnumerator.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr)
+TextParamsWindow::TextParamsWindow() :
+    fontSizeComboboxCustomEdit_(this),
+    windowDc_(nullptr)
 {
-    memset(&font_, 0, sizeof(font_));
 }
 
 TextParamsWindow::~TextParamsWindow()
@@ -181,7 +182,7 @@ void TextParamsWindow::createToolbar() {
     GetDlgItem(IDC_TOOLBARPLACEHOLDER).GetWindowRect(&toolbarRect);
     ScreenToClient(&toolbarRect);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -212,8 +213,7 @@ void TextParamsWindow::createToolbar() {
         textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
         textToolbar_.SetButtonStructSize();
     } else {
-        TBBUTTONINFO bi;
-        memset(&bi, 0, sizeof(bi));
+        TBBUTTONINFO bi = {};
         bi.cbSize = sizeof(bi);
         bi.dwMask = TBIF_STATE;
 
@@ -244,11 +244,6 @@ void TextParamsWindow::NotifyParent(DWORD changeMask)
 CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow)
 {
     textParamsWindow_ = textParamsWindow;
-}
-
-CustomEdit::~CustomEdit()
-{
-
 }
 
 LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

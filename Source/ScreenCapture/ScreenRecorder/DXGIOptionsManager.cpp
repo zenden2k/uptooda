@@ -111,7 +111,7 @@ IdNameArray DXGIOptionsManager::getAudioSources() {
     }
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     std::sort(result.begin(), result.end(), compareFunc);

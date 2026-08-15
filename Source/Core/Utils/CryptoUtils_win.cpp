@@ -48,7 +48,7 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
     HCRYPTPROV hProv = NULL;
 
     if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
-        return std::string();
+        return {};
     }
 
     BOOL hash_ok = FALSE;
@@ -62,27 +62,27 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
 
     if (!hash_ok) {
         CryptReleaseContext(hProv, 0);
-        return std::string();
+        return {};
     }
 
     if (!CryptHashData(hHash, static_cast<const BYTE *>(data), static_cast<DWORD>(data_size), 0)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
-        return std::string();
+        return {};
     }
 
     DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
-    if (!CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE *)&cbHashSize, &dwCount, 0)) {
+    if (!CryptGetHashParam(hHash, HP_HASHSIZE, reinterpret_cast<BYTE*>(&cbHashSize), &dwCount, 0)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
-        return std::string();
+        return {};
     }
 
     std::vector<BYTE> buffer(cbHashSize);
-    if (!CryptGetHashParam(hHash, HP_HASHVAL, reinterpret_cast<BYTE*>(&buffer[0]), &cbHashSize, 0)) {
+    if (!CryptGetHashParam(hHash, HP_HASHVAL, &buffer[0], &cbHashSize, 0)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
-        return std::string();
+        return {};
     }
 
     std::ostringstream oss;
@@ -119,14 +119,14 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
     {
         dwStatus = GetLastError();
         LOG(ERROR) << "Error opening file " << filename << "\nError: " << dwStatus;
-        return std::string();
+        return {};
     }
 
     if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
         dwStatus = GetLastError();
         LOG(ERROR) << "CryptAcquireContext failed: " << dwStatus;
         CloseHandle(hFile);
-        return std::string();
+        return {};
     }
 
     BOOL hash_ok = FALSE;
@@ -143,7 +143,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
         LOG(ERROR) << "CryptCreateHash failed: " << dwStatus;
         CryptReleaseContext(hProv, 0);
         CloseHandle(hFile);
-        return std::string();
+        return {};
     }
 
     if (!prefix.empty()) {
@@ -154,7 +154,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
-            return std::string();
+            return {};
         }
     }
 
@@ -182,7 +182,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
-            return std::string();
+            return {};
         }
         if (chunkSize && totalRead >= chunkSize) {
             break;
@@ -197,7 +197,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
-            return std::string();
+            return {};
         }
     }
 
@@ -209,7 +209,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
         CloseHandle(hFile);
-        return std::string();
+        return {};
     }
 
     std::vector<BYTE> buffer(cbHashSize);
@@ -219,7 +219,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
         CloseHandle(hFile);
-        return std::string();
+        return {};
     }
 
     std::ostringstream oss;
@@ -355,7 +355,7 @@ Exit:
     delete[] pbHash;
 
     if (err == 1){
-        return std::string();
+        return {};
     }
 
     return res;

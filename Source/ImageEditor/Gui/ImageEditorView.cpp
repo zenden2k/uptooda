@@ -13,7 +13,7 @@ namespace ImageEditor {
 
 CImageEditorView::CImageEditorView():
         dpiScaleX_(1.0f),
-        dpiScaleY_(1.0f)  {
+        dpiScaleY_(1.0f) {
     oldPoint.x = -1;
     oldPoint.y = -1;
     mouseDown_ = false;

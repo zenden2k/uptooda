@@ -55,7 +55,7 @@ CComPtr<IDXGIAdapter1> GetAdapterByIndex(int index) {
 CComPtr<IDXGIAdapter1> GetAdapterForMonitor(HMONITOR hMonitor, UINT* adapterIndex, UINT* outputIndex) {
     outputIndex = 0;
     CComPtr<IDXGIFactory1> pFactory;
-    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory);
+    CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&pFactory));
 
     CComPtr<IDXGIAdapter1> pAdapter;
     for (UINT i = 0; pFactory->EnumAdapters1(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i) {

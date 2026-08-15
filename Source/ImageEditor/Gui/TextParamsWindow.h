@@ -32,7 +32,6 @@ class TextParamsWindow;
 class CustomEdit: public CWindowImpl<CustomEdit, CEdit,CControlWinTraits>{
 public:
     explicit CustomEdit(TextParamsWindow* textParamsWindow);
-    ~CustomEdit();
     DECLARE_WND_SUPERCLASS(_T("CustomComboBox"), CEdit::GetWndClassName())
 
     BEGIN_MSG_MAP(CustomEdit)
@@ -96,7 +95,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         CComboBox fontSizeComboBox_;
         CustomEdit fontSizeComboboxCustomEdit_;
         CString fontName_;
-        LOGFONT font_;
+        LOGFONT font_{};
         CImageListManaged toolbarImageList_;
         void NotifyParent(DWORD changeMask);
         std::vector<LOGFONT> fonts_;

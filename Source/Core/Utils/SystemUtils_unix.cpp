@@ -1,6 +1,8 @@
 #ifndef IU_CORE_UTILS_SYSTEMUTILS_WIN_H
 #define IU_CORE_UTILS_SYSTEMUTILS_WIN_H
 
+#include "SystemUtils.h"
+
 #include <string>
 #include <limits.h>
 
@@ -8,12 +10,7 @@ namespace IuCoreUtils
 {
 
 bool IsOs64Bit() {
-    if (sizeof(void *) * CHAR_BIT == 64) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return sizeof(void *) * CHAR_BIT == 64;
 }
 
 std::string GetOsName() {

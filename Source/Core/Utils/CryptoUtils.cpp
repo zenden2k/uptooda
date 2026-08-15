@@ -53,6 +53,7 @@ std::string Base64EncodeRaw(const char* bytes, unsigned int len) {
     res.resize(outlen);
     return res;
 }
+
 std::string Base64Decode(const std::string& data)
 {
     std::string res;

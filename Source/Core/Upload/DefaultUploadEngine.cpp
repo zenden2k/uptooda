@@ -555,9 +555,11 @@ bool CDefaultUploadEngine::ReadServerResponse(const UploadAction& Action)
 void CDefaultUploadEngine::AddQueryPostParams(const UploadAction& Action)
 {
     std::string Txt = Action.PostParams;
-    std::string Post = "Post Request to URL: " + Action.Url + "\r\n";
 
-    //pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
+    std::ostringstream message;
+    if (m_UploadData->Debug) {
+        message << "Post Request to URL: " << Action.Url << "\r\n";
+    }
 
     pcrepp::Pcre reg2("\\\\;(*SKIP)(*FAIL)|;", "imcs");
     const std::string& str = Txt;
@@ -569,32 +571,37 @@ void CDefaultUploadEngine::AddQueryPostParams(const UploadAction& Action)
         if (tokens.size() < 2) {
             continue;
         }
-        const std::string& VarName = tokens[0];
-        const std::string& VarValue = tokens[1];
+        const std::string& varName = tokens[0];
+        const std::string& varValue = tokens[1];
 
-        if (VarName.empty())
+        if (varName.empty())
             continue;
 
-        std::string NewValue = VarValue;
-        NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+        std::string NewValue = varValue;
+        NewValue = IuStringUtils::Replace(NewValue, "\\;", ";");
 
-        std::string NewName = VarName;
+        std::string NewName = varName;
 
         NewName = ReplaceVars(NewName);
 
         if (NewValue == "%filename%") {
-            Post += NewName + " = ** FILE CONTENTS ** \r\n";
+            if (m_UploadData->Debug) {
+                message << NewName << " = ** FILE CONTENTS ** \r\n";
+            }
             m_NetworkClient->addPostFieldFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
                 IuCoreUtils::GetFileMimeType(m_FileName));
         } else {
             NewValue = ReplaceVars(NewValue);
-            Post += NewName + " = " + NewValue + "\r\n";
+            if (m_UploadData->Debug) {
+                message << NewName << " = " << NewValue << "\r\n";
+            }
             m_NetworkClient->addPostField(NewName, NewValue);
         }
     }
 
-    if (m_UploadData->Debug)
-        DebugMessage(Post);
+    if (m_UploadData->Debug) {
+        DebugMessage(message.str());
+    }
 }
 
 void CDefaultUploadEngine::AddCustomHeaders(const UploadAction& Action)
@@ -628,7 +635,7 @@ void CDefaultUploadEngine::AddCustomHeaders(const UploadAction& Action)
                     continue;
 
                 std::string NewValue = VarValue;
-                NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+                NewValue = IuStringUtils::Replace(NewValue, "\\;", ";");
 
                 std::string NewName = VarName;
 
@@ -688,7 +695,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
                 }
             }
 
-            Result = IuCoreUtils::StrReplace(Result, "$(" + vv + ")", value);
+            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", value);
         }
         else
             break;

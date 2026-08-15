@@ -164,7 +164,6 @@ void MovableElement::setPos(int x, int y) {
     int canvasWidth = canvas_->getWidth();
     int canvasHeight = canvas_->getHeigth();
 
-
     if (x <= 0) {
         x = 0;
     }
@@ -250,14 +249,14 @@ void MovableElement::createGrips()
     };
 
     for( int i = 0; i < 8; i++ ) {
-        int x = pts[i].x;
-        int y = pts[i].y;
+        int ptX = pts[i].x;
+        int ptY = pts[i].y;
         Grip grip;
-        grip.pt.x = x;
-        grip.pt.y = y;
-        if ( x == startPoint_.x && y == startPoint_.y ) {
+        grip.pt.x = ptX;
+        grip.pt.y = ptY;
+        if ( ptX == startPoint_.x && ptY == startPoint_.y ) {
             grip.gpt = GripPointType::gptStartPoint;
-        } else if ( x == endPoint_.x &&   y == endPoint_.y ) {
+        } else if ( ptX == endPoint_.x && ptY == endPoint_.y ) {
             grip.gpt = GripPointType::gptEndPoint;
         }
         grip.bt = static_cast<BoundaryType>(i);

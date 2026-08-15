@@ -13,6 +13,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/format.hpp>
+#include <utility>
 
 #include "ArgsBuilder/FFmpegArgsBuilder.h"
 #include "Core/Logging.h"
@@ -78,7 +79,7 @@ std::string BuildCommandLine(const std::vector<std::string>& args) {
 constexpr auto FFMPEG_RETURN_CODE_NO_OUTPUT = -22;
 
 FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect, FFmpegOptions options)
-     : ScreenRecorder(outFile, rect)
+     : ScreenRecorder(std::move(outFile), rect)
     , ffmpegPath_(std::move(ffmpegPath))
     , options_(std::move(options))
 {

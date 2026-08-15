@@ -20,8 +20,8 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     foregroundButton_.SetFont(font_);
     foregroundColorButton_.SubclassWindow(foregroundButton_.m_hWnd);
     using namespace std::placeholders;
-    foregroundColorButton_.setOnSelChangeCallback([this](auto && PH1, auto && PH2) {
-        OnForegroundButtonSelChanged(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    foregroundColorButton_.setOnSelChangeCallback([this](auto && color, auto && valid) {
+        OnForegroundButtonSelChanged(std::forward<decltype(color)>(color), std::forward<decltype(valid)>(valid));
     });
     foregroundColorButton_.SetCustomText(TR("More colors..."));
     foregroundColorButton_.SetColorCodeText(TR("Get color's code..."));
@@ -29,8 +29,8 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     backgroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     backgroundButton_.SetFont(font_);
     backgroundColorButton_.SubclassWindow(backgroundButton_.m_hWnd);
-    backgroundColorButton_.setOnSelChangeCallback([this](auto && PH1, auto && PH2) {
-        OnBackgroundButtonSelChanged(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    backgroundColorButton_.setOnSelChangeCallback([this](auto && color, auto && valid) {
+        OnBackgroundButtonSelChanged(std::forward<decltype(color)>(color), std::forward<decltype(valid)>(valid));
     });
     backgroundColorButton_.SetCustomText(TR("More colors..."));
     backgroundColorButton_.SetColorCodeText(TR("Get color's code..."));

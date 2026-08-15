@@ -617,8 +617,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         //resultingBitmap_ = 0;
     }
 
-
-
     return dialogResult_;
 }
 
@@ -731,7 +729,7 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
     if ( !horizontalToolbar_.m_hWnd ) {
         return 0;
     }
-    MINMAXINFO* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
+    auto* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
     RECT horRc, vertRc;
     horizontalToolbar_.GetClientRect(&horRc);
     verticalToolbar_.GetClientRect(&vertRc);

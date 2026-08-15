@@ -18,6 +18,8 @@
 
 */
 
+#include "GlobalMutex.h"
+
 #include <thread>
 #include "Core/Utils/CoreUtils.h"
 #include <windows.h>
