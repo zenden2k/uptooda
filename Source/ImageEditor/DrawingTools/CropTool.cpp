@@ -60,7 +60,7 @@ void CropTool::endDraw(int x, int y) {
     }
 }
 
-void CropTool::applyOperation() {
+bool CropTool::applyOperation() {
     std::vector<MovableElement*> elements;
     canvas_->getElementsByType(ElementType::etCrop, elements);
 
@@ -70,8 +70,10 @@ void CropTool::applyOperation() {
             canvas_->applyCrop(cropEl);
             canvas_->deleteMovableElement(cropEl);
             canvas_->showOverlay(false);
+            return true;
         }
     }
+    return false;
 }
 
 void CropTool::cancelOperation() {

@@ -210,7 +210,13 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             ua.Referer = actionNode.Attribute("Referer");
 
             ua.PostParams = actionNode.Attribute("PostParams");
-            ua.Body = actionNode.Text();
+            SimpleXmlNode bodyNode = actionNode.GetChild("Body", false);
+            if (bodyNode.IsNull()) {
+                ua.Body = actionNode.Text();
+            } else {
+                ua.Body = bodyNode.Text();
+            }
+
             ua.CustomHeaders = actionNode.Attribute("CustomHeaders");
             ua.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 
@@ -245,7 +251,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                         }
                     }
                     ua.FunctionCalls.push_back(newFuncCall);
-                } else {
+                } else if (callNode.Name() != "Body") {
                     LOG(ERROR) << "Unknown function: " << callNode.Name();
                     return true;
                 }

@@ -377,12 +377,8 @@
         <!-- /Thanks to Alex_Qwerty -->
     <Server Name="u.to" Authorize="0" Type="urlshortening" WebsiteUrl="https://u.to">
         <Actions>
-            <Action
-                Type="post"
-                Url="https://u.to/api/shorten/"
-                AssignVars="surl:0"
-                CustomHeaders="Content-Type:application/json;Referer:https://u.to/"
-            ><![CDATA[{"url": $(_ORIGINALURL|jsonescape)}]]>
+            <Action Type="post" Url="https://u.to/api/shorten/" AssignVars="surl:0" CustomHeaders="Content-Type:application/json;Referer:https://u.to/">
+                <Body><![CDATA[{"url": $(_ORIGINALURL|jsonescape)}]]></Body>
                 <Call Function="json" Arg1="shortUrl" AssignVars="ShortUrl:0;" Required="1"/>
             </Action>
         </Actions>
@@ -417,6 +413,15 @@
     </Server>
     <Server Name="bit.ly" Authorize="2" Type="urlshortening" Plugin="bit.ly" NeedPassword="0" WebsiteUrl="https://bitly.com">
         <Result DirectUrlTemplate="stub"/>
+    </Server>
+    <Server Name="0.mk" Authorize="2" Type="urlshortening" WebsiteUrl="https://0.mk/" PasswordLabel="API token">
+        <Actions>
+            <Action Type="post" Url="https://0.mk/api/links" CustomHeaders="Content-Type:application/json;Authorization:Bearer $(_PASSWORD)">
+                <Body><![CDATA[{"url":$(_ORIGINALURL|jsonescape)}]]></Body>
+                <Call Function="json" Arg1="shortUrl" AssignVars="ShortUrl:0;" Required="1"/>
+            </Action>
+        </Actions>
+        <Result DirectUrlTemplate="$(ShortUrl)" />
     </Server>
     <Server Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" WebsiteUrl="https://vk.com/">
         <Info>  

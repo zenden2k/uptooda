@@ -284,11 +284,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
             itemIndex = arrowTypeCombobox_.AddString(_T(""));
             setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
-            RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
-            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
+            RECT applyButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply crop"), WS_CHILD | BS_PUSHBUTTON | BS_DEFPUSHBUTTON, 0, ID_APPLYBUTTON);
             applyButton_.SetFont(systemFont_);
 
-            RECT cancelButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT cancelButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
             cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
             cancelOperationButton_.SetFont(systemFont_);
         }
@@ -796,8 +796,8 @@ int Toolbar::AutoSize() {
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
-        applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(10 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(8 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(175 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {

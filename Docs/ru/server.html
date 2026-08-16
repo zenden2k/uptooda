@@ -13,11 +13,11 @@
 </div>
  <div id="menu">
     <ul>
-        <li><a href="index.html">Описание</a></li>        
+        <li><a href="index.html">Описание</a></li>
         <li><a href="usage.html">Использование</a></li>
 	    <li><a href="advanced.html">Дополнительно</a></li>
-	 	<li><a href="server.html">Добавление хостинга</a></li>			
-        <li><a href="../api/html/index.html">Scripting API</a></li>			
+	 	<li><a href="server.html">Добавление хостинга</a></li>
+        <li><a href="../api/html/index.html">Scripting API</a></li>
     </ul>
 </div>
 <div id="content">
@@ -58,8 +58,8 @@
 &lt;Servers&gt;
     &lt;Server Name=&quot;Мой Сервер&quot;&gt;
         &lt;Actions&gt;
-            &lt;Action Type=&quot;upload&quot; 
-                    Url=&quot;https://api.example.com/upload&quot; 
+            &lt;Action Type=&quot;upload&quot;
+                    Url=&quot;https://api.example.com/upload&quot;
                     PostParams=&quot;file=%filename%&quot;
                     RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39;
                     AssignVars=&quot;ImageUrl:0&quot;/&gt;
@@ -119,7 +119,7 @@
 </tr>
 <tr>
 <td><code>Type</code></td>
-<td><code>image</code>, <code>file</code>, <code>urlshortening</code>, <code>searchbyimage</code></td>
+<td><code>image</code>, <code>file</code>, <code>video</code>,<code>urlshortening</code>, <code>searchbyimage</code></td>
 <td>Тип сервера</td>
 </tr>
 <tr>
@@ -129,7 +129,7 @@
 </tr>
 <tr>
 <td><code>Types</code></td>
-<td><code>file image urlshortening</code></td>
+<td><code>image file video urlshortening searchbyimage</code></td>
 <td>Список типов через пробел (версия ≥ 1.3.2)</td>
 </tr>
 <tr>
@@ -215,7 +215,7 @@
 <tr>
 <td><code>MaxThreads</code></td>
 <td>число</td>
-<td>Ограничение одновременных соединений (версия ≥ 1.3.2)</td>
+<td>Ограничение одновременных подключений (версия ≥ 1.3.2)</td>
 </tr>
 <tr>
 <td><code>SupportsFolders</code></td>
@@ -234,9 +234,9 @@
 </tr>
 </tbody></table>
 <h3 id="пример-с-атрибутами">Пример с атрибутами</h3>
-<pre class="prettyprint">&lt;Server Name=&quot;Imgur&quot; 
-        Type=&quot;image&quot; 
-        Authorize=&quot;1&quot; 
+<pre class="prettyprint">&lt;Server Name=&quot;Imgur&quot;
+        Type=&quot;image&quot;
+        Authorize=&quot;1&quot;
         MaxFileSize=&quot;10485760&quot;
         RegistrationUrl=&quot;https://imgur.com/register&quot;
         LoginLabel=&quot;Username&quot;
@@ -257,7 +257,7 @@
     &lt;/FormatGroup&gt;
 &lt;/SupportedFormats&gt;
 </pre>
-<p>В атрибуте MimeType перечисляются (через запятую) разрешенные MIME-типы файлов, которые могут содержать подстановочные символы - wildcards, 
+<p>В атрибуте MimeType перечисляются (через запятую) разрешенные MIME-типы файлов, которые могут содержать подстановочные символы - wildcards,
     а в тексте узла перечисляются расширения файлов (через запятую), которые также могут содержать подстановочные символы. Если в одном узле Format указан только MIME-тип(ы), или только расширение(-ия), то проверка файлов будет производиться только по одному признаку.</p>
 <h3 id="атрибуты-formatgroup">Атрибуты FormatGroup</h3>
 <ul>
@@ -275,7 +275,7 @@
         &lt;Format MimeType=&quot;image/png&quot;&gt;*.png&lt;/Format&gt;
         &lt;Format MimeType=&quot;image/gif&quot;&gt;*.gif&lt;/Format&gt;
     &lt;/FormatGroup&gt;
-    
+
     &lt;!-- Для любых авторизованных --&gt;
     &lt;FormatGroup MaxFileSize=&quot;52428800&quot; UserTypes=&quot;reg&quot;&gt;
         &lt;Format MimeType=&quot;video/mp4&quot;&gt;*.mp4&lt;/Format&gt;
@@ -360,7 +360,6 @@
 </tr>
 </tbody>
 </table>
-<p>Опциональное тело узла <code>Action</code> содержит тело запроса. Тело может содержать <a href="#система-переменных">переменные</a>.</p>
 <h3 id="полный-список-атрибутов-action">Полный список атрибутов Action</h3>
 <table>
 <thead>
@@ -439,13 +438,13 @@
 <h3 id="пример-последовательности-действий">Пример последовательности действий</h3>
 <pre class="prettyprint">&lt;Actions&gt;
     &lt;!-- 1. Получение токена --&gt;
-    &lt;Action Type=&quot;get&quot; 
+    &lt;Action Type=&quot;get&quot;
             Url=&quot;https://api.example.com/token&quot;
             RegExp=&#39;&quot;token&quot;:&quot;([^&quot;]+)&quot;&#39;
             AssignVars=&quot;token:0&quot;
             OnlyOnce=&quot;1&quot;
             Description=&quot;Получение токена авторизации&quot;/&gt;
-    
+
     &lt;!-- 2. Загрузка файла --&gt;
     &lt;Action Type=&quot;upload&quot;
             Url=&quot;https://api.example.com/upload&quot;
@@ -456,7 +455,9 @@
 &lt;/Actions&gt;
 </pre>
 <h3 id="вложенные-узлы-action">Вложенные узлы Action</h3>
-<h4 id="regexp-узел">RegExp узел</h4>
+<h4 id="body-узел">Узел  (версия ≥ 1.4.7)</h4>
+<p>Тело узла <code>Body</code> содержит тело запроса . Тело может содержать <a href="#система-переменных">переменные</a>.</p>
+<h4 id="regexp-узел">Узел RegExp</h4>
 <p>Дополнительные регулярные выражения для обработки ответа:</p>
 <pre class="prettyprint">&lt;Action ...&gt;
     &lt;RegExp Pattern=&#39;&quot;delete_url&quot;:&quot;([^&quot;]+)&quot;&#39; AssignVars=&quot;DeleteUrl:0&quot; Required=&quot;1&quot;/&gt;
@@ -470,7 +471,7 @@
 <li><code>Required</code> - генерировать ошибку при неудаче (по умолчанию 0)</li>
 <li><code>Data</code> - текст для поиска, может содержать переменные (по умолчанию - ответ сервера)</li>
 </ul>
-<h4 id="call-узел-версия-≥-140">Call узел (версия ≥ 1.4.0)</h4>
+<h4 id="call-узел-версия-≥-140">Узел Call (версия ≥ 1.4.0)</h4>
 <p>Используется для вызова встроенных функций:</p>
 <pre class="prettyprint">&lt;Action ...&gt;
     &lt;Call Function=&quot;json&quot; Arg1=&quot;data.files[0].url&quot; AssignVars=&quot;ImageUrl:0&quot; Required=&quot;1&quot;/&gt;
@@ -497,8 +498,8 @@
 <hr>
 <h2 id="узел-result">Узел Result</h2>
 <p>Определяет шаблоны для генерации ссылок.</p>
-<pre class="prettyprint">&lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; 
-        ThumbUrlTemplate=&quot;$(ThumbUrl)&quot; 
+<pre class="prettyprint">&lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot;
+        ThumbUrlTemplate=&quot;$(ThumbUrl)&quot;
         DownloadUrlTemplate=&quot;$(ViewUrl)&quot;
         DeleteUrl=&quot;$(DeleteUrl)&quot;
         EditUrl=&quot;$(EditUrl)&quot;/&gt;
@@ -621,7 +622,7 @@
 </tr>
 <tr>
 <td><code>_IMAGEURL</code></td>
-<td>Прямая ссылка на изображение для поиска (версия ≥ 1.4.1)</td>
+    <td>Прямая ссылка на изображение для поиска, только для типа сервера <code>searchbyimage</code> (версия ≥ 1.4.1)</td>
 <td><code>https://temp.host/img.jpg</code></td>
 </tr>
 </tbody></table>
@@ -772,21 +773,18 @@ AssignVars=&quot;Title:0&quot;
 &lt;Servers&gt;
     &lt;Server Name=&quot;SimpleHost&quot; Type=&quot;image&quot;&gt;
         &lt;Actions&gt;
-            &lt;Action Type=&quot;upload&quot;
-                    Url=&quot;https://simplehost.com/api/upload&quot;
-                    PostParams=&quot;image=%filename%&quot;
-                    RegExp=&#39;&quot;success&quot;:true,&quot;data&quot;:{&quot;url&quot;:&quot;([^&quot;]+)&quot;,&quot;delete_hash&quot;:&quot;([^&quot;]+)&quot;}&#39;
-                    AssignVars=&quot;ImageUrl:0;DeleteHash:1&quot;/&gt;
+            &lt;Action Type=&quot;upload&quot; Url=&quot;https://simplehost.com/api/upload&quot; PostParams=&quot;image=%filename%&quot;&gt;
+                &lt;Call Function=&quot;json&quot; Arg1=&quot;data.url&quot; Arg2=&quot;data.delete_hash&quot; AssignVars=&quot;ImageUrl:0;DeleteHash:1&quot;/&gt;
+            &lt;/Action&gt;
         &lt;/Actions&gt;
-        &lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; 
-                DeleteUrl=&quot;https://simplehost.com/delete/$(DeleteHash)&quot;/&gt;
+        &lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; DeleteUrl=&quot;https://simplehost.com/delete/$(DeleteHash)&quot;/&gt;
     &lt;/Server&gt;
 &lt;/Servers&gt;
 </pre>
 <h3 id="пример-2-сервер-с-авторизацией">Пример 2: Сервер с авторизацией</h3>
 <pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
 &lt;Servers&gt;
-    &lt;Server Name=&quot;AuthHost&quot; Type=&quot;image&quot; Authorize=&quot;1&quot; 
+    &lt;Server Name=&quot;AuthHost&quot; Type=&quot;image&quot; Authorize=&quot;1&quot;
             LoginLabel=&quot;Username&quot; PasswordLabel=&quot;Password&quot;&gt;
         &lt;Actions&gt;
             &lt;!-- Авторизация --&gt;
@@ -797,7 +795,7 @@ AssignVars=&quot;Title:0&quot;
                     AssignVars=&quot;_token:0&quot;
                     OnlyOnce=&quot;1&quot;
                     Description=&quot;Авторизация&quot;/&gt;
-            
+
             &lt;!-- Загрузка --&gt;
             &lt;Action Type=&quot;upload&quot;
                     Url=&quot;https://authhost.com/api/upload&quot;
@@ -903,9 +901,9 @@ AssignVars=&quot;Title:0&quot;
 <li><strong><a href="https://httptoolkit.com/" target="_blank">HTTP Toolkit</a></strong> - анализ сетевого трафика с помощью прокси-сервера</li>
 <li><strong><a href="https://www.postman.com/downloads/" target="_blank">Postman</a></strong> - тестирование API запросов</li>
 </ul>
-<h3 id="scripts">Создание скриптов (плагинов)</h3> 
+<h3 id="scripts">Создание скриптов (плагинов)</h3>
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
- языке Squirrel 3</a> (до версии 1.3.2 использовался Squirrel 2).</p> 
+ языке Squirrel 3</a> (до версии 1.3.2 использовался Squirrel 2).</p>
 <p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
 <p>
 <a href="../api/html/index.html">Scripting API reference</a><p>

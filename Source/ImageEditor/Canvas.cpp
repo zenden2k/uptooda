@@ -1520,8 +1520,8 @@ Arrow::ArrowMode Canvas::getArrowMode() const {
     return arrowMode_;
 }
 
-void Canvas::applyCurrentOperation() {
-    currentDrawingTool_->applyOperation();
+bool Canvas::applyCurrentOperation() {
+    return currentDrawingTool_->applyOperation();
 }
 
 void Canvas::cancelCurrentOperation() {

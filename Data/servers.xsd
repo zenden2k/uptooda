@@ -168,6 +168,7 @@
                                         <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
                                             <xs:complexType mixed="true">
                                                 <xs:choice maxOccurs="unbounded">
+                                                    <xs:element name="Body" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
                                                     <xs:element name="RegExp" minOccurs="0">
                                                         <xs:complexType>
                                                             <xs:simpleContent>

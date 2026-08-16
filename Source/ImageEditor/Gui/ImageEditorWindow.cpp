@@ -746,6 +746,10 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 }
 
 LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    if (!wasOpenedAfterScreenshot() && canvas_->applyCurrentOperation()) {
+        updateApplyButtons();
+        return 0;
+    }
     if (showUploadButton_ || showAddToWizardButton_ ) {
         if (!sourceFileName_.IsEmpty()) {
             outFileName_ = sourceFileName_;
@@ -763,20 +767,31 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     if (onlySelectRegion_) {
         return 0;
     }
-    if (wParam == VK_OEM_6) { // ']'
-         canvas_->beginPenSizeChanging();
-         canvas_->setPenSize(canvas_->getPenSize()+1);
-         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-         updatePixelLabels();
-         m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
-     }
-     else if (wParam == VK_OEM_4 ) { //'['
-         canvas_->beginPenSizeChanging();
-         canvas_->setPenSize(canvas_->getPenSize()-1);
-         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-         updatePixelLabels();
-         m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
-     }
+
+    bool noMod = WinUtils::NoModifiersPressed();
+
+    if (!noMod) {
+        return 0;
+    }
+
+    switch (wParam) {
+    case VK_OEM_6:
+        canvas_->beginPenSizeChanging();
+        canvas_->setPenSize(canvas_->getPenSize()+1);
+        horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+        updatePixelLabels();
+        m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
+        break;
+    case VK_OEM_4:
+        canvas_->beginPenSizeChanging();
+        canvas_->setPenSize(canvas_->getPenSize()-1);
+        horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+        updatePixelLabels();
+        m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
+        break;
+    default:;
+    }
+
     return 0;
 }
 
@@ -1208,7 +1223,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
     if (!onlySelectRegion_) {
-        showApplyButtons();
+        updateApplyButtons();
     }
 
     OnCropChanged(x,y,w,h);
@@ -1296,7 +1311,7 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 
-    showApplyButtons();
+    updateApplyButtons();
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
@@ -1697,7 +1712,7 @@ bool ImageEditorWindow::onSave(bool closeFlag) {
 
     if (!sourceFileName_.IsEmpty()) {
         outFileName_ = sourceFileName_;
-    } else if (openedAfterScreenshot()) {
+    } else if (wasOpenedAfterScreenshot()) {
         CString fileName = makeFileName();
         if (WinUtils::GetFilePath(fileName).IsEmpty()) {
             return onSaveAs(closeFlag);
@@ -1876,17 +1891,17 @@ void ImageEditorWindow::updateWindowTitle() {
 
 LRESULT ImageEditorWindow::OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->applyCurrentOperation();
-    showApplyButtons();
+    updateApplyButtons();
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->cancelCurrentOperation();
-    showApplyButtons();
+    updateApplyButtons();
     return 0;
 }
 
-void ImageEditorWindow::showApplyButtons() {
+void ImageEditorWindow::updateApplyButtons() {
     horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
 }
 
@@ -1993,11 +2008,11 @@ void ImageEditorWindow::createIcons() {
 }
 
 bool ImageEditorWindow::checkCloseWindowAfterAction() const {
-    return openedAfterScreenshot() && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
+    return wasOpenedAfterScreenshot() && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
 }
 
 bool ImageEditorWindow::canCloseAfterAction() const {
-    return openedAfterScreenshot() && sourceFileName_.IsEmpty();
+    return wasOpenedAfterScreenshot() && sourceFileName_.IsEmpty();
 }
 
 std::string ImageEditorWindow::getUploadButtonText() const {
@@ -2008,7 +2023,7 @@ std::string ImageEditorWindow::getUploadButtonText() const {
     return str(IuStringUtils::FormatNoExcept(_("Upload to %s")) % serverDisplayName_);   
 }
 
-bool ImageEditorWindow::openedAfterScreenshot() const {
+bool ImageEditorWindow::wasOpenedAfterScreenshot() const {
     return displayMode_ == wdmFullscreen;
 }
 
