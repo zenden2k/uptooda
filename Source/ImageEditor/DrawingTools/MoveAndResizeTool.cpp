@@ -293,7 +293,6 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     endPoint_.y   = -1;
 
     if ( draggedBoundary_.bt!= BoundaryType::btNone ) {
-
         draggedBoundary_.bt = BoundaryType::btNone;
         return;
     }

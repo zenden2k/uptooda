@@ -41,8 +41,11 @@ typedef HRESULT (WINAPI *FN_EndBufferedPaint) (HPAINTBUFFER hBufferedPaint, BOOL
 class IconBitmapUtils
 {
 public:
-    IconBitmapUtils(void);
-    ~IconBitmapUtils(void);
+    /**
+     *
+     */
+    IconBitmapUtils() = default;
+    ~IconBitmapUtils();
 
     HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
     HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon);
@@ -54,10 +57,5 @@ public:
 
 
 private:
-    HMODULE hUxTheme;
     std::map<UINT, HBITMAP>        bitmaps;
-
-    FN_GetBufferedPaintBits pfnGetBufferedPaintBits;
-    FN_BeginBufferedPaint pfnBeginBufferedPaint;
-    FN_EndBufferedPaint pfnEndBufferedPaint;
 };

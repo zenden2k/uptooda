@@ -247,6 +247,16 @@ int CHotkeyList::getFuncIndex(const CString &func) const {
     return -1;
 }
 
+int CHotkeyList::findByKey(WORD keyCode, WORD keyModifier) {
+    for (size_t i=0; i<size(); i++) {
+        CHotkeyItem& item = (*this)[i];
+        if (item.globalKey.keyCode == keyCode && item.globalKey.keyModifier == keyModifier) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
 bool CHotkeyList::operator==(const CHotkeyList& other) const {
     if (this == &other) {
         return true;

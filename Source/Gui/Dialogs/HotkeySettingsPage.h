@@ -49,6 +49,7 @@ class CHotkeyList: public std::vector<CHotkeyItem>
         CString toString() const;
         bool deserialize(const CString &data);
         int getFuncIndex(const CString &func) const;
+        int findByKey(WORD keyCode, WORD keyModifier);
     private:
         bool m_bChanged;
 };

@@ -21,31 +21,12 @@
 #include "Func/WinUtils.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-IconBitmapUtils::IconBitmapUtils()
-    : hUxTheme(NULL)
-{
-    if (IsWindowsVistaOrGreater())
-    {
-        hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
-
-        if (hUxTheme)
-        {
-            pfnGetBufferedPaintBits = reinterpret_cast<FN_GetBufferedPaintBits>(::GetProcAddress(hUxTheme, "GetBufferedPaintBits"));
-            pfnBeginBufferedPaint = reinterpret_cast<FN_BeginBufferedPaint>(::GetProcAddress(hUxTheme, "BeginBufferedPaint"));
-            pfnEndBufferedPaint = reinterpret_cast<FN_EndBufferedPaint>(::GetProcAddress(hUxTheme, "EndBufferedPaint"));
-        }
-    }
-}
-
 IconBitmapUtils::~IconBitmapUtils()
 {
     for (auto it = bitmaps.begin(); it != bitmaps.end(); ++it)
     {
         ::DeleteObject(it->second);
     }
-    bitmaps.clear();
-    if (hUxTheme)
-        FreeLibrary(hUxTheme);
 }
 
 HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
@@ -54,7 +35,7 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
         return bitmap_it->second;
 
-    HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, 12, 12, LR_DEFAULTCOLOR);
+    auto hIcon = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, 12, 12, LR_DEFAULTCOLOR));
     if (!hIcon)
         return NULL;
 
@@ -84,7 +65,7 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     if (dst_hdc == NULL)
     {
         DestroyIcon(hIcon);
-        ::ReleaseDC(desktop, screen_dev); 
+        ::ReleaseDC(desktop, screen_dev);
         return NULL;
     }
 
@@ -94,7 +75,7 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     {
         DestroyIcon(hIcon);
         ::DeleteDC(dst_hdc);
-        ::ReleaseDC(desktop, screen_dev); 
+        ::ReleaseDC(desktop, screen_dev);
         return NULL;
     }
 
@@ -117,17 +98,14 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     // Restore settings
     ::SelectObject(dst_hdc, old_dst_bmp);
     ::DeleteDC(dst_hdc);
-    ::ReleaseDC(desktop, screen_dev); 
+    ::ReleaseDC(desktop, screen_dev);
     DestroyIcon(hIcon);
 
     bitmaps.insert(bitmap_it, std::make_pair(uIcon, bmp));
     return bmp;
 }
 
-HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
-    if (pfnBeginBufferedPaint == NULL || pfnEndBufferedPaint == NULL || pfnGetBufferedPaintBits == NULL)
-        return NULL;
-
+HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, UINT dpi) {
     SIZE sizIcon;
     sizIcon.cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     sizIcon.cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -141,7 +119,7 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
     {
         if (SUCCEEDED(Create32BitHBITMAP(hdcDest, &sizIcon, NULL, &hBmp)))
         {
-            HBITMAP hbmpOld = (HBITMAP)SelectObject(hdcDest, hBmp);
+            HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(hdcDest, hBmp));
             if (hbmpOld)
             {
                 BLENDFUNCTION bfAlpha = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
@@ -151,7 +129,7 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
                 paintParams.pBlendFunction = &bfAlpha;
 
                 HDC hdcBuffer;
-                HPAINTBUFFER hPaintBuffer = pfnBeginBufferedPaint(hdcDest, &rcIcon, BPBF_DIB, &paintParams, &hdcBuffer);
+                HPAINTBUFFER hPaintBuffer = BeginBufferedPaint(hdcDest, &rcIcon, BPBF_DIB, &paintParams, &hdcBuffer);
                 if (hPaintBuffer)
                 {
                     if (DrawIconEx(hdcBuffer, 0, 0, hIcon, sizIcon.cx, sizIcon.cy, 0, NULL, DI_NORMAL))
@@ -161,7 +139,7 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
                     }
 
                     // This will write the buffer contents to the destination bitmap
-                    pfnEndBufferedPaint(hPaintBuffer, TRUE);
+                    EndBufferedPaint(hPaintBuffer, TRUE);
                 }
 
                 SelectObject(hdcDest, hbmpOld);
@@ -171,17 +149,17 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
         DeleteDC(hdcDest);
     }
 
-    
+
     return hBmp;
 }
 
-HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, int dpi)
+HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, UINT dpi)
 {
     std::map<UINT, HBITMAP>::iterator bitmap_it = bitmaps.lower_bound(uIcon);
     if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
         return bitmap_it->second;
 
-    HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+    HICON hIcon = static_cast<HICON>(LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR));
     if (!hIcon)
         return NULL;
 
@@ -223,10 +201,10 @@ HRESULT IconBitmapUtils::ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC h
 {
     RGBQUAD *prgbQuad;
     int cxRow;
-    HRESULT hr = pfnGetBufferedPaintBits(hPaintBuffer, &prgbQuad, &cxRow);
+    HRESULT hr = GetBufferedPaintBits(hPaintBuffer, &prgbQuad, &cxRow);
     if (SUCCEEDED(hr))
     {
-        Gdiplus::ARGB *pargb = reinterpret_cast<Gdiplus::ARGB *>(prgbQuad);
+        auto *pargb = reinterpret_cast<Gdiplus::ARGB *>(prgbQuad);
         if (!HasAlpha(pargb, sizIcon, cxRow))
         {
             ICONINFO info;
