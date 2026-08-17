@@ -341,9 +341,22 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     SolidBrush br1(transparentColor_);
     gr.FillRectangle(&br1, rect);
         Pen p(Color(1,87,124));
-    LinearGradientBrush br (RectF(float(0), float(-0.5 ), float(buttonsRect_.right),
-            /*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
-            200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
+
+    auto brushRectWidth = static_cast<float>(buttonsRect_.right);
+    auto brushRectHeight = static_cast<float>(buttonsRect_.bottom);
+
+    if (orientation_ == orHorizontal) {
+        brushRectHeight = brushRectHeight / 2.0f;
+    } else {
+        brushRectWidth = brushRectWidth / 2.0f;
+    }
+    LinearGradientBrush br(
+        RectF(float(0), float(-0.5 ), brushRectWidth, brushRectHeight),
+        Color(231,231,231),Color(248,248,248),
+        orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal
+    );
+    //br.SetWrapMode(orientation_ == orHorizontal ? WrapModeTileFlipX : WrapModeTileFlipY);
+    br.SetWrapMode(WrapModeTileFlipX);
 
     rect = Rect(subpanelLeftOffset_, static_cast<INT>(buttonsRect_.bottom - 2 * dpiScaleY_), static_cast<INT>(kSubpanelWidth*dpiScaleX_), clientRect.bottom);
     rect.Height -= rect.Y;
@@ -706,8 +719,6 @@ int Toolbar::AutoSize() {
         }
     }
 
-
-
     if ( orientation_ == orHorizontal && createSubPanel_) {
         SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE|SWP_NOZORDER);
         penSizeSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE|SWP_NOZORDER);
@@ -923,40 +934,26 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
     SolidBrush brush(item.enabled ? Color(0, 0, 0) : Color(120, 120, 120));
 
-    if ( item.state == isHover ||  item.state == isDown ||  item.state == isDropDown || item.isChecked) {
-            Pen p(Color(198,196,197));
-            Color gradientColor1 = item.isChecked ?  Color(170,170,170) : Color(232,232,232);
-            Color gradientColor2 = item.isChecked ? Color(130,130,130) : Color(170,170,170);
-            LinearGradientBrush br (RectF(float(x), float(y ), float( x+size.cx),
-                /*rect.top+*/ float(y+size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
+    if (item.state == isHover || item.state == isDown || item.state == isDropDown || item.isChecked) {
+        Pen p(Color(198, 196, 197));
+        Color gradientColor1 = item.isChecked ? Color(210, 210, 210) : Color(230, 230, 230);
+        Color gradientColor2 = item.isChecked ? Color(190, 190, 190) : Color(225, 225, 225);
+        LinearGradientBrush br(RectF(float(x)+1, float(y), float(x + size.cx),
+                                     float(y + size.cy)+2), gradientColor1, gradientColor2,
+                               LinearGradientModeVertical);
+        br.SetWrapMode(WrapModeTileFlipX);
 
-            CRoundRect roundRect;
-            roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
+        CRoundRect roundRect;
+        roundRect.FillRoundRect(gr, &br, Rect(x, y, size.cx, size.cy), Color(195, 195, 195), 4);
 
-            if ( item.type == itComboButton ) {
-                gr->DrawLine(&p, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
-            }
+        if (item.type == itComboButton) {
+            gr->DrawLine(&p, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2 * dpiScaleX_, bounds.Y + 1,
+                         bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2 * dpiScaleX_,
+                         bounds.Y + bounds.Height - 1);
+        }
+    }
 
-    } /*else if ( item.state == isChecked ) {
-        Pen p(Color(198,196,197));
-        Color gradientColor1 = Color(200,200,200);
-        Color gradientColor2 = Color(140,140,140);
-        LinearGradientBrush br (RectF(float(0), float(0.5 ), float( size.cx),
-            /*rect.top+* float(size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
-        //    gr->FillRectangle( &brush, Rect(x, y, size.cx, size.cy));
-        //br.TranslateTransform(x,y);
-        //br.SetWrapMode(WrapModeTile);
-        /*CRoundRect roundRect;
-        roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
-        //roundRect.DrawRoundRect(gr,Rect(x, y, size.cx, size.cy),Color(198,196,197),7, 1);
-        //DrawRoundedRectangle(gr,Rect(x, y, size.cx, size.cy),8,&p, 0);
-        /*if ( item.type == itComboButton ) {
-            gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3 ,  bounds.Y+1 , bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3, bounds.Y + bounds.Height -1 );
-        }*/
-
-//    }
-
-    REAL iconX = itemHorPadding_ + bounds.X + (item.state == isDown ? 1 : 0);
+    REAL iconX = itemHorPadding_ + bounds.X + (item.state == isDown ? 1.0f : 0.f);
 
     if ( item.type == itComboButton ) {
         gr->DrawImage(dropDownIcon_.get(), bounds.GetRight() - kDropdownIconSize * dpiScaleX_ + (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height - kDropdownIconSize * dpiScaleY_) / 2 + (item.state == isDropDown ? 1 : 0) /* kDropdownIconSize * dpiScaleX_, kDropdownIconSize * dpiScaleY_*/);

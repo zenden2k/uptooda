@@ -401,13 +401,6 @@
         </Actions>
         <Result DirectUrlTemplate="$(ShortUrl)" />
     </Server>
-    <!-- is.gd is not accessible in Russia (works with VPN) -->
-    <Server Name="is.gd" Debug="0" Type="urlshortening" DefaultForTypes="urlshortening" WebsiteUrl="https://is.gd/">
-        <Actions>
-            <Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
-        </Actions>
-        <Result DirectUrlTemplate="$(ShortUrl)" />
-    </Server>
     <Server Name="vk.cc" Authorize="0" Type="urlshortening" Plugin="vk.cc" NeedPassword="0" WebsiteUrl="https://vk.cc">
         <Result DirectUrlTemplate="stub"/>
     </Server>
