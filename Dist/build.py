@@ -79,37 +79,18 @@ BUILD_TARGETS = [
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
-        'arch': 'x86',
-        'host_profile': WINDOWS_HOST_PROFILE_X86,
-        'build_profile': DEFAULT_BUILD_PROFILE,
-        'cmake_generator': WINDOWS_CMAKE_GENERATOR,
-        'cmake_platform': "Win32",
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
-        'enable_webview2': True,
-        'shell_ext_arch': 'Win32',
-        'shell_ext_64bit_arch': 'x64',
-        'run_tests': True,
-        'ffmpeg_standalone' : False,
-        'supported_os': 'Windows 7/8/8.1/10/11',
-        'upload_pdb': True
-    },
-    {
-        'os': "Windows",
-        'compiler': "VS2019",
-        'build_type': "Release",
         'arch': 'x86_64',
         'host_profile': WINDOWS_HOST_PROFILE_X64,
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': WINDOWS_CMAKE_GENERATOR,
         'cmake_platform': "x64",
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_BUILD_QIMAGEUPLOADER=On", "-DCMAKE_PREFIX_PATH=E:/Qt6/6.11.0/msvc2026_64_static_release"],
         'enable_webview2': True,
-        'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
         'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
-        'supported_os': 'Windows 7/8/8.1/10/11 (64 bit)',
+        'supported_os': 'Windows 10/11 (64 bit)',
         'upload_pdb': True
     },
     {
@@ -121,7 +102,7 @@ BUILD_TARGETS = [
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': WINDOWS_CMAKE_GENERATOR,
         'cmake_platform': "ARM64",
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off"],
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off", "-DIU_BUILD_QIMAGEUPLOADER=On"],
         'enable_webview2': True,
         'shell_ext_64bit_arch': 'ARM64',
         'ffmpeg_standalone' : False,
@@ -579,7 +560,7 @@ def update_github_build_number():
     if not GITHUB_VARIABLES_TOKEN:
         raise RuntimeError("GH_VARIABLES_TOKEN is not set. Add it to Dist/.env or use --no-update-github-build-number.")
 
-    variable_name = "IU_BUILD_NUMBER"
+    variable_name = "IU_MODERN_BUILD_NUMBER"
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/actions/variables/{variable_name}"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -982,7 +963,7 @@ def main():
             build_type = target.get("build_type")
             command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type,
                        "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake",
-                       "-DCONAN_BUILD_PROFILE=" + build_profile
+                       "-DCONAN_BUILD_PROFILE=" + build_profile,
                        ]
             if target.get("host_profile") != "":
                 command += ["-DCONAN_HOST_PROFILE=" + host_profile]
@@ -1027,7 +1008,7 @@ def main():
 
             if target["os"] == "Windows":
                 if target.get("shell_ext_arch"):
-                    command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln",
+                    command = ["C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln",
                                "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
                     print("Running command:", " ".join(command))
                     proc = subprocess.run(command)
@@ -1036,7 +1017,7 @@ def main():
                         exit(1)
 
                 if target.get("shell_ext_64bit_arch"):
-                    command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln",
+                    command = ["C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.exe", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln",
                                "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_64bit_arch"]]
                     print("Running command:", " ".join(command))
                     proc = subprocess.run(command)
