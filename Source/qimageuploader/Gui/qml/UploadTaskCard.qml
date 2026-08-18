@@ -8,29 +8,29 @@ Rectangle {
     property int taskIndex
     property var taskData
     property real dragStartY: 0
-    readonly property bool successfullyFinished: taskData.status === "Завершено"
+    readonly property bool successfullyFinished: taskData.statusKey === "finished"
     readonly property real displayedProgress: successfullyFinished ? 100 : taskData.progress
 
     function statusColor(status) {
         switch (status) {
-        case "Завершено":
+        case "finished":
             return "#278a56"
-        case "Ошибка":
+        case "failure":
             return "#c43d4b"
-        case "Остановлено":
+        case "stopped":
             return "#a54f55"
-        case "Загрузка":
+        case "running":
             return "#197db8"
-        case "Обработка":
+        case "processing":
             return "#7760b5"
-        case "Отложено":
+        case "postponed":
             return "#a36a16"
         default:
             return "#66768a"
         }
     }
 
-    height: 112
+    height: 84
     radius: 8
     color: dragArea.drag.active ? "#edf8ff" : taskHover.hovered ? "#f1f7fb" : "#f8fafc"
     border.color: dragArea.drag.active ? "#68b6e8" : taskHover.hovered ? "#b8d3e5" : "#dce4ec"
@@ -66,12 +66,12 @@ Rectangle {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 12
+        anchors.margins: 6
+        spacing: 8
 
         Rectangle {
-            Layout.preferredWidth: 74
-            Layout.preferredHeight: 74
+            Layout.preferredWidth: 64
+            Layout.preferredHeight: 64
             radius: 2
             color: "#eaf0f5"
             clip: true
@@ -94,7 +94,7 @@ Rectangle {
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 6
+            spacing: 4
 
             RowLayout {
                 Layout.fillWidth: true
@@ -108,7 +108,7 @@ Rectangle {
                     Layout.maximumWidth: 300
                 }
                 Label {
-                    text: "Сервер: " + taskCard.taskData.server
+                    text: qsTr("Server: %1").arg(taskCard.taskData.server)
                     color: "#607086"
                     elide: Text.ElideRight
                     Layout.maximumWidth: 230
@@ -132,7 +132,10 @@ Rectangle {
                             height: parent.height
                             radius: 4
                             color: "#5eb5e8"
-                            Behavior on width { NumberAnimation { duration: 120 } }
+                            Behavior on width {
+                                enabled: !taskCard.successfullyFinished
+                                NumberAnimation { duration: 120 }
+                            }
                         }
                     }
                 }
@@ -143,7 +146,7 @@ Rectangle {
 
             Label {
                 text: taskCard.taskData.status
-                color: taskCard.statusColor(taskCard.taskData.status)
+                color: taskCard.statusColor(taskCard.taskData.statusKey)
                 font.pixelSize: 12
                 font.weight: Font.DemiBold
             }
@@ -151,7 +154,7 @@ Rectangle {
 
         Button {
             id: codesButton
-            text: "Коды"
+            text: qsTr("Codes")
             Layout.preferredWidth: 76
             Layout.preferredHeight: 34
             onClicked: mainWindowController.showCodes(taskCard.sessionId, taskCard.taskData.taskId)
@@ -188,15 +191,15 @@ Rectangle {
         width: 218
         padding: 1
         spacing: 0
-        AppMenuItem { text: "Коды"; onTriggered: mainWindowController.showCodes(taskCard.sessionId, taskCard.taskData.taskId) }
-        AppMenuItem { text: "Копировать прямую ссылку"; onTriggered: mainWindowController.copyDirectLink(taskCard.sessionId, taskCard.taskData.taskId) }
-        AppMenuItem { text: "Копировать ссылку просмотра"; onTriggered: mainWindowController.copyViewLink(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Codes"); onTriggered: mainWindowController.showCodes(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Copy direct link"); onTriggered: mainWindowController.copyDirectLink(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Copy view link"); onTriggered: mainWindowController.copyViewLink(taskCard.sessionId, taskCard.taskData.taskId) }
         AppMenuSeparator {}
-        AppMenuItem { text: "Открыть в браузере"; onTriggered: mainWindowController.openTaskUrl(taskCard.sessionId, taskCard.taskData.taskId) }
-        AppMenuItem { text: "Открыть файл"; onTriggered: mainWindowController.openTaskFile(taskCard.sessionId, taskCard.taskData.taskId) }
-        AppMenuItem { text: "Копировать путь к файлу"; onTriggered: mainWindowController.copyFilePath(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Open in browser"); onTriggered: mainWindowController.openTaskUrl(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Open file"); onTriggered: mainWindowController.openTaskFile(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Copy file path"); onTriggered: mainWindowController.copyFilePath(taskCard.sessionId, taskCard.taskData.taskId) }
         AppMenuSeparator {}
-        AppMenuItem { text: "Удалить"; onTriggered: mainWindowController.removeTask(taskCard.sessionId, taskCard.taskData.taskId) }
+        AppMenuItem { text: qsTr("Remove"); onTriggered: mainWindowController.removeTask(taskCard.sessionId, taskCard.taskData.taskId) }
         background: MenuBackground {}
     }
 }

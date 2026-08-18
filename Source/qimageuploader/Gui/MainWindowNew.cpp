@@ -1,9 +1,11 @@
 #include "MainWindowNew.h"
 
+#include <QAbstractListModel>
 #include <QApplication>
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
@@ -15,6 +17,8 @@
 #include <QQuickWidget>
 #include <QSystemTrayIcon>
 #include <QTemporaryFile>
+
+#include <algorithm>
 
 #include "AboutDialog.h"
 #include "Core/AppRuntimeInfo.h"
@@ -39,6 +43,41 @@
 #include "Gui/models/QmlUploadSessionModel.h"
 
 using Uptooda::Core::OutputGenerator::UploadObject;
+
+class PendingFilesModel final : public QAbstractListModel {
+public:
+    enum Roles { TIME_ROLE = Qt::UserRole + 1, SOURCE_ROLE };
+
+    explicit PendingFilesModel(QObject* parent = nullptr) : QAbstractListModel(parent) { }
+
+    int rowCount(const QModelIndex& parent = { }) const override { return parent.isValid() ? 0 : FileNames_.size(); }
+
+    QVariant data(const QModelIndex& index, int role) const override {
+        if (!index.isValid() || index.row() < 0 || index.row() >= FileNames_.size()) {
+            return { };
+        }
+        const QString& fileName = FileNames_[index.row()];
+        switch (role) {
+        case TIME_ROLE:
+            return QFileInfo(fileName).fileName();
+        case SOURCE_ROLE:
+            return QUrl::fromLocalFile(fileName);
+        default:
+            return { };
+        }
+    }
+
+    QHash<int, QByteArray> roleNames() const override { return { { TIME_ROLE, "time" }, { SOURCE_ROLE, "source" } }; }
+
+    void setFileNames(const QStringList& fileNames) {
+        beginResetModel();
+        FileNames_ = fileNames;
+        endResetModel();
+    }
+
+private:
+    QStringList FileNames_;
+};
 
 namespace {
 class UploadSessionsImageSource final : public IImageViewerSource {
@@ -183,7 +222,7 @@ private:
 MainWindowNew::MainWindowNew(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent), EngineList_(engineList), LogWindow_(logWindow), QuickWidget_(new QQuickWidget(this)),
     SystemTrayIcon_(nullptr) {
-    setWindowTitle(APP_NAME_A + QStringLiteral(" (Qt Quick GUI)"));
+    setWindowTitle(APP_NAME_A + tr(" (Qt Quick GUI)"));
     setWindowIcon(QIcon(QStringLiteral(":/res/icon_main.ico")));
     resize(1080, 720);
     setMinimumSize(820, 560);
@@ -204,14 +243,15 @@ MainWindowNew::MainWindowNew(CUploadEngineList* engineList, LogWindow* logWindow
     serviceLocator->setServerIconCache(ServerIconCache_.get());
     UploadEngineManager_->setScriptsDirectory(dataDirectory + "/Scripts/");
     UploadSessionModel_ = std::make_unique<QmlUploadSessionModel>(UploadManager_.get(), this);
+    PendingFilesModel_ = std::make_unique<PendingFilesModel>(this);
     FrameGrabberController_ = std::make_unique<FrameGrabberController>(this, this);
     connect(FrameGrabberController_.get(), &FrameGrabberController::framesAccepted, this,
             [this](const QStringList& fileNames) {
                 if (fileNames.isEmpty()) {
                     return;
                 }
-                setPendingFiles(fileNames);
-                emit uploadSelectionRequested();
+                const int firstAddedIndex = addPendingFiles(fileNames);
+                emit uploadSelectionRequested(firstAddedIndex, false);
             });
     connect(FrameGrabberController_.get(), &FrameGrabberController::frameViewerRequested, this, [this](int index) {
         auto source = std::make_unique<FrameGrabberImageSource>(FrameGrabberController_->frameFileNames(), index);
@@ -261,6 +301,8 @@ QVariantList MainWindowNew::imageServers() const { return buildServerList(CUploa
 
 QVariantList MainWindowNew::fileServers() const { return buildServerList(CUploadEngineData::TypeFileServer); }
 
+QAbstractItemModel* MainWindowNew::pendingFiles() const { return PendingFilesModel_.get(); }
+
 int MainWindowNew::pendingFileCount() const { return PendingFiles_.size(); }
 
 QString MainWindowNew::defaultImageServer() const {
@@ -283,8 +325,8 @@ void MainWindowNew::chooseFiles() {
     QFileDialog dialog(this, tr("Open files"), QString(), tr("All files (*.*)"));
     dialog.setFileMode(QFileDialog::ExistingFiles);
     if (dialog.exec() == QDialog::Accepted && !dialog.selectedFiles().isEmpty()) {
-        setPendingFiles(dialog.selectedFiles());
-        emit uploadSelectionRequested();
+        const int firstAddedIndex = addPendingFiles(dialog.selectedFiles());
+        emit uploadSelectionRequested(firstAddedIndex, false);
     }
 }
 
@@ -311,10 +353,47 @@ void MainWindowNew::addDroppedFiles(const QVariantList& urls) {
         }
     }
     if (!fileNames.isEmpty()) {
-        setPendingFiles(fileNames);
-        emit uploadSelectionRequested();
+        const int firstAddedIndex = addPendingFiles(fileNames);
+        emit uploadSelectionRequested(firstAddedIndex, false);
     }
 }
+
+void MainWindowNew::clearPendingFiles() {
+    PendingFilesUploaded_ = false;
+    setPendingFiles({ });
+}
+
+void MainWindowNew::removePendingFiles(const QVariantList& indices) {
+    QList<int> rows;
+    rows.reserve(indices.size());
+    for (const QVariant& index : indices) {
+        rows.append(index.toInt());
+    }
+    std::sort(rows.begin(), rows.end(), std::greater<int>());
+    rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+    for (const int row : rows) {
+        if (row >= 0 && row < PendingFiles_.size()) {
+            PendingFiles_.removeAt(row);
+        }
+    }
+    PendingFilesModel_->setFileNames(PendingFiles_);
+    emit pendingFilesChanged();
+}
+
+void MainWindowNew::openPendingFile(int index) {
+    auto source = std::make_unique<FrameGrabberImageSource>(PendingFiles_, index);
+    if (source->currentFile().isEmpty()) {
+        return;
+    }
+    if (!ImageViewerWindow_) {
+        ImageViewerWindow_ = std::make_unique<ImageViewerWindow>();
+        ImageViewerWindow_->setTransientParent(windowHandle());
+    }
+    ImageViewerWindow_->setImageViewerSource(std::move(source));
+    ImageViewerWindow_->open();
+}
+
+void MainWindowNew::reusePendingFiles() { PendingFilesUploaded_ = false; }
 
 void MainWindowNew::openImageViewer(const QString& sessionId, const QString& taskId) {
     Q_UNUSED(sessionId);
@@ -355,16 +434,17 @@ void MainWindowNew::captureScreenshot() {
         const QString fileName = file.fileName();
         file.close();
         if (captureEngine.capturedBitmap()->save(fileName)) {
-            setPendingFiles({ fileName });
-            emit uploadSelectionRequested();
+            const int firstAddedIndex = addPendingFiles({ fileName });
+            emit uploadSelectionRequested(firstAddedIndex, true);
         }
     }
     show();
 }
 
-void MainWindowNew::confirmUpload(const QString& imageServer, const QString& imageAccount, const QString& fileServer,
+bool MainWindowNew::confirmUpload(const QString& imageServer, const QString& imageAccount, const QString& fileServer,
                                   const QString& fileAccount) {
-    if (addFiles(PendingFiles_, imageServer, imageAccount, fileServer, fileAccount)) {
+    const bool uploadStarted = addFiles(PendingFiles_, imageServer, imageAccount, fileServer, fileAccount);
+    if (uploadStarted) {
         auto* settings = ServiceLocator::instance()->settings<QtGuiSettings>();
         ServerProfile imageProfile(Q2U(imageServer));
         imageProfile.setProfileName(Q2U(imageAccount));
@@ -372,11 +452,12 @@ void MainWindowNew::confirmUpload(const QString& imageServer, const QString& ima
         ServerProfile fileProfile(Q2U(fileServer));
         fileProfile.setProfileName(Q2U(fileAccount));
         settings->fileServer = fileProfile;
+        PendingFilesUploaded_ = true;
     }
-    setPendingFiles({ });
+    return uploadStarted;
 }
 
-void MainWindowNew::cancelUpload() { setPendingFiles({ }); }
+void MainWindowNew::cancelUpload() { clearPendingFiles(); }
 
 QString MainWindowNew::addAccount(const QString& serverName) {
     ServerProfile profile(Q2U(serverName));
@@ -425,7 +506,7 @@ void MainWindowNew::copyViewLink(const QString& sessionId, const QString& taskId
 
 void MainWindowNew::copyFilePath(const QString& sessionId, const QString& taskId) {
     if (auto task = std::dynamic_pointer_cast<FileUploadTask>(findTask(sessionId, taskId))) {
-        QApplication::clipboard()->setText(U2Q(task->getFileName()));
+        QApplication::clipboard()->setText(QDir::toNativeSeparators(U2Q(task->getFileName())));
     }
 }
 
@@ -553,7 +634,25 @@ bool MainWindowNew::addFiles(const QStringList& fileNames, const QString& imageS
 
 void MainWindowNew::setPendingFiles(const QStringList& fileNames) {
     PendingFiles_ = fileNames;
+    PendingFilesModel_->setFileNames(PendingFiles_);
     emit pendingFilesChanged();
+}
+
+int MainWindowNew::addPendingFiles(const QStringList& fileNames) {
+    QStringList combined = PendingFilesUploaded_ ? QStringList { } : PendingFiles_;
+    PendingFilesUploaded_ = false;
+    int firstAddedIndex = -1;
+    for (const QString& fileName : fileNames) {
+        const QString absoluteFileName = QFileInfo(fileName).absoluteFilePath();
+        if (!absoluteFileName.isEmpty() && !combined.contains(absoluteFileName)) {
+            if (firstAddedIndex < 0) {
+                firstAddedIndex = combined.size();
+            }
+            combined.append(absoluteFileName);
+        }
+    }
+    setPendingFiles(combined);
+    return firstAddedIndex;
 }
 
 std::shared_ptr<UploadTask> MainWindowNew::findTask(const QString& sessionId, const QString& taskId) const {

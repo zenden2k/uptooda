@@ -1,5 +1,6 @@
 #include "QmlUploadSessionModel.h"
 
+#include <QCoreApplication>
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMetaObject>
@@ -17,21 +18,41 @@ namespace {
 QString statusText(UploadTask::Status status) {
     switch (status) {
     case UploadTask::StatusInQueue:
-        return QStringLiteral("В очереди");
+        return QCoreApplication::translate("QmlUploadSessionModel", "In queue");
     case UploadTask::StatusRunning:
-        return QStringLiteral("Загрузка");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Uploading");
     case UploadTask::StatusStopped:
-        return QStringLiteral("Остановлено");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Stopped");
     case UploadTask::StatusFinished:
-        return QStringLiteral("Завершено");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Finished");
     case UploadTask::StatusFailure:
-        return QStringLiteral("Ошибка");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Failed");
     case UploadTask::StatusPostponed:
-        return QStringLiteral("Отложено");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Postponed");
     case UploadTask::StatusWaitingChildren:
-        return QStringLiteral("Обработка");
+        return QCoreApplication::translate("QmlUploadSessionModel", "Processing");
     }
     return { };
+}
+
+QString statusKey(UploadTask::Status status) {
+    switch (status) {
+    case UploadTask::StatusInQueue:
+        return QStringLiteral("queued");
+    case UploadTask::StatusRunning:
+        return QStringLiteral("running");
+    case UploadTask::StatusStopped:
+        return QStringLiteral("stopped");
+    case UploadTask::StatusFinished:
+        return QStringLiteral("finished");
+    case UploadTask::StatusFailure:
+        return QStringLiteral("failure");
+    case UploadTask::StatusPostponed:
+        return QStringLiteral("postponed");
+    case UploadTask::StatusWaitingChildren:
+        return QStringLiteral("processing");
+    }
+    return QStringLiteral("unknown");
 }
 
 QString sizeText(qint64 bytes) {
@@ -77,7 +98,7 @@ QVariant QmlUploadSessionModel::data(const QModelIndex& index, int role) const {
     }
     std::shared_ptr<UploadSession> session;
     int visibleIndex = 0;
-    for (int i = 0; i < UploadManager_->sessionCount(); ++i) {
+    for (int i = UploadManager_->sessionCount() - 1; i >= 0; --i) {
         auto candidate = UploadManager_->session(i);
         if (HiddenSessions_.contains(objectId(candidate.get()))) {
             continue;
@@ -248,6 +269,7 @@ QVariantMap QmlUploadSessionModel::taskData(const std::shared_ptr<UploadTask>& t
     result[QStringLiteral("fileName")] = U2Q(task->title());
     result[QStringLiteral("server")] = U2Q(task->serverName());
     result[QStringLiteral("status")] = statusText(task->status());
+    result[QStringLiteral("statusKey")] = statusKey(task->status());
 
     const auto* progress = task->progress();
     const qint64 total = std::max<qint64>(0, progress->totalUpload > 0 ? progress->totalUpload : task->getDataLength());

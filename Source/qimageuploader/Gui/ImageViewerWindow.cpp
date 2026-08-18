@@ -1,5 +1,6 @@
 #include "ImageViewerWindow.h"
 
+#include <QCloseEvent>
 #include <QFileInfo>
 #include <QFutureWatcher>
 #include <QImageReader>
@@ -37,6 +38,8 @@ ImageViewerWindow::ImageViewerWindow(QWindow* parent) : QQuickView(parent), Imag
     setFlags(Qt::Window | Qt::FramelessWindowHint);
     setColor(Qt::transparent);
     setResizeMode(QQuickView::SizeRootObjectToView);
+    setPersistentGraphics(true);
+    setPersistentSceneGraph(true);
     engine()->addImageProvider(QStringLiteral("imageviewer"), ImageProvider_);
     rootContext()->setContextProperty(QStringLiteral("imageViewerController"), this);
     setSource(QUrl(QStringLiteral("qrc:/qt/qml/Uptooda/Ui/ImageViewerWindow.qml")));
@@ -45,6 +48,8 @@ ImageViewerWindow::ImageViewerWindow(QWindow* parent) : QQuickView(parent), Imag
 ImageViewerWindow::~ImageViewerWindow() = default;
 
 void ImageViewerWindow::setImageViewerSource(std::unique_ptr<IImageViewerSource> source) {
+    hide();
+    OpenWhenReady_ = false;
     ImageSource_.clear();
     ImageProvider_->setImage({ });
     Source_ = std::move(source);
@@ -52,6 +57,14 @@ void ImageViewerWindow::setImageViewerSource(std::unique_ptr<IImageViewerSource>
 }
 
 void ImageViewerWindow::open() {
+    OpenWhenReady_ = true;
+    if (!Loading_) {
+        showViewer();
+    }
+}
+
+void ImageViewerWindow::showViewer() {
+    OpenWhenReady_ = false;
     showFullScreen();
     raise();
     requestActivate();
@@ -91,7 +104,15 @@ void ImageViewerWindow::toggleFullScreen() {
     }
 }
 
-void ImageViewerWindow::closeViewer() { close(); }
+void ImageViewerWindow::closeViewer() {
+    OpenWhenReady_ = false;
+    hide();
+}
+
+void ImageViewerWindow::closeEvent(QCloseEvent* event) {
+    event->ignore();
+    closeViewer();
+}
 
 void ImageViewerWindow::loadFile(const QString& fileName) {
     const quint64 request = ++LoadRequest_;
@@ -122,6 +143,9 @@ void ImageViewerWindow::loadFile(const QString& fileName) {
             ImageSource_ = QStringLiteral("image://imageviewer/current?request=%1").arg(request);
         }
         emit viewerStateChanged();
+        if (OpenWhenReady_) {
+            showViewer();
+        }
     });
     watcher->setFuture(QtConcurrent::run([fileName] {
         QImageReader reader(fileName);

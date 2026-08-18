@@ -13,6 +13,8 @@
 class LogWindow;
 class FrameGrabberController;
 class ImageViewerWindow;
+class PendingFilesModel;
+class QAbstractItemModel;
 class QmlUploadSessionModel;
 class QQuickWidget;
 class QSystemTrayIcon;
@@ -25,6 +27,7 @@ class MainWindowNew : public QMainWindow, public IProgramWindow {
     Q_OBJECT
     Q_PROPERTY(QVariantList imageServers READ imageServers NOTIFY serverListsChanged)
     Q_PROPERTY(QVariantList fileServers READ fileServers NOTIFY serverListsChanged)
+    Q_PROPERTY(QAbstractItemModel* pendingFiles READ pendingFiles NOTIFY pendingFilesChanged)
     Q_PROPERTY(int pendingFileCount READ pendingFileCount NOTIFY pendingFilesChanged)
     Q_PROPERTY(QString defaultImageServer READ defaultImageServer CONSTANT)
     Q_PROPERTY(QString defaultImageAccount READ defaultImageAccount CONSTANT)
@@ -37,6 +40,7 @@ public:
 
     QVariantList imageServers() const;
     QVariantList fileServers() const;
+    QAbstractItemModel* pendingFiles() const;
     int pendingFileCount() const;
     QString defaultImageServer() const;
     QString defaultImageAccount() const;
@@ -46,9 +50,13 @@ public:
     Q_INVOKABLE void chooseFiles();
     Q_INVOKABLE void importVideo();
     Q_INVOKABLE void addDroppedFiles(const QVariantList& urls);
+    Q_INVOKABLE void clearPendingFiles();
+    Q_INVOKABLE void removePendingFiles(const QVariantList& indices);
+    Q_INVOKABLE void openPendingFile(int index);
+    Q_INVOKABLE void reusePendingFiles();
     Q_INVOKABLE void openImageViewer(const QString& sessionId, const QString& taskId);
     Q_INVOKABLE void captureScreenshot();
-    Q_INVOKABLE void confirmUpload(const QString& imageServer, const QString& imageAccount, const QString& fileServer,
+    Q_INVOKABLE bool confirmUpload(const QString& imageServer, const QString& imageAccount, const QString& fileServer,
                                    const QString& fileAccount);
     Q_INVOKABLE void cancelUpload();
     Q_INVOKABLE QString addAccount(const QString& serverName);
@@ -72,7 +80,7 @@ public:
 signals:
     void pendingFilesChanged();
     void serverListsChanged();
-    void uploadSelectionRequested();
+    void uploadSelectionRequested(int firstAddedIndex, bool selectAddedItem);
     void videoImportRequested();
 
 protected:
@@ -80,6 +88,7 @@ protected:
 
 private:
     QVariantList buildServerList(int serverTypeMask) const;
+    int addPendingFiles(const QStringList& fileNames);
     bool addFiles(const QStringList& fileNames, const QString& imageServer, const QString& imageAccount,
                   const QString& fileServer, const QString& fileAccount);
     void setPendingFiles(const QStringList& fileNames);
@@ -93,10 +102,12 @@ private:
     std::unique_ptr<UploadManager> UploadManager_;
     std::unique_ptr<QtServerIconCache> ServerIconCache_;
     std::unique_ptr<QmlUploadSessionModel> UploadSessionModel_;
+    std::unique_ptr<PendingFilesModel> PendingFilesModel_;
     std::unique_ptr<FrameGrabberController> FrameGrabberController_;
     std::unique_ptr<ImageViewerWindow> ImageViewerWindow_;
     QSystemTrayIcon* SystemTrayIcon_;
     QStringList PendingFiles_;
+    bool PendingFilesUploaded_ = false;
 };
 
 #endif

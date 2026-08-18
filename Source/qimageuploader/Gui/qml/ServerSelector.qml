@@ -4,7 +4,7 @@ import QtQuick.Layouts
 
 Rectangle {
     id: root
-    property string title: "Сервер"
+    property string title: qsTr("Server")
     property var serverModel: []
     property string initialServer: ""
     property string initialAccount: ""
@@ -239,7 +239,7 @@ Rectangle {
                 Layout.preferredWidth: 42
                 Layout.preferredHeight: 42
                 ToolTip.visible: hovered
-                ToolTip.text: "Добавить аккаунт"
+                ToolTip.text: qsTr("Add account")
                 ToolTip.delay: 600
                 onClicked: {
                     var server = root.selectedServer

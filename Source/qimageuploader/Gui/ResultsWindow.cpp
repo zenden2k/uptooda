@@ -6,17 +6,15 @@
 #include "ui_ResultsWindow.h"
 namespace OutputCodeGenerator = Uptooda::Core::OutputGenerator;
 ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> objects, QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui::ResultsWindow),
-    uploadObjects_(objects) {
+    QDialog(parent), ui(new Ui::ResultsWindow), uploadObjects_(objects) {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
-    ui->tabBar->addTab("For forums (BBCode)");
-    ui->tabBar->addTab("For websites (HTML)");
-    ui->tabBar->addTab("Markdown");
-    ui->tabBar->addTab("Just links");
-    ui->codeTypeCombo->addItems(QStringList() << "Table of clickable thumbnails" << "Clickable thumbnails"
-        << "Images" << "Links");
+    ui->tabBar->addTab(tr("For forums (BBCode)"));
+    ui->tabBar->addTab(tr("For websites (HTML)"));
+    ui->tabBar->addTab(tr("Markdown"));
+    ui->tabBar->addTab(tr("Just links"));
+    ui->codeTypeCombo->addItems(QStringList() << tr("Table of clickable thumbnails") << tr("Clickable thumbnails")
+                                              << tr("Images") << tr("Links"));
     connect(ui->tabBar, &QTabBar::currentChanged, this, &ResultsWindow::currentTabChanged);
     connect(ui->codeTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(generateCode()));
     connect(ui->copyToClipboardButton, &QPushButton::clicked, this, &ResultsWindow::onCopyToClipboard);
@@ -24,8 +22,7 @@ ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> obje
 }
 
 
-ResultsWindow::~ResultsWindow() {
-}
+ResultsWindow::~ResultsWindow() { }
 
 void ResultsWindow::generateCode() {
     OutputCodeGenerator::OutputGeneratorFactory factory;
@@ -35,29 +32,23 @@ void ResultsWindow::generateCode() {
     OutputCodeGenerator::GeneratorID gid;
     int tabIndex = ui->tabBar->currentIndex();
     if (tabIndex == 0) {
-        //lang = OutputCodeGenerator::clBBCode;
+        // lang = OutputCodeGenerator::clBBCode;
         gid = OutputCodeGenerator::gidBBCode;
-    }
-    else if (tabIndex == 1) {
+    } else if (tabIndex == 1) {
         gid = OutputCodeGenerator::gidHTML;
-    }
-    else if (tabIndex == 2) {
+    } else if (tabIndex == 2) {
         gid = OutputCodeGenerator::gidMarkdown;
-    }
-    else {
+    } else {
         gid = OutputCodeGenerator::gidPlain;
     }
     int codeTypeIndex = ui->codeTypeCombo->currentIndex();
     if (codeTypeIndex == 0) {
         codeType = OutputCodeGenerator::ctTableOfThumbnails;
-    }
-    else if (codeTypeIndex == 1) {
+    } else if (codeTypeIndex == 1) {
         codeType = OutputCodeGenerator::ctClickableThumbnails;
-    }
-    else if (codeTypeIndex == 2) {
+    } else if (codeTypeIndex == 2) {
         codeType = OutputCodeGenerator::ctImages;
-    }
-    else if (codeTypeIndex == 3) {
+    } else if (codeTypeIndex == 3) {
         codeType = OutputCodeGenerator::ctLinks;
     } else {
         codeType = OutputCodeGenerator::ctTableOfThumbnails;

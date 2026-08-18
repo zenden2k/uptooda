@@ -2,6 +2,7 @@
 
 #include <QAbstractListModel>
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -177,13 +178,14 @@ FrameGrabberController::~FrameGrabberController() {
     }
 }
 
-QString FrameGrabberController::fileName() const { return FileName_; }
+QString FrameGrabberController::fileName() const { return QDir::toNativeSeparators(FileName_); }
 
 void FrameGrabberController::setFileName(const QString& fileName) {
-    if (FileName_ == fileName || Running_) {
+    const QString normalizedFileName = QDir::fromNativeSeparators(fileName);
+    if (FileName_ == normalizedFileName || Running_) {
         return;
     }
-    FileName_ = fileName;
+    FileName_ = normalizedFileName;
     ErrorText_.clear();
     emit stateChanged();
 }
@@ -231,7 +233,7 @@ bool FrameGrabberController::prepareFile(const QString& fileName) {
     if (Running_) {
         return false;
     }
-    FileName_ = fileName;
+    FileName_ = QDir::fromNativeSeparators(fileName);
     ImageStore_->clear();
     Frames_->clear();
     ErrorText_.clear();
@@ -270,8 +272,6 @@ void FrameGrabberController::start() {
         return;
     }
 
-    ImageStore_->clear();
-    Frames_->clear();
     ErrorText_.clear();
     CancelRequested_ = false;
     Running_ = true;

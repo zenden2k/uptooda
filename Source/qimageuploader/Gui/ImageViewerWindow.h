@@ -8,6 +8,7 @@
 #include "IImageViewerSource.h"
 
 class ViewerImageProvider;
+class QCloseEvent;
 
 class ImageViewerWindow : public QQuickView {
     Q_OBJECT
@@ -41,8 +42,12 @@ public:
 signals:
     void viewerStateChanged();
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
 private:
     void loadFile(const QString& fileName);
+    void showViewer();
 
     std::unique_ptr<IImageViewerSource> Source_;
     ViewerImageProvider* ImageProvider_;
@@ -51,6 +56,7 @@ private:
     QString ErrorText_;
     quint64 LoadRequest_ = 0;
     bool Loading_ = false;
+    bool OpenWhenReady_ = false;
 };
 
 #endif

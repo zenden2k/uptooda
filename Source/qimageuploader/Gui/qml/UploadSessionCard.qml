@@ -9,9 +9,9 @@ Rectangle {
     required property string serverNames
     required property string serverIcon
     required property var tasks
-    property bool expanded: fileCount <= 3
+    property bool expanded: true
 
-    implicitHeight: header.height + (expanded ? taskColumn.implicitHeight + 12 : 0)
+    implicitHeight: header.height + (expanded ? taskColumn.implicitHeight + 8 : 0)
     height: implicitHeight
     radius: 9
     color: "#ffffff"
@@ -24,13 +24,13 @@ Rectangle {
     Item {
         id: header
         width: parent.width
-        height: 66
+        height: 58
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 16
-            anchors.rightMargin: 12
-            spacing: 12
+            anchors.leftMargin: 12
+            anchors.rightMargin: 10
+            spacing: 10
 
             Image { source: card.serverIcon; Layout.preferredWidth: 30; Layout.preferredHeight: 30; fillMode: Image.PreserveAspectFit }
             ColumnLayout {
@@ -38,20 +38,13 @@ Rectangle {
                 spacing: 2
                 Label {
                     Layout.fillWidth: true
-                    text: card.serverNames.length > 0 ? card.serverNames : "Сессия загрузки"
+                    text: card.serverNames.length > 0 ? card.serverNames : qsTr("Upload session")
                     color: "#263548"
                     font.weight: Font.DemiBold
                     font.pixelSize: 14
                     elide: Text.ElideRight
                 }
-                Label { text: card.fileCount + " " + (card.fileCount === 1 ? "файл" : "файлов"); color: "#7c8999"; font.pixelSize: 12 }
-            }
-            ToolButton {
-                id: expandButton
-                text: card.expanded ? "⌃" : "⌄"
-                visible: card.fileCount > 3
-                onClicked: card.expanded = !card.expanded
-                background: Rectangle { radius: 9; color: expandButton.hovered ? "#eaf3fa" : "transparent" }
+                Label { text: qsTr("%n file(s)", "", card.fileCount); color: "#7c8999"; font.pixelSize: 12 }
             }
             ToolButton {
                 id: sessionMenuButton
@@ -60,16 +53,15 @@ Rectangle {
                 background: Rectangle { radius: 9; color: sessionMenuButton.hovered ? "#eaf3fa" : "transparent" }
             }
         }
-        TapHandler { onTapped: if (card.fileCount > 3) card.expanded = !card.expanded }
         TapHandler { acceptedButtons: Qt.RightButton; onTapped: sessionMenu.popup() }
     }
 
     Column {
         id: taskColumn
-        x: 12
+        x: 8
         y: header.height
-        width: parent.width - 24
-        spacing: 8
+        width: parent.width - 16
+        spacing: 6
         visible: card.expanded
 
         Repeater {
@@ -91,10 +83,10 @@ Rectangle {
         width: 198
         padding: 1
         spacing: 0
-        AppMenuItem { text: "Коды"; onTriggered: mainWindowController.showCodes(card.sessionId) }
-        AppMenuItem { text: "Повторить неудачные"; onTriggered: mainWindowController.retrySession(card.sessionId) }
+        AppMenuItem { text: qsTr("Codes"); onTriggered: mainWindowController.showCodes(card.sessionId) }
+        AppMenuItem { text: qsTr("Retry failed"); onTriggered: mainWindowController.retrySession(card.sessionId) }
         AppMenuSeparator {}
-        AppMenuItem { text: "Удалить сессию"; onTriggered: mainWindowController.removeSession(card.sessionId) }
+        AppMenuItem { text: qsTr("Remove session"); onTriggered: mainWindowController.removeSession(card.sessionId) }
         background: MenuBackground {}
     }
 }

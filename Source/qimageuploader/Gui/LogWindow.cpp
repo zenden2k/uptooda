@@ -5,11 +5,8 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
 
-LogWindow::LogWindow(QWidget *parent) :
-    QDialog(parent),
-	ui(new Ui::LogWindow) 
-{
-	ui->setupUi(this);
+LogWindow::LogWindow(QWidget* parent) : QDialog(parent), ui(new Ui::LogWindow) {
+    ui->setupUi(this);
     ui->plainTextEdit->setReadOnly(true);
 
     connect(ui->clearButton, &QPushButton::clicked, ui->plainTextEdit, &QPlainTextEdit::clear);
@@ -20,15 +17,12 @@ LogWindow::LogWindow(QWidget *parent) :
 }
 
 
-LogWindow::~LogWindow()
-{
-}
+LogWindow::~LogWindow() { }
 
-void LogWindow::writeLog(ILogger::LogMsgType MsgType, QString Sender, QString Msg, QString Info)
-{
+void LogWindow::writeLog(ILogger::LogMsgType MsgType, QString Sender, QString Msg, QString Info) {
     QString line;
     line.fill('-', 70);
-	QString msg = "Sender:" + Sender + "\r\n" + Info + "\r\n" + Msg + "\r\n" + line + "\r\n";
+    QString msg = tr("Sender:") + Sender + "\r\n" + Info + "\r\n" + Msg + "\r\n" + line + "\r\n";
     QMetaObject::invokeMethod(this, "writeLogInMainThread", Q_ARG(int, MsgType), Q_ARG(QString, msg));
 }
 
@@ -43,4 +37,3 @@ void LogWindow::writeLogInMainThread(int msgType, QString msg) {
         }
     }
 }
-

@@ -10,10 +10,44 @@ Item {
     readonly property color ink: "#263548"
     property int activeTab: 0
     property bool fileDropActive: false
+    property bool pendingTabsVisible: false
+    property bool uploadParametersVisible: false
+    property bool reuploadAvailable: false
+
+    function openUploadParameters() {
+        if (mainWindowController.pendingFileCount === 0)
+            return
+        root.uploadParametersVisible = true
+        root.activeTab = 4
+    }
+
+    Shortcut {
+        sequences: ["Return", "Enter"]
+        context: Qt.WindowShortcut
+        enabled: root.activeTab === 3 && mainWindowController.pendingFileCount > 0
+        onActivated: root.openUploadParameters()
+    }
 
     Connections {
         target: mainWindowController
-        function onUploadSelectionRequested() { uploadDialog.open() }
+        function onUploadSelectionRequested(firstAddedIndex, selectAddedItem) {
+            if (root.reuploadAvailable)
+                root.uploadParametersVisible = false
+            root.reuploadAvailable = false
+            root.pendingTabsVisible = true
+            root.activeTab = 3
+            Qt.callLater(function() {
+                addedFilesView.revealItem(firstAddedIndex, selectAddedItem)
+            })
+        }
+        function onPendingFilesChanged() {
+            if (mainWindowController.pendingFileCount === 0 && root.activeTab >= 3) {
+                root.pendingTabsVisible = false
+                root.uploadParametersVisible = false
+                root.reuploadAvailable = false
+                root.activeTab = 0
+            }
+        }
         function onVideoImportRequested() { frameGrabberDialog.open() }
     }
 
@@ -58,51 +92,81 @@ Item {
 
             Menu {
                 id: fileMenu
-                title: "&Файл"
+                title: qsTr("&File")
                 popupType: Popup.Item
                 y: menuBar.height
                 width: 150
-                padding: 1
+                padding: 2
+                horizontalPadding: 2
+                verticalPadding: 2
+                leftPadding: 2
+                rightPadding: 2
+                topPadding: 2
+                bottomPadding: 2
+                leftInset: 0
+                rightInset: 0
+                topInset: 0
+                bottomInset: 0
                 spacing: 0
                 AppMenuItem {
-                    text: "Загрузить файлы…"
+                    text: qsTr("Upload files…")
                     onTriggered: { fileMenu.close(); mainWindowController.chooseFiles() }
                 }
                 AppMenuSeparator {}
                 AppMenuItem {
-                    text: "Выход"
+                    text: qsTr("Exit")
                     onTriggered: { fileMenu.close(); mainWindowController.quitApp() }
                 }
                 background: MenuBackground {}
             }
             Menu {
                 id: toolsMenu
-                title: "&Инструменты"
+                title: qsTr("&Tools")
                 popupType: Popup.Item
                 y: menuBar.height
                 width: 150
-                padding: 1
+                padding: 2
+                horizontalPadding: 2
+                verticalPadding: 2
+                leftPadding: 2
+                rightPadding: 2
+                topPadding: 2
+                bottomPadding: 2
+                leftInset: 0
+                rightInset: 0
+                topInset: 0
+                bottomInset: 0
                 spacing: 0
                 AppMenuItem {
-                    text: "Сделать скриншот"
+                    text: qsTr("Take screenshot")
                     onTriggered: { toolsMenu.close(); mainWindowController.captureScreenshot() }
                 }
                 AppMenuItem {
-                    text: "Показать журнал"
+                    text: qsTr("Show log")
                     onTriggered: { toolsMenu.close(); mainWindowController.showLog() }
                 }
                 background: MenuBackground {}
             }
             Menu {
                 id: helpMenu
-                title: "&Справка"
+                title: qsTr("&Help")
                 popupType: Popup.Item
                 y: menuBar.height
                 width: 150
-                padding: 1
+                padding: 2
+                horizontalPadding: 2
+                verticalPadding: 2
+                leftPadding: 2
+                rightPadding: 2
+                topPadding: 2
+                bottomPadding: 2
+                leftInset: 0
+                rightInset: 0
+                topInset: 0
+                bottomInset: 0
                 spacing: 0
                 AppMenuItem {
-                    text: "О программе"
+                    text: qsTr("About")
                     onTriggered: { helpMenu.close(); mainWindowController.showAbout() }
                 }
                 background: MenuBackground {}
@@ -122,15 +186,15 @@ Item {
                 spacing: 12
 
                 ActionButton {
-                    text: "＋  Загрузить файлы"
+                    text: qsTr("＋  Upload files")
                     onClicked: mainWindowController.chooseFiles()
                 }
                 ActionButton {
-                    text: "▣  Сделать скриншот"
+                    text: qsTr("▣  Take screenshot")
                     onClicked: mainWindowController.captureScreenshot()
                 }
                 ActionButton {
-                    text: "▶  Импорт видеофайла"
+                    text: qsTr("▶  Import video file")
                     onClicked: mainWindowController.importVideo()
                 }
             }
@@ -150,7 +214,7 @@ Item {
                 spacing: 8
 
                 Repeater {
-                    model: ["Загрузки", "Скриншоты", "Записи экрана"]
+                    model: [qsTr("Uploads"), qsTr("Screenshots"), qsTr("Screen recordings")]
                     delegate: AbstractButton {
                         id: tabButton
                         required property string modelData
@@ -185,6 +249,105 @@ Item {
                     }
                 }
             }
+
+            Row {
+                anchors.right: parent.right
+                anchors.rightMargin: 22
+                anchors.bottom: parent.bottom
+                height: parent.height
+                spacing: 8
+
+                AbstractButton {
+                    id: addedFilesTabButton
+                    visible: root.pendingTabsVisible && mainWindowController.pendingFileCount > 0
+                    hoverEnabled: true
+                    text: qsTr("Added files (%1)").arg(mainWindowController.pendingFileCount)
+                    height: parent.height
+                    leftPadding: 18
+                    rightPadding: 18
+                    font.weight: root.activeTab === 3 ? Font.DemiBold : Font.Normal
+                    onClicked: root.activeTab = 3
+                    contentItem: Text {
+                        text: addedFilesTabButton.text
+                        color: root.activeTab === 3 ? "#2789c9" : "#5b697b"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Item {
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.bottomMargin: 3
+                            color: addedFilesTabButton.hovered ? "#edf6fc" : "transparent"
+                        }
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            height: 3
+                            color: root.activeTab === 3 ? "#55afe8" : "transparent"
+                        }
+                    }
+                }
+
+                AbstractButton {
+                    id: uploadParametersTabButton
+                    visible: root.pendingTabsVisible && root.uploadParametersVisible
+                             && mainWindowController.pendingFileCount > 0
+                    hoverEnabled: true
+                    text: qsTr("Upload settings")
+                    height: parent.height
+                    leftPadding: 18
+                    rightPadding: 18
+                    font.weight: root.activeTab === 4 ? Font.DemiBold : Font.Normal
+                    onClicked: root.activeTab = 4
+                    contentItem: Text {
+                        text: uploadParametersTabButton.text
+                        color: root.activeTab === 4 ? "#2789c9" : "#5b697b"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Item {
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.bottomMargin: 3
+                            color: uploadParametersTabButton.hovered ? "#edf6fc" : "transparent"
+                        }
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            height: 3
+                            color: root.activeTab === 4 ? "#55afe8" : "transparent"
+                        }
+                    }
+                }
+
+                AbstractButton {
+                    id: reuploadButton
+                    visible: root.reuploadAvailable && mainWindowController.pendingFileCount > 0
+                    hoverEnabled: true
+                    text: qsTr("Upload again")
+                    height: parent.height
+                    leftPadding: 18
+                    rightPadding: 18
+                    onClicked: {
+                        mainWindowController.reusePendingFiles()
+                        root.reuploadAvailable = false
+                        root.pendingTabsVisible = true
+                        root.uploadParametersVisible = true
+                        root.activeTab = 3
+                    }
+                    contentItem: Text {
+                        text: reuploadButton.text
+                        color: "#2789c9"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        color: reuploadButton.hovered ? "#edf6fc" : "transparent"
+                    }
+                }
+            }
         }
 
         StackLayout {
@@ -196,8 +359,8 @@ Item {
                 ListView {
                     id: sessionsView
                     anchors.fill: parent
-                    anchors.margins: 18
-                    spacing: 12
+                    anchors.margins: 14
+                    spacing: 8
                     clip: true
                     model: uploadSessions
                     boundsBehavior: Flickable.StopAtBounds
@@ -207,25 +370,76 @@ Item {
                         width: sessionsView.width - (sessionsView.ScrollBar.vertical.visible ? 14 : 0)
                     }
 
-                    footer: Item { width: 1; height: 12 }
+                    footer: Item { width: 1; height: 8 }
                     Label {
                         anchors.centerIn: parent
                         visible: sessionsView.count === 0
-                        text: "Здесь появятся ваши загрузки"
+                        text: qsTr("Your uploads will appear here")
                         color: "#8996a6"
                         font.pixelSize: 16
                     }
                 }
             }
 
-            EmptyTab { title: "Скриншоты"; description: "Раздел будет подключён к истории снимков." }
-            EmptyTab { title: "Записи экрана"; description: "Раздел будет подключён к записям экрана." }
+            EmptyTab { title: qsTr("Screenshots"); description: qsTr("This section will display screenshot history.") }
+            EmptyTab { title: qsTr("Screen recordings"); description: qsTr("This section will display screen recordings.") }
+
+            ColumnLayout {
+                spacing: 12
+
+                ThumbsView {
+                    id: addedFilesView
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.margins: 18
+                    Layout.bottomMargin: 0
+                    model: mainWindowController.pendingFiles
+                    itemCount: mainWindowController.pendingFileCount
+                    emptyTitle: qsTr("The added files list is empty")
+                    onRemoveRequested: function(indices) { mainWindowController.removePendingFiles(indices) }
+                    onOpenRequested: function(index) { mainWindowController.openPendingFile(index) }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 18
+                    Layout.rightMargin: 18
+                    Layout.bottomMargin: 18
+
+                    ActionButton {
+                        text: qsTr("Clear list")
+                        onClicked: {
+                            mainWindowController.clearPendingFiles()
+                            root.pendingTabsVisible = false
+                            root.reuploadAvailable = false
+                            root.activeTab = 0
+                        }
+                    }
+                    Item { Layout.fillWidth: true }
+                    ActionButton {
+                        text: qsTr("Next >")
+                        enabled: mainWindowController.pendingFileCount > 0
+                        onClicked: root.openUploadParameters()
+                    }
+                }
+            }
+
+            UploadParametersPage {
+                controller: mainWindowController
+                onUploadStarted: {
+                    root.pendingTabsVisible = false
+                    root.uploadParametersVisible = false
+                    root.reuploadAvailable = true
+                    root.activeTab = 0
+                }
+                onBackRequested: root.activeTab = 3
+            }
         }
     }
 
     DropArea {
         anchors.fill: parent
-        enabled: !uploadDialog.visible && !frameGrabberDialog.visible
+        enabled: !frameGrabberDialog.visible
         onEntered: function(drag) {
             var containsLocalFile = false
             for (var i = 0; i < drag.urls.length; ++i) {
@@ -266,14 +480,14 @@ Item {
             spacing: 8
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Отпустите файлы для загрузки"
+                text: qsTr("Drop files to upload")
                 color: "#257aaf"
                 font.pixelSize: 20
                 font.weight: Font.DemiBold
             }
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "После этого можно будет выбрать серверы"
+                text: qsTr("You can choose servers afterwards")
                 color: "#607f94"
                 font.pixelSize: 13
             }
@@ -331,7 +545,7 @@ Item {
                 Layout.rightMargin: 14
 
                 Label {
-                    text: "Параметры загрузки"
+                    text: qsTr("Upload settings")
                     color: root.ink
                     font.pixelSize: 20
                     font.weight: Font.DemiBold
@@ -344,7 +558,7 @@ Item {
                     Layout.preferredHeight: 32
                     hoverEnabled: true
                     ToolTip.visible: hovered
-                    ToolTip.text: "Закрыть"
+                    ToolTip.text: qsTr("Close")
                     ToolTip.delay: 600
                     onClicked: uploadDialog.cancelSelection()
                     contentItem: Canvas {
@@ -375,13 +589,13 @@ Item {
                 }
             }
             Label {
-                text: "Выбрано файлов: " + mainWindowController.pendingFileCount
+                text: qsTr("Selected files: %1").arg(mainWindowController.pendingFileCount)
                 color: "#6a7889"
                 Layout.leftMargin: 22
             }
             ServerSelector {
                 id: imageSelector
-                title: "Сервер для изображений"
+                title: qsTr("Image server")
                 serverModel: mainWindowController.imageServers
                 initialServer: mainWindowController.defaultImageServer
                 initialAccount: mainWindowController.defaultImageAccount
@@ -391,7 +605,7 @@ Item {
             }
             ServerSelector {
                 id: fileSelector
-                title: "Сервер для остальных файлов"
+                title: qsTr("Server for other files")
                 serverModel: mainWindowController.fileServers
                 initialServer: mainWindowController.defaultFileServer
                 initialAccount: mainWindowController.defaultFileAccount
@@ -407,7 +621,7 @@ Item {
                 Item { Layout.fillWidth: true }
                 AbstractButton {
                     id: cancelButton
-                    text: "Отмена"
+                    text: qsTr("Cancel")
                     hoverEnabled: true
                     leftPadding: 20
                     rightPadding: 20
@@ -424,7 +638,7 @@ Item {
                 }
                 AbstractButton {
                     id: uploadButton
-                    text: "Загрузить"
+                    text: qsTr("Upload")
                     hoverEnabled: true
                     leftPadding: 20
                     rightPadding: 20

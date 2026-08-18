@@ -20,6 +20,16 @@ Dialog {
         controller.acceptFrames()
     }
 
+    function handleEnter() {
+        if (controller.running)
+            return
+        if (controller.extractedFrameCount > 0) {
+            acceptDialog()
+        } else if (controller.canStart) {
+            controller.start()
+        }
+    }
+
     anchors.centerIn: parent
     width: Math.min(parent.width - 48, 920)
     height: Math.min(parent.height - 48, 620)
@@ -32,6 +42,14 @@ Dialog {
         context: Qt.WindowShortcut
         enabled: dialog.visible
         onActivated: dialog.cancelDialog()
+    }
+
+    Shortcut {
+        sequences: ["Return", "Enter"]
+        context: Qt.WindowShortcut
+        enabled: dialog.visible && !dialog.controller.running
+                 && (dialog.controller.canStart || dialog.controller.canAccept)
+        onActivated: dialog.handleEnter()
     }
 
     onOpened: thumbsView.clearSelection()
@@ -58,13 +76,13 @@ Dialog {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
                 Label {
-                    text: "Импорт видеофайла"
+                    text: qsTr("Import video file")
                     color: "#263548"
                     font.pixelSize: 20
                     font.weight: Font.DemiBold
                 }
                 Label {
-                    text: "Извлечение равномерно распределённых кадров"
+                    text: qsTr("Extract evenly distributed frames")
                     color: "#748397"
                     font.pixelSize: 12
                 }
@@ -78,7 +96,7 @@ Dialog {
                 height: 32
                 hoverEnabled: true
                 ToolTip.visible: hovered
-                ToolTip.text: "Закрыть"
+                ToolTip.text: qsTr("Close")
                 ToolTip.delay: 600
                 onClicked: dialog.cancelDialog()
                 contentItem: Canvas {
@@ -121,7 +139,7 @@ Dialog {
                 Layout.preferredHeight: 40
                 enabled: !dialog.controller.running
                 text: dialog.controller.fileName
-                placeholderText: "Путь к видеофайлу"
+                placeholderText: qsTr("Video file path")
                 selectByMouse: true
                 leftPadding: 12
                 rightPadding: 12
@@ -141,7 +159,7 @@ Dialog {
                 enabled: !dialog.controller.running
                 hoverEnabled: true
                 ToolTip.visible: hovered
-                ToolTip.text: "Выбрать видеофайл"
+                ToolTip.text: qsTr("Choose video file")
                 ToolTip.delay: 600
                 onClicked: dialog.controller.browseFile()
                 contentItem: Text {
@@ -158,15 +176,6 @@ Dialog {
                 }
             }
 
-            ActionButton {
-                text: "Извлечь кадры"
-                Layout.preferredHeight: 40
-                enabled: dialog.controller.canStart
-                onClicked: {
-                    thumbsView.clearSelection()
-                    dialog.controller.start()
-                }
-            }
         }
 
         RowLayout {
@@ -175,7 +184,7 @@ Dialog {
             Layout.rightMargin: 20
             spacing: 10
 
-            Label { text: "Количество кадров:"; color: "#526273" }
+            Label { text: qsTr("Frame count:"); color: "#526273" }
             SpinBox {
                 id: frameCountBox
                 Layout.preferredWidth: 122
@@ -235,8 +244,7 @@ Dialog {
                     }
                 }
             }
-            Item { Layout.fillWidth: true }
-            Label { text: "Движок:"; color: "#526273" }
+            Label { text: qsTr("Engine:"); color: "#526273" }
             ComboBox {
                 id: engineBox
                 Layout.preferredWidth: 190
@@ -328,6 +336,15 @@ Dialog {
                     }
                 }
             }
+
+            Item { Layout.fillWidth: true }
+
+            ActionButton {
+                text: qsTr("Extract frames")
+                Layout.preferredHeight: 40
+                enabled: dialog.controller.canStart
+                onClicked: dialog.controller.start()
+            }
         }
 
         ThumbsView {
@@ -336,7 +353,13 @@ Dialog {
             Layout.fillHeight: true
             Layout.leftMargin: 20
             Layout.rightMargin: 20
-            controller: dialog.controller
+            model: dialog.controller.frames
+            itemCount: dialog.controller.extractedFrameCount
+            busy: dialog.controller.running
+            emptyTitle: qsTr("Frames will appear here")
+            emptyDescription: qsTr("Choose a file and click “Extract frames”")
+            onRemoveRequested: function(indices) { dialog.controller.removeFrames(indices) }
+            onOpenRequested: function(index) { dialog.controller.openFrame(index) }
         }
 
         Label {
@@ -359,7 +382,7 @@ Dialog {
             AbstractButton {
                 id: stopButton
                 visible: dialog.controller.running
-                text: "Остановить"
+                text: qsTr("Stop")
                 hoverEnabled: true
                 leftPadding: 16
                 rightPadding: 16
@@ -387,7 +410,7 @@ Dialog {
             Item { Layout.fillWidth: true }
             AbstractButton {
                 id: cancelButton
-                text: "Отмена"
+                text: qsTr("Cancel")
                 hoverEnabled: true
                 leftPadding: 18
                 rightPadding: 18
@@ -403,9 +426,10 @@ Dialog {
                 background: Rectangle { radius: 8; color: cancelButton.hovered ? "#e8edf3" : "#f1f4f7" }
             }
             ActionButton {
-                text: "Добавить кадры"
+                id: addFramesButton
+                text: qsTr("Add frames")
                 Layout.preferredHeight: 38
-                enabled: dialog.controller.canAccept
+                enabled: dialog.controller.extractedFrameCount > 0 && dialog.controller.canAccept
                 onClicked: dialog.acceptDialog()
             }
         }

@@ -137,9 +137,9 @@ Item {
 
         Repeater {
             model: [
-                { "tip": "Свернуть" },
-                { "tip": "Полный экран" },
-                { "tip": "Закрыть" }
+                { "tip": qsTr("Minimize") },
+                { "tip": qsTr("Full screen") },
+                { "tip": qsTr("Close") }
             ]
             delegate: AbstractButton {
                 id: windowButton
@@ -160,6 +160,8 @@ Item {
                         imageViewerController.closeViewer()
                 }
                 contentItem: Canvas {
+                    opacity: windowButton.hovered ? 1.0 : 0.82
+                    Behavior on opacity { NumberAnimation { duration: 100 } }
                     onWidthChanged: requestPaint()
                     onHeightChanged: requestPaint()
                     onPaint: {
@@ -188,9 +190,11 @@ Item {
                 }
                 background: Rectangle {
                     radius: 5
+                    opacity: windowButton.hovered ? 0.92 : 0.76
                     color: windowButton.hovered
                            ? (windowButton.index === 2 ? "#d94b55" : "#53616d")
                            : "#303b45"
+                    Behavior on opacity { NumberAnimation { duration: 100 } }
                 }
             }
         }

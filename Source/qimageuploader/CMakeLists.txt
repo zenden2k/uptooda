@@ -85,6 +85,7 @@ set_source_files_properties(Gui/qml/UploadTaskCard.qml PROPERTIES QT_RESOURCE_AL
 set_source_files_properties(Gui/qml/ImageViewerWindow.qml PROPERTIES QT_RESOURCE_ALIAS ImageViewerWindow.qml)
 set_source_files_properties(Gui/qml/FrameGrabberDialog.qml PROPERTIES QT_RESOURCE_ALIAS FrameGrabberDialog.qml)
 set_source_files_properties(Gui/qml/ThumbsView.qml PROPERTIES QT_RESOURCE_ALIAS ThumbsView.qml)
+set_source_files_properties(Gui/qml/UploadParametersPage.qml PROPERTIES QT_RESOURCE_ALIAS UploadParametersPage.qml)
 
 qt_add_qml_module(qimageuploader
         URI Uptooda.Ui
@@ -103,6 +104,7 @@ qt_add_qml_module(qimageuploader
         Gui/qml/ImageViewerWindow.qml
         Gui/qml/FrameGrabberDialog.qml
         Gui/qml/ThumbsView.qml
+        Gui/qml/UploadParametersPage.qml
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Concurrent Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Qml Qt6::Quick Qt6::QuickControls2 Qt6::QuickWidgets)
