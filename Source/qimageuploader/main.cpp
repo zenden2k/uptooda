@@ -11,7 +11,7 @@
 //#include <3rdparty/qtdotnetstyle.h>
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
-#include "Gui/MainWindow.h"
+#include "Gui/MainWindowNew.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/AppRuntimeInfo.h"
@@ -62,7 +62,7 @@ class MyApplication : public QApplication
 public:
     MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
     {
-
+        AbstractImage::autoRegisterFactory<void>();
     }
 #ifdef _WIN32
     MediaFoundationInitializer mediaFoundationInitializer_;
@@ -188,7 +188,7 @@ settingsDir.mkpath(settingsFolder);
 	Settings.setEngineList(engineList.get());
 	
     //QApplication::setStyle("Fusion");
-    MainWindow w(engineList.get(), logWindow.get());
+    MainWindowNew w(engineList.get(), logWindow.get());
     w.show();
     
     int res =  a.exec();

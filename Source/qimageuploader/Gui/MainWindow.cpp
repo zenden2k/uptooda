@@ -258,7 +258,7 @@ bool MainWindow::addMultipleFilesToList(QStringList fileNames) {
     for (const auto& fileName : fileNames) {
         auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
         ServerProfile serverProfile = imageServerWidget_->serverProfile();
-        if (serverProfile.getUseDefaultSettings())
+        if (serverProfile.useDefaultSettings())
         {
             auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
             serverProfile.setImageUploadParams(settings->DefaultImageUploadParams);

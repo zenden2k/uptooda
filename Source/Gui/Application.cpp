@@ -171,6 +171,7 @@ public:
     }
 
     void initBasicServices() {
+        AbstractImage::autoRegisterFactory<void>();
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         logger_ = std::make_shared<DefaultLogger>();
         myLogSink_ = std::make_unique<MyLogSink>(logger_.get());

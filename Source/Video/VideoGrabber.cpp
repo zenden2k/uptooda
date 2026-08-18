@@ -75,6 +75,7 @@ public:
                 throw std::runtime_error(str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
             }
         } catch (const std::exception& ex) {
+            std::string s = ex.what();
             (logErrors_ ? LOG(ERROR) : LOG(WARNING)) << "File: " << videoGrabber_->fileName_ << std::endl
                                    << ex.what();
 
