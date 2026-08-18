@@ -70,5 +70,6 @@ void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')
 CString HotkeyToString(CString funcName, CString menuItemText);
 
 void OpenDocumentation(HWND parent, const CString& file, const CString& id = {});
+bool DisableWindowsPrintScreenKeyInterception();
 typedef CAtlArray<CString> CStringList;
 #endif

@@ -363,11 +363,11 @@ IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_
 
 IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
 
-IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG          "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
 
 IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
 
-IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
+IDB_ICONTOOLFILLEDELLIPSE PNG                   "res\\ImageEditor\\icon_tool_filled_ellipse.png"
 
 IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
 
@@ -375,7 +375,7 @@ IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png
 
 IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
 
-IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload.png"
+IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload_cloud.png"
 
 IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
 

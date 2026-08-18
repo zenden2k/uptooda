@@ -130,7 +130,7 @@ public:
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
-        MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
+        MESSAGE_HANDLER(TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
         MESSAGE_HANDLER(WM_DPICHANGED, OnDPICHanged)
 
         COMMAND_ID_HANDLER(IDOK, OnClickedOK)
@@ -298,7 +298,7 @@ public:
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
-        void showApplyButtons();
+        void updateApplyButtons();
 
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible
@@ -312,7 +312,7 @@ public:
         bool canCloseAfterAction() const;
 
         std::string getUploadButtonText() const;
-        bool openedAfterScreenshot() const;
+        bool wasOpenedAfterScreenshot() const;
         CString makeFileName() const;
 };
 

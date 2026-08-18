@@ -22,7 +22,7 @@ public:
     virtual void rightButtonClick(int x, int y);
     virtual void setPenSize(int size);
     virtual void setRoundingRadius(int radius);
-    virtual void applyOperation();
+    virtual bool applyOperation();
     virtual void cancelOperation();
     void setForegroundColor(Gdiplus::Color color);
     void setBackgroundColor(Gdiplus::Color color);

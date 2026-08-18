@@ -1679,6 +1679,12 @@ CString NormalizeLineEndings(const CString& text) {
     return result;
 }
 
+bool NoModifiersPressed() {
+    return !(GetKeyState(VK_CONTROL) & 0x8000) &&
+           !(GetKeyState(VK_SHIFT)   & 0x8000) &&
+           !(GetKeyState(VK_MENU)    & 0x8000); // Alt
+}
+
 }
 
 std::wstring Utf8ToWstring(const std::string &str)

@@ -15,7 +15,7 @@ public:
     void beginDraw(int x, int y) override;
     void continueDraw(int x, int y, DWORD flags) override;
     void endDraw(int x, int y) override;
-    void applyOperation() override;
+    bool applyOperation() override;
     void cancelOperation() override;
 };
 

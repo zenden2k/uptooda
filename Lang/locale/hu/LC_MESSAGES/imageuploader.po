@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-31 14:45+0300\n"
+"POT-Creation-Date: 2026-08-16 17:46+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/image-uploader/"
@@ -54,13 +54,13 @@ msgstr ""
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:681
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:680
 msgctxt "upload_settings_wizard_page.server_button"
 msgid "%1% + %2%"
 msgstr ""
 
-#: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
-#: ../Source/Gui/Dialogs/MainDlg.cpp:896
+#: ../Source/Gui/Controls/HistoryTreeControl.cpp:216
+#: ../Source/Gui/Dialogs/MainDlg.cpp:895
 #, fuzzy, c-format
 #| msgid "Any file"
 msgid "%d file"
@@ -68,7 +68,7 @@ msgid_plural "%d files"
 msgstr[0] "Bármely fájl"
 msgstr[1] "Bármely fájl"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:890
+#: ../Source/Gui/Dialogs/MainDlg.cpp:889
 #, fuzzy, c-format
 #| msgid "No Folder Selected"
 msgid "%d file selected"
@@ -76,7 +76,7 @@ msgid_plural "%d files selected"
 msgstr[0] "Nincs mappa kijelölve"
 msgstr[1] "Nincs mappa kijelölve"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:891
+#: ../Source/Gui/Dialogs/MainDlg.cpp:890
 #, fuzzy, c-format
 #| msgid "Files total:"
 msgid "%d file total"
@@ -84,7 +84,7 @@ msgid_plural "%d files total"
 msgstr[0] "Összes fájl:"
 msgstr[1] "Összes fájl:"
 
-#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:111
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:102
 #, fuzzy, c-format
 #| msgid "No Folder Selected"
 msgid "%d server selected"
@@ -101,13 +101,13 @@ msgid_plural "%d servers selected in total..."
 msgstr[0] "Nincs mappa kijelölve"
 msgstr[1] "Nincs mappa kijelölve"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:31
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:29
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:33
 #, c-format
 msgid "%d%%"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:619
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:617
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "%s (screen recording)"
@@ -118,7 +118,7 @@ msgstr "Képernyőfelvétel"
 msgid "%s - Quick Setup"
 msgstr "%s - Gyors beállítás"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:979
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:978
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - Frissítés érhető el"
@@ -139,7 +139,7 @@ msgstr "%s a %s-ból (%d%%) %s"
 msgid "%s server settings"
 msgstr "%s szerver beállítások"
 
-#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:118
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:116
 #, c-format
 msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
@@ -150,10 +150,10 @@ msgstr[1] ""
 msgid "&Upload"
 msgstr "&Feltöltés"
 
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:346
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:347
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:348
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1325
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1326
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1323
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1324
 msgid "(edited)"
 msgstr "(szerkesztett)"
 
@@ -168,12 +168,12 @@ msgstr "(link a vágólapra másolva)"
 msgid "(the link has been copied to the clipboard)"
 msgstr "(link a vágólapra másolva)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:527
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:526
 msgid "< Back"
 msgstr "< Vissza"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:419
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:874
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:418
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:873
 msgid "<no authentication>"
 msgstr "<Nem hitelesített>"
 
@@ -187,7 +187,7 @@ msgstr ""
 msgid "About %s"
 msgstr "Névjegy..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2897
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2892
 msgid "About..."
 msgstr "Névjegy..."
 
@@ -201,7 +201,7 @@ msgstr "Hozzáférés:"
 msgid "Account"
 msgstr "Fiók..."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:727
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:726
 msgid "Account is not enabled"
 msgstr "A fiók nem engedélyezett"
 
@@ -210,7 +210,7 @@ msgstr "A fiók nem engedélyezett"
 msgid "Account with such name already exists."
 msgstr "Az ilyen névvel rendelkező fiók már létezik."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:257
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:260
 msgid "Account..."
 msgstr "Fiók..."
 
@@ -261,8 +261,8 @@ msgstr "Elem hozzáadása"
 msgid "Add Menu Item"
 msgstr "Adjon hozzá a menüpontot"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:440
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:892
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:439
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:891
 #, fuzzy
 #| msgid "Account..."
 msgid "Add account..."
@@ -306,7 +306,7 @@ msgstr "Elem hozzáadása a videófájlok helyi menühöz"
 msgid "Add server"
 msgstr "FTP-kiszolgáló hozzáadása..."
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:53
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
 msgid "Add text"
 msgstr "Szöveg hozzáadása"
 
@@ -334,9 +334,9 @@ msgstr "Hozzáadás a listához"
 msgid "Add to favorites"
 msgstr "Hozzáadás a listához"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:536
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:988
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:989
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:535
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1014
 msgid "Add to the list"
 msgstr "Hozzáadás a listához"
 
@@ -366,7 +366,7 @@ msgstr "További paraméterek"
 msgid "Additional settings"
 msgstr "További beállítások"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:19
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:17
 msgid "Address:"
 msgstr "Cím:"
 
@@ -393,21 +393,21 @@ msgstr ""
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:96
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
-#: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:283
+#: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:282
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:133
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:132
 #: ../Source/Gui/Dialogs/LogWindow.cpp:181
-#: ../Source/Gui/Dialogs/MainDlg.cpp:718
+#: ../Source/Gui/Dialogs/MainDlg.cpp:717
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:179
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:111
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1793
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2084
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1587
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1612
 msgid "All files"
 msgstr "Minden fájl"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:630
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:623
 msgid "All files have been successfully uploaded."
 msgstr "Az összes fájl sikeresen feltöltve."
 
@@ -417,7 +417,7 @@ msgstr "Az összes fájl sikeresen feltöltve."
 msgid "All monitors"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:38
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:34
 msgid "All the time"
 msgstr "Mindig"
 
@@ -447,14 +447,14 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr "Hiba történt,  a frissítési információk fogadásakor a szerverről."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:519
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1553
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2112
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1551
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2110
 msgid "Any file"
 msgstr "Bármely fájl"
 
@@ -462,28 +462,33 @@ msgstr "Bármely fájl"
 msgid "Appearance options"
 msgstr "Megjelenítési lehetőségek"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:86
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
 msgid "Apply"
 msgstr "Alkalmaz"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:246
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
+#, fuzzy
+#| msgid "Apply"
+msgid "Apply crop"
+msgstr "Alkalmaz"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:245
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr ""
 "Biztos abban, hogy a képet és a logót ugyanabban a pozícióban helyezi el a "
 "képen?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1986
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1984
 msgid "Are you sure to quit?"
 msgstr "Valóban kilép?"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:421
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:420
 #, c-format
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr "Valóban törli a '%s' profilt?"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:430
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:426
 #, fuzzy, c-format
 #| msgid "Are you sure you want to delete profile '%s'?"
 msgid "Are you sure you want to delete the file '%s' from the server?"
@@ -495,7 +500,7 @@ msgstr "Valóban törli a '%s' profilt?"
 msgid "Are you sure you want to delete this account from %s's internal list?"
 msgstr "Valóban törli a '%s' profilt?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1065
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1090
 msgid "Arrow"
 msgstr "Nyíl"
 
@@ -513,23 +518,23 @@ msgstr ""
 "Figyelem! - A globális gyorsbillentyűk csak akkor aktívak, ha a tálca ikon "
 "látható."
 
-#: ../Source/Func/MediaInfoHelper.cpp:242
-#: ../Source/Func/MediaInfoHelper.cpp:247
+#: ../Source/Func/MediaInfoHelper.cpp:221
+#: ../Source/Func/MediaInfoHelper.cpp:226
 msgid "Audio"
 msgstr "Audió:"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:23
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:26
 #, fuzzy
 #| msgid "Audio files"
 msgid "Audio codec:"
 msgstr "Hangfájlok"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2083
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2081
 msgid "Audio files"
 msgstr "Hangfájlok"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:25
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:23
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:28
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:98
 msgid "Audio source:"
@@ -549,7 +554,7 @@ msgstr "Hitelesítés:"
 msgid "Author:"
 msgstr "Szerző:"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:20
 msgid "Authorization on proxy"
 msgstr "Meghatalmazás a proxyn"
 
@@ -558,7 +563,7 @@ msgstr "Meghatalmazás a proxyn"
 msgid "Authorize"
 msgstr "Engedélyezés"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:79
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:78
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:238
 msgid "Auto"
 msgstr "Auto."
@@ -575,12 +580,12 @@ msgstr "Engedélyezési paraméterek"
 msgid "Backend:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:51
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:50
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:64
 msgid "Background color:"
 msgstr "Háttérszín:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:369
+#: ../Source/Core/Upload/UploadTask.cpp:368
 msgid "Begin upload"
 msgstr ""
 
@@ -592,8 +597,8 @@ msgstr ""
 msgid "Beta-testers:"
 msgstr "- Béta-tesztelők:"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:26
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:24
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:24
 msgid "Bitrate:"
 msgstr ""
@@ -605,24 +610,24 @@ msgstr ""
 msgid "Blur radius"
 msgstr "Kerekítés sugara"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:130
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:868
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1072
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:132
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:893
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1097
 msgid "Blurring rectangle"
 msgstr "Elkenő - szögletes rész"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:88
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:95
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:87
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:94
 msgid "Bottom center"
 msgstr "Alul középen"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:87
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:94
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:86
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:93
 msgid "Bottom left corner"
 msgstr "Bal alsó sarokban"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:89
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:96
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:88
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:95
 msgid "Bottom right corner"
 msgstr "Jobb alsó sarokban"
 
@@ -637,13 +642,13 @@ msgstr "Húzza az ablakot az előtérbe, ha az egérrel van kijelölve"
 msgid "Browse..."
 msgstr "Tallózás..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1062
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1087
 msgid "Brush"
 msgstr "Ecset"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:36
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:32
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:41
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:58
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:25
@@ -654,7 +659,7 @@ msgstr "Ecset"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:483
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:481
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
@@ -662,7 +667,7 @@ msgstr "Ecset"
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:35
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:69
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:292
@@ -676,11 +681,11 @@ msgid ""
 "Make sure you have the required codecs installed on your system."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:743
+#: ../Source/Gui/Dialogs/MainDlg.cpp:742
 msgid "Cannot copy file "
 msgstr "Nem lehet másolni a fájlt "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:732
+#: ../Source/Gui/Dialogs/MainDlg.cpp:731
 msgid "Cannot copy file: "
 msgstr "Nem lehet másolni a fájlt: "
 
@@ -688,7 +693,7 @@ msgstr "Nem lehet másolni a fájlt: "
 msgid "Cannot create registry key for extension: "
 msgstr ""
 
-#: ../Source/Gui/Controls/ThumbsView.cpp:325
+#: ../Source/Gui/Controls/ThumbsView.cpp:324
 msgid "Cannot load thumbnail for image."
 msgstr "A kép miniatűrje nem tölthető be."
 
@@ -707,7 +712,7 @@ msgid ""
 msgstr "Nem lehet másolni a fájlt "
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:756
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:578
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:576
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -774,7 +779,7 @@ msgstr "Rögzítés árnyékkal"
 msgid "Cascaded context menu"
 msgstr "Lépcsőzetes helyi menü"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:77
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:76
 msgid "Center"
 msgstr "Középre"
 
@@ -795,13 +800,13 @@ msgstr ""
 msgid "Change width:"
 msgstr "Szélesség módosítása:"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:33
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
 #, fuzzy
 #| msgid "Process images before upload"
 msgid "Check file types before upload"
 msgstr "Képek feldolgozása feltöltés előtt"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2894
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2889
 msgid "Check for Updates"
 msgstr "Frissítések keresése"
 
@@ -820,12 +825,12 @@ msgstr "Frissítések keresése..."
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2114
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2112
 msgid "Choose files"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:180
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1917
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1915
 msgid "Choose folder"
 msgstr ""
 
@@ -833,7 +838,7 @@ msgstr ""
 msgid "Choose folder..."
 msgstr "Mappa kiválasztása..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2087
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2085
 msgid "Choose media file"
 msgstr ""
 
@@ -854,10 +859,10 @@ msgstr ""
 msgid "Choose program"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:329
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:328
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:675
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:674
 msgid "Choose server"
 msgstr "Válasszon szervert"
 
@@ -874,11 +879,11 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1796
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1794
 msgid "Choose video file"
 msgstr ""
 
-#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:45
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:41
 #, fuzzy
 #| msgid "Choose folder..."
 msgid "Choose..."
@@ -890,11 +895,11 @@ msgstr "Mappa kiválasztása..."
 msgid "Clear"
 msgstr "Ürítés"
 
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:35
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:31
 msgid "Clear History"
 msgstr "Előzmények törlése"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:103
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
 msgid "Clear History..."
 msgstr "Előzmények törlése..."
 
@@ -902,7 +907,7 @@ msgstr "Előzmények törlése..."
 msgid "Clear all"
 msgstr "Mind törli"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:87
 msgid "Clear filters"
 msgstr ""
 
@@ -942,7 +947,7 @@ msgstr "A részletek megtekintéséhez kattintson erre az üzenetre..."
 msgid "Clickable thumbnails"
 msgstr "Kattintható miniatűrök"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:221
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:77
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:563
@@ -953,7 +958,7 @@ msgstr "Kattintható miniatűrök"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:260
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
 msgid "Close"
 msgstr "Bezár"
 
@@ -969,7 +974,7 @@ msgstr "Kód típusa:"
 msgid "Collecting files..."
 msgstr "Fájlok gyűjtése ..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1075
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1100
 msgid "Color chooser"
 msgstr "Színmintavétel"
 
@@ -977,7 +982,7 @@ msgstr "Színmintavétel"
 msgid "Color codes"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:42
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:38
 msgid "Colors"
 msgstr "Színek"
 
@@ -989,7 +994,7 @@ msgstr "Összetevő neve"
 msgid "Components:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:547
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
 #, fuzzy
 #| msgid "Documentation"
 msgid "Concatenation..."
@@ -1011,7 +1016,7 @@ msgstr "Kapcsolat neve:"
 msgid "Connection name cannot be empty"
 msgstr "A kapcsolat neve nem lehet üres"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:15
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:13
 msgid "Connection settings"
 msgstr "Kapcsolat beállítása"
 
@@ -1021,8 +1026,8 @@ msgstr "Helyi menü Egyéni elemek:"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:205
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:993
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:994
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1018
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1019
 msgid "Continue"
 msgstr "Tovább"
 
@@ -1036,11 +1041,11 @@ msgstr "- Közreműködők:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "UNC elérési út konvertálása \"\\\\ to \"\"file://///\"\"\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:499
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:498
 msgid "Converting history"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:545
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:543
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1050,7 +1055,7 @@ msgstr "Beállítások..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1022
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr "Másolás"
@@ -1067,11 +1072,11 @@ msgstr "Másolás &másként..."
 msgid "Copy URL of %1%->%2%"
 msgstr "URL másolása"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:13
 msgid "Copy automatically results to clipboard"
 msgstr "Automatikus másolás a vágólapra"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:290
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:283
 msgid "Copy delete link"
 msgstr ""
 
@@ -1080,7 +1085,7 @@ msgid "Copy e-mail"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:387
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:970
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:969
 msgid "Copy folder's ID"
 msgstr ""
 
@@ -1092,30 +1097,30 @@ msgstr "Teljes elérési út másolása"
 msgid "Copy image"
 msgstr "Kép másolása"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:891
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:916
 msgid "Copy in data:URI format"
 msgstr "Másolás adatként: URI-formátum"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:892
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:917
 msgid "Copy in data:URI format (html)"
 msgstr "Másolás adatként: URI-formátum (html)"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:213
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:281
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:209
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:274
 #, fuzzy
 #| msgid "Copy image"
 msgid "Copy link"
 msgstr "Kép másolása"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:217
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:287
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:213
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:280
 #, fuzzy
 #| msgid "Clickable thumbnails"
 msgid "Copy link to thumbnail"
 msgstr "Kattintható miniatűrök"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:214
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:284
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:210
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:277
 msgid "Copy link to view page"
 msgstr ""
 
@@ -1129,18 +1134,18 @@ msgstr "Másolás a vágólapra"
 msgid "Copy to clipboard"
 msgstr "Másolás a vágólapra"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1015
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1040
 #, fuzzy, c-format
 #| msgid "Copy to clipboard"
 msgid "Copy to clipboard (%s)"
 msgstr "Másolás a vágólapra"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1015
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1040
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:30
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:20
 #, fuzzy
 #| msgid "Copy to clipboard"
 msgid "Copy to the clipboard:"
@@ -1161,7 +1166,7 @@ msgstr "Nem sikerült hitelesíteni. Próbálja újra."
 msgid "Could not find a video stream."
 msgstr "Nem sikerült hozzáadni a kiszolgálót."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:157
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1176,7 +1181,7 @@ msgstr "Nem található link az adott szövegben!"
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1042
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1041
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "A beállítási fájl mentése nem sikerült. Lásd a hibajelentést a részletekért."
@@ -1185,7 +1190,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr "Nem sikerült feltölteni a képernyőfelvételt :("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:435
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:434
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1202,17 +1207,17 @@ msgstr ""
 
 #: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:214
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:188
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:253
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:262
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:187
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:261
 msgid "Couldn't load thumbnail preset!"
 msgstr "Nem sikerült betölteni a bélyegkép-készletet!"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:390
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:389
 msgid "Create Profile"
 msgstr "Profil létrehozása"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
 msgid "Create a Copy"
 msgstr "Másolat létrehozása"
 
@@ -1233,11 +1238,11 @@ msgstr "Beágyazott mappa létrehozása"
 msgid "Create thumbnails"
 msgstr "Bélyegképek létrehozása"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:319
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:318
 msgid "Creating new thumbnail preset"
 msgstr "Új miniatűr-beállításkészlet létrehozása"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1061
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1086
 msgid "Crop"
 msgstr "Vágás"
 
@@ -1247,7 +1252,7 @@ msgstr "Vágás"
 msgid "Current monitor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:310
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:309
 msgid "Current profile's changes weren't saved. Do you want to continue?"
 msgstr "A jelenlegi profil módosításai nem lettek elmentve. Folytatja?"
 
@@ -1261,7 +1266,7 @@ msgstr "Vágás"
 msgid "Data file path:"
 msgstr "Beállítás fájl elérési útja:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:89
 msgid "Date from:"
 msgstr ""
 
@@ -1293,7 +1298,7 @@ msgstr "Az ablak elrejtésének késleltetése:"
 msgid "Delete"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:392
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:391
 msgid "Delete Profile"
 msgstr "Profil törlése"
 
@@ -1301,11 +1306,11 @@ msgstr "Profil törlése"
 msgid "Delete account"
 msgstr "Fiók törlése"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:232
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:228
 msgid "Delete file from server"
 msgstr "Fájl törlése a szerverről"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:433
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:429
 #, fuzzy
 #| msgid "Delete file from server"
 msgid "Deleting the file from the server"
@@ -1327,8 +1332,8 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr "A képen megjelenő videofájl információinak megjelenítése"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1984
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:339
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1982
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:341
 msgid "Do not ask again"
 msgstr ""
 
@@ -1340,7 +1345,7 @@ msgstr "Ne indítson új program példányt a tálcából"
 msgid "Do nothing"
 msgstr "Ne csinálj semmit"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2896
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2891
 msgid "Documentation"
 msgstr "Dokumentáció"
 
@@ -1350,7 +1355,7 @@ msgstr "Dokumentáció"
 msgid "Don't have an account? Sign up on %s right now!"
 msgstr "Nincs fiókja? Jelentkezzen be a %s webhelyre"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1141
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1140
 msgid "Don't resize"
 msgstr "Ne méretezze át"
 
@@ -1378,17 +1383,17 @@ msgstr "Fájl letöltése "
 msgid "Draw border"
 msgstr "Keret rajzolás"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:42
 msgid "Draw frame"
 msgstr "Keret rajzolás"
 
-#: ../Source/Func/MediaInfoHelper.cpp:151
+#: ../Source/Func/MediaInfoHelper.cpp:155
 msgid "Duration: "
 msgstr "Időtartam: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:213
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:368
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
 msgid "Edit"
 msgstr "Szerkesztés"
 
@@ -1396,7 +1401,7 @@ msgstr "Szerkesztés"
 msgid "Edit Profile"
 msgstr "Profil szerkesztése"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:229
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:225
 msgid "Edit file on server"
 msgstr "Fájl szerkesztése a szerveren"
 
@@ -1408,15 +1413,15 @@ msgstr "Mappa szerkesztése"
 msgid "Edit hotkey..."
 msgstr "Gyorsbillentyű szerk."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:368
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:811
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:367
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:810
 #, fuzzy
 #| msgid "View log for details."
 msgid "Edit login credentials..."
 msgstr "Részletek megtekintése a naplófájlból."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:106
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:843
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:108
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:868
 msgid "Ellipse"
 msgstr "Ellipszis"
 
@@ -1428,15 +1433,15 @@ msgstr ""
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr "Adja meg az URL-eket (egy http:// vagy ftp:// link lehet soronként)"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:258
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:261
 msgid "Enter account information"
 msgstr "Írja be a fiókadatokat"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:292
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:291
 msgid "Enter new profile name:"
 msgstr "Új profilnév megadása:"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:319
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:318
 msgid "Enter new thumbnail preset name:"
 msgstr "Adja meg az új miniatűr beállításkészlet nevét:"
 
@@ -1455,7 +1460,7 @@ msgstr "Adja meg fiókadatait"
 msgid "Enter your text:"
 msgstr "A szöveg:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:378 ../Source/Func/Common.cpp:314
+#: ../Source/Core/Upload/UploadTask.cpp:377 ../Source/Func/Common.cpp:314
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:93
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:101
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:122
@@ -1468,15 +1473,15 @@ msgstr "A szöveg:"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:152
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:161
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:167
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:163
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:169
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:192
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:159
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:222
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:521
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:157
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:220
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:519
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:184
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:202
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
@@ -1487,9 +1492,9 @@ msgstr "A szöveg:"
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:136
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:142
-#: ../Source/Gui/Dialogs/TextViewDlg.cpp:85
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:135
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:141
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:81
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:324
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:343
 msgid "Error"
@@ -1499,7 +1504,7 @@ msgstr "Hiba"
 msgid "Error control"
 msgstr "Hibakezelő"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:108
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:98
 #, c-format
 msgid "Error in the field '%s':\n"
 msgstr ""
@@ -1530,25 +1535,25 @@ msgstr "Hiba az összetevő frissítése közben "
 msgid "Error:"
 msgstr "Hiba:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:635
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:628
 #, c-format
 msgid "Errors: %d"
 msgstr "Hibák száma: %d"
 
-#: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:280
+#: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:279
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:88
 msgid "Executables"
 msgstr "Futtathatók"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:28
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:18
 msgid "Execute Squirrel script for each task (file)"
 msgstr "Futtassa a Squirrel parancsfájlt minden feladathoz (fájl)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:284
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:230
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:522
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:521
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1928
 msgid "Exit"
 msgstr "Kilépés"
 
@@ -1588,7 +1593,7 @@ msgstr ""
 msgid "FTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:221
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:219
 #, fuzzy, c-format
 #| msgid "Failed to load folder list."
 msgid "Failed to create the directory '%s'."
@@ -1608,13 +1613,13 @@ msgstr ""
 msgid "Failed to open video file '%s'."
 msgstr "Nem sikerült betölteni a mappalistát."
 
-#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:488
+#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:489
 msgid "Fetching filesystem..."
 msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:20
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:94
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:74
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:93
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:70
 msgid "File"
 msgstr "Fájl"
 
@@ -1631,7 +1636,7 @@ msgstr "Fájl"
 msgid "File \"%s\" not found!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:109
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:99
 #, c-format
 msgid "File %s doesn't exist"
 msgstr "A %s fájl nem létezik"
@@ -1643,7 +1648,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:100
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:99
 #, c-format
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "A fájl meghaladja a \"%s\" határt a szerveren (%s)."
@@ -1666,11 +1671,11 @@ msgstr ""
 msgid "File size exceeding"
 msgstr "A fájl mérete meghaladja a..."
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:633
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:626
 msgid "File uploading was cancelled by user."
 msgstr "Felhasználói megszakítás."
 
-#: ../Source/Gui/Controls/ThumbsView.cpp:325
+#: ../Source/Gui/Controls/ThumbsView.cpp:324
 msgid "File:"
 msgstr "Fájl:"
 
@@ -1686,25 +1691,25 @@ msgstr "Fájl: "
 msgid "Filename and path template:"
 msgstr "Fájlnév formátum:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
 msgid "Filename:"
 msgstr "Fájlnév:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:136
+#: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filename: "
 msgstr "Fájl név: "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:717
+#: ../Source/Gui/Dialogs/MainDlg.cpp:716
 msgid "Files"
 msgstr "Fájlok"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
 msgid "Files total:"
 msgstr "Összes fájl:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:140
+#: ../Source/Func/MediaInfoHelper.cpp:144
 msgid "Filesize: "
 msgstr "Fájl méret: "
 
@@ -1712,28 +1717,28 @@ msgstr "Fájl méret: "
 msgid "Fill background"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:122
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:856
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:124
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:881
 msgid "Filled ellipse"
 msgstr "Kitöltött ellipszis"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:111
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:854
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1068
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:113
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:879
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1093
 msgid "Filled rectangle"
 msgstr "Kitöltött téglalap"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:88
 msgid "Filters"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:465
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:463
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:253
 msgid "Finish"
 msgstr "Kész"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:317
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:310
 msgid "Finish >"
 msgstr "Kész >"
 
@@ -1743,20 +1748,20 @@ msgstr "Kész >"
 msgid "Finish Screen Recording"
 msgstr "Képernyőfelvétel"
 
-#: ../Source/Core/Upload/UploadTask.cpp:375
+#: ../Source/Core/Upload/UploadTask.cpp:374
 #: ../Source/Gui/Models/UploadListModel.cpp:160
 msgid "Finished"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:77
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:76
 msgid "Fit"
 msgstr "Illesztés"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1936
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1961
 msgid "Flip horizontal"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1937
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1962
 msgid "Flip vertical"
 msgstr ""
 
@@ -1796,14 +1801,14 @@ msgid "Font size:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:48
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:53
 msgid "Font..."
 msgstr "Betűtípus..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:185
 msgid "Format:"
@@ -1819,7 +1824,7 @@ msgstr "Fórum kód (BBkód)"
 msgid "Found a bug? Send a bug report to the author."
 msgstr "Hibát talált? Küldje el a fejlesztőnek"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:43
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 msgid "Frame color:"
 msgstr "Keret színe:"
 
@@ -1866,8 +1871,8 @@ msgid "Generating image..."
 msgstr ""
 
 #: ../Source/3rdpart/ColorButton.cpp:227
-#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:25
-#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:32
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:27
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:36
 msgid "Get color's code..."
 msgstr ""
 
@@ -1884,7 +1889,7 @@ msgid "Global hotkey:"
 msgstr "Globális gyorsbillentyű:"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:746
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1074
 msgid "Go to signup page"
 msgstr "Ugrás a feliratkozási oldalra"
 
@@ -1899,11 +1904,11 @@ msgstr "Alapértelmezés szerint"
 msgid "Grab"
 msgstr "Kiemelés"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:44
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
 msgid "Gradient color 1:"
 msgstr "Színátmenet 1:"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:45
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:41
 msgid "Gradient color 2:"
 msgstr "Színátmenet 2:"
 
@@ -1921,19 +1926,19 @@ msgstr "HTML kód"
 msgid "HTML files"
 msgstr "Videó fájlok"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:52
 msgid "Height:"
 msgstr "Magasság:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:124
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:414
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:413
 msgid "Help"
 msgstr "Súgó"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:524
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1932
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:523
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
 msgid "Hide"
 msgstr "Elrejt"
 
@@ -1941,16 +1946,16 @@ msgstr "Elrejt"
 msgid "Hide blacklisted"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1063
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1088
 msgid "Highlight"
 msgstr "Kiemelő"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:668
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2879
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2874
 msgid "History"
 msgstr "Előzmények"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:551
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:547
 msgid "History has been cleared successfully."
 msgstr ""
 
@@ -1993,8 +1998,8 @@ msgstr "Képek"
 msgid "Image Downloader"
 msgstr "Kép letöltő"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:343
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:620
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:345
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:630
 msgid "Image Editor"
 msgstr "Képszerkesztő"
 
@@ -2003,21 +2008,21 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Képszerkesztő"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1849
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1874
 msgid "Image Editor  (%1%x%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1855
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1880
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:341
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:343
 msgid ""
 "Image Editor cannot deal with animated images. If you edit this file, "
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1023
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1022
 msgid "Image Settings and Server Selection"
 msgstr "A képek beállításai és a szerver kiválasztása"
 
@@ -2025,21 +2030,21 @@ msgstr "A képek beállításai és a szerver kiválasztása"
 msgid "Image processing"
 msgstr "Képfeldolgozás"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:91
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
 msgid "Image processing settings..."
 msgstr "Képfeldolgozási beállítások..."
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:246
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:422
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:245
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:421
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:49
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:190
 msgid "Image settings"
 msgstr "Képbeállítások"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:132
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:131
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:123
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1551
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2110
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1549
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2108
 msgid "Images"
 msgstr "Képek"
 
@@ -2073,16 +2078,16 @@ msgstr ""
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:537 ../Source/Gui/Win7JumpList.cpp:291
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:536 ../Source/Gui/Win7JumpList.cpp:291
 msgid "Import Video File"
 msgstr "Videófájl importálása"
 
-#: ../Source/Core/Upload/UploadTask.cpp:381
+#: ../Source/Core/Upload/UploadTask.cpp:380
 #: ../Source/Gui/Models/UploadListModel.cpp:21
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1918
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
 msgid "Including subdirectories"
 msgstr "Almappákkal együtt."
 
@@ -2148,7 +2153,7 @@ msgstr "JPEG, PNG, GIF, BMP vagy bármely más fájl"
 msgid "JSON files"
 msgstr "Minden fájl"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:31
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:21
 #, fuzzy
 #| msgid "List of URLs"
 msgid "Just URL"
@@ -2169,7 +2174,7 @@ msgstr ""
 msgid "Last Region"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:32
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:22
 #, fuzzy
 #| msgid "not selected"
 msgid "Last code type selected"
@@ -2194,7 +2199,7 @@ msgstr "Bal egér klikk:"
 msgid "Libraries:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1064
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1089
 msgid "Line"
 msgstr "Vonal"
 
@@ -2203,11 +2208,11 @@ msgstr "Vonal"
 msgid "Line thickness"
 msgstr "Vonalvastagság"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:499
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:492
 msgid "Links"
 msgstr "Linkek"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:427
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:420
 #, c-format
 msgid "Links (%d)"
 msgstr "Linkek (%d)"
@@ -2220,7 +2225,7 @@ msgstr "Linkek (URL)"
 msgid "Links to Images/Files"
 msgstr "Hivatkozások képekhez/fájlokhoz"
 
-#: ../Source/Gui/Controls/ThumbsView.cpp:325
+#: ../Source/Gui/Controls/ThumbsView.cpp:324
 msgid "List of Images"
 msgstr "Képek listája"
 
@@ -2241,7 +2246,7 @@ msgstr "Helyi"
 msgid "Local hotkey:"
 msgstr "Helyi gyorsbillentyű:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:500
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:493
 msgid "Log"
 msgstr "Napló"
 
@@ -2250,7 +2255,7 @@ msgstr "Napló"
 msgid "Log Record [%s]"
 msgstr ""
 
-#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:371
+#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:372
 msgid "Logging in..."
 msgstr ""
 
@@ -2261,7 +2266,7 @@ msgid "Login"
 msgstr "Kapcsolat:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:206
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:251
@@ -2289,7 +2294,7 @@ msgstr "MD5 frissítési csomag ellenőrzése sikertelen "
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:128
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:64
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:82
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:64
 #, fuzzy
 #| msgid "Clear list"
@@ -2302,7 +2307,7 @@ msgstr "Lista törlése"
 msgid "Max. file size"
 msgstr "Fájl méret:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:518
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:517
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2328,8 +2333,8 @@ msgid "Monitor:"
 msgstr ""
 
 #: ../Source/3rdpart/ColorButton.cpp:226
-#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:24
-#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:31
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:26
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:35
 msgid "More colors..."
 msgstr "További színek..."
 
@@ -2337,7 +2342,7 @@ msgstr "További színek..."
 msgid "Mouse clicks handlers"
 msgstr "Egérklikk kezelés"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1058
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1083
 msgid "Move"
 msgstr "Áthelyezés"
 
@@ -2350,7 +2355,7 @@ msgid "Move Up"
 msgstr "Feljebb"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:22
 msgid "N"
 msgstr ""
 
@@ -2363,24 +2368,24 @@ msgid "Name:"
 msgstr "Név:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:21
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2885
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2880
 msgid "Network Debugger"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:292
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:291
 msgid "New Profile Name"
 msgstr "Új profilnév"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:963
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:962
 msgid "New folder"
 msgstr "Új mappa"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:403
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:402
 msgid "New profile"
 msgstr "Új profil"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:814
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:813
 msgid "Next >"
 msgstr "Tovább >"
 
@@ -2388,7 +2393,7 @@ msgstr "Tovább >"
 msgid "No"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:739
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:738
 msgid "No Folder Selected"
 msgstr "Nincs mappa kijelölve"
 
@@ -2400,7 +2405,7 @@ msgstr "Nem található fájl."
 msgid "No pictures were found."
 msgstr "Nincsenek képek."
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:18
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:16
 msgid "No proxy (direct connection)"
 msgstr ""
 
@@ -2411,17 +2416,17 @@ msgid "No updates for %s components are available"
 msgstr "Frissítések állnak rendelkezésre"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:158
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:156
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:146
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:185
 msgid "None"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:26
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:16
 msgid "Num of retries per action:"
 msgstr "Egy művelethez tartozó újrapróbálkozások száma:"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:15
 #, fuzzy
 #| msgid " Num of retries per file:"
 msgid "Num of retries per file:"
@@ -2438,7 +2443,7 @@ msgstr "Kockák száma:"
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:267
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:37
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:33
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:42
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:57
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:58
@@ -2453,12 +2458,12 @@ msgstr "Kockák száma:"
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:36
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:59
 msgid "OK"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:39
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:35
 msgid "Older than 30 days"
 msgstr ""
 
@@ -2470,9 +2475,9 @@ msgstr "Konténer mappa megnyitása"
 msgid "Open download page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:211
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:207
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:375
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:974
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:973
 msgid "Open in Web Browser"
 msgstr "Megnyitás a Böngészőben"
 
@@ -2484,7 +2489,7 @@ msgstr "Megnyitás a varázslóval"
 msgid "Open in external editor"
 msgstr "Megnyitás külső szerkesztőben"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:226
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:222
 #: ../Source/Gui/Dialogs/MainDlg.cpp:226
 msgid "Open in folder"
 msgstr "Megnyitás mappában"
@@ -2499,7 +2504,7 @@ msgstr "Képernyőfelvétel megnyitása a szerkesztőben"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:662
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:221
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2881
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2876
 msgid "Open screenshots folder"
 msgstr "Tároló mappa megnyitása..."
 
@@ -2509,7 +2514,7 @@ msgstr "Tároló mappa megnyitása..."
 msgid "Open servers folder"
 msgstr "Tároló mappa megnyitása..."
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:81
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:79
 #, fuzzy
 #| msgid "Connection settings"
 msgid "Open system connection settings"
@@ -2517,7 +2522,7 @@ msgstr "Kapcsolat beállítása"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:745
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1081
 #, fuzzy
 #| msgid "Open in the editor"
 msgid "Open the website"
@@ -2528,8 +2533,8 @@ msgid "Open with..."
 msgstr ""
 
 #: ../Source/Core/Upload/DefaultUploadEngine.cpp:76
-#: ../Source/Core/Upload/ScriptUploadEngine.cpp:398
-#: ../Source/Core/Upload/ScriptUploadEngine.cpp:423
+#: ../Source/Core/Upload/ScriptUploadEngine.cpp:392
+#: ../Source/Core/Upload/ScriptUploadEngine.cpp:417
 #, fuzzy
 #| msgid "File uploading was cancelled by user."
 msgid "Operation was cancelled by user."
@@ -2541,7 +2546,7 @@ msgstr "Felhasználói megszakítás."
 msgid "Options"
 msgstr "Beállítások"
 
-#: ../Source/Func/MediaInfoHelper.cpp:156
+#: ../Source/Func/MediaInfoHelper.cpp:159
 msgid "Overall bitrate: "
 msgstr "Teljes bitráta: "
 
@@ -2550,7 +2555,7 @@ msgid "Parameters:"
 msgstr "Paraméterek:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:22
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:207
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
@@ -2578,17 +2583,17 @@ msgid "Paste a link to shorten it:"
 msgstr "Illesszen be egy linket, hogy lerövidítse:"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:70
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:470
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:468
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:529
 msgid "Pause"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:135
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:869
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:137
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:894
 msgid "Pixelation"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:40
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:36
 msgid "Please choose period:"
 msgstr "Válasszon periódust:"
 
@@ -2613,15 +2618,15 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Adja meg a hitelesítési beállításokat a '%s' szervernek!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:499
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:498
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:20
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:18
 msgid "Port:"
 msgstr ""
 
-#: ../Source/Core/Upload/UploadTask.cpp:384
+#: ../Source/Core/Upload/UploadTask.cpp:383
 msgid "Postponed"
 msgstr ""
 
@@ -2633,16 +2638,16 @@ msgstr ""
 msgid "Preserve metadata (for ex. EXIF)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:20
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:25
 msgid "Preset:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1004
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
 msgid "Pressing this button while holding Shift will close the window."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1004
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 
@@ -2655,7 +2660,7 @@ msgid "Preview Window"
 msgstr "Előnézeti ablak"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1040
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1065
 msgid "Print..."
 msgstr "Nyomtatás..."
 
@@ -2682,7 +2687,7 @@ msgstr "Képek feldolgozása feltöltés előtt"
 msgid "Processing folder:"
 msgstr "Feldolgozó mappa:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:642
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:641
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2690,7 +2695,7 @@ msgid ""
 "the application on the same computer."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:330
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:329
 msgid "Profile with such name already exists!"
 msgstr "Ilyen nevű profil már létezik!"
 
@@ -2700,7 +2705,7 @@ msgstr "Ilyen nevű profil már létezik!"
 msgid "Profile:"
 msgstr "Profil:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:95
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:91
 msgid "Progress:"
 msgstr "Folyamat:"
 
@@ -2708,17 +2713,17 @@ msgstr "Folyamat:"
 msgid "Properties"
 msgstr "Tulajdonságok"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:21
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:19
 msgid "Proxy type:"
 msgstr "Proxy Típus:"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:18
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:24
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:16
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:22
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:186
 msgid "Quality:"
@@ -2746,13 +2751,13 @@ msgstr ""
 msgid "Reason:"
 msgstr "Ok:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1025
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
 msgid "Record"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:96
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:841
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:98
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:866
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1092
 msgid "Rectangle"
 msgstr "Téglalap"
 
@@ -2808,16 +2813,16 @@ msgstr "Távolítsa el ezt a fiókot a listáról (nem a távoli kiszolgálóró
 msgid "Resize mode:"
 msgstr "Átméretezés:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:475
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:473
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:529
 msgid "Resume"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:102
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
 msgid "Retrieve thumbnails from the Internet"
 msgstr "Bélyegképek lekérése az internetről"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:274
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:267
 msgid "Retry"
 msgstr ""
 
@@ -2838,22 +2843,22 @@ msgstr "Képek áttöltése a szövegbe az eredeti jelölés megőrzésével"
 msgid "Right button click:"
 msgstr "Jobb klikk:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1934
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1959
 msgid "Rotate clockwise (90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1935
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1960
 msgid "Rotate counter clockwise (-90°)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1038
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1063
 msgid "Rotate or flip"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:101
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:117
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:842
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:855
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:103
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:119
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:867
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:880
 msgid "Rounded rectangle"
 msgstr "Kerekített téglalap"
 
@@ -2866,33 +2871,33 @@ msgstr "Kerekítés sugara"
 msgid "SFTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:71
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:93
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:70
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:92
 msgid "Same format as image"
 msgstr "Képpel azonos formátum"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:736
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
+#: ../Source/Gui/Dialogs/MainDlg.cpp:735
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1038
 msgid "Save"
 msgstr "Mentés"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1031
 #, fuzzy, c-format
 #| msgid "Save as"
 msgid "Save (%s)"
 msgstr "Mentés másként"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:391
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:390
 msgid "Save Profile"
 msgstr "Profil mentése"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1006
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1031
 #, c-format
 msgid "Save and close (%s)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:880
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
 msgid "Save as..."
 msgstr "Mentés másként..."
 
@@ -2900,7 +2905,7 @@ msgstr "Mentés másként..."
 msgid "Save as:"
 msgstr "Mentés másként:"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1389
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1414
 msgid "Save changes?"
 msgstr "Elmenti a változtatásokat?"
 
@@ -3004,19 +3009,19 @@ msgstr "Pillanatfelvétel"
 msgid "Screenshot Action"
 msgstr "Képernyőfelvétel"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2536
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2534
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to the clipboard."
 msgstr "A képernyőfelvétel mentve lett a vágólapra."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2534
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2532
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been saved and copied to the clipboard."
 msgstr "A képernyőfelvétel mentve lett a vágólapra."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2538
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2536
 #, fuzzy
 #| msgid "Settings have been saved."
 msgid "Screenshot has been saved."
@@ -3040,21 +3045,21 @@ msgstr ""
 msgid "Search by image"
 msgstr "Kép szerinti keresés"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:911
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:936
 #, c-format
 msgid "Search by image (%s)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Search on %1% (%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
 msgid "Search on %1% and close (%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1028
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1302
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1327
 #, c-format
 msgid "Search on %s"
 msgstr ""
@@ -3090,7 +3095,7 @@ msgstr ""
 msgid "Select folder"
 msgstr "Mappa választás"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1560
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1585
 msgid "Select region"
 msgstr "Terület kijelölése"
 
@@ -3111,7 +3116,7 @@ msgstr "Tallózás"
 msgid "Select..."
 msgstr "Tallózás"
 
-#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:108
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:99
 #, c-format
 msgid "Selected server: %s"
 msgstr ""
@@ -3127,7 +3132,7 @@ msgstr "Szerver"
 msgid "Server [:port]:"
 msgstr "Szerver [:port]:"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:538
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:537
 msgid "Server and authentication settings"
 msgstr "Kiszolgáló és hitelesítési beállítások"
 
@@ -3136,7 +3141,7 @@ msgid "Server for other file types"
 msgstr "Szerver más fájltípusokhoz"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:942
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:967
 msgid "Server for quick screenshot uploading"
 msgstr "Szerver gyors képernyőfelvétel feltöltéshez"
 
@@ -3157,12 +3162,12 @@ msgstr "Szerver a képek feltöltésére"
 msgid "Server name:"
 msgstr "Szerver név:"
 
-#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:106
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:97
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:824
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1062
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:823
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1061
 msgid "Server settings..."
 msgstr "Szerver beállítások..."
 
@@ -3191,7 +3196,7 @@ msgctxt "settings.menu"
 msgid "Servers"
 msgstr "Szerverek"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
 msgid "Session total:"
 msgstr "Összes munkamenet:"
 
@@ -3199,7 +3204,7 @@ msgstr "Összes munkamenet:"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:667
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:222
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2878
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2873
 msgid "Settings"
 msgstr "Beállítások"
 
@@ -3211,7 +3216,7 @@ msgstr "Beállítás fájl elérési útja:"
 msgid "Settings have been saved."
 msgstr "A beállítások elmentve."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:91
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
 msgid "Settings..."
 msgstr "Beállítások..."
 
@@ -3232,7 +3237,7 @@ msgid "Shorten URL"
 msgstr "Rövidítse az URL-t"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:374
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1253
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1251
 #, c-format
 msgid "Shorten URL using %s"
 msgstr "Rövidítse le az URL-t %s használatával"
@@ -3266,7 +3271,7 @@ msgstr "A kijelölt terület felvétele..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2890
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2885
 msgid "Show Error Log"
 msgstr "Hibák megtekintése"
 
@@ -3284,7 +3289,7 @@ msgstr "Hozzáadás a listához"
 msgid "Show in default viewer"
 msgstr "Megjelenítés az alapértelmezett nézőkében"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:277
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:270
 msgid "Show log for this file"
 msgstr ""
 
@@ -3342,7 +3347,7 @@ msgstr "Forrás URL (opcionális):"
 msgid "Source code"
 msgstr "Forráskód"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:725
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:724
 msgid "Specify account..."
 msgstr "Adja meg a fiókot..."
 
@@ -3362,17 +3367,17 @@ msgid "Starting upload"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:61
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:75
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:71
 msgid "Status"
 msgstr "Állapota"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1070
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1095
 msgid "Step"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:115
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:728
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:721
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:175
 msgid "Stop"
@@ -3382,7 +3387,7 @@ msgstr ""
 msgid "Stop uploading"
 msgstr "Feltöltés leállítása"
 
-#: ../Source/Core/Upload/UploadTask.cpp:372
+#: ../Source/Core/Upload/UploadTask.cpp:371
 msgid "Stopped"
 msgstr ""
 
@@ -3390,17 +3395,17 @@ msgstr ""
 msgid "Storage time (days)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:77
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:76
 msgid "Stretch"
 msgstr "Nyújtás"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:55
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:41
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:50
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:37
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Stroke color:"
 msgstr "Körvonal színe:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:282
+#: ../Source/Func/MediaInfoHelper.cpp:266
 msgid "Subtitles: "
 msgstr "Feliratok: "
 
@@ -3416,7 +3421,7 @@ msgstr ""
 msgid "Summary:"
 msgstr "Összefoglaló:"
 
-#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:81
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:85
 #, fuzzy
 #| msgid "Frame color:"
 msgid "Swap colors"
@@ -3438,21 +3443,21 @@ msgstr ""
 msgid "Test failed"
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1069
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1094
 msgid "Text"
 msgstr "Szöveg - Felirat"
 
-#: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:94
+#: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:95
 msgid "Text Options"
 msgstr "Szöveg beállításai"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:48
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:44
 msgid "Text Settings:"
 msgstr "Szöveg beállítások:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:45
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:54
 msgid "Text color:"
 msgstr "Szövegszín:"
@@ -3477,7 +3482,7 @@ msgstr "Szöveg a képen"
 msgid "Text position:"
 msgstr "Szöveg pozíció:"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:51
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 msgid "Text:"
 msgstr "Szöveg:"
 
@@ -3495,13 +3500,13 @@ msgstr "Köszönjük az itt felsoroltak munkáit:"
 msgid "The field '%s' cannot be empty."
 msgstr "Letöltési URL nem lehet üres."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:853
+#: ../Source/Gui/Dialogs/MainDlg.cpp:852
 #, fuzzy
 #| msgid "Server's name cannot be empty"
 msgid "The file name cannot be empty."
 msgstr "A szerver neve nem lehet üres"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:857
+#: ../Source/Gui/Dialogs/MainDlg.cpp:856
 #, fuzzy
 #| msgid "File name cannot contains forbidden characters!"
 msgid "The file name contains forbidden characters."
@@ -3538,27 +3543,27 @@ msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 "Ez azt jelenti, hogy a miniatűr jön létre a helyszínen, nem pedig a program."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1099
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1098
 msgid "This server doesn't have any settings."
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
 msgid "Thread"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:27
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:17
 msgid "Threads number:"
 msgstr "Szálak száma:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:76
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:72
 msgid "Thumbnail"
 msgstr "Miniatűr"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:55
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:51
 msgid "Thumbnail Preset Editor"
 msgstr "Miniatűr készlet szerkesztő"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:55
 msgid "Thumbnail Preset:"
 msgstr "Bélyegkép beállítása:"
@@ -3567,7 +3572,7 @@ msgstr "Bélyegkép beállítása:"
 msgid "Thumbnail settings"
 msgstr "Miniatűr beállítások"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:50
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:63
 msgid "Thumbnail text:"
 msgstr "Bélyegkép felirat:"
@@ -3589,7 +3594,7 @@ msgctxt "settings.menu"
 msgid "Thumbnails"
 msgstr "Miniatűrök"
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
 #, fuzzy
 #| msgid "Timeout:"
 msgid "Time"
@@ -3605,22 +3610,22 @@ msgstr "Időtúllépés:"
 msgid "To all"
 msgstr "Az összesre"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:85
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:92
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:91
 msgid "Top center"
 msgstr "Felül középen"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:91
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:83
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:90
 msgid "Top left corner"
 msgstr "Bal felső sarokban"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:86
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:93
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:85
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:92
 msgid "Top right corner"
 msgstr "Jobb felső sarokban"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:100
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
 msgid "Total size:"
 msgstr "Teljes méret:"
 
@@ -3637,7 +3642,7 @@ msgstr "Tálca ikon"
 msgid "Tray icon context menu"
 msgstr "Tálca ikon kontextus menü"
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
 msgid "Type"
 msgstr ""
 
@@ -3657,20 +3662,20 @@ msgstr "URL letöltésre:"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:111
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1167
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1166
 msgid "URL shortening server"
 msgstr "URL-t rövidítő szerver"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
 msgid "URL:"
 msgstr ""
 
 #: ../Source/Gui/Controls/MyImage.cpp:176
-#: ../Source/Gui/Controls/ThumbsView.cpp:326
+#: ../Source/Gui/Controls/ThumbsView.cpp:325
 msgid "Unable to load picture"
 msgstr "Nem tölthető be a kép"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2503
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2501
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -3683,12 +3688,12 @@ msgstr "Nem sikerült lerövidíteni a linket..."
 msgid "Unable to unpack archive %s"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1077
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1102
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr "Visszavonás - mégse..."
 
-#: ../Source/Core/Upload/UploadTask.cpp:391
+#: ../Source/Core/Upload/UploadTask.cpp:390
 msgid "Unknown status"
 msgstr ""
 
@@ -3701,11 +3706,11 @@ msgstr ""
 msgid "Update finished. Updated %d of %d files "
 msgstr "A frissítés befejeződött. %d frissítve a %d fájlból "
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:25
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
 msgid "Upload Buffer Size:"
 msgstr "Feltöltési puffer mérete:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:101
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
 msgid "Upload History"
 msgstr "Előznények feltöltése"
 
@@ -3742,7 +3747,7 @@ msgstr "Képek feltöltése"
 msgid "Upload images only"
 msgstr "Csak képeket töltsön fel"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:498
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:491
 msgid "Upload progress"
 msgstr "Feltöltés folyamata"
 
@@ -3750,18 +3755,18 @@ msgstr "Feltöltés folyamata"
 msgid "Upload results"
 msgstr "Eredmények feltöltése"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:26
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
 msgid "Upload speed limit per thread:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1998
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2023
 #, c-format
 msgid "Upload to %s"
 msgstr "Feltöltés ide %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1995
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2020
 msgid "Upload to Web"
 msgstr "Feltöltés a Webre"
 
@@ -3784,11 +3789,11 @@ msgctxt "settings.menu"
 msgid "Uploading"
 msgstr "Feltöltés"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1025
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1024
 msgid "Uploading Files to Server"
 msgstr "Fájl feltöltése a szerverre"
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:24
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:14
 msgid "Uploading errors"
 msgstr "Feltöltési hibák"
 
@@ -3798,7 +3803,7 @@ msgstr "Feltöltési hibák"
 msgid "Uploading file \"%1%\" to server \"%2%\"..."
 msgstr "Fájl küldése a szerverre..."
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:636
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:629
 msgid "Uploading has been finished."
 msgstr "A feltöltés befejeződött."
 
@@ -3806,7 +3811,7 @@ msgstr "A feltöltés befejeződött."
 msgid "Uploading image..."
 msgstr "Kép feltöltésee..."
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:29
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:19
 #, fuzzy
 #| msgid "Uploading errors"
 msgid "Uploading initiated from tray"
@@ -3836,7 +3841,7 @@ msgstr "Használjon közvetlen linkeket"
 msgid "Use old method of rectangular area selection"
 msgstr "Használja a régi négyszögletes területkiválasztási módszert"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:16
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:14
 msgid "Use provided proxy:"
 msgstr ""
 
@@ -3845,7 +3850,7 @@ msgstr ""
 msgid "Use server-side thumbnails"
 msgstr "Kiszolgálóoldali bélyegképek használata"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:17
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:15
 msgid "Use system proxy settings"
 msgstr ""
 
@@ -3853,11 +3858,11 @@ msgstr ""
 msgid "Use template"
 msgstr "Használjon sablont"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:86
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:90
 msgid "User name"
 msgstr "Felhasználó"
 
-#: ../Source/Gui/Controls/ThumbsView.cpp:389
+#: ../Source/Gui/Controls/ThumbsView.cpp:388
 #, c-format
 msgid "VIDEO %s"
 msgstr ""
@@ -3885,7 +3890,7 @@ msgstr "Videó"
 msgid "Video backend"
 msgstr "Videó:"
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:17
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:15
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:20
 #, fuzzy
 #| msgid "Video: "
@@ -3893,9 +3898,9 @@ msgid "Video codec:"
 msgstr "Videó:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1792
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2111
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2080
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2109
 msgid "Video files"
 msgstr "Videó fájlok"
 
@@ -3911,16 +3916,16 @@ msgstr "Feldolgozó mappa:"
 msgid "Video source:"
 msgstr "Videó:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:163
+#: ../Source/Func/MediaInfoHelper.cpp:166
 msgid "Video: "
 msgstr "Videó: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:203
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:272
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:265
 msgid "View"
 msgstr "Nézet"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:216
 msgid "View BBCode/HTML codes"
 msgstr "BB/HTML kódok megtekintése"
 
@@ -3940,11 +3945,11 @@ msgstr "Nézet"
 msgid "View log for details."
 msgstr "Részletek megtekintése a naplófájlból."
 
-#: ../Source/Core/Upload/UploadTask.cpp:387
+#: ../Source/Core/Upload/UploadTask.cpp:386
 msgid "Waiting for child tasks"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:189
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:187
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -3978,8 +3983,8 @@ msgstr ""
 "Üdvözli a Képmegosztó Varázsló, amely segíti feltölteni  fényképeit, videóit "
 "az Internetre!"
 
-#: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:43
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:51
 msgid "Width:"
 msgstr "Szélesség:"
 
@@ -3993,7 +3998,7 @@ msgstr "Előnézeti ablak"
 msgid "Windows Explorer integration"
 msgstr "Windows Intéző-integráció"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2733
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2728
 #, fuzzy
 #| msgid "Upload progress"
 msgid "Work in progress"
@@ -4009,16 +4014,16 @@ msgid "You are using the latest %s version."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:151
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:160
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:162
 #, c-format
 msgid "You have not selected \"%s\""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:168
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:133
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:117
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:141
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:140
 #, c-format
 msgid "You have not selected account for server \"%s\""
 msgstr "Nem választotta ki a kiszolgáló fiókját \"%s\""
@@ -4036,7 +4041,7 @@ msgstr ""
 msgid "You have not selected server"
 msgstr "Nem választotta ki a kiszolgálót"
 
-#: ../Source/Gui/Dialogs/SizeExceed.cpp:136
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:135
 msgid "You have not selected server!"
 msgstr "Nem választotta ki a kiszolgálót (szervert)!"
 
@@ -4061,7 +4066,7 @@ msgstr ""
 msgid "extracting frames from video"
 msgstr "Képkocka kivágása videóból..."
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:452
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
 #, fuzzy
 #| msgid "Filesize: "
 msgid "file size"
@@ -4076,7 +4081,7 @@ msgstr "mappa \"%s\""
 msgid "for easier link sharing"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:20
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:23
 msgid "high quality (100)"
 msgstr ""
@@ -4088,14 +4093,14 @@ msgid "hour"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:179
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:451
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
 #, fuzzy
 #| msgid "By height"
 msgid "image height"
 msgstr "magasság szerint"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:178
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:450
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:449
 #, fuzzy
 #| msgid "Change width:"
 msgid "image width"
@@ -4107,7 +4112,7 @@ msgstr "Szélesség módosítása:"
 msgid "index"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:19
+#: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:17
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:22
 msgid "low quality (0)"
 msgstr ""
@@ -4162,7 +4167,7 @@ msgstr ""
 msgid "single file (mosaic)"
 msgstr "Egyetlen fájl"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 msgid "to:"
 msgstr ""
 
@@ -4170,7 +4175,7 @@ msgstr ""
 msgid "translator_name"
 msgstr "LaMoLa"
 
-#: ../Source/Gui/Controls/HistoryTreeControl.cpp:213
+#: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 #, fuzzy
 #| msgid "Random server"
 msgid "unknown server"

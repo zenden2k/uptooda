@@ -30,26 +30,37 @@
 #include "Core/AppRuntimeInfo.h"
 #include "Core/ServiceLocator.h"
 
+#define TR_COND(s) (enableLocalization ? TR(s): _T(s))
+
 namespace MediaInfoHelper {
 
-void AddStr(CString &Str, const CString& Str2)
+// Заменяет все вхождения from на to в строке str
+void StrReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to)
 {
-    if (Str2.GetLength() > 0) Str += Str2;
+    if (from.empty()) return;
+    size_t pos = 0;
+    while ((pos = str.find(from, pos)) != std::wstring::npos) {
+        str.replace(pos, from.length(), to);
+        pos += to.length();
+    }
 }
 
-void AddStr(CString &Str, const CString& Str2, const CString& StrPostfix, const CString& StrPrefix = CString(_T("")))
+// Добавляет str2 в поток, если он не пуст
+inline void AddStr(std::wostringstream& out, const CString& str2)
 {
-    if (Str2.GetLength() > 0) Str += StrPrefix + Str2 + StrPostfix;
+    if (str2.GetLength() > 0) out << str2.GetString();
 }
 
-inline CString& StrReplace(CString &text, CString s, CString d)
+// Добавляет prefix + str2 + postfix в поток, если str2 не пуст
+inline void AddStr(std::wostringstream& out, const CString& str2, const CString& postfix,
+                    const CString& prefix = CString(_T("")))
 {
-    text.Replace(s, d);
-    return text;
+    if (str2.GetLength() > 0) out << prefix.GetString() << str2.GetString() << postfix.GetString();
 }
 
-#define VIDEO(a) MI.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name).c_str()
-#define AUDIO(n, a) MI.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name).c_str()
+
+#define VIDEO(a) mi.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name).c_str()
+#define AUDIO(n, a) mi.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name).c_str()
 
 std::string TimestampToStr(int64_t duration, int64_t units) {
     int hours, mins, secs, us;
@@ -90,20 +101,13 @@ bool FindMediaInfoDllPath() {
 
 bool IsMediaInfoAvailable() {
     return true;
-    //return *MediaInfoDllPath != _T('\0');
 }
 
-bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool enableLocalization)
-{
+bool GetMediaFileInfo(LPCWSTR fileName, CString& buffer, CString& fullInfo, bool enableLocalization) {
     using namespace MediaInfoLib;
-    //using namespace MediaInfoDLL;
-    MediaInfo MI;
-    /*if (!MI.IsReady()) {
-        Buffer = TR("Unable to load library MediaInfo.dll!");
-        return false;
-    }*/
-    MI.Option(__T("Internet"), __T(""));
-    //MI.Option(__T("Complete"), __T("1"));
+    MediaInfo mi;
+
+    mi.Option(__T("Internet"), __T(""));
     if (enableLocalization) {
         CString path = WinUtils::GetAppFolder();
         CString langDir = path + CString(_T("Modules\\MediaInfoLang\\"));
@@ -114,182 +118,161 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
             CString langFilePath = langDir + lang + _T(".csv");
             std::string langFileContents;
             if (IuCoreUtils::ReadUtf8TextFile(W2U(langFilePath), langFileContents)) {
-                MI.Option(__T("Language"), IuCoreUtils::Utf8ToWstring(langFileContents));
+                mi.Option(__T("Language"), IuCoreUtils::Utf8ToWstring(langFileContents));
             }
         }
     } else {
-        MI.Option(__T("Language"), _T(""));
+        mi.Option(__T("Language"), _T(""));
     }
 
-    MI.Open(FileName);
+    mi.Open(fileName);
 
-    CString Result;
-    CString VideoFormat, VideoVersion, VideoCodec, VideoFrameRate, VideoBitrate, VideoNominalBitrate, VideoBitsperPixel;
-    CString AudioFormat, AudioFormatProfile, AudioSampleRate, AudioChannels, AudioBitrate, AudioBitrateMode, AudioLanguage;
+    std::wostringstream result;
+    CString videoFormat, videoVersion, videoCodec, videoFrameRate, videoBitrate, videoNominalBitrate, videoBitsperPixel;
+    CString audioFormat, audioFormatProfile, audioSampleRate, audioChannels, audioBitrate, audioBitrateMode,
+            audioLanguage;
 
-    int count = MI.Count_Get(Stream_Audio); //Count of audio streams in file
-    int VideoCount = MI.Count_Get(Stream_Video); //Count of video streams in file
-    int SubsCount = MI.Count_Get(Stream_Text);
-    fullInfo = MI.Inform().c_str();
-    Result += CString(TR("Filename: ")) + WinUtils::DoExtractFileName(FileName);
-    Result += _T("\r\n");
-    CString fileSize = MI.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name).c_str();
+    int count = mi.Count_Get(Stream_Audio); //Count of audio streams in file
+    int VideoCount = mi.Count_Get(Stream_Video); //Count of video streams in file
+    int SubsCount = mi.Count_Get(Stream_Text);
+    fullInfo = mi.Inform().c_str();
+
+    result << TR_COND("Filename: ") << WinUtils::DoExtractFileName(fileName).GetString() << L"\r\n";
+
+    CString fileSize = mi.Get(Stream_General, 0, _T("FileSize/String"), Info_Text, Info_Name).c_str();
     fileSize.Replace(_T("iB"), _T("B")); // MiB --> MB
-    Result += CString(TR("Filesize: ")) + fileSize;
-    Result += _T("\r\n");
+    result << TR_COND("Filesize: ") << fileSize.GetString() << L"\r\n";
+
     CString Duration;
-    CString DurationStr = MI.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name).c_str();
+    CString DurationStr = mi.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name).c_str();
     if (!DurationStr.IsEmpty()) {
         uint64_t duration = IuCoreUtils::StringToInt64(W2U(DurationStr));
         Duration = U2W(TimestampToStr(duration, 1000));
     } else {
-        Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name).c_str();
+        Duration = mi.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name).c_str();
     }
 
-    AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Duration: ")));
+    AddStr(result, Duration, _T("\r\n"), TR_COND("Duration: "));
 
-    if (count + VideoCount > 1) // if file contains more than one audio/video stream
-    {
-        AddStr(Result, MI.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name).c_str(),
-            CString(_T("\r\n")), CString(TR("Overall bitrate: ")));
+    if (count + VideoCount > 1) {// if file contains более одного аудио/видео потока
+        AddStr(result, mi.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name).c_str(),
+               _T("\r\n"), TR_COND("Overall bitrate: "));
     }
 
-    if (VideoCount) // If file contains one or more video streams
-    {
-        // The next piece of code gets information only from the first video stream
-        // e.g. there is no support for multiple video streams
-        CString VideoTotal = TR("Video: ");
-        VideoFormat = VIDEO("Format");
-        VideoVersion = VIDEO("Format_Version");
+    if (VideoCount) { // Если файл содержит один или несколько видеопотоков
+        // Информация берётся только из первого видеопотока
+        // (поддержки нескольких видеопотоков нет)
+        std::wostringstream videoTotal;
+        videoTotal << TR_COND("Video: ");
 
-        CString width = VIDEO("Width");
-        CString height = VIDEO("Height");
+        videoFormat = VIDEO("Format");
+        videoVersion = VIDEO("Format_Version");
 
-        /*CString aspectRatio = MI.Get(Stream_Video, 0, _T("DisplayAspectRatio"), Info_Text, Info_Name).c_str();
-        try {
-            //double fAspectRatio = boost::lexical_cast<double>(LPCTSTR(aspectRatio));
-            int iWidth = boost::lexical_cast<int>(LPCTSTR(width));
-            int iHeight = boost::lexical_cast<int>(LPCTSTR(height));
-            //double physicalAspect = iWidth / static_cast<double>(iHeight);
-            /*if (physicalAspect != fAspectRatio) {
-                //LOG(WARNING) << "physicalAspect " << physicalAspect << " != " << fAspectRatio;
-            }*
-        } catch ( const boost::bad_lexical_cast& ex ) {
-            LOG(WARNING) << ex.what();
-        }*/
+        videoTotal << videoFormat.GetString();
 
-        AddStr(VideoTotal, VideoFormat);
-        StrReplace(VideoVersion, CString(_T("Version ")), CString(_T("")));
-
-        if (VideoVersion.GetLength()) {
-            AddStr(VideoTotal, CString(_T(" ")), VideoVersion);
+        videoVersion.Replace(_T("Version "), _T(""));
+        if (videoVersion.GetLength()) {
+            videoTotal << L" " << videoVersion.GetString();
         }
 
-        VideoCodec = VIDEO("CodecID/Hint");
-        if (VideoCodec.GetLength())
-            AddStr(VideoTotal, CString(_T(", ")), VideoCodec);
-        AddStr(VideoTotal, CString(_T(", ")));
-        AddStr(VideoTotal, VIDEO("Width"));
-        AddStr(VideoTotal, CString(_T("x")));
-        AddStr(VideoTotal, VIDEO("Height"));
-        StrReplace(VideoTotal, CString(_T("MPEG Video")), CString(_T("MPEG")));
-        CString DisplayRatio;
-        StrReplace(VideoTotal, CString(_T("MPEG-4 Visual")), CString(_T("MPEG4")));
-        DisplayRatio = VIDEO("DisplayAspectRatio/String");
-        if (DisplayRatio.GetLength()) {
-            AddStr(VideoTotal, CString(_T(" (")));
-            AddStr(VideoTotal, DisplayRatio);
-            AddStr(VideoTotal, CString(_T(")")));
+        videoCodec = VIDEO("CodecID/Hint");
+        if (videoCodec.GetLength())
+            videoTotal << L", " << videoCodec.GetString();
+
+        videoTotal << L", " << VIDEO("Width") << L"x" << VIDEO("Height");
+
+        std::wstring videoTotalStr = videoTotal.str();
+        StrReplaceAll(videoTotalStr, L"MPEG Video", L"MPEG");
+        StrReplaceAll(videoTotalStr, L"MPEG-4 Visual", L"MPEG4");
+        videoTotal.str(videoTotalStr);
+        videoTotal.seekp(0, std::ios_base::end);
+
+        CString displayRatio = VIDEO("DisplayAspectRatio/String");
+        if (!displayRatio.IsEmpty()) {
+            videoTotal << L" (" << displayRatio.GetString() << L")";
         }
 
-        VideoFrameRate = VIDEO("FrameRate");
-        if (VideoFrameRate.GetLength()) {
-            AddStr(VideoTotal, CString(_T(", ")));
-            AddStr(VideoTotal, VideoFrameRate);
-            AddStr(VideoTotal, CString(_T(" fps")));
+        videoFrameRate = VIDEO("FrameRate");
+        if (!videoFrameRate.IsEmpty()) {
+            videoTotal << L", " << videoFrameRate.GetString() << L" fps";
         }
 
-        VideoNominalBitrate = VIDEO("BitRate_Nominal/String");
-        VideoBitrate = VIDEO("BitRate/String");
+        videoNominalBitrate = VIDEO("BitRate_Nominal/String");
+        videoBitrate = VIDEO("BitRate/String");
 
-        if (VideoNominalBitrate.GetLength()) // Nominal bitrate value has higher priority than Actual bitrate
+        if (!videoNominalBitrate.IsEmpty()) // Номинальный битрейт приоритетнее фактического
         {
-            AddStr(VideoTotal, CString(_T(", ")));
-            AddStr(VideoTotal, VideoNominalBitrate);
-        } else if (VideoBitrate.GetLength()) {
-            AddStr(VideoTotal, CString(_T(", ")));
-            AddStr(VideoTotal, VideoBitrate);
+            videoTotal << L", " << videoNominalBitrate.GetString();
+        } else if (videoBitrate.GetLength()) {
+            videoTotal << L", " << videoBitrate.GetString();
         }
 
-        VideoBitsperPixel = VIDEO("Bits-(Pixel*Frame)");
-        if (VideoBitsperPixel.GetLength()) {
-            AddStr(VideoTotal, CString(_T(" (")));
-            AddStr(VideoTotal, VideoBitsperPixel);
-            AddStr(VideoTotal, CString(_T(" bit/pixel)")));
+        videoBitsperPixel = VIDEO("Bits-(Pixel*Frame)");
+        if (!videoBitsperPixel.IsEmpty()) {
+            videoTotal << L" (" << videoBitsperPixel.GetString() << L" bit/pixel)";
         }
 
-        Result += VideoTotal;
-        Result += _T("\r\n");
-    }  // End of getting information about video stream
-
-    //CString CountString = MI.Get(Stream_Audio, 0, _T("StreamCount"), Info_Text, Info_Name).c_str();
+        result << videoTotal.str() << L"\r\n";
+    }  // Конец получения информации о видеопотоке
 
     for (int i = 0; i < count; i++) {
-        CString AudioTotal;
+        std::wostringstream AudioTotal;
         CString buf;
-        buf.Format(CString(TR("Audio")) + _T(" #%d: "), i + 1);
+        buf.Format(CString(TR_COND("Audio")) + _T(" #%d: "), i + 1);
 
         if (count > 1)
-            AudioTotal = buf;
+            AudioTotal << buf.GetString();
         else
-            AudioTotal += CString(TR("Audio")) + _T(": ");
+            AudioTotal << TR_COND("Audio") << L": ";
 
-        AudioFormat = AUDIO(i, "Format");
-        AudioFormatProfile = AUDIO(i, "Format_Profile");
-        AudioSampleRate = AUDIO(i, "SamplingRate/String");
-        AudioChannels = AUDIO(i, "Channel(s)");
-        AudioBitrate = AUDIO(i, "BitRate/String");
-        AudioBitrateMode = AUDIO(i, "BitRate_Mode");
-        AudioLanguage = AUDIO(i, "Language/String");
+        audioFormat = AUDIO(i, "Format");
+        audioFormatProfile = AUDIO(i, "Format_Profile");
+        audioSampleRate = AUDIO(i, "SamplingRate/String");
+        audioChannels = AUDIO(i, "Channel(s)");
+        audioBitrate = AUDIO(i, "BitRate/String");
+        audioBitrateMode = AUDIO(i, "BitRate_Mode");
+        audioLanguage = AUDIO(i, "Language/String");
 
-        AddStr(AudioTotal, AudioFormat);
-        AddStr(AudioTotal, AudioFormatProfile, CString(_T("")), CString(_T(" ")));
-        AddStr(AudioTotal, AudioSampleRate, CString(_T("")), CString(_T(", ")));
-        AddStr(AudioTotal, AudioChannels, CString(_T(" ch")), CString(_T(", ")));
-        AddStr(AudioTotal, AudioBitrate, CString(_T("")), CString(_T(", ")));
-        AddStr(AudioTotal, AudioBitrateMode, CString(_T("")), CString(_T(", ")));
-        AddStr(AudioTotal, AudioLanguage, CString(_T(")")), CString(_T(" (")));
-        AudioTotal += _T("\r\n");
-        StrReplace(AudioTotal, CString(_T("MPEG Audio Layer ")), CString(_T("MP")));
-        StrReplace(AudioTotal, CString(_T(" ,")), CString(_T("")));
-        StrReplace(AudioTotal, CString(_T(",,")), CString(_T(",")));
-        Result += AudioTotal;
-    } // End of getting information about audio streams
+        AddStr(AudioTotal, audioFormat);
+        AddStr(AudioTotal, audioFormatProfile, _T(""), _T(" "));
+        AddStr(AudioTotal, audioSampleRate, _T(""), _T(", "));
+        AddStr(AudioTotal, audioChannels, _T(" ch"), _T(", "));
+        AddStr(AudioTotal, audioBitrate, _T(""), _T(", "));
+        AddStr(AudioTotal, audioBitrateMode, _T(""), _T(", "));
+        AddStr(AudioTotal, audioLanguage, _T(")"), _T(" ("));
+        AudioTotal << L"\r\n";
+
+        std::wstring audioTotalStr = AudioTotal.str();
+        StrReplaceAll(audioTotalStr, L"MPEG Audio Layer ", L"MP");
+        StrReplaceAll(audioTotalStr, L" ,", L"");
+        StrReplaceAll(audioTotalStr, L",,", L",");
+
+        result << audioTotalStr;
+    } // Конец получения информации об аудиопотоках
 
     if (SubsCount > 0) {
-        CString SubsTotal;
+        std::wostringstream SubsTotal;
 
         for (int i = 0; i < SubsCount; i++) {
-            CString mode = MI.Get(Stream_Text, i, _T("Language_More"), Info_Text, Info_Name).c_str();
-            AddStr(SubsTotal, MI.Get(Stream_Text, i, _T("Language/String"), Info_Text, Info_Name).c_str(), CString(_T("")), CString(i ? _T(", ") : _T("")));
+            CString mode = mi.Get(Stream_Text, i, _T("Language_More"), Info_Text, Info_Name).c_str();
+            AddStr(SubsTotal, mi.Get(Stream_Text, i, _T("Language/String"), Info_Text, Info_Name).c_str(),
+                   _T(""), i ? _T(", ") : _T(""));
 
-            if (mode == _T("Forced")) AddStr(SubsTotal, CString(_T(" (forced)")));
+            if (mode == _T("Forced")) AddStr(SubsTotal, _T(" (forced)"));
         }
 
-        if (SubsTotal.GetLength()) {
-            SubsTotal = CString(TR("Subtitles: ")) + SubsTotal;
-            Result += SubsTotal;
-            Result += _T("\r\n");
+        std::wstring subsTotalStr = SubsTotal.str();
+        if (!subsTotalStr.empty()) {
+            result << TR_COND("Subtitles: ") << subsTotalStr << L"\r\n";
         }
     }
 
-    MI.Close();
-    Buffer = Result;
+    mi.Close();
+    buffer = result.str().c_str();
     return true;
 }
 
 CString GetLibraryVersion() {
-   // using namespace MediaInfoDLL;
     MediaInfoLib::MediaInfo MI;
     return MI.Option(__T("Info_Version")).c_str();
 }

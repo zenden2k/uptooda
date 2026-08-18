@@ -117,6 +117,7 @@ namespace WinUtils {
     std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID);
     CString GUIDToString(const GUID& guid);
     CString NormalizeLineEndings(const CString& text);
+    bool NoModifiersPressed();
 }
 
 #endif

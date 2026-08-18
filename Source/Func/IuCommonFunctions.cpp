@@ -40,7 +40,7 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder) {
             return false;
         }
     }
-    IUTempFolder.Format(_T("%s\\iu_temp_%x"), static_cast<LPCTSTR>(IUCommonTempFolder), pid);
+    IUTempFolder.Format(_T("%s\\iu_temp_%x"), IUCommonTempFolder.GetString(), pid);
 
     if (!CreateDirectory(IUTempFolder, 0)) {
         DWORD errorCode = GetLastError();

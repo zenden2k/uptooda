@@ -40,7 +40,6 @@ class CUploadEngineList : public CUploadEngineListBase {
         int m_ActionNumOfRetries = 0;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
-        bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);
         void loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out);
         void loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<StorageTime>& out);
         void sort();

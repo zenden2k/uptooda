@@ -654,6 +654,8 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         VideoSettings.Engine = VideoEngineDirectshow;
     }
 
+    disableWindowsPrintScreenKeyInterception();
+
     notifyChange();
     return true;
 }
@@ -732,6 +734,9 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     }
 
     Hotkeys_changed = false;
+
+    disableWindowsPrintScreenKeyInterception();
+
     return true;
 }
 
@@ -894,6 +899,12 @@ void WtlGuiSettings::BindToManager() {
     SettingsNode& serversChecker = mgr_["ServersChecker"];
     serversChecker.n_bind(testFileName);
     serversChecker.n_bind(testUrl);
+}
+
+void WtlGuiSettings::disableWindowsPrintScreenKeyInterception() {
+    if (ShowTrayIcon && IsWindows10OrGreater() && Hotkeys.findByKey(VK_SNAPSHOT, 0) != -1) {
+        DisableWindowsPrintScreenKeyInterception();
+    }
 }
 
 // The following code should  be deleted in next releases

@@ -171,6 +171,7 @@ protected:
     void PostLoadServerProfile(ServerProfile& profile) override;
 
     void BindToManager();
+    void disableWindowsPrintScreenKeyInterception();
 private:
     TCHAR m_Directory[MAX_PATH];
     CFloatingWindow* floatWnd_;
