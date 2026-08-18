@@ -189,7 +189,17 @@ Rectangle {
         id: taskMenu
         popupType: Popup.Item
         width: 218
-        padding: 1
+        padding: 2
+        horizontalPadding: 2
+        verticalPadding: 2
+        leftPadding: 2
+        rightPadding: 2
+        topPadding: 2
+        bottomPadding: 2
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
         spacing: 0
         AppMenuItem { text: qsTr("Codes"); onTriggered: mainWindowController.showCodes(taskCard.sessionId, taskCard.taskData.taskId) }
         AppMenuItem { text: qsTr("Copy direct link"); onTriggered: mainWindowController.copyDirectLink(taskCard.sessionId, taskCard.taskData.taskId) }

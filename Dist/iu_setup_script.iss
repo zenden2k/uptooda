@@ -94,7 +94,7 @@ Name: "{code:GetDataFolder}\Uptooda\Scripts"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Uptooda\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Uptooda\Update"; Permissions: users-modify
 [Files]
-Source: "..\Build\Gui\Release\uptooda.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\bin\qimageuploader.exe"; DestDir: "{app}"; DestName: "uptooda.exe"; Flags: ignoreversion
 #if IU_ARCH != "arm64"
 Source: "..\Build\Gui\Release\sendrpt.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\Gui\Release\dbghelp.dll"; DestDir: "{app}"; Flags: ignoreversion

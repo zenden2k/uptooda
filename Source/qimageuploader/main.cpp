@@ -88,6 +88,12 @@ protected:
 
 };
 
+#if defined(_MSC_VER) && !defined(NDEBUG)
+extern "C" const char* __asan_default_options() {
+    return "continue_on_error=1";
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     ServiceLocator::instance()->setSettings(&Settings);

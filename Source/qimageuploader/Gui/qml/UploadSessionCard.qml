@@ -46,6 +46,18 @@ Rectangle {
                 }
                 Label { text: qsTr("%n file(s)", "", card.fileCount); color: "#7c8999"; font.pixelSize: 12 }
             }
+            Button {
+                id: codesButton
+                text: qsTr("Codes")
+                Layout.preferredWidth: 70
+                Layout.preferredHeight: 30
+                onClicked: mainWindowController.showCodes(card.sessionId)
+                background: Rectangle {
+                    radius: 7
+                    color: codesButton.hovered ? "#d8effd" : "#e9f6fd"
+                    border.color: "#b8dcef"
+                }
+            }
             ToolButton {
                 id: sessionMenuButton
                 text: "⋮"
@@ -81,7 +93,17 @@ Rectangle {
         id: sessionMenu
         popupType: Popup.Item
         width: 198
-        padding: 1
+        padding: 2
+        horizontalPadding: 2
+        verticalPadding: 2
+        leftPadding: 2
+        rightPadding: 2
+        topPadding: 2
+        bottomPadding: 2
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
         spacing: 0
         AppMenuItem { text: qsTr("Codes"); onTriggered: mainWindowController.showCodes(card.sessionId) }
         AppMenuItem { text: qsTr("Retry failed"); onTriggered: mainWindowController.retrySession(card.sessionId) }
