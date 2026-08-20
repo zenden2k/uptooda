@@ -26,6 +26,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/CommonDefs.h"
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()
@@ -111,9 +112,9 @@ DWORD CMediaInfoDlg::Run()
 
     SetDlgItemText(IDC_FILEINFOLABEL, fileInfoLabel.c_str());
 
-    MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_, !generateTextInEnglish_);
+    MediaInfoHelper::GetMediaFileInfo(W2U(m_FileName), summary_, fullInfo_, !generateTextInEnglish_);
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
-    SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
+    SetDlgItemText(IDC_FILEINFOEDIT, U2W(fullInfo ? fullInfo_ : summary_));
     return 0;
 }
 
@@ -158,7 +159,7 @@ LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
+    SetDlgItemText(IDC_FILEINFOEDIT, U2W(fullInfo ? fullInfo_ : summary_));
     settings->MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
     return 0;
 }

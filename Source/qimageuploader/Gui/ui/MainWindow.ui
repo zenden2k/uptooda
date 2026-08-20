@@ -102,6 +102,11 @@
     <string>Take screenshot</string>
    </property>
   </action>
+  <action name="actionMedia_info">
+   <property name="text">
+    <string>Media info</string>
+   </property>
+  </action>
   <action name="actionAboutProgram">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">

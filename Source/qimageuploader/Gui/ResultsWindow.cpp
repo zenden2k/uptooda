@@ -1,20 +1,19 @@
 #include "ResultsWindow.h"
 
 #include <QClipboard>
+#include <utility>
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
 
 #include "ui_ResultsWindow.h"
 namespace OutputCodeGenerator = Uptooda::Core::OutputGenerator;
 ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> objects, QWidget* parent) :
-    QDialog(parent), ui(new Ui::ResultsWindow), uploadObjects_(objects) {
+    QDialog(parent), ui(new Ui::ResultsWindow), uploadObjects_(std::move(objects)) {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
-    ui->tabBar->setObjectName(QStringLiteral("resultsTabSwitcher"));
     ui->tabBar->setDrawBase(false);
     ui->tabBar->setExpanding(false);
     ui->tabBar->setUsesScrollButtons(false);
     ui->tabBar->setElideMode(Qt::ElideNone);
-    ui->tabBar->setFixedHeight(52);
     ui->tabBar->addTab("For forums (BBCode)");
     ui->tabBar->addTab("For websites (HTML)");
     ui->tabBar->addTab("Markdown");

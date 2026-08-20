@@ -1,11 +1,19 @@
 #include "UploadSessionListWidget.h"
 
+#include <QApplication>
+#include <QDrag>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QFileInfo>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QLabel>
+#include <QMimeData>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
@@ -28,7 +36,7 @@
 namespace {
 constexpr QSize TASK_THUMBNAIL_SIZE(64, 64);
 
-class InteractiveFrame final : public QFrame {
+class InteractiveFrame : public QFrame {
 public:
     explicit InteractiveFrame(QWidget* parent = nullptr) : QFrame(parent) { }
 
@@ -49,6 +57,153 @@ protected:
         }
         QFrame::mouseDoubleClickEvent(event);
     }
+};
+
+class TaskCard final : public InteractiveFrame {
+public:
+    using InteractiveFrame::InteractiveFrame;
+
+    UploadSession* Session = nullptr;
+    UploadTask* Task = nullptr;
+    std::function<bool()> canDrag;
+
+protected:
+    void mousePressEvent(QMouseEvent* event) override {
+        if (event->button() == Qt::LeftButton) {
+            dragStartPosition_ = event->position().toPoint();
+        }
+        InteractiveFrame::mousePressEvent(event);
+    }
+
+    void mouseMoveEvent(QMouseEvent* event) override {
+        if (!(event->buttons() & Qt::LeftButton) || !canDrag || !canDrag()
+            || (event->position().toPoint() - dragStartPosition_).manhattanLength()
+                < QApplication::startDragDistance()) {
+            InteractiveFrame::mouseMoveEvent(event);
+            return;
+        }
+
+        auto* drag = new QDrag(this);
+        auto* mimeData = new QMimeData;
+        mimeData->setData(QStringLiteral("application/x-uptooda-upload-task"), QByteArrayLiteral("move"));
+        drag->setMimeData(mimeData);
+        QPixmap dragPixmap = grab();
+        if (dragPixmap.width() > 480) {
+            dragPixmap = dragPixmap.scaledToWidth(480, Qt::SmoothTransformation);
+        }
+        drag->setPixmap(dragPixmap);
+        drag->setHotSpot(QPoint(24, qMin(24, dragPixmap.height() / 2)));
+        drag->exec(Qt::MoveAction);
+    }
+
+private:
+    QPoint dragStartPosition_;
+};
+
+class SessionFrame final : public QFrame {
+public:
+    using QFrame::QFrame;
+
+    UploadSession* Session = nullptr;
+    std::function<void(TaskCard*, int)> taskDropped;
+
+protected:
+    void dragEnterEvent(QDragEnterEvent* event) override {
+        if (TaskCard* source = acceptedSource(event->source(), event->mimeData())) {
+            updateInsertion(source, event->position().toPoint());
+            event->acceptProposedAction();
+        } else {
+            event->ignore();
+        }
+    }
+
+    void dragMoveEvent(QDragMoveEvent* event) override {
+        if (TaskCard* source = acceptedSource(event->source(), event->mimeData())) {
+            updateInsertion(source, event->position().toPoint());
+            event->acceptProposedAction();
+        } else {
+            clearInsertion();
+            event->ignore();
+        }
+    }
+
+    void dragLeaveEvent(QDragLeaveEvent* event) override {
+        clearInsertion();
+        event->accept();
+    }
+
+    void dropEvent(QDropEvent* event) override {
+        TaskCard* source = acceptedSource(event->source(), event->mimeData());
+        const int destination = insertionIndex_;
+        clearInsertion();
+        if (!source || destination < 0 || !taskDropped) {
+            event->ignore();
+            return;
+        }
+        taskDropped(source, destination);
+        event->acceptProposedAction();
+    }
+
+    void paintEvent(QPaintEvent* event) override {
+        QFrame::paintEvent(event);
+        if (insertionLineY_ < 0) {
+            return;
+        }
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setPen(QPen(QColor(QStringLiteral("#399bd8")), 3, Qt::SolidLine, Qt::RoundCap));
+        painter.drawLine(12, insertionLineY_, width() - 12, insertionLineY_);
+    }
+
+private:
+    TaskCard* acceptedSource(QObject* sourceObject, const QMimeData* mimeData) const {
+        auto* source = dynamic_cast<TaskCard*>(sourceObject);
+        if (!source || source->Session != Session || !source->canDrag || !source->canDrag()
+            || !mimeData->hasFormat(QStringLiteral("application/x-uptooda-upload-task"))) {
+            return nullptr;
+        }
+        return source;
+    }
+
+    QList<TaskCard*> taskCardsExcept(TaskCard* excluded) const {
+        QList<TaskCard*> result;
+        if (!layout()) {
+            return result;
+        }
+        for (int i = 0; i < layout()->count(); ++i) {
+            auto* card = dynamic_cast<TaskCard*>(layout()->itemAt(i)->widget());
+            if (card && card != excluded) {
+                result.append(card);
+            }
+        }
+        return result;
+    }
+
+    void updateInsertion(TaskCard* source, const QPoint& position) {
+        const QList<TaskCard*> cards = taskCardsExcept(source);
+        int destination = 0;
+        while (destination < cards.size() && position.y() > cards[destination]->geometry().center().y()) {
+            ++destination;
+        }
+        insertionIndex_ = destination;
+        if (cards.isEmpty()) {
+            insertionLineY_ = height() - 10;
+        } else if (destination < cards.size()) {
+            insertionLineY_ = cards[destination]->geometry().top() - 4;
+        } else {
+            insertionLineY_ = cards.last()->geometry().bottom() + 4;
+        }
+        update();
+    }
+
+    void clearInsertion() {
+        insertionIndex_ = -1;
+        insertionLineY_ = -1;
+        update();
+    }
+
+    int insertionIndex_ = -1;
+    int insertionLineY_ = -1;
 };
 
 class ThumbnailLabel final : public QLabel {
@@ -208,17 +363,22 @@ void UploadSessionListWidget::refresh() {
     clearLayout(contentsLayout_);
     if (!uploadManager_) {
         contentsLayout_->addStretch();
+        emit hasItemsChanged(false);
         return;
     }
 
+    bool hasItems = false;
     for (int sessionIndex = uploadManager_->sessionCount() - 1; sessionIndex >= 0; --sessionIndex) {
         const auto session = uploadManager_->session(sessionIndex);
         if (hiddenSessions_.contains(session.get())) {
             continue;
         }
+        hasItems = true;
 
-        auto* sessionCard = new QFrame(contents_);
+        auto* sessionCard = new SessionFrame(contents_);
         sessionCard->setObjectName(QStringLiteral("sessionCard"));
+        sessionCard->setAcceptDrops(true);
+        sessionCard->Session = session.get();
         auto* sessionLayout = new QVBoxLayout(sessionCard);
         sessionLayout->setContentsMargins(8, 8, 8, 8);
         sessionLayout->setSpacing(6);
@@ -283,14 +443,61 @@ void UploadSessionListWidget::refresh() {
         };
         sessionLayout->addWidget(header);
 
+        sessionCard->taskDropped = [this, session, sessionLayout](TaskCard* card, int visualDestination) {
+            if (!session->isFinished() || !card || card->Task == nullptr) {
+                return;
+            }
+
+            int fromIndex = -1;
+            QList<UploadTask*> remainingVisibleTasks;
+            for (int i = 0; i < session->taskCount(); ++i) {
+                UploadTask* candidate = session->getTask(i).get();
+                if (candidate == card->Task) {
+                    fromIndex = i;
+                } else if (!hiddenTasks_.contains(candidate)) {
+                    remainingVisibleTasks.append(candidate);
+                }
+            }
+            if (fromIndex < 0 || visualDestination < 0 || visualDestination > remainingVisibleTasks.size()) {
+                return;
+            }
+
+            UploadTask* beforeTask
+                = visualDestination < remainingVisibleTasks.size() ? remainingVisibleTasks[visualDestination] : nullptr;
+            int destinationIndex = 0;
+            for (int i = 0; i < session->taskCount(); ++i) {
+                UploadTask* candidate = session->getTask(i).get();
+                if (candidate == card->Task) {
+                    continue;
+                }
+                if (candidate == beforeTask) {
+                    break;
+                }
+                ++destinationIndex;
+                if (!beforeTask && !hiddenTasks_.contains(candidate)
+                    && candidate == remainingVisibleTasks.value(visualDestination - 1, nullptr)) {
+                    break;
+                }
+            }
+
+            if (!session->moveTask(fromIndex, destinationIndex)) {
+                return;
+            }
+            sessionLayout->removeWidget(card);
+            sessionLayout->insertWidget(visualDestination + 1, card);
+        };
+
         for (int taskIndex = 0; taskIndex < session->taskCount(); ++taskIndex) {
             const auto task = session->getTask(taskIndex);
             if (hiddenTasks_.contains(task.get())) {
                 continue;
             }
 
-            auto* taskCard = new InteractiveFrame(sessionCard);
+            auto* taskCard = new TaskCard(sessionCard);
             taskCard->setObjectName(QStringLiteral("taskCard"));
+            taskCard->Session = session.get();
+            taskCard->Task = task.get();
+            taskCard->canDrag = [session] { return session->isFinished(); };
             taskCard->setMinimumHeight(84);
             auto* taskLayout = new QHBoxLayout(taskCard);
             taskLayout->setContentsMargins(7, 7, 7, 7);
@@ -396,6 +603,7 @@ void UploadSessionListWidget::refresh() {
         contentsLayout_->addWidget(sessionCard);
     }
     contentsLayout_->addStretch();
+    emit hasItemsChanged(hasItems);
 }
 
 void UploadSessionListWidget::hideSession(UploadSession* session) {

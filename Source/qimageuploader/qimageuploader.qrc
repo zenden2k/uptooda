@@ -14,6 +14,9 @@
         <file>res/spin-plus.svg</file>
         <file>res/spin-minus.svg</file>
         <file>res/chevron-down.svg</file>
+        <file>res/checkbox-check.svg</file>
+        <file>res/checkbox-indeterminate.svg</file>
+        <file>res/radio-dot.svg</file>
         <file alias="styles/Application.qss">Gui/styles/Application.qss</file>
     </qresource>
 </RCC>

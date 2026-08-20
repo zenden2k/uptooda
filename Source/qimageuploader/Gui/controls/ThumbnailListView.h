@@ -28,7 +28,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 private:
-    void openImage(const QModelIndex& index);
+    bool openImage(const QModelIndex& index);
 
     QString emptyText_;
     std::unique_ptr<ImageViewerWindow> imageViewerWindow_;

@@ -7,6 +7,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/CommonDefs.h"
 
 ImageGeneratorTask::ImageGeneratorTask(std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile):
 	files_(std::move(files)),
@@ -26,10 +27,13 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
 #ifdef IU_ENABLE_MEDIAINFO
     if (Settings.VideoSettings.ShowMediaInfo)
     {
-        CString fullInfo;
+        std::string report;
+        std::string fullInfo;
         onProgress(this, -1, -1, _("Getting info about file..."));
         /*bool bMediaInfoResult = */
-        MediaInfoHelper::GetMediaFileInfo(mediaFile_, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
+        MediaInfoHelper::GetMediaFileInfo(W2U(mediaFile_), report, fullInfo,
+                                          Settings.MediaInfoSettings.EnableLocalization);
+        Report = U2W(report);
         Bitmap bm(100, 100, PixelFormat32bppARGB);
         Graphics g1(&bm);
 

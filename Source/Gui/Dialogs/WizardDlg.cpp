@@ -41,7 +41,6 @@
 #include "Gui/Dialogs/UpdateDlg.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Gui/Dialogs/MediaInfoDlg.h"
-#include "Func/MediaInfoHelper.h"
 #endif
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
@@ -392,9 +391,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     pLoop->AddIdleHandler(this);
 
     ::RegisterDragDrop(m_hWnd, this);
-#ifdef IU_ENABLE_MEDIAINFO
-    MediaInfoHelper::FindMediaInfoDllPath();
-#endif
     SetWindowText(APP_NAME);
 
     const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
@@ -512,11 +508,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
-#ifdef IU_ENABLE_MEDIAINFO
-	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APP_NAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
-	}
-#endif
     if (!CmdLine.IsOption(_T("tray"))) {
         TRC(IDCANCEL, "Exit");
     } else {

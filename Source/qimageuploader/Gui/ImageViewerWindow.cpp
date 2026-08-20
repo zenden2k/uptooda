@@ -177,13 +177,18 @@ ImageViewerWindow::ImageViewerWindow(QWidget* parent) : QWidget(parent) {
 
 ImageViewerWindow::~ImageViewerWindow() = default;
 
+bool ImageViewerWindow::isSupportedImageFile(const QString& fileName) {
+    const QByteArray extension = QFileInfo(fileName).suffix().toLatin1().toLower();
+    return !extension.isEmpty() && QImageReader::supportedImageFormats().contains(extension);
+}
+
 void ImageViewerWindow::setImageViewerSource(std::unique_ptr<IImageViewerSource> source) {
     hide();
     setUpdatesEnabled(false);
     openWhenReady_ = false;
     image_ = { };
     source_ = std::move(source);
-    loadFile(source_ ? source_->currentFile() : QString { });
+    loadFile(findImageFile(true, true));
 }
 
 void ImageViewerWindow::setTransientParent(QWindow* parent) {
@@ -199,14 +204,16 @@ void ImageViewerWindow::open() {
 }
 
 void ImageViewerWindow::showNext() {
-    if (source_ && source_->hasNext()) {
-        loadFile(source_->nextFile());
+    const QString fileName = findImageFile(true, false);
+    if (!fileName.isEmpty()) {
+        loadFile(fileName);
     }
 }
 
 void ImageViewerWindow::showPrevious() {
-    if (source_ && source_->hasPrevious()) {
-        loadFile(source_->previousFile());
+    const QString fileName = findImageFile(false, false);
+    if (!fileName.isEmpty()) {
+        loadFile(fileName);
     }
 }
 
@@ -282,6 +289,28 @@ void ImageViewerWindow::resizeEvent(QResizeEvent* event) {
     loadingIndicator_->move((width() - loadingIndicator_->width()) / 2, (height() - loadingIndicator_->height()) / 2);
 }
 
+QString ImageViewerWindow::findImageFile(bool forward, bool includeCurrent) {
+    if (!source_) {
+        return { };
+    }
+
+    const QString initialFile = source_->currentFile();
+    if (includeCurrent && isSupportedImageFile(initialFile)) {
+        return initialFile;
+    }
+
+    while (forward ? source_->hasNext() : source_->hasPrevious()) {
+        const QString fileName = forward ? source_->nextFile() : source_->previousFile();
+        if (isSupportedImageFile(fileName)) {
+            return fileName;
+        }
+        if (fileName == initialFile) {
+            break;
+        }
+    }
+    return { };
+}
+
 void ImageViewerWindow::loadFile(const QString& fileName) {
     const quint64 request = ++loadRequest_;
     movie_.reset();
@@ -295,8 +324,10 @@ void ImageViewerWindow::loadFile(const QString& fileName) {
 
     if (fileName.isEmpty()) {
         loading_ = false;
+        image_ = { };
         errorLabel_->setText(tr("Image is unavailable"));
         updateControls();
+        update();
         return;
     }
 
@@ -329,8 +360,10 @@ void ImageViewerWindow::loadFile(const QString& fileName) {
                     return;
                 }
                 loading_ = false;
+                image_ = { };
                 errorLabel_->setText(tr("Unable to load image"));
                 updateControls();
+                update();
                 if (openWhenReady_) {
                     showViewer();
                 }
@@ -350,6 +383,7 @@ void ImageViewerWindow::loadFile(const QString& fileName) {
         }
         loading_ = false;
         if (image.isNull()) {
+            image_ = { };
             errorLabel_->setText(tr("Unable to load image"));
         } else {
             image_ = image;

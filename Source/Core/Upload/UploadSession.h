@@ -21,6 +21,7 @@ class UploadSession
         */
         void addTask(std::shared_ptr<UploadTask> task);
         void removeTask(std::shared_ptr<UploadTask> task);
+        bool moveTask(int fromIndex, int toIndex);
         //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         bool isRunning();
         bool isFinished();

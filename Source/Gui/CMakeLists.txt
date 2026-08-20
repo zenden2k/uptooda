@@ -337,8 +337,8 @@ set(HEADER_LIST
 )
 
 if (IU_ENABLE_MEDIAINFO)
-    list(APPEND SRC_LIST ../Func/MediaInfoHelper.cpp Dialogs/MediaInfoDlg.cpp)
-    list(APPEND HEADER_LIST ../Func/MediaInfoHelper.h Dialogs/MediaInfoDlg.h)
+    list(APPEND SRC_LIST Dialogs/MediaInfoDlg.cpp)
+    list(APPEND HEADER_LIST Dialogs/MediaInfoDlg.h)
 endif ()
 
 if (IU_ENABLE_SERVERS_CHECKER)
@@ -388,7 +388,7 @@ set(LIBS_LIST
 )
 
 if (IU_ENABLE_MEDIAINFO)
-    list(APPEND LIBS_LIST mediainfo)
+    list(APPEND LIBS_LIST iu_mediainfo)
 endif ()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")

@@ -21,9 +21,6 @@
 
 #include "SettingsDlg.h"
 #include "Func/MyUtils.h"
-#ifdef IU_ENABLE_MEDIAINFO
-#include "Func/MediaInfoHelper.h"
-#endif
 #include "WizardDlg.h"
 #include "Core/Images/Utils.h"
 #include "Gui/Helpers/DPIHelper.h"
@@ -339,8 +336,7 @@ void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
     ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 
 #ifdef IU_ENABLE_MEDIAINFO
-    if (MediaInfoHelper::IsMediaInfoAvailable())
-        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
+    ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
 #endif
     ListBox.AddString(TR("Shorten a Link"), TR("for easier link sharing"), IDC_SHORTENURL, loadBigIcon(IDI_ICONLINK) );
 

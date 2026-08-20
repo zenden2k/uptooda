@@ -33,6 +33,7 @@
 #include <mega/version.h>
 #endif
 #include "Core/AppRuntimeInfo.h"
+#include "Core/CommonDefs.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
 #endif
@@ -191,7 +192,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
 #ifdef IU_ENABLE_MEDIAINFO
-    memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n");
+    memoText += U2W(MediaInfoHelper::GetLibraryVersion()) + _T("\r\n");
 #endif
 #ifdef IU_ENABLE_MEGANZ
     memoText += str(IuStringUtils::FormatWideNoExcept(L"MEGA SDK: v%d.%d.%d\r\n") % MEGA_MAJOR_VERSION % MEGA_MINOR_VERSION % MEGA_MICRO_VERSION).c_str();

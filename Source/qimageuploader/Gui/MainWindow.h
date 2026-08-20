@@ -17,6 +17,7 @@ class ScriptsManager;
 class UploadSession;
 class UploadSessionListWidget;
 class UploadTask;
+class FileDropHighlight;
 
 namespace Uptooda::Core::OutputGenerator {
 struct UploadObject;
@@ -50,6 +51,7 @@ private slots:
     void updateView();
 
     void on_actionGrab_frames_triggered();
+    void on_actionMedia_info_triggered();
     void on_actionScreenshot_triggered();
     void on_actionAdd_files_triggered();
     void on_actionAboutProgram_triggered();
@@ -65,6 +67,7 @@ private slots:
     void removePendingFiles(const QList<int>& rows);
     void showUploadSettings();
     void startPendingUpload();
+    void openMediaDialog(const QString& fileName, bool showMediaInfo = false);
 
 protected:
     bool addFileToList(QString fileName);
@@ -97,7 +100,7 @@ private:
     QThread* iconsLoadingThread_ { };
     QAction* copyDirectLinkAction_ = nullptr;
     QAction* copyFilePathAction_ = nullptr;
-    QWidget* dropHighlightOverlay_ = nullptr;
+    FileDropHighlight* dropHighlightOverlay_ = nullptr;
     bool dragContainsFiles_ = false;
 };
 

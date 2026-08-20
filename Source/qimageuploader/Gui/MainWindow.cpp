@@ -38,7 +38,8 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Upload/UploadManager.h"
-#include "Gui/FrameGrabberDlg.h"
+#include "Core/Video/VideoUtils.h"
+#include "Gui/MediaDlg.h"
 #include "Gui/ImageViewerWindow.h"
 #include "Gui/LogWindow.h"
 #include "Gui/RegionSelect.h"
@@ -49,11 +50,36 @@
 
 using namespace Uptooda::Core::OutputGenerator;
 
-namespace {
-
 class FileDropHighlight final : public QWidget {
 public:
-    using QWidget::QWidget;
+    enum class Action { AddFiles, ExtractFrames, FileInformation };
+
+    explicit FileDropHighlight(QWidget* parent = nullptr) : QWidget(parent) { }
+
+    void setMediaFile(bool video, bool audio) {
+        video_ = video;
+        media_ = video || audio;
+        hoveredAction_ = Action::AddFiles;
+        update();
+    }
+
+    void setDragPosition(const QPoint& position) {
+        const Action action = actionAt(position);
+        if (hoveredAction_ != action) {
+            hoveredAction_ = action;
+            update();
+        }
+    }
+
+    Action actionAt(const QPoint& position) const {
+        if (video_ && extractFramesRect().contains(position)) {
+            return Action::ExtractFrames;
+        }
+        if (media_ && fileInformationRect().contains(position)) {
+            return Action::FileInformation;
+        }
+        return Action::AddFiles;
+    }
 
 protected:
     void paintEvent(QPaintEvent*) override {
@@ -75,8 +101,68 @@ protected:
         painter.setPen(QColor(QStringLiteral("#197db8")));
         painter.drawText(rect().adjusted(24, 24, -24, -24), Qt::AlignCenter | Qt::TextWordWrap,
                          QCoreApplication::translate("MainWindow", "Drop files to add"));
+
+        if (video_) {
+            drawAction(painter, extractFramesRect(), QCoreApplication::translate("MainWindow", "Extract frames"),
+                       Action::ExtractFrames);
+        }
+        if (media_) {
+            drawAction(painter, fileInformationRect(), QCoreApplication::translate("MainWindow", "File information"),
+                       Action::FileInformation);
+        }
     }
+
+private:
+    static constexpr int ACTION_WIDTH = 220;
+    static constexpr int ACTION_HEIGHT = 62;
+    static constexpr int ACTION_GAP = 14;
+    static constexpr int ACTION_TOP = 28;
+
+    QRect extractFramesRect() const {
+        if (!video_) {
+            return { };
+        }
+        const int totalWidth = media_ ? ACTION_WIDTH * 2 + ACTION_GAP : ACTION_WIDTH;
+        return { (width() - totalWidth) / 2, ACTION_TOP, ACTION_WIDTH, ACTION_HEIGHT };
+    }
+
+    QRect fileInformationRect() const {
+        if (!media_) {
+            return { };
+        }
+        if (!video_) {
+            return { (width() - ACTION_WIDTH) / 2, ACTION_TOP, ACTION_WIDTH, ACTION_HEIGHT };
+        }
+        const QRect framesRect = extractFramesRect();
+        return { framesRect.right() + 1 + ACTION_GAP, ACTION_TOP, ACTION_WIDTH, ACTION_HEIGHT };
+    }
+
+    void drawAction(QPainter& painter, const QRect& actionRect, const QString& text, Action action) const {
+        const bool hovered = hoveredAction_ == action;
+        painter.setBrush(hovered ? QColor(QStringLiteral("#cceafb")) : QColor(QStringLiteral("#ffffff")));
+        QPen borderPen(QColor(QStringLiteral("#399bd8")), hovered ? 2.0 : 1.5, Qt::DashLine);
+        borderPen.setDashPattern({ 5, 4 });
+        painter.setPen(borderPen);
+        painter.drawRoundedRect(actionRect, 11, 11);
+
+        QFont font = QWidget::font();
+        font.setPointSize(qMax(9, font.pointSize() - 1));
+        font.setBold(true);
+        painter.setFont(font);
+        painter.setPen(QColor(QStringLiteral("#197db8")));
+        painter.drawText(actionRect.adjusted(12, 8, -12, -8), Qt::AlignCenter | Qt::TextWordWrap, text);
+    }
+
+    Action hoveredAction_ = Action::AddFiles;
+    bool video_ = false;
+    bool media_ = false;
 };
+
+namespace {
+
+bool IsFileOfType(const QString& fileName, const std::set<std::string>& extensions) {
+    return extensions.find(QFileInfo(fileName).suffix().toLower().toStdString()) != extensions.end();
+}
 
 QStringList LocalFilesFromMimeData(const QMimeData* mimeData) {
     QStringList result;
@@ -114,18 +200,22 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
 
     auto* fileMenu = ui->menuBar->addMenu(tr("&File"));
     fileMenu->addAction(ui->actionAdd_files);
+    fileMenu->addAction(ui->actionGrab_frames);
     fileMenu->addSeparator();
     QAction* exitAction = fileMenu->addAction(tr("Exit"));
     connect(exitAction, &QAction::triggered, this, &MainWindow::quitApp);
 
     auto* toolsMenu = ui->menuBar->addMenu(tr("&Tools"));
     toolsMenu->addAction(ui->actionScreenshot);
+    toolsMenu->addAction(ui->actionMedia_info);
     QAction* showLogAction = toolsMenu->addAction(tr("Show log"));
     connect(showLogAction, &QAction::triggered, this, &MainWindow::onShowLog);
 
     auto* helpMenu = ui->menuBar->addMenu(tr("&Help"));
     helpMenu->addAction(ui->actionAboutProgram);
     ui->actionAdd_files->setIconVisibleInMenu(false);
+    ui->actionGrab_frames->setIconVisibleInMenu(false);
+    ui->actionMedia_info->setIconVisibleInMenu(false);
     ui->actionScreenshot->setIconVisibleInMenu(false);
     ui->actionAboutProgram->setIconVisibleInMenu(false);
 
@@ -243,11 +333,17 @@ MainWindow::~MainWindow() {
 void MainWindow::updateView() { }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
-    dragContainsFiles_ = !LocalFilesFromMimeData(event->mimeData()).isEmpty();
+    const QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
+    dragContainsFiles_ = !fileNames.isEmpty();
     if (!dragContainsFiles_) {
         event->ignore();
         return;
     }
+    const bool singleFile = fileNames.size() == 1;
+    const bool video = singleFile && IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions);
+    const bool audio = singleFile && !video && IsFileOfType(fileNames.first(), VideoUtils::audioFilesExtensions);
+    dropHighlightOverlay_->setMediaFile(video, audio);
+    dropHighlightOverlay_->setDragPosition(event->position().toPoint());
     dropHighlightOverlay_->setGeometry(rect());
     dropHighlightOverlay_->raise();
     dropHighlightOverlay_->show();
@@ -256,6 +352,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
 
 void MainWindow::dragMoveEvent(QDragMoveEvent* event) {
     if (dragContainsFiles_) {
+        dropHighlightOverlay_->setDragPosition(event->position().toPoint());
         event->acceptProposedAction();
     } else {
         event->ignore();
@@ -270,10 +367,24 @@ void MainWindow::dragLeaveEvent(QDragLeaveEvent* event) {
 
 void MainWindow::dropEvent(QDropEvent* event) {
     dragContainsFiles_ = false;
+    const FileDropHighlight::Action action = dropHighlightOverlay_->actionAt(event->position().toPoint());
     dropHighlightOverlay_->hide();
     const QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
     if (fileNames.isEmpty()) {
         event->ignore();
+        return;
+    }
+    if (action == FileDropHighlight::Action::ExtractFrames && fileNames.size() == 1
+        && IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions)) {
+        event->acceptProposedAction();
+        openMediaDialog(fileNames.first());
+        return;
+    }
+    if (action == FileDropHighlight::Action::FileInformation && fileNames.size() == 1
+        && (IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions)
+            || IsFileOfType(fileNames.first(), VideoUtils::audioFilesExtensions))) {
+        event->acceptProposedAction();
+        openMediaDialog(fileNames.first(), true);
         return;
     }
     addMultipleFilesToList(fileNames);
@@ -301,7 +412,22 @@ void MainWindow::on_actionGrab_frames_triggered() {
     }
     QString fileName = files.first();
 
-    FrameGrabberDlg dlg(fileName, this);
+    openMediaDialog(fileName);
+}
+
+void MainWindow::on_actionMedia_info_triggered() {
+    QFileDialog fileDialog(this, tr("Open multimedia file"), QString(), tr("All files (*.*)"));
+    fileDialog.setModal(true);
+    fileDialog.setWindowModality(Qt::WindowModal);
+    if (fileDialog.exec() != QDialog::Accepted || fileDialog.selectedFiles().isEmpty()) {
+        return;
+    }
+
+    openMediaDialog(fileDialog.selectedFiles().first(), true);
+}
+
+void MainWindow::openMediaDialog(const QString& fileName, bool showMediaInfo) {
+    MediaDlg dlg(fileName, this, showMediaInfo);
     dlg.setModal(true);
     dlg.setWindowModality(Qt::WindowModal);
     if (dlg.exec() == QDialog::Accepted) {

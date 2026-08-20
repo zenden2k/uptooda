@@ -23,12 +23,22 @@ constexpr qreal MENU_SHADOW_RIGHT = 9.0;
 constexpr qreal MENU_SHADOW_BOTTOM = 9.0;
 constexpr qreal MENU_SHADOW_OFFSET_X = 2.0;
 constexpr qreal MENU_SHADOW_OFFSET_Y = 3.0;
+constexpr int MENU_CONTENT_PADDING = 7;
 constexpr int COMBO_ITEM_HORIZONTAL_PADDING = 10;
 constexpr int COMBO_ITEM_VERTICAL_PADDING = 7;
 constexpr int COMBO_ITEM_MINIMUM_HEIGHT = 32;
 constexpr int COMBO_MAXIMUM_VISIBLE_ITEMS = 8;
 
 bool isComboBoxPopup(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateContainer"); }
+
+void configureMenuMargins(QMenu* menu) {
+    const QMargins margins(
+        qRound(MENU_SHADOW_LEFT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_TOP) + MENU_CONTENT_PADDING,
+        qRound(MENU_SHADOW_RIGHT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_BOTTOM) + MENU_CONTENT_PADDING);
+    if (menu->contentsMargins() != margins) {
+        menu->setContentsMargins(margins);
+    }
+}
 
 bool isComboBoxScroller(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateScroller"); }
 
@@ -206,8 +216,9 @@ protected:
             return QObject::eventFilter(watched, event);
         }
 
+        auto* menu = qobject_cast<QMenu*>(popup);
         const bool comboBoxPopup = isComboBoxPopup(popup);
-        if (!qobject_cast<QMenu*>(popup) && !comboBoxPopup) {
+        if (!menu && !comboBoxPopup) {
             return QObject::eventFilter(watched, event);
         }
 
@@ -221,7 +232,9 @@ protected:
             palette.setColor(QPalette::Window, Qt::transparent);
             popup->setPalette(palette);
 
-            if (comboBoxPopup) {
+            if (menu) {
+                configureMenuMargins(menu);
+            } else if (comboBoxPopup) {
                 configureComboBoxPopupMargins(popup);
                 if (auto* frame = qobject_cast<QFrame*>(popup)) {
                     frame->setFrameStyle(QFrame::NoFrame);
@@ -230,8 +243,12 @@ protected:
                     configureComboBoxView(itemView);
                 }
             }
-        } else if ((event->type() == QEvent::Show || event->type() == QEvent::Resize) && comboBoxPopup) {
-            adjustComboBoxPopupGeometry(popup);
+        } else if (event->type() == QEvent::Show || event->type() == QEvent::Resize) {
+            if (menu) {
+                configureMenuMargins(menu);
+            } else if (comboBoxPopup) {
+                adjustComboBoxPopupGeometry(popup);
+            }
         } else if (event->type() == QEvent::Paint) {
             QPainter painter(popup);
             painter.setRenderHint(QPainter::Antialiasing);

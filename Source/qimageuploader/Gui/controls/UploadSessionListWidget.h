@@ -32,6 +32,7 @@ public:
     std::shared_ptr<UploadTask> selectedTask() const;
 
 signals:
+    void hasItemsChanged(bool hasItems);
     void showCodesRequested(UploadSession* session, UploadTask* task);
     void imageViewerRequested(UploadSession* session, UploadTask* task);
     void removeTaskRequested(UploadSession* session, UploadTask* task);

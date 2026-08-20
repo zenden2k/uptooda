@@ -30,7 +30,8 @@ set(SOURCE_FILES
         Gui/AppStyle.cpp
         Gui/AppStyle.h
         Gui/styles/Application.qss
-        Gui/FrameGrabberDlg.cpp
+        Gui/MediaDlg.cpp
+        Gui/MediaDlg.h
         Gui/ImageViewerWindow.cpp
         Gui/ImageViewerWindow.h
         Gui/IImageViewerSource.h
@@ -62,7 +63,7 @@ set(SOURCE_FILES
         ../Core/QtServerIconCache.h
         ../Video/QtImage.cpp
         Gui/ui/MainWindow.ui
-        Gui/ui/FrameGrabberDlg.ui
+        Gui/ui/MediaDlg.ui
         Gui/ui/ResultsWindow.ui
         Gui/ui/LogWindow.ui
         Gui/ui/LoginDialog.ui
@@ -87,6 +88,10 @@ if(WIN32)
 endif()
 
 target_link_libraries(qimageuploader PRIVATE iu_core iu_video iu_image ${COMMON_LIBS_LIST})
+
+if(WIN32 AND IU_ENABLE_MEDIAINFO)
+    target_link_libraries(qimageuploader PRIVATE iu_mediainfo)
+endif()
 
 if(WIN32)
     add_custom_command(TARGET qimageuploader

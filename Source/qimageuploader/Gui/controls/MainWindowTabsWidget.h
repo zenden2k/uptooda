@@ -95,6 +95,7 @@ public:
     UploadSessionListWidget* sessionList() const;
 
 private:
+    QStackedWidget* stack_ = nullptr;
     UploadSessionListWidget* sessionList_ = nullptr;
 };
 

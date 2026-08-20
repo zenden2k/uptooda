@@ -28,6 +28,7 @@
 
 
 #pragma once
+#include <string>
 #include "atlheaders.h"
 #include "maindlg.h"
 #include "resource.h"
@@ -88,7 +89,7 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
         CFont editFont_, boldFont_;
         InfoType infoType_;
         bool generateTextInEnglish_;
-        CString summary_, fullInfo_;
+        std::string summary_, fullInfo_;
         CCustomEditControl editControl_;
 };
 

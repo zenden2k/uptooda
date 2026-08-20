@@ -11,6 +11,12 @@
 
 #include <algorithm>
 
+#include "Core/CommonDefs.h"
+#include "Core/Settings/CommonGuiSettings.h"
+#include "Core/Video/VideoUtils.h"
+#include "Video/QtImage.h"
+#include "Video/VideoGrabber.h"
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 
@@ -26,6 +32,36 @@ struct LoadResult {
     QImage Image;
     bool IsImage = false;
 };
+
+bool IsVideoFile(const QString& fileName) {
+    const std::string extension = QFileInfo(fileName).suffix().toLower().toStdString();
+    return VideoUtils::videoFilesExtensions.find(extension) != VideoUtils::videoFilesExtensions.end();
+}
+
+QImage LoadVideoThumbnail(const QString& fileName) {
+    if (!CommonGuiSettings::IsFFmpegAvailable()) {
+        return { };
+    }
+
+    QImage result;
+    VideoGrabber grabber(false, false);
+    grabber.setVideoEngine(VideoGrabber::veAvcodec);
+    grabber.setFrameCount(1);
+    grabber.setOnFrameGrabbed([&result](const std::string&, int64_t, const std::shared_ptr<AbstractImage>& frame) {
+        const auto qtImage = std::dynamic_pointer_cast<QtImage>(frame);
+        if (qtImage) {
+            result = qtImage->toQImage();
+        }
+    });
+    try {
+        grabber.grab(Q2U(fileName));
+    }
+    catch (const std::exception&) {
+        return { };
+    }
+    return result.isNull() ? QImage { }
+                           : result.scaled(CACHED_IMAGE_SIZE, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
 
 #ifdef Q_OS_WIN
 QImage LoadFileIcon(const QString& fileName) {
@@ -81,6 +117,13 @@ QImage LoadFileIcon(const QString& fileName) {
 #endif
 
 LoadResult LoadThumbnail(const QString& fileName) {
+    if (IsVideoFile(fileName)) {
+        const QImage videoThumbnail = LoadVideoThumbnail(fileName);
+        if (!videoThumbnail.isNull()) {
+            return { videoThumbnail, false };
+        }
+    }
+
     QImageReader reader(fileName);
     reader.setAutoTransform(true);
     const QSize sourceSize = reader.size();

@@ -49,83 +49,75 @@ public:
 
     virtual ~VideoGrabberRunnable() = default;
 
-    void cancel()
-    {
-        canceled_ = true;
-    }
+    void cancel() { canceled_ = true; }
 
-    virtual void run()
-    {
+    virtual void run() {
         isRunning_ = true;
-        if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
-            LOG(ERROR) << (boost::format(_("File \"%s\" not found!")) % videoGrabber_->fileName_);
-            if ( videoGrabber_->onFinished_ ) {
-                videoGrabber_->onFinished_(false);
-            }
-            isRunning_ = false;
-            return;
-        }
-        std::unique_ptr<AbstractFrameGrabber> grabber;
-
+        bool success = false;
         try {
-            grabber = videoGrabber_->createGrabber();
+            if (!IuCoreUtils::FileExists(videoGrabber_->fileName_)) {
+                throw std::runtime_error(str(boost::format(_("File \"%s\" not found!")) % videoGrabber_->fileName_));
+            }
+
+            std::unique_ptr<AbstractFrameGrabber> grabber = videoGrabber_->createGrabber();
 
             if (!grabber->open(videoGrabber_->fileName_)) {
-                isRunning_ = false;
-                throw std::runtime_error(str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
+                throw std::runtime_error(
+                    str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
             }
-        } catch (const std::exception& ex) {
-            (logErrors_ ? LOG(ERROR) : LOG(WARNING)) << "File: " << videoGrabber_->fileName_ << std::endl
-                                   << ex.what();
 
-            if ( videoGrabber_->onFinished_ ) {
-                videoGrabber_->onFinished_(false);
-            }
-            isRunning_ = false;
-            return;
-        }
+            videoGrabber_->streamInfo_ = grabber->getInfo();
 
-        videoGrabber_->streamInfo_ = grabber->getInfo();
-
-        int64_t duration = grabber->duration();
-        int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
-        int successFrameCount = 0;
-        for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
-            if ( canceled_) {
-                break;
-            }
-            auto curTime = static_cast<int64_t>(( i + 0.5 ) * static_cast<double>(step));
-            AbstractVideoFrame* frame = nullptr;
-            try {
-                grabber->seek(curTime);
-                frame = grabber->grabCurrentFrame();
-                if (!frame) {
+            int64_t duration = grabber->duration();
+            int64_t step = duration / (videoGrabber_->frameCount_ + 1);
+            int successFrameCount = 0;
+            for (int i = 0; i < videoGrabber_->frameCount_; i++) {
+                if (canceled_) {
+                    break;
+                }
+                auto curTime = static_cast<int64_t>((i + 0.5) * static_cast<double>(step));
+                AbstractVideoFrame* frame = nullptr;
+                try {
                     grabber->seek(curTime);
                     frame = grabber->grabCurrentFrame();
+                    if (!frame) {
+                        grabber->seek(curTime);
+                        frame = grabber->grabCurrentFrame();
+                    }
                 }
-            } catch (const std::exception& ex) {
-                LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl <<ex.what();
-            }
-            if (!frame) {
-                LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl << "grabber->grabCurrentFrame returned NULL";
-                continue;
-            }
-            int64_t sampleTime = frame->getTime();
-            int hours = static_cast<int>(sampleTime / 3600);
-            int minutes = static_cast<int>(sampleTime / 60 % 60);
-            int seconds = static_cast<int>(sampleTime % 60);
-            std::string s = str(boost::format("%02d:%02d:%02d") % hours % minutes % seconds);
+                catch (const std::exception& ex) {
+                    LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl << ex.what();
+                }
+                if (!frame) {
+                    LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl
+                                 << "grabber->grabCurrentFrame returned NULL";
+                    continue;
+                }
+                int64_t sampleTime = frame->getTime();
+                int hours = static_cast<int>(sampleTime / 3600);
+                int minutes = static_cast<int>(sampleTime / 60 % 60);
+                int seconds = static_cast<int>(sampleTime % 60);
+                std::string s = str(boost::format("%02d:%02d:%02d") % hours % minutes % seconds);
 
-            if ( /*frame && */videoGrabber_->onFrameGrabbed_ ) {
-                videoGrabber_->onFrameGrabbed_(s, sampleTime, frame->toImage());
-                successFrameCount++;
+                if (videoGrabber_->onFrameGrabbed_) {
+                    videoGrabber_->onFrameGrabbed_(s, sampleTime, frame->toImage());
+                    successFrameCount++;
+                }
             }
+            success = successFrameCount != 0;
         }
-        grabber.reset();
-        if ( videoGrabber_->onFinished_ ) {
-            videoGrabber_->onFinished_(successFrameCount != 0);
+        catch (const std::exception& ex) {
+            (logErrors_ ? LOG(ERROR) : LOG(WARNING)) << "File: " << videoGrabber_->fileName_ << std::endl << ex.what();
         }
+        catch (...) {
+            (logErrors_ ? LOG(ERROR) : LOG(WARNING)) << "File: " << videoGrabber_->fileName_ << std::endl
+                                                     << "Unknown frame extraction error";
+        }
+
         isRunning_ = false;
+        if (videoGrabber_->onFinished_) {
+            videoGrabber_->onFinished_(success);
+        }
     }
 
     bool isRunning() const
@@ -148,22 +140,19 @@ VideoGrabber::VideoGrabber(bool async, bool logErrors)
     frameCount_ = 5;
 }
 
-VideoGrabber::~VideoGrabber()= default;
+VideoGrabber::~VideoGrabber() = default;
 
 void VideoGrabber::grab(const std::string& fileName) {
-     if ( !IuCoreUtils::FileExists(fileName) ) {
-         return;
-     }
-     //std::string ext = IuCoreUtils::ExtractFileExt(fileName);
-     fileName_ = fileName;
-     worker_ = std::make_unique<VideoGrabberRunnable>(this, logErrors_);
-     if (async_) {
-         std::thread t1(&VideoGrabberRunnable::run, worker_.get());
-         t1.detach();
-     } else {
-         worker_->run();
-     }
- }
+    // std::string ext = IuCoreUtils::ExtractFileExt(fileName);
+    fileName_ = fileName;
+    worker_ = std::make_unique<VideoGrabberRunnable>(this, logErrors_);
+    if (async_) {
+        std::thread t1(&VideoGrabberRunnable::run, worker_.get());
+        t1.detach();
+    } else {
+        worker_->run();
+    }
+}
 
 void VideoGrabber::abort() {
     worker_->cancel();

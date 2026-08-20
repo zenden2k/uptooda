@@ -1,9 +1,11 @@
 #include "ThumbnailListView.h"
 
+#include <QDesktopServices>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyledItemDelegate>
+#include <QUrl>
 
 #include "Gui/ImageViewerWindow.h"
 #include "Gui/models/ThumbnailListModel.h"
@@ -88,8 +90,9 @@ ThumbnailListView::ThumbnailListView(QWidget* parent) : QListView(parent) {
     setItemDelegate(new ThumbnailItemDelegate(this));
     setStyleSheet(QStringLiteral("QListView { background: #f3f7fa; border: 0; outline: 0; color: #40566b; }"));
     connect(this, &QListView::doubleClicked, this, [this](const QModelIndex& index) {
-        openImage(index);
-        emit openRequested(index.row());
+        if (openImage(index)) {
+            emit openRequested(index.row());
+        }
     });
 }
 
@@ -130,8 +133,9 @@ void ThumbnailListView::keyPressEvent(QKeyEvent* event) {
         return;
     }
     if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && currentIndex().isValid()) {
-        openImage(currentIndex());
-        emit openRequested(currentIndex().row());
+        if (openImage(currentIndex())) {
+            emit openRequested(currentIndex().row());
+        }
         event->accept();
         return;
     }
@@ -162,9 +166,19 @@ void ThumbnailListView::paintEvent(QPaintEvent* event) {
     }
 }
 
-void ThumbnailListView::openImage(const QModelIndex& index) {
+bool ThumbnailListView::openImage(const QModelIndex& index) {
     if (!index.isValid() || !model()) {
-        return;
+        return false;
+    }
+
+    const QString selectedFileName
+        = model()->data(model()->index(index.row(), 0), ThumbnailListModel::FILE_PATH_ROLE).toString();
+    if (selectedFileName.isEmpty()) {
+        return false;
+    }
+    if (!ImageViewerWindow::isSupportedImageFile(selectedFileName)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(selectedFileName));
+        return false;
     }
 
     QStringList fileNames;
@@ -173,7 +187,7 @@ void ThumbnailListView::openImage(const QModelIndex& index) {
         fileNames.append(model()->data(model()->index(row, 0), ThumbnailListModel::FILE_PATH_ROLE).toString());
     }
     if (index.row() >= fileNames.size() || fileNames[index.row()].isEmpty()) {
-        return;
+        return false;
     }
 
     if (!imageViewerWindow_) {
@@ -185,4 +199,5 @@ void ThumbnailListView::openImage(const QModelIndex& index) {
     imageViewerWindow_->setImageViewerSource(
         std::make_unique<FileListImageViewerSource>(std::move(fileNames), index.row()));
     imageViewerWindow_->open();
+    return true;
 }

@@ -23,6 +23,7 @@ public:
     explicit ImageViewerWindow(QWidget* parent = nullptr);
     ~ImageViewerWindow() override;
 
+    static bool isSupportedImageFile(const QString& fileName);
     void setImageViewerSource(std::unique_ptr<IImageViewerSource> source);
     void setTransientParent(QWindow* parent);
     void open();
@@ -42,6 +43,7 @@ protected:
     void resizeEvent(QResizeEvent* event) override;
 
 private:
+    QString findImageFile(bool forward, bool includeCurrent);
     void loadFile(const QString& fileName);
     void showViewer();
     void setViewerGeometry(const QRect& geometry);

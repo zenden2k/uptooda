@@ -29,7 +29,6 @@
 
 #include "Func/WinUtils.h"
 #ifdef IU_ENABLE_MEDIAINFO
-#include "Func/MediaInfoHelper.h"
 #include "MediaInfoDlg.h"
 #endif
 #include "Core/Settings/WtlGuiSettings.h"
@@ -400,7 +399,7 @@ bool CVideoGrabberPage::OnShow()
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(fileName_);
 #ifdef IU_ENABLE_MEDIAINFO
-    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), MediaInfoHelper::IsMediaInfoAvailable() ? SW_SHOW : SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), SW_SHOW);
 #endif
     SetGrabbingStatusText(_T(""));
     EnableNext(true);

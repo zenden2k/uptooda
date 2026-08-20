@@ -35,6 +35,22 @@ void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
         tasks_.erase(it);
 }
 
+bool UploadSession::moveTask(int fromIndex, int toIndex)
+{
+    if (!isFinished() || fromIndex < 0 || fromIndex >= tasks_.size() || toIndex < 0 || toIndex >= tasks_.size()) {
+        return false;
+    }
+    if (fromIndex != toIndex) {
+        auto task = tasks_[fromIndex];
+        tasks_.erase(tasks_.begin() + fromIndex);
+        tasks_.insert(tasks_.begin() + toIndex, std::move(task));
+    }
+    for (int i = 0; i < tasks_.size(); ++i) {
+        tasks_[i]->setIndex(i);
+    }
+    return true;
+}
+
 bool UploadSession::isRunning()
 {
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
