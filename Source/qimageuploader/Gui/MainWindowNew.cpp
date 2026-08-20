@@ -278,6 +278,8 @@ MainWindowNew::MainWindowNew(CUploadEngineList* engineList, LogWindow* logWindow
     QuickWidget_->setSource(QUrl(QStringLiteral("qrc:/qt/qml/Uptooda/Ui/MainWindowNew.qml")));
     setCentralWidget(QuickWidget_);
 
+    connect(qApp, &QGuiApplication::focusWindowChanged, this, [this] { emit shortcutScopeActiveChanged(); });
+
     auto* trayMenu = new QMenu(this);
     trayMenu->addAction(tr("Exit"), this, &MainWindowNew::quitApp);
     SystemTrayIcon_ = new QSystemTrayIcon(QIcon(QStringLiteral(":/res/icon_main.ico")), this);
@@ -320,6 +322,8 @@ QString MainWindowNew::defaultFileServer() const {
 QString MainWindowNew::defaultFileAccount() const {
     return U2Q(ServiceLocator::instance()->settings<QtGuiSettings>()->fileServer.getByIndex(0).profileName());
 }
+
+bool MainWindowNew::shortcutScopeActive() const { return QApplication::activeWindow() == this; }
 
 void MainWindowNew::chooseFiles() {
     QFileDialog dialog(this, tr("Open files"), QString(), tr("All files (*.*)"));

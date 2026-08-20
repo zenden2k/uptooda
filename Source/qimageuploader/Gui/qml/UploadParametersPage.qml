@@ -20,14 +20,14 @@ Item {
     Shortcut {
         sequences: ["Return", "Enter"]
         context: Qt.WindowShortcut
-        enabled: root.visible && uploadButton.enabled
+        enabled: root.controller.shortcutScopeActive && root.visible && uploadButton.enabled
         onActivated: root.confirmSelection()
     }
 
     Shortcut {
         sequence: "Escape"
         context: Qt.WindowShortcut
-        enabled: root.visible
+        enabled: root.controller.shortcutScopeActive && root.visible
         onActivated: root.backRequested()
     }
 

@@ -33,6 +33,7 @@ class MainWindowNew : public QMainWindow, public IProgramWindow {
     Q_PROPERTY(QString defaultImageAccount READ defaultImageAccount CONSTANT)
     Q_PROPERTY(QString defaultFileServer READ defaultFileServer CONSTANT)
     Q_PROPERTY(QString defaultFileAccount READ defaultFileAccount CONSTANT)
+    Q_PROPERTY(bool shortcutScopeActive READ shortcutScopeActive NOTIFY shortcutScopeActiveChanged)
 
 public:
     explicit MainWindowNew(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent = nullptr);
@@ -46,6 +47,7 @@ public:
     QString defaultImageAccount() const;
     QString defaultFileServer() const;
     QString defaultFileAccount() const;
+    bool shortcutScopeActive() const;
 
     Q_INVOKABLE void chooseFiles();
     Q_INVOKABLE void importVideo();
@@ -80,6 +82,7 @@ public:
 signals:
     void pendingFilesChanged();
     void serverListsChanged();
+    void shortcutScopeActiveChanged();
     void uploadSelectionRequested(int firstAddedIndex, bool selectAddedItem);
     void videoImportRequested();
 

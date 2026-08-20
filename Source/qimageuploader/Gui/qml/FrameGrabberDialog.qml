@@ -7,6 +7,7 @@ import QtQuick.Layouts
 Dialog {
     id: dialog
     required property var controller
+    required property bool shortcutScopeActive
 
     function cancelDialog() {
         controller.cancel()
@@ -40,14 +41,14 @@ Dialog {
     Shortcut {
         sequence: "Escape"
         context: Qt.WindowShortcut
-        enabled: dialog.visible
+        enabled: dialog.shortcutScopeActive && dialog.visible
         onActivated: dialog.cancelDialog()
     }
 
     Shortcut {
         sequences: ["Return", "Enter"]
         context: Qt.WindowShortcut
-        enabled: dialog.visible && !dialog.controller.running
+        enabled: dialog.shortcutScopeActive && dialog.visible && !dialog.controller.running
                  && (dialog.controller.canStart || dialog.controller.canAccept)
         onActivated: dialog.handleEnter()
     }

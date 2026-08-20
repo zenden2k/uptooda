@@ -1085,7 +1085,7 @@ def main():
                 shutil.copyfile(file_from, file_to)
                 json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix + ")")
 
-                shutil.copyfile("GUI\\Release\\Uptooda.pdb", pdb_os_dir + "/Uptooda.pdb")
+                shutil.copyfile("bin\\Release\\qimageuploader.pdb", pdb_os_dir + "/Uptooda.pdb")
 
                 if UPLOAD_TO_DRDUMP and target.get("upload_pdb"):
                     if not shutil.which(SYMUPLOAD_EXE):

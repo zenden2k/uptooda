@@ -24,7 +24,8 @@ Item {
     Shortcut {
         sequences: ["Return", "Enter"]
         context: Qt.WindowShortcut
-        enabled: root.activeTab === 3 && mainWindowController.pendingFileCount > 0
+        enabled: mainWindowController.shortcutScopeActive && root.activeTab === 3
+                 && mainWindowController.pendingFileCount > 0
         onActivated: root.openUploadParameters()
     }
 
@@ -462,6 +463,7 @@ Item {
     FrameGrabberDialog {
         id: frameGrabberDialog
         controller: frameGrabberController
+        shortcutScopeActive: mainWindowController.shortcutScopeActive
     }
 
     Rectangle {
@@ -519,13 +521,13 @@ Item {
         Shortcut {
             sequences: ["Return", "Enter"]
             context: Qt.WindowShortcut
-            enabled: uploadDialog.visible && uploadButton.enabled
+            enabled: mainWindowController.shortcutScopeActive && uploadDialog.visible && uploadButton.enabled
             onActivated: uploadDialog.confirmSelection()
         }
         Shortcut {
             sequence: "Escape"
             context: Qt.WindowShortcut
-            enabled: uploadDialog.visible
+            enabled: mainWindowController.shortcutScopeActive && uploadDialog.visible
             onActivated: uploadDialog.cancelSelection()
         }
 
