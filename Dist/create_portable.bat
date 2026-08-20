@@ -55,12 +55,12 @@ for %%x in (
 )
 
 rem call signcode.bat
-Copy "..\Build\Gui\Release\uptooda.exe" %temp_dir%\
+Copy "..\Build\bin\Release\qimageuploader.exe" %temp_dir%\uptooda.exe
 if ERRORLEVEL 1 goto CopyFailed
 
-Copy "..\Build\Gui\Release\sendrpt.exe" %temp_dir%\
-Copy "..\Build\Gui\Release\dbghelp.dll" %temp_dir%\
-Copy "..\Build\Gui\Release\crashrpt.dll" %temp_dir%\
+Copy "..\Build\bin\Release\sendrpt.exe" %temp_dir%\
+Copy "..\Build\bin\Release\dbghelp.dll" %temp_dir%\
+Copy "..\Build\bin\Release\crashrpt.dll" %temp_dir%\
 
 xcopy "..\Lang\locale" %temp_dir%\Lang\locale /i /e /y
 if ERRORLEVEL 1 goto CopyFailed
