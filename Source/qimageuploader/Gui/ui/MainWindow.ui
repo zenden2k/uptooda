@@ -20,35 +20,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="UploadTreeView" name="treeView">
-      <property name="expandsOnDoubleClick">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="showLogButton">
-        <property name="text">
-         <string>Show log</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+     <widget class="MainWindowTabsWidget" name="mainTabs"/>
     </item>
    </layout>
   </widget>
@@ -82,20 +54,16 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAdd_files"/>
-   <addaction name="actionSettings"/>
    <addaction name="actionScreenshot"/>
    <addaction name="actionGrab_frames"/>
-   <addaction name="separator"/>
-   <addaction name="actionAboutProgram"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAdd_files">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">
      <normaloff>:/res/icon-plus.png</normaloff>:/res/icon-plus.png</iconset>
    </property>
    <property name="text">
-    <string>Upload files</string>
+    <string>Upload files…</string>
    </property>
   </action>
   <action name="actionAdd_Images">
@@ -122,7 +90,7 @@
      <normaloff>:/res/icon-movie.png</normaloff>:/res/icon-movie.png</iconset>
    </property>
    <property name="text">
-    <string>Import video</string>
+    <string>Import video file</string>
    </property>
   </action>
   <action name="actionScreenshot">
@@ -131,7 +99,7 @@
      <normaloff>:/res/icon-screenshot.png</normaloff>:/res/icon-screenshot.png</iconset>
    </property>
    <property name="text">
-    <string>Screenshot</string>
+    <string>Take screenshot</string>
    </property>
   </action>
   <action name="actionAboutProgram">
@@ -140,16 +108,16 @@
      <normaloff>:/res/icon-information.png</normaloff>:/res/icon-information.png</iconset>
    </property>
    <property name="text">
-    <string>About program</string>
+    <string>About</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>UploadTreeView</class>
-   <extends>QTreeView</extends>
-   <header>Gui/controls/UploadTreeView.h</header>
+   <class>MainWindowTabsWidget</class>
+   <extends>QWidget</extends>
+   <header>Gui/controls/MainWindowTabsWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

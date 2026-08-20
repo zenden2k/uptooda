@@ -102,47 +102,7 @@
     </layout>
    </item>
    <item>
-    <widget class="MyListWidget" name="listWidget">
-     <property name="showDropIndicator" stdset="0">
-      <bool>false</bool>
-     </property>
-     <property name="dragEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragDropOverwriteMode">
-      <bool>false</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
-     </property>
-     <property name="defaultDropAction">
-      <enum>Qt::MoveAction</enum>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ContiguousSelection</enum>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>128</width>
-       <height>128</height>
-      </size>
-     </property>
-     <property name="movement">
-      <enum>QListView::Snap</enum>
-     </property>
-     <property name="resizeMode">
-      <enum>QListView::Adjust</enum>
-     </property>
-     <property name="layoutMode">
-      <enum>QListView::Batched</enum>
-     </property>
-     <property name="viewMode">
-      <enum>QListView::IconMode</enum>
-     </property>
-     <property name="uniformItemSizes">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="ThumbnailListView" name="listWidget"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -192,9 +152,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyListWidget</class>
-   <extends>QListWidget</extends>
-   <header>Gui/controls/MyListWidget.h</header>
+   <class>ThumbnailListView</class>
+   <extends>QListView</extends>
+   <header>Gui/controls/ThumbnailListView.h</header>
   </customwidget>
   <customwidget>
    <class>ProgressRingWidget</class>

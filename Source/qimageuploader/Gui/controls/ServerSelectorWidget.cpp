@@ -5,14 +5,14 @@
 #include <QMenu>
 #include <QDebug>
 
-#include "Core/Upload/UploadEngineManager.h"
-#include "Core/Upload/ServerProfile.h"
-#include "Core/ServiceLocator.h"
-#include "Core/CommonDefs.h"
-#include "Core/AppRuntimeInfo.h"
-#include "Core/Settings/BasicSettings.h"
-#include "Gui/LoginDialog.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Core/AppRuntimeInfo.h"
+#include "Core/CommonDefs.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Settings/BasicSettings.h"
+#include "Core/Upload/ServerProfile.h"
+#include "Core/Upload/UploadEngineManager.h"
+#include "Gui/LoginDialog.h"
 
 ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineManager, bool defaultServer,
                                            QWidget* parent) : QGroupBox(parent) {
@@ -24,25 +24,24 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
     setStyleSheet("QGroupBox {font-weight: bold;}");
     QGridLayout* grid = new QGridLayout(this);
     serverListComboBox = new QComboBox(this);
+    serverListComboBox->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 
     accountButton = new QToolButton(this);
+    accountButton->setObjectName(QStringLiteral("serverAccountButton"));
     accountButton->setIcon(QIcon(":/res/icon-user.png"));
     accountButton->setText(tr("<without account>"));
     accountButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     accountButton->setPopupMode(QToolButton::MenuButtonPopup);
-    //accountButton->setFlat(true);
+    accountButton->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     accountButton->setCursor(Qt::PointingHandCursor);
-    accountButton->setStyleSheet("QPushButton { color : blue; }");
-    /*accountIcon = new QLabel(this);
-    accountIcon->setPixmap(QIcon(":/res/icon-user.ico").pixmap(16,16));*/
+
+    grid->setHorizontalSpacing(10);
+    grid->setColumnStretch(0, 1);
+    grid->setColumnStretch(1, 1);
     grid->addWidget(serverListComboBox, 0, 0);
     accountLayout = new QHBoxLayout();
-    //accountLayout->addWidget(accountIcon);
+    accountLayout->setContentsMargins(0, 0, 0, 0);
     accountLayout->addWidget(accountButton);
-    QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-    accountLayout->addItem(horizontalSpacer);
-
     grid->addLayout(accountLayout, 0, 1);
     connect(serverListComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxIndexChanged(int)));
     connect(accountButton, &QPushButton::clicked, this, &ServerSelectorWidget::accountButtonClicked);
@@ -53,7 +52,7 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
 
 /*void ServerSelectorWidget::setTitle(QString title)
 {
-	titleLabel->setText(title);
+    titleLabel->setText(title);
 }*/
 
 void ServerSelectorWidget::setServerProfile(const ServerProfile& serverProfile) {

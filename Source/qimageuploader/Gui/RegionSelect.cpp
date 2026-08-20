@@ -25,8 +25,11 @@
 
 namespace {
 
-QRect desktopGeometry()
-{
+constexpr int ZOOM_SIDE = 200;
+constexpr int ZOOM_FACTOR = 8;
+constexpr qreal CROSS_HALF_SIZE = 12.0;
+
+QRect desktopGeometry() {
     QRect geometry;
     const auto screens = QGuiApplication::screens();
     for (QScreen* screen : screens) {
@@ -36,11 +39,39 @@ QRect desktopGeometry()
     return geometry;
 }
 
+QRect toPixmapCoordinates(const QRect& rect, const QPixmap& pixmap) {
+    const qreal devicePixelRatio = pixmap.devicePixelRatio();
+    const int left = qRound(rect.x() * devicePixelRatio);
+    const int top = qRound(rect.y() * devicePixelRatio);
+    const int right = qRound((rect.x() + rect.width()) * devicePixelRatio);
+    const int bottom = qRound((rect.y() + rect.height()) * devicePixelRatio);
+
+    return QRect(left, top, right - left, bottom - top).intersected(pixmap.rect());
+}
+
+QRect centeredRect(const QPoint& center, const QSize& size, const QRect& bounds) {
+    const QSize boundedSize(qMin(size.width(), bounds.width()), qMin(size.height(), bounds.height()));
+    QRect rect(center - QPoint(boundedSize.width() / 2, boundedSize.height() / 2), boundedSize);
+
+    if (rect.left() < bounds.left()) {
+        rect.moveLeft(bounds.left());
+    } else if (rect.right() > bounds.right()) {
+        rect.moveRight(bounds.right());
+    }
+    if (rect.top() < bounds.top()) {
+        rect.moveTop(bounds.top());
+    } else if (rect.bottom() > bounds.bottom()) {
+        rect.moveBottom(bounds.bottom());
+    }
+
+    return rect;
+}
+
 }
 
 RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
     :QDialog(parent)
-{    
+{
 	 //conf = mainconf;
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
@@ -113,7 +144,7 @@ void RegionSelect::drawBackGround()
 
     // draw rect of desktop size in poainter
     painter.drawRect(desktopPixmapBkg.rect());
-        
+
     QScreen* primaryScreen = QGuiApplication::primaryScreen();
     QRect txtRect = primaryScreen ? primaryScreen->geometry() : desktopPixmapBkg.rect();
     txtRect.translate(-desktopGeometry().topLeft());
@@ -148,54 +179,70 @@ void RegionSelect::drawBackGround()
     }
 }
 
-void RegionSelect::drawRectSelection(QPainter &painter)
-{
-    painter.drawPixmap(selectRect, desktopPixmapClr, selectRect);
+void RegionSelect::drawRectSelection(QPainter& painter) {
+    const QRect sourceRect = toPixmapCoordinates(selectRect, desktopPixmapClr);
+    painter.drawPixmap(selectRect, desktopPixmapClr, sourceRect);
     painter.setPen(QPen(QBrush(QColor(0, 0, 0, 255)), 2));
     painter.drawRect(selectRect);
 
-    QString txtSize = QApplication::tr("%1 x %2 pixels ").arg(selectRect.width()).arg(selectRect.height());
+    QString txtSize = QApplication::tr("%1 x %2 pixels ").arg(sourceRect.width()).arg(sourceRect.height());
     painter.drawText(selectRect, Qt::AlignBottom | Qt::AlignRight, txtSize);
 
-	 if (!selEndPoint.isNull() /*&& conf->getZoomAroundMouse() == true*/)
-    {
-        const quint8 zoomSide = 200;
+    if (!selEndPoint.isNull() /*&& conf->getZoomAroundMouse() == true*/) {
+        const qreal devicePixelRatio = desktopPixmapClr.devicePixelRatio();
+        const QSize zoomPixmapSize(qRound(ZOOM_SIDE * devicePixelRatio), qRound(ZOOM_SIDE * devicePixelRatio));
+        const QSize zoomSourceSize((zoomPixmapSize.width() + ZOOM_FACTOR - 1) / ZOOM_FACTOR,
+                                   (zoomPixmapSize.height() + ZOOM_FACTOR - 1) / ZOOM_FACTOR);
+        const QPoint mousePixel(qBound(desktopPixmapClr.rect().left(), qRound(selEndPoint.x() * devicePixelRatio),
+                                       desktopPixmapClr.rect().right()),
+                                qBound(desktopPixmapClr.rect().top(), qRound(selEndPoint.y() * devicePixelRatio),
+                                       desktopPixmapClr.rect().bottom()));
+        const QRect zoomSourceRect = centeredRect(mousePixel, zoomSourceSize, desktopPixmapClr.rect());
 
-        // create magnifer coords
-        QPoint zoomStart = selEndPoint;
-        zoomStart -= QPoint(zoomSide/5, zoomSide/5); // 40, 40
-
-        QPoint zoomEnd = selEndPoint;
-        zoomEnd += QPoint(zoomSide/5, zoomSide/5);
-
-        // creating rect area for magnifer
-        QRect zoomRect = QRect(zoomStart, zoomEnd);
-
-        QPixmap zoomPixmap = desktopPixmapClr.copy(zoomRect).scaled(QSize(zoomSide, zoomSide), Qt::KeepAspectRatio);
+        QPixmap zoomPixmap
+            = desktopPixmapClr.copy(zoomSourceRect)
+                  .scaled(zoomSourceRect.size() * ZOOM_FACTOR, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+        const QRect zoomCropRect = centeredRect(zoomPixmap.rect().center(), zoomPixmapSize, zoomPixmap.rect());
+        const qreal zoomPixelCenterOffset = (ZOOM_FACTOR - 1) / 2.0;
+        const QPointF zoomCursor = QPointF(mousePixel - zoomSourceRect.topLeft()) * ZOOM_FACTOR
+            + QPointF(zoomPixelCenterOffset, zoomPixelCenterOffset) - zoomCropRect.topLeft();
+        zoomPixmap = zoomPixmap.copy(zoomCropRect);
+        zoomPixmap.setDevicePixelRatio(devicePixelRatio);
+        const QRect zoomPixmapRect(QPoint(), zoomPixmap.deviceIndependentSize().toSize());
 
         QPainter zoomPainer(&zoomPixmap); // create painter from pixmap maignifer
         zoomPainer.setPen(QPen(QBrush(QColor(255, 0, 0, 180)), 2));
-        zoomPainer.drawRect(zoomPixmap.rect()); // draw
-        zoomPainer.drawText(zoomPixmap.rect().center() - QPoint(4, -4), "+");
+        zoomPainer.drawRect(zoomPixmapRect); // draw
+
+        const QPointF crossCenter = zoomCursor / devicePixelRatio;
+        zoomPainer.setCompositionMode(QPainter::CompositionMode_Difference);
+        QPen crossPen(Qt::white);
+        crossPen.setWidthF(ZOOM_FACTOR / devicePixelRatio);
+        crossPen.setCapStyle(Qt::FlatCap);
+        zoomPainer.setPen(crossPen);
+        zoomPainer.drawLine(crossCenter - QPointF(CROSS_HALF_SIZE, 0), crossCenter + QPointF(CROSS_HALF_SIZE, 0));
+        zoomPainer.drawLine(crossCenter - QPointF(0, CROSS_HALF_SIZE), crossCenter + QPointF(0, CROSS_HALF_SIZE));
 
         // position for drawing preview
         QPoint zoomCenter = selectRect.bottomRight();
 
-        if (zoomCenter.x() + zoomSide > desktopPixmapClr.rect().width() || zoomCenter.y() + zoomSide > desktopPixmapClr.rect().height())
-        {
-            zoomCenter -= QPoint(zoomSide, zoomSide);
+        if (zoomCenter.x() + ZOOM_SIDE > width() || zoomCenter.y() + ZOOM_SIDE > height()) {
+            zoomCenter -= QPoint(ZOOM_SIDE, ZOOM_SIDE);
         }
+        painter.save();
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
         painter.drawPixmap(zoomCenter, zoomPixmap);
+        painter.restore();
     }
 }
 
-QPixmap RegionSelect::getSelection()
-{
+QPixmap RegionSelect::getSelection() {
     QPixmap sel;
-    sel = desktopPixmapClr.copy(selectRect);
+    sel = desktopPixmapClr.copy(toPixmapCoordinates(selectRect, desktopPixmapClr));
     return sel;
 }
 
 CScreenshotRegion* RegionSelect::selectedRegion() {
-    return new CRectRegion(selectRect.x(), selectRect.y(), selectRect.width(), selectRect.height());
+    const QRect sourceRect = toPixmapCoordinates(selectRect, desktopPixmapClr);
+    return new CRectRegion(sourceRect.x(), sourceRect.y(), sourceRect.width(), sourceRect.height());
 }

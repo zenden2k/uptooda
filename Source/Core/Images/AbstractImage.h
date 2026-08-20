@@ -53,12 +53,12 @@ protected:
     int height_;
     std::string srcFormat_;
 
-    struct FactoryRegistrar {
+    /*struct FactoryRegistrar {
         FactoryRegistrar() {
             autoRegisterFactory<void>();
         }
     };
-    static FactoryRegistrar factoryRegistrar_;
+    static FactoryRegistrar factoryRegistrar_;*/
     DISALLOW_COPY_AND_ASSIGN(AbstractImage);
 };
 

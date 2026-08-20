@@ -11,5 +11,9 @@
         <file>res/icon-screenshot.png</file>
         <file>res/icon-settings.png</file>
         <file>res/icon-user.png</file>
+        <file>res/spin-plus.svg</file>
+        <file>res/spin-minus.svg</file>
+        <file>res/chevron-down.svg</file>
+        <file alias="styles/Application.qss">Gui/styles/Application.qss</file>
     </qresource>
 </RCC>

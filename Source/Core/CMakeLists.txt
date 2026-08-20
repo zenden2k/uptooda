@@ -101,7 +101,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     Video/VideoUtils.cpp
     Images/AbstractImage.cpp
     FileTypeCheckTask.cpp
-    Settings/AutoSettings.cpp
 )
 
 set(HEADER_LIST
@@ -213,7 +212,6 @@ set(HEADER_LIST
     i18n/Translator.h
     FileTypeCheckTask.h
     IFileList.h
-    Settings/AutoSettings.h
 )
     
 if(WIN32)

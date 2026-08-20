@@ -2,45 +2,148 @@
 
 #include "ui_MainWindow.h"
 
-#include <vector>
-#include <QDebug>
-#include <QFileDialog>
-#include <QToolButton>
-#include <QMessageBox>
-#include <QDesktopServices>
-#include <QTemporaryFile>
 #include <QClipboard>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDesktopServices>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QMimeDatabase>
+#include <QPainter>
+#include <QResizeEvent>
 #include <QSystemTrayIcon>
-#include <QTimer>
+#include <QTemporaryFile>
 #include <QThread>
+#include <QTimer>
+#include <QToolButton>
+#include <QWidgetAction>
+#include <vector>
 
-#include "Core/BasicConstants.h"
-#include "Gui/FrameGrabberDlg.h"
-#include "Gui/RegionSelect.h"
-#include "Gui/controls/ServerSelectorWidget.h"
-#include "models/uploadtreemodel.h"
-#include "Core/CommonDefs.h"
-#include "Core/Upload/UploadManager.h"
-#include "Core/Upload/UploadEngineManager.h"
-#include "Core/ServiceLocator.h"
-#include "Core/Upload/FileUploadTask.h"
-#include "Core/Scripting/ScriptsManager.h"
-#include "Core/AppRuntimeInfo.h"
-#include "Core/Settings/QtGuiSettings.h"
-#include "Core/Network/NetworkClientFactory.h"
-#include "ResultsWindow.h"
-#include "Gui/LogWindow.h"
-#include "Core/OutputGenerator/AbstractOutputGenerator.h"
 #include "AboutDialog.h"
+#include "Core/AppRuntimeInfo.h"
+#include "Core/BasicConstants.h"
+#include "Core/CommonDefs.h"
+#include "Core/Network/NetworkClientFactory.h"
+#include "Core/OutputGenerator/AbstractOutputGenerator.h"
 #include "Core/QtServerIconCache.h"
+#include "Core/Scripting/ScriptsManager.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Settings/QtGuiSettings.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UploadEngineManager.h"
+#include "Core/Upload/UploadManager.h"
+#include "Gui/FrameGrabberDlg.h"
+#include "Gui/ImageViewerWindow.h"
+#include "Gui/LogWindow.h"
+#include "Gui/RegionSelect.h"
+#include "Gui/controls/MainWindowTabsWidget.h"
+#include "Gui/controls/UploadSessionListWidget.h"
+#include "Gui/models/ThumbnailListModel.h"
+#include "ResultsWindow.h"
 
 using namespace Uptooda::Core::OutputGenerator;
 
+namespace {
+
+class FileDropHighlight final : public QWidget {
+public:
+    using QWidget::QWidget;
+
+protected:
+    void paintEvent(QPaintEvent*) override {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.fillRect(rect(), QColor(232, 246, 255, 235));
+
+        const QRectF borderRect = QRectF(rect()).adjusted(10.5, 10.5, -10.5, -10.5);
+        QPen borderPen(QColor(QStringLiteral("#399bd8")), 3, Qt::DashLine);
+        borderPen.setDashPattern({ 7, 5 });
+        painter.setPen(borderPen);
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRoundedRect(borderRect, 12, 12);
+
+        QFont font = painter.font();
+        font.setPointSize(qMax(20, font.pointSize() + 10));
+        font.setBold(true);
+        painter.setFont(font);
+        painter.setPen(QColor(QStringLiteral("#197db8")));
+        painter.drawText(rect().adjusted(24, 24, -24, -24), Qt::AlignCenter | Qt::TextWordWrap,
+                         QCoreApplication::translate("MainWindow", "Drop files to add"));
+    }
+};
+
+QStringList LocalFilesFromMimeData(const QMimeData* mimeData) {
+    QStringList result;
+    if (!mimeData || !mimeData->hasUrls()) {
+        return result;
+    }
+    for (const QUrl& url : mimeData->urls()) {
+        if (!url.isLocalFile()) {
+            continue;
+        }
+        const QString fileName = QFileInfo(url.toLocalFile()).absoluteFilePath();
+        if (QFileInfo(fileName).isFile()) {
+            result.append(fileName);
+        }
+    }
+    return result;
+}
+
+} // namespace
+
 MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    logWindow_(logWindow) {
+    QMainWindow(parent), ui(new Ui::MainWindow), logWindow_(logWindow) {
     ui->setupUi(this);
+    setMinimumSize(820, 560);
+    ui->verticalLayout->setContentsMargins(0, 0, 0, 0);
+    ui->verticalLayout->setSpacing(0);
+    setAcceptDrops(true);
+
+    dropHighlightOverlay_ = new FileDropHighlight(this);
+    dropHighlightOverlay_->setAttribute(Qt::WA_TransparentForMouseEvents);
+    dropHighlightOverlay_->setGeometry(rect());
+    dropHighlightOverlay_->hide();
+
+    ui->menuBar->setFixedHeight(40);
+
+    auto* fileMenu = ui->menuBar->addMenu(tr("&File"));
+    fileMenu->addAction(ui->actionAdd_files);
+    fileMenu->addSeparator();
+    QAction* exitAction = fileMenu->addAction(tr("Exit"));
+    connect(exitAction, &QAction::triggered, this, &MainWindow::quitApp);
+
+    auto* toolsMenu = ui->menuBar->addMenu(tr("&Tools"));
+    toolsMenu->addAction(ui->actionScreenshot);
+    QAction* showLogAction = toolsMenu->addAction(tr("Show log"));
+    connect(showLogAction, &QAction::triggered, this, &MainWindow::onShowLog);
+
+    auto* helpMenu = ui->menuBar->addMenu(tr("&Help"));
+    helpMenu->addAction(ui->actionAboutProgram);
+    ui->actionAdd_files->setIconVisibleInMenu(false);
+    ui->actionScreenshot->setIconVisibleInMenu(false);
+    ui->actionAboutProgram->setIconVisibleInMenu(false);
+
+    ui->mainToolBar->setFixedHeight(50);
+    ui->mainToolBar->setIconSize(QSize(20, 20));
+    const QList<QAction*> toolbarActions = ui->mainToolBar->actions();
+    for (QAction* action : toolbarActions) {
+        if (auto* button = qobject_cast<QToolButton*>(ui->mainToolBar->widgetForAction(action))) {
+            button->setText(QStringLiteral("\u00a0\u00a0") + action->text());
+        }
+    }
+    for (int index = 1; index < toolbarActions.size(); ++index) {
+        auto* spacerAction = new QWidgetAction(ui->mainToolBar);
+        auto* spacer = new QWidget(ui->mainToolBar);
+        spacer->setFixedWidth(14);
+        spacerAction->setDefaultWidget(spacer);
+        ui->mainToolBar->insertAction(toolbarActions[index], spacerAction);
+    }
     setWindowTitle(APP_NAME_A + QStringLiteral(" (Qt GUI)"));
     auto* serviceLocator = ServiceLocator::instance();
     auto* settings = serviceLocator->settings<QtGuiSettings>();
@@ -50,8 +153,8 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadErrorHandler = serviceLocator->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(), uploadErrorHandler,
-                                       networkClientFactory, settings, 3);
+    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(),
+                                                     uploadErrorHandler, networkClientFactory, settings, 3);
     std::string dataDirectory = AppRuntimeInfo::instance()->dataDirectory();
     std::string iconsDir = dataDirectory + "Favicons/";
     serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);
@@ -60,17 +163,13 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     std::string scriptsDirectory = dataDirectory + "/Scripts/";
     uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
 
-    uploadTreeModel_ = new UploadTreeModel(this, uploadManager_.get());
-
-    ui->treeView->setModel(uploadTreeModel_);
-    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
-    ui->treeView->setColumnWidth(0, 150); // Filename column
-    ui->treeView->setColumnWidth(1, 150); // Status column
-    ui->treeView->setColumnWidth(2, 150); // Progress column
-    ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-    connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::itemDoubleClicked);
-    connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
+    uploadSessionList()->setUploadManager(uploadManager_.get());
+    connect(uploadSessionList(), &UploadSessionListWidget::showCodesRequested, this,
+            qOverload<UploadSession*, UploadTask*>(&MainWindow::showCodes));
+    connect(uploadSessionList(), &UploadSessionListWidget::imageViewerRequested, this, &MainWindow::openImageViewer);
+    connect(uploadSessionList(), &UploadSessionListWidget::removeTaskRequested, this, &MainWindow::removeTask);
+    connect(uploadSessionList(), &UploadSessionListWidget::contextMenuRequested, this,
+            &MainWindow::onCustomContextMenu);
 
     copyDirectLinkAction_ = new QAction(tr("Copy direct link"), this);
     copyDirectLinkAction_->setShortcut(QKeySequence::Copy);
@@ -80,29 +179,29 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     copyFilePathAction_->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C));
     connect(copyFilePathAction_, &QAction::triggered, this, &MainWindow::onCopyFilePathTriggered);
 
-    ui->treeView->addAction(copyDirectLinkAction_);
-    ui->treeView->addAction(copyFilePathAction_);
+    uploadSessionList()->addAction(copyDirectLinkAction_);
+    uploadSessionList()->addAction(copyFilePathAction_);
 
     const ServerProfile& imageProfile = settings->imageServer.getByIndex(0);
-
-    imageServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
-    imageServerWidget_->setTitle(tr("Server for images:"));
-    imageServerWidget_->setServerProfile(imageProfile);
-    ui->verticalLayout->insertWidget(1, imageServerWidget_);
-    fileServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
-    fileServerWidget_->setTitle(tr("Server for other file types:"));
-    fileServerWidget_->setServersMask(ServerSelectorWidget::smFileServers);
-    fileServerWidget_->updateServerList();
-
     const ServerProfile& fileServerProfile = settings->fileServer.getByIndex(0);
-    fileServerWidget_->setServerProfile(fileServerProfile);
-    ui->verticalLayout->insertWidget(2, fileServerWidget_);
+    pendingFilesModel_ = std::make_unique<ThumbnailListModel>(this);
+    ui->mainTabs->setPendingFilesModel(pendingFilesModel_.get());
+    ui->mainTabs->configureUploadSettings(uploadEngineManager_.get(), imageProfile, fileServerProfile);
+    ui->mainTabs->setPendingFilesCount(0);
+    connect(ui->mainTabs->addedFilesTab(), &AddedFilesTabWidget::clearRequested, this, &MainWindow::clearPendingFiles);
+    connect(ui->mainTabs->addedFilesTab(), &AddedFilesTabWidget::removeRequested, this,
+            &MainWindow::removePendingFiles);
+    connect(ui->mainTabs->addedFilesTab(), &AddedFilesTabWidget::nextRequested, this, &MainWindow::showUploadSettings);
+    connect(ui->mainTabs->uploadSettingsTab(), &UploadSettingsTabWidget::backRequested, this,
+            [this] { ui->mainTabs->setCurrentIndex(3); });
+    connect(ui->mainTabs->uploadSettingsTab(), &UploadSettingsTabWidget::uploadRequested, this,
+            &MainWindow::startPendingUpload);
 
     iconsLoadingThread_ = new QThread(this);
     auto* timer = new QTimer(nullptr);
     timer->moveToThread(iconsLoadingThread_);
     timer->setSingleShot(true);
-    connect(timer, &QTimer::timeout, [this, serviceLocator](){
+    connect(timer, &QTimer::timeout, [this, serviceLocator]() {
         serviceLocator->serverIconCache()->preLoadIcons(96);
         QMetaObject::invokeMethod(this, "fillServerIcons", Qt::AutoConnection);
         iconsLoadingThread_->quit();
@@ -113,21 +212,19 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     iconsLoadingThread_->start();
 
     QMenu* trayContextMenu = new QMenu(this);
-    QAction* exitAction = trayContextMenu->addAction(tr("Exit"));
-    connect(exitAction, &QAction::triggered, this, &MainWindow::quitApp);
+    QAction* trayExitAction = trayContextMenu->addAction(tr("Exit"));
+    connect(trayExitAction, &QAction::triggered, this, &MainWindow::quitApp);
     systemTrayIcon_ = new QSystemTrayIcon(this);
     systemTrayIcon_->setIcon(QIcon(":/res/icon_main.ico"));
     systemTrayIcon_->setContextMenu(trayContextMenu);
     connect(systemTrayIcon_, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
-        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick){
+        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick) {
             setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
             show();
             activateWindow();
         }
     });
     systemTrayIcon_->show();
-
-    connect(ui->showLogButton, &QPushButton::clicked, this, &MainWindow::onShowLog);
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
@@ -138,17 +235,60 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 }
 
 MainWindow::~MainWindow() {
-    uploadTreeModel_->reset();
+    uploadSessionList()->detach();
     uploadManager_.reset(); // Must be destroyed first
     iconsLoadingThread_->wait();
 }
 
-void MainWindow::updateView() {
+void MainWindow::updateView() { }
 
+void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
+    dragContainsFiles_ = !LocalFilesFromMimeData(event->mimeData()).isEmpty();
+    if (!dragContainsFiles_) {
+        event->ignore();
+        return;
+    }
+    dropHighlightOverlay_->setGeometry(rect());
+    dropHighlightOverlay_->raise();
+    dropHighlightOverlay_->show();
+    event->acceptProposedAction();
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent* event) {
+    if (dragContainsFiles_) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
+    }
+}
+
+void MainWindow::dragLeaveEvent(QDragLeaveEvent* event) {
+    dragContainsFiles_ = false;
+    dropHighlightOverlay_->hide();
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent* event) {
+    dragContainsFiles_ = false;
+    dropHighlightOverlay_->hide();
+    const QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
+    if (fileNames.isEmpty()) {
+        event->ignore();
+        return;
+    }
+    addMultipleFilesToList(fileNames);
+    event->acceptProposedAction();
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);
+    if (dropHighlightOverlay_) {
+        dropHighlightOverlay_->setGeometry(rect());
+    }
 }
 
 void MainWindow::on_actionGrab_frames_triggered() {
-    QFileDialog fd(this,"Open multimedia file", QString(), tr("All files (*.*)"));
+    QFileDialog fd(this, "Open multimedia file", QString(), tr("All files (*.*)"));
     fd.setModal(true);
     fd.setWindowModality(Qt::WindowModal);
     if (fd.exec() != QDialog::Accepted) {
@@ -198,7 +338,7 @@ void MainWindow::on_actionScreenshot_triggered() {
         return;
     }
 
-    QPixmap* screen = eng.capturedBitmap(); //QPixmap::grabWindow(QApplication::desktop()->winId());
+    QPixmap* screen = eng.capturedBitmap(); // QPixmap::grabWindow(QApplication::desktop()->winId());
     QTemporaryFile f(U2Q(AppRuntimeInfo::instance()->tempDirectory()) + "/screenshot_XXXXXX.png");
     f.setAutoRemove(false);
     QString uniqueFileName;
@@ -212,11 +352,10 @@ void MainWindow::on_actionScreenshot_triggered() {
         }
     }
     show();
-
 }
 
 void MainWindow::on_actionAdd_files_triggered() {
-    QFileDialog fd(this,"Open files", QString(), tr("All files (*.*)"));
+    QFileDialog fd(this, "Open files", QString(), tr("All files (*.*)"));
     fd.setModal(true);
     fd.setWindowModality(Qt::WindowModal);
     if (fd.exec() == QDialog::Accepted) {
@@ -230,82 +369,100 @@ void MainWindow::on_actionAdd_files_triggered() {
     }
 }
 
-bool MainWindow::addFileToList(QString fileName) {
-    if (fileName.isEmpty()) {
-        return false;
-    }
-    auto uploadSession = std::make_shared<UploadSession>();
-    auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-    ServerProfile serverProfile = imageServerWidget_->serverProfile();
-    task->setServerProfile(serverProfile);
-    uploadSession->addTask(task);
-    uploadManager_->addSession(uploadSession);
-
-    // Select and expand newly created tree item
-    ui->treeView->clearSelection();
-    QModelIndex index = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, 0);
-    QModelIndex indexLast = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, uploadTreeModel_->columnCount() - 1);
-    ui->treeView->selectionModel()->select(QItemSelection(index, indexLast), QItemSelectionModel::Select);
-    ui->treeView->expand(index);
-    return true;
-}
+bool MainWindow::addFileToList(QString fileName) { return addMultipleFilesToList({ std::move(fileName) }); }
 
 bool MainWindow::addMultipleFilesToList(QStringList fileNames) {
     if (fileNames.isEmpty()) {
         return false;
     }
+    const int firstAddedRow = pendingFilesModel_->addFiles(fileNames);
+    if (firstAddedRow < 0) {
+        return false;
+    }
+    ui->mainTabs->setPendingFilesCount(pendingFilesModel_->rowCount());
+    ui->mainTabs->addedFilesTab()->revealRow(firstAddedRow);
+    ui->mainTabs->setCurrentIndex(3);
+    return true;
+}
+
+void MainWindow::clearPendingFiles() {
+    pendingFilesModel_->clear();
+    ui->mainTabs->setPendingFilesCount(0);
+}
+
+void MainWindow::removePendingFiles(const QList<int>& rows) {
+    pendingFilesModel_->removeItems(rows);
+    ui->mainTabs->setPendingFilesCount(pendingFilesModel_->rowCount());
+}
+
+void MainWindow::showUploadSettings() {
+    if (pendingFilesModel_->rowCount() > 0) {
+        ui->mainTabs->setCurrentIndex(4);
+    }
+}
+
+void MainWindow::startPendingUpload() {
+    const QStringList fileNames = pendingFilesModel_->filePaths();
+    if (fileNames.isEmpty()) {
+        return;
+    }
+
+    auto* settingsTab = ui->mainTabs->uploadSettingsTab();
+    const ServerProfile imageProfile = settingsTab->imageServerProfile();
+    const ServerProfile fileProfile = settingsTab->fileServerProfile();
+    if (imageProfile.serverName().empty() || fileProfile.serverName().empty()) {
+        return;
+    }
+
     auto uploadSession = std::make_shared<UploadSession>();
-    for (const auto& fileName : fileNames) {
+    QMimeDatabase mimeDatabase;
+    for (const QString& fileName : fileNames) {
         auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-        ServerProfile serverProfile = imageServerWidget_->serverProfile();
-        if (serverProfile.getUseDefaultSettings())
-        {
+        const bool isImage = mimeDatabase.mimeTypeForFile(fileName, QMimeDatabase::MatchExtension)
+                                 .name()
+                                 .startsWith(QStringLiteral("image/"));
+        ServerProfile profile = isImage ? imageProfile : fileProfile;
+        if (profile.useDefaultSettings()) {
             auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-            serverProfile.setImageUploadParams(settings->DefaultImageUploadParams);
+            profile.setImageUploadParams(settings->DefaultImageUploadParams);
         }
-        task->setServerProfile(serverProfile);
+        task->setIsImage(isImage);
+        task->setServerProfile(profile);
+        task->setIndex(uploadSession->taskCount());
         uploadSession->addTask(task);
     }
 
     uploadManager_->addSession(uploadSession);
-
-    // Select and expand newly created tree item
-    ui->treeView->clearSelection();
-    QModelIndex index = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, 0);
-    QModelIndex indexLast = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, uploadTreeModel_->columnCount() - 1);
-    ui->treeView->selectionModel()->select(QItemSelection(index, indexLast), QItemSelectionModel::Select);
-    ui->treeView->expand(index);
-        
-        
-    return true;
+    uploadSessionList()->selectSession(uploadSession.get());
+    clearPendingFiles();
+    saveOptions();
+    ui->mainTabs->setCurrentIndex(0);
 }
 
-void MainWindow::itemDoubleClicked(const QModelIndex& index) {
-    showCodeForIndex(index);
+void MainWindow::showCodes(UploadSession* session, UploadTask* task) {
+    showCodes(findSession(session), findTask(task));
 }
 
 void MainWindow::uploadTaskToUploadObject(UploadTask* task, UploadObject& obj) {
     obj.fillFromUploadResult(task->uploadResult(), task);
 }
 
-void MainWindow::showCodeForIndex(const QModelIndex& index) {
+void MainWindow::showCodes(const std::shared_ptr<UploadSession>& session, const std::shared_ptr<UploadTask>& task) {
     std::vector<UploadObject> uploadObjects;
-    auto item = uploadTreeModel_->getInternalItem(index);
-    if (item->session) {
-        int count = item->session->taskCount();
+    if (task && task->uploadSuccess(false)) {
+        UploadObject obj;
+        uploadTaskToUploadObject(task.get(), obj);
+        uploadObjects.push_back(obj);
+    } else if (session && !task) {
+        int count = session->taskCount();
         for (int i = 0; i < count; i++) {
-            auto task = item->session->getTask(i);
-            if (task && task->uploadSuccess(false)) {
+            auto sessionTask = session->getTask(i);
+            if (sessionTask && sessionTask->uploadSuccess(false)) {
                 UploadObject obj;
-                uploadTaskToUploadObject(task.get(), obj);
+                uploadTaskToUploadObject(sessionTask.get(), obj);
                 uploadObjects.push_back(obj);
             }
         }
-    }
-    else if (item->task && item->task->uploadSuccess(false)) {
-        UploadObject obj;
-        uploadTaskToUploadObject(item->task.get(), obj);
-        uploadObjects.push_back(obj);
     }
     ResultsWindow dlg(uploadObjects, this);
     dlg.setModal(true);
@@ -313,68 +470,110 @@ void MainWindow::showCodeForIndex(const QModelIndex& index) {
     dlg.exec();
 }
 
-void MainWindow::onCustomContextMenu(const QPoint& point) {
-    QModelIndex index = ui->treeView->indexAt(point);
-    if (index.isValid()) {
-        UploadTreeModel::InternalItem* internalItem = uploadTreeModel_->getInternalItem(index);
-        QMenu* contextMenu = new QMenu(ui->treeView);
+void MainWindow::onCustomContextMenu(UploadSession* sessionPtr, UploadTask* taskPtr, const QPoint& globalPosition) {
+    const auto session = findSession(sessionPtr);
+    const auto task = findTask(taskPtr);
+    if (!session) {
+        return;
+    }
 
-        QAction* viewCodeAction = new QAction(tr("View HTML/BBCode"), contextMenu);
+    QMenu contextMenu(this);
+    QAction* viewCodeAction = contextMenu.addAction(tr("View HTML/BBCode"));
+    connect(viewCodeAction, &QAction::triggered, this, [this, session, task] { showCodes(session, task); });
+    contextMenu.setDefaultAction(viewCodeAction);
 
-        contextMenu->addAction(viewCodeAction);
-        connect(viewCodeAction, &QAction::triggered, [index, this](bool checked)
-        {
-            showCodeForIndex(index);
-        });
-        contextMenu->setDefaultAction(viewCodeAction);
+    if (task) {
+        auto* uploadResult = task->uploadResult();
+        QString directUrl = QString::fromStdString(uploadResult->getDirectUrl());
+        QString viewUrl = QString::fromStdString(uploadResult->getDownloadUrl());
 
-        if (internalItem->task) {
-            auto* uploadResult = internalItem->task->uploadResult();
-            QString directUrl = QString::fromStdString(uploadResult->getDirectUrl());
-            QString viewUrl = QString::fromStdString(uploadResult->getDownloadUrl());
-
-            if (!directUrl.isEmpty()) {
-                contextMenu->addAction(copyDirectLinkAction_);
-            }
-
-            if (!viewUrl.isEmpty()) {
-                QAction* copyViewLinkAction = new QAction(tr("Copy view link"), contextMenu);
-                if (directUrl.isEmpty()) {
-                    copyViewLinkAction->setShortcut(QKeySequence::Copy);
-                }
-                connect(copyViewLinkAction, &QAction::triggered, [viewUrl](bool checked) {
-                    QClipboard* clipboard = QApplication::clipboard();
-                    clipboard->setText(viewUrl);
-                });
-                contextMenu->addAction(copyViewLinkAction);
-            }
-            contextMenu->addSeparator();
-            QString url = directUrl.isEmpty() ? viewUrl : directUrl;
-            if (!url.isEmpty()) {
-                QAction* viewInBrowser = new QAction(tr("Open in browser"), contextMenu);
-                connect(viewInBrowser, &QAction::triggered, [url](bool checked)
-                {
-                    QDesktopServices::openUrl(url);
-                });
-                contextMenu->addAction(viewInBrowser);
-            }
-            auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(internalItem->task);
-           
-            if (fileTask) {
-                QString fileName = U2Q(fileTask->getFileName());
-                QAction* openInProgram = new QAction(tr("Open file in default program"), contextMenu);
-                connect(openInProgram, &QAction::triggered, [fileName](bool checked)
-                {
-                    QDesktopServices::openUrl("file:///" + fileName);
-                });
-                contextMenu->addAction(openInProgram);
-                contextMenu->addAction(copyFilePathAction_);
-            }
-
+        if (!directUrl.isEmpty()) {
+            contextMenu.addAction(copyDirectLinkAction_);
         }
 
-        contextMenu->exec(ui->treeView->viewport()->mapToGlobal(point));
+        if (!viewUrl.isEmpty()) {
+            QAction* copyViewLinkAction = contextMenu.addAction(tr("Copy view link"));
+            if (directUrl.isEmpty()) {
+                copyViewLinkAction->setShortcut(QKeySequence::Copy);
+            }
+            connect(copyViewLinkAction, &QAction::triggered,
+                    [viewUrl] { QApplication::clipboard()->setText(viewUrl); });
+        }
+        contextMenu.addSeparator();
+        QString url = directUrl.isEmpty() ? viewUrl : directUrl;
+        if (!url.isEmpty()) {
+            QAction* viewInBrowser = contextMenu.addAction(tr("Open in browser"));
+            connect(viewInBrowser, &QAction::triggered, [url] { QDesktopServices::openUrl(QUrl(url)); });
+        }
+        auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task);
+
+        if (fileTask) {
+            QString fileName = U2Q(fileTask->getFileName());
+            QAction* openInProgram = contextMenu.addAction(tr("Open file in default program"));
+            connect(openInProgram, &QAction::triggered,
+                    [fileName] { QDesktopServices::openUrl(QUrl::fromLocalFile(fileName)); });
+            contextMenu.addAction(copyFilePathAction_);
+        }
+        contextMenu.addSeparator();
+        QAction* removeAction = contextMenu.addAction(tr("Remove"));
+        connect(removeAction, &QAction::triggered, this,
+                [this, session, task] { removeTask(session.get(), task.get()); });
+    } else {
+        QAction* retryAction = contextMenu.addAction(tr("Retry failed"));
+        connect(retryAction, &QAction::triggered, this, [this, session] {
+            uploadManager_->retrySession(session);
+            uploadSessionList()->refresh();
+        });
+        contextMenu.addSeparator();
+        QAction* removeAction = contextMenu.addAction(tr("Remove session"));
+        connect(removeAction, &QAction::triggered, this, [this, session] {
+            session->stop(true);
+            uploadSessionList()->hideSession(session.get());
+        });
     }
+    contextMenu.exec(globalPosition);
+}
+
+void MainWindow::openImageViewer(UploadSession* session, UploadTask* task) {
+    if (!findSession(session) || !findTask(task)) {
+        return;
+    }
+
+    QStringList imageFiles;
+    int currentIndex = -1;
+    for (int sessionIndex = 0; sessionIndex < uploadManager_->sessionCount(); ++sessionIndex) {
+        const auto uploadSession = uploadManager_->session(sessionIndex);
+        for (int taskIndex = 0; taskIndex < uploadSession->taskCount(); ++taskIndex) {
+            const auto uploadTask = uploadSession->getTask(taskIndex);
+            const auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(uploadTask);
+            if (!fileTask || !fileTask->isImage()) {
+                continue;
+            }
+            if (uploadTask.get() == task) {
+                currentIndex = imageFiles.size();
+            }
+            imageFiles.append(U2Q(fileTask->getFileName()));
+        }
+    }
+    if (currentIndex < 0) {
+        return;
+    }
+
+    if (!imageViewerWindow_) {
+        imageViewerWindow_ = std::make_unique<ImageViewerWindow>();
+        imageViewerWindow_->setTransientParent(windowHandle());
+    }
+    imageViewerWindow_->setImageViewerSource(
+        std::make_unique<FileListImageViewerSource>(std::move(imageFiles), currentIndex));
+    imageViewerWindow_->open();
+}
+
+void MainWindow::removeTask(UploadSession* session, UploadTask* task) {
+    if (!findSession(session) || !findTask(task)) {
+        return;
+    }
+    task->stop(true);
+    uploadSessionList()->hideTask(task);
 }
 
 void MainWindow::onShowLog() {
@@ -382,37 +581,24 @@ void MainWindow::onShowLog() {
     logWindow_->activateWindow();
 }
 
-void MainWindow::fillServerIcons() {
-    imageServerWidget_->fillServerIcons();
-    fileServerWidget_->fillServerIcons();
-}
+void MainWindow::fillServerIcons() { ui->mainTabs->uploadSettingsTab()->fillServerIcons(); }
 
 void MainWindow::onCopyDirectLinkTriggered(bool checked) {
-    QModelIndex index = getUploadTreeViewSelectedIndex();
-
-    if (!index.isValid()) {
+    Q_UNUSED(checked);
+    const auto task = uploadSessionList()->selectedTask();
+    if (!task) {
         return;
     }
-
-    QString url = ui->treeView->model()->data(index, Qt::UserRole).toString();
-    QClipboard* clipboard = QApplication::clipboard();
-    clipboard->setText(url);
+    QApplication::clipboard()->setText(U2Q(task->uploadResult()->getDirectUrl()));
 }
 
 void MainWindow::onCopyFilePathTriggered(bool checked) {
-    QModelIndex index = getUploadTreeViewSelectedIndex();
-
-    if (!index.isValid()) {
+    Q_UNUSED(checked);
+    const auto task = uploadSessionList()->selectedTask();
+    if (!task) {
         return;
     }
-
-    UploadTreeModel::InternalItem* internalItem = uploadTreeModel_->getInternalItem(index);
-
-    if (!internalItem || !internalItem->task) {
-        return;
-
-    }
-    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(internalItem->task);
+    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task);
 
     if (fileTask) {
         QString fileName = U2Q(fileTask->getFileName());
@@ -427,10 +613,10 @@ void MainWindow::on_actionAboutProgram_triggered() {
     dlg.exec();
 }
 
-void  MainWindow::saveOptions() {
+void MainWindow::saveOptions() {
     auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
-    settings->imageServer = imageServerWidget_->serverProfile();
-    settings->fileServer = fileServerWidget_->serverProfile();
+    settings->imageServer = ui->mainTabs->uploadSettingsTab()->imageServerProfile();
+    settings->fileServer = ui->mainTabs->uploadSettingsTab()->fileServerProfile();
 }
 
 void MainWindow::quitApp() {
@@ -438,30 +624,43 @@ void MainWindow::quitApp() {
     QApplication::quit();
 }
 
-WindowHandle MainWindow::getHandle() {
-    return this;
-}
+WindowHandle MainWindow::getHandle() { return this; }
 
-WindowNativeHandle MainWindow::getNativeHandle() {
-    return reinterpret_cast<WindowNativeHandle>(effectiveWinId());
-}
+WindowNativeHandle MainWindow::getNativeHandle() { return reinterpret_cast<WindowNativeHandle>(effectiveWinId()); }
 
 void MainWindow::setServersChanged(bool changed) {
     // TODO:
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
-    saveOptions();
-}
+void MainWindow::closeEvent(QCloseEvent* event) { saveOptions(); }
 
-QModelIndex MainWindow::getUploadTreeViewSelectedIndex() {
-    QItemSelectionModel * selection = ui->treeView->selectionModel();
-    QModelIndexList indexes = selection->selectedIndexes();
-
-    if(indexes.size() < 1) {
-        return {};
+std::shared_ptr<UploadSession> MainWindow::findSession(UploadSession* session) const {
+    if (!session) {
+        return { };
     }
-    std::sort(indexes.begin(), indexes.end());
-    QModelIndex index = indexes.first();
-    return index;
+    for (int i = 0; i < uploadManager_->sessionCount(); ++i) {
+        auto candidate = uploadManager_->session(i);
+        if (candidate.get() == session) {
+            return candidate;
+        }
+    }
+    return { };
 }
+
+std::shared_ptr<UploadTask> MainWindow::findTask(UploadTask* task) const {
+    if (!task) {
+        return { };
+    }
+    for (int i = 0; i < uploadManager_->sessionCount(); ++i) {
+        auto session = uploadManager_->session(i);
+        for (int j = 0; j < session->taskCount(); ++j) {
+            auto candidate = session->getTask(j);
+            if (candidate.get() == task) {
+                return candidate;
+            }
+        }
+    }
+    return { };
+}
+
+UploadSessionListWidget* MainWindow::uploadSessionList() const { return ui->mainTabs->uploadsTab()->sessionList(); }

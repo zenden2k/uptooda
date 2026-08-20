@@ -10,7 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Concurrent Core Gui Widgets)
 qt_standard_project_setup()
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS "Gui/ui/")
@@ -25,23 +25,35 @@ endif()
 set(SOURCE_FILES
         main.cpp
         Gui/MainWindow.cpp
+        Gui/FileThumbnailCache.cpp
+        Gui/FileThumbnailCache.h
+        Gui/AppStyle.cpp
+        Gui/AppStyle.h
+        Gui/styles/Application.qss
         Gui/FrameGrabberDlg.cpp
+        Gui/ImageViewerWindow.cpp
+        Gui/ImageViewerWindow.h
+        Gui/IImageViewerSource.h
         Gui/ResultsWindow.cpp
         Gui/LogWindow.cpp
         Gui/LoginDialog.cpp
         Gui/AboutDialog.cpp
         ../ScreenCapture/ScreenCaptureQt.cpp
         Gui/RegionSelect.cpp
-        Gui/models/uploadtreemodel.cpp
-        Gui/controls/MyListWidget.cpp
+        Gui/models/ThumbnailListModel.cpp
+        Gui/models/ThumbnailListModel.h
+        Gui/controls/ThumbnailListView.cpp
+        Gui/controls/ThumbnailListView.h
         QtUploadErrorHandler.cpp
         QtDefaultLogger.cpp
         QtScriptDialogProvider.cpp
         QtScriptFunctionsImpl.cpp
         Gui/controls/ServerSelectorWidget.cpp
         Gui/controls/ProgressRingWidget.cpp
-        Gui/controls/UploadTreeView.cpp
-        Gui/controls/UploadTreeView.h
+        Gui/controls/MainWindowTabsWidget.cpp
+        Gui/controls/MainWindowTabsWidget.h
+        Gui/controls/UploadSessionListWidget.cpp
+        Gui/controls/UploadSessionListWidget.h
         ../Core/Settings/QtGuiSettings.cpp
         ../Core/Settings/CommonGuiSettings.cpp
         ../Core/AbstractServerIconCache.cpp
@@ -66,7 +78,7 @@ endif()
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Concurrent Qt6::Core Qt6::Gui Qt6::Widgets)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE gdi32 dwmapi gdiplus)

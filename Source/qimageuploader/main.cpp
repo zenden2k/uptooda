@@ -1,32 +1,34 @@
 #include <QApplication>
-#include <QDir>
-#include <QTemporaryDir>
 #include <QDebug>
+#include <QDir>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include <QStyleFactory>
+#include <QTemporaryDir>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 
-//#include <3rdparty/qtdotnetstyle.h>
+// #include <3rdparty/qtdotnetstyle.h>
+#include "Core/3rdpart/dotenv.h"
+#include "Core/AppRuntimeInfo.h"
+#include "Core/CommonDefs.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
-#include "Gui/MainWindow.h"
-#include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
-#include "Core/AppRuntimeInfo.h"
-#include "QtUploadErrorHandler.h"
+#include "Core/Settings/QtGuiSettings.h"
+#include "Core/i18n/Translator.h"
+#include "Gui/AppStyle.h"
+#include "Gui/LogWindow.h"
+#include "Gui/MainWindow.h"
 #include "QtDefaultLogger.h"
 #include "QtScriptDialogProvider.h"
-#include "Gui/LogWindow.h"
-#include "Core/Settings/QtGuiSettings.h"
+#include "QtUploadErrorHandler.h"
 #include "Video/QtImage.h"
-#include "Core/i18n/Translator.h"
-#include "Core/3rdpart/dotenv.h"
 
 #ifdef _WIN32
-    #include "Func/GdiPlusInitializer.h"
-    #include "Video/MediaFoundationFrameGrabber.h"
+#include "Func/GdiPlusInitializer.h"
+#include "Video/MediaFoundationFrameGrabber.h"
 #endif
 #include "versioninfo.h"
 
@@ -40,42 +42,28 @@ QtGuiSettings Settings;
 std::unique_ptr<LogWindow> logWindow;
 class Translator : public ITranslator {
 public:
-	std::string getCurrentLanguage() override {
-		return "English";
-	}
-	std::string getCurrentLocale() override {
-		return "en_US";
-	}
-	std::string translate(const char* str) override {
-		return str;
-	}
+    std::string getCurrentLanguage() override { return "English"; }
+    std::string getCurrentLocale() override { return "en_US"; }
+    std::string translate(const char* str) override { return str; }
 #ifdef _WIN32
-    std::wstring translateW(const char* str) override {
-		return IuCoreUtils::Utf8ToWstring(str);
-	}
+    std::wstring translateW(const char* str) override { return IuCoreUtils::Utf8ToWstring(str); }
 #endif
 };
 Translator translator; // dummy translator
 
-class MyApplication : public QApplication
-{
+class MyApplication : public QApplication {
 public:
-    MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
-    {
-
+    MyApplication(int& argc, char** argv, int flags = ApplicationFlags) : QApplication(argc, argv, flags) {
+        AbstractImage::autoRegisterFactory<void>();
     }
 #ifdef _WIN32
     MediaFoundationInitializer mediaFoundationInitializer_;
 #endif
 protected:
-
-    bool notify(QObject *receiver, QEvent *event) override
-    {
-        if (event->type() == QEvent::KeyPress)
-        {
+    bool notify(QObject* receiver, QEvent* event) override {
+        if (event->type() == QEvent::KeyPress) {
             auto keyEvent = static_cast<QKeyEvent*>(event);
-            if (keyEvent->key() == Qt::Key_L && keyEvent->modifiers() == (Qt::ShiftModifier | Qt::ControlModifier) )
-            {
+            if (keyEvent->key() == Qt::Key_L && keyEvent->modifiers() == (Qt::ShiftModifier | Qt::ControlModifier)) {
                 logWindow->show();
                 logWindow->raise();
                 logWindow->activateWindow();
@@ -85,11 +73,9 @@ protected:
         }
         return QApplication::notify(receiver, event);
     }
-
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     ServiceLocator::instance()->setSettings(&Settings);
 #if defined(_WIN32) && !defined(NDEBUG)
     // These global strings in GLOG are initially reserved with a small
@@ -99,13 +85,13 @@ int main(int argc, char *argv[])
     // So for 'debug builds', where memory leak checking is performed,
     // reserve a large enough space so the string will not be resized later.
     // For these variables, _MAX_PATH should be fine.
-    FLAGS_log_dir.reserve(_MAX_PATH);  // comment out this line to trigger false memory leak
+    FLAGS_log_dir.reserve(_MAX_PATH); // comment out this line to trigger false memory leak
     FLAGS_log_link.reserve(_MAX_PATH);
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
     // Enable memory dump from within VS.
 #else
-        FLAGS_logtostderr = true;
+    FLAGS_logtostderr = true;
 #endif
 
     google::InitGoogleLogging(argv[0]);
@@ -121,8 +107,12 @@ int main(int argc, char *argv[])
     AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     MyApplication a(argc, argv);
+    if (QStyle* fusionStyle = QStyleFactory::create(QStringLiteral("Fusion"))) {
+        a.setStyle(fusionStyle);
+    }
+    ApplyApplicationStyle(a);
     logWindow = std::make_unique<LogWindow>();
-    //logWindow->show();
+    // logWindow->show();
     auto logger = std::make_shared<QtDefaultLogger>(logWindow.get());
     auto myLogSink_ = std::make_unique<MyLogSink>(logger.get());
     google::AddLogSink(myLogSink_.get());
@@ -132,7 +122,7 @@ int main(int argc, char *argv[])
 #endif
     auto engineList = std::make_unique<CUploadEngineList>();
     auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get(), engineList.get());
-	QtScriptDialogProvider dlgProvider;
+    QtScriptDialogProvider dlgProvider;
     auto serviceLocator = ServiceLocator::instance();
     serviceLocator->setTranslator(&translator);
     serviceLocator->setUploadErrorHandler(errorHandler);
@@ -144,19 +134,19 @@ int main(int argc, char *argv[])
     QString settingsFolder;
     setlocale(LC_ALL, "");
 
-    if(QFileInfo::exists(appDirectory + "/Data/servers.xml")){
-        dataFolder = appDirectory+"/Data/";
+    if (QFileInfo::exists(appDirectory + "/Data/servers.xml")) {
+        dataFolder = appDirectory + "/Data/";
         settingsFolder = dataFolder;
     }
 #ifndef _WIN32
-   else {
-dataFolder = "/usr/share/uptooda/";
-   }
+    else {
+        dataFolder = "/usr/share/uptooda/";
+    }
 
 #ifndef __APPLE__
-settingsFolder = getenv("HOME")+QString("/.config/uptooda/");
-QDir settingsDir = QDir::root();
-settingsDir.mkpath(settingsFolder);
+    settingsFolder = getenv("HOME") + QString("/.config/uptooda/");
+    QDir settingsDir = QDir::root();
+    settingsDir.mkpath(settingsFolder);
 #endif
 
 #endif
@@ -175,26 +165,27 @@ settingsDir.mkpath(settingsFolder);
         LOG(ERROR) << "Unable to create temp directory!";
     }
 
+
     Settings.LoadSettings(AppRuntimeInfo::instance()->settingsDirectory(), "uptooda.xml");
 
-	if (!engineList->loadFromFile(AppRuntimeInfo::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
-		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
-	}
+    if (!engineList->loadFromFile(AppRuntimeInfo::instance()->dataDirectory() + "servers.xml",
+                                  Settings.ServersSettings)) {
+        QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
+    }
     ServiceLocator::instance()->setEngineList(engineList.get());
-    //google::AddLogSink(&logSink);
-    //serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-    //serviceLocator->setLogger(&defaultLogger);
+    // google::AddLogSink(&logSink);
+    // serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
+    // serviceLocator->setLogger(&defaultLogger);
 
-	Settings.setEngineList(engineList.get());
-	
-    //QApplication::setStyle("Fusion");
+    Settings.setEngineList(engineList.get());
+
     MainWindow w(engineList.get(), logWindow.get());
     w.show();
-    
-    int res =  a.exec();
 
-    //google::RemoveLogSink(&logSink);
-	Settings.SaveSettings();
+    int res = a.exec();
+
+    // google::RemoveLogSink(&logSink);
+    Settings.SaveSettings();
     google::ShutdownGoogleLogging();
     logWindow.reset();
     return res;

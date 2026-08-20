@@ -4,34 +4,44 @@
 #include <QMainWindow>
 #include <QThread>
 
+#include <memory>
+
 #include "Core/ProgramWindow.h"
-#include "Core/UploadEngineList.h"
 #include "Core/QtServerIconCache.h"
+#include "Core/UploadEngineList.h"
 class UploadManager;
 class UploadEngineManager;
-class UploadTreeModel;
+class ImageViewerWindow;
+class ThumbnailListModel;
 class ScriptsManager;
+class UploadSession;
+class UploadSessionListWidget;
+class UploadTask;
 
 namespace Uptooda::Core::OutputGenerator {
 struct UploadObject;
 }
-class ServerSelectorWidget;
 class LogWindow;
+class QDragEnterEvent;
+class QDragLeaveEvent;
+class QDragMoveEvent;
+class QDropEvent;
+class QMimeData;
+class QResizeEvent;
 class QSystemTrayIcon;
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow, public IProgramWindow
-{
+class MainWindow : public QMainWindow, public IProgramWindow {
     Q_OBJECT
-    
+
 public:
-    explicit MainWindow(CUploadEngineList*, LogWindow* logWindow, QWidget *parent = 0);
+    explicit MainWindow(CUploadEngineList*, LogWindow* logWindow, QWidget* parent = 0);
     ~MainWindow();
 
-    bool eventFilter(QObject *, QEvent *);
+    bool eventFilter(QObject*, QEvent*);
 
     WindowHandle getHandle() override;
     WindowNativeHandle getNativeHandle() override;
@@ -43,35 +53,52 @@ private slots:
     void on_actionScreenshot_triggered();
     void on_actionAdd_files_triggered();
     void on_actionAboutProgram_triggered();
-	void itemDoubleClicked(const QModelIndex &index);
-	void onCustomContextMenu(const QPoint &point);
-	void onShowLog();
+    void showCodes(UploadSession* session, UploadTask* task);
+    void openImageViewer(UploadSession* session, UploadTask* task);
+    void removeTask(UploadSession* session, UploadTask* task);
+    void onCustomContextMenu(UploadSession* session, UploadTask* task, const QPoint& globalPosition);
+    void onShowLog();
     void fillServerIcons();
     void onCopyDirectLinkTriggered(bool checked);
     void onCopyFilePathTriggered(bool checked);
+    void clearPendingFiles();
+    void removePendingFiles(const QList<int>& rows);
+    void showUploadSettings();
+    void startPendingUpload();
+
 protected:
-	bool addFileToList(QString fileName);
-	bool addMultipleFilesToList(QStringList fileNames);
+    bool addFileToList(QString fileName);
+    bool addMultipleFilesToList(QStringList fileNames);
     void uploadTaskToUploadObject(UploadTask* task, Uptooda::Core::OutputGenerator::UploadObject& obj);
-	void showCodeForIndex(const QModelIndex& index);
-	void quitApp();
+    void showCodes(const std::shared_ptr<UploadSession>& session, const std::shared_ptr<UploadTask>& task = { });
+    void quitApp();
     void saveOptions();
-    void closeEvent(QCloseEvent *event) override;
-    QModelIndex getUploadTreeViewSelectedIndex();
+    void closeEvent(QCloseEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    std::shared_ptr<UploadSession> findSession(UploadSession* session) const;
+    std::shared_ptr<UploadTask> findTask(UploadTask* task) const;
+    UploadSessionListWidget* uploadSessionList() const;
+
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    UploadTreeModel* uploadTreeModel_;
     std::unique_ptr<UploadManager> uploadManager_;
     std::unique_ptr<UploadEngineManager> uploadEngineManager_;
     std::unique_ptr<ScriptsManager> scriptsManager_;
+    std::unique_ptr<ThumbnailListModel> pendingFilesModel_;
+    std::unique_ptr<ImageViewerWindow> imageViewerWindow_;
     std::unique_ptr<QtServerIconCache> serverIconCache_;
     QSystemTrayIcon* systemTrayIcon_;
-    ServerSelectorWidget* imageServerWidget_, *fileServerWidget_;
-	LogWindow* logWindow_;
-	CUploadEngineList* engineList_;
-    QThread* iconsLoadingThread_{};
+    LogWindow* logWindow_;
+    CUploadEngineList* engineList_;
+    QThread* iconsLoadingThread_ { };
     QAction* copyDirectLinkAction_ = nullptr;
     QAction* copyFilePathAction_ = nullptr;
+    QWidget* dropHighlightOverlay_ = nullptr;
+    bool dragContainsFiles_ = false;
 };
 
 #endif // MAINWINDOW_H
