@@ -89,7 +89,7 @@ if(WIN32)
     configure_nuget_packages(${PROJECT_NAME})
 endif()
 
-target_link_libraries(qimageuploader PRIVATE iu_core iu_video iu_image ${COMMON_LIBS_LIST})
+target_link_libraries(qimageuploader PRIVATE iu_core iu_video ${COMMON_LIBS_LIST})
 
 if(WIN32 AND IU_ENABLE_MEDIAINFO)
     target_link_libraries(qimageuploader PRIVATE iu_mediainfo)
