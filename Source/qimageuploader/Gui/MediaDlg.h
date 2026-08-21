@@ -11,6 +11,7 @@
 #include "Video/VideoGrabber.h"
 
 class QCloseEvent;
+class QtImageGenerator;
 class ThumbnailListModel;
 class VideoGrabber;
 
@@ -39,6 +40,8 @@ private slots:
     void updateMediaInfoText();
     void reloadMediaInfo();
     void copyMediaInfo();
+    void createMosaic();
+    void cancelMosaic();
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -52,11 +55,14 @@ private:
     bool isVideoFile(const QString& fileName) const;
     void setFileName(const QString& fileName);
     void startMediaInfoLoad();
+    void updateMosaicControls();
+    void mosaicFinished(bool success, bool canceled, const QString& outputFileName, const QString& errorMessage);
     VideoGrabber::VideoEngine getVideoEngine() const;
 
     Ui::MediaDlg* ui;
     std::unique_ptr<VideoGrabber> grabber_;
     std::unique_ptr<ThumbnailListModel> frameModel_;
+    QtImageGenerator* mosaicGenerator_ = nullptr;
     QString fileName_;
     QString mediaInfoSummary_;
     QString mediaInfoFull_;
@@ -65,6 +71,7 @@ private:
     bool mediaInfoLoaded_ = false;
     bool grabInProgress_ = false;
     bool grabCanceled_ = false;
+    bool mosaicInProgress_ = false;
 };
 
 #endif // MEDIADLG_H

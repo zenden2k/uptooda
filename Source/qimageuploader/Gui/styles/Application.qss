@@ -114,6 +114,26 @@ QPushButton:disabled, QToolButton:disabled {
     background: #eef2f6;
     border-color: #d5dee7;
 }
+QPushButton#grabButton {
+    color: #ffffff;
+    background: #2789c9;
+    border-color: #1f78b4;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+QPushButton#grabButton:hover {
+    background: #1f7fbe;
+    border-color: #196da4;
+}
+QPushButton#grabButton:pressed {
+    background: #196fa9;
+    border-color: #155e90;
+}
+QPushButton#grabButton:disabled {
+    color: #e7edf2;
+    background: #93b7ce;
+    border-color: #86a9bf;
+}
 QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QSpinBox {
     color: #1f2c3d;
     background: #f1f6fb;
@@ -191,6 +211,25 @@ QToolButton#serverAccountButton::menu-arrow {
     width: 14px;
     height: 9px;
 }
+QToolButton#cancelMosaicButton {
+    background: #fff1f2;
+    border: 1px solid #efc0c5;
+    border-radius: 8px;
+    min-height: 26px;
+    padding: 0;
+}
+QToolButton#cancelMosaicButton:hover {
+    background: #ffe2e5;
+    border-color: #dfa1a8;
+}
+QToolButton#cancelMosaicButton:pressed {
+    background: #fbd2d6;
+    border-color: #cf838c;
+}
+QToolButton#cancelMosaicButton:disabled {
+    background: #f5f0f1;
+    border-color: #e1d6d8;
+}
 QAbstractItemView#comboBoxPopupView {
     color: #24354a;
     background: transparent;
@@ -212,6 +251,11 @@ QAbstractItemView#comboBoxPopupView::item:hover {
 }
 QSpinBox {
     padding: 0 61px 0 9px;
+}
+QSpinBox#numOfFramesSpinBox {
+    qproperty-alignment: AlignLeft;
+    padding-left: 9px;
+    padding-right: 0;
 }
 QSpinBox::down-button {
     subcontrol-origin: border;
@@ -332,13 +376,14 @@ QProgressBar::chunk {
 QScrollBar:vertical {
     background: transparent;
     border: 0;
-    width: 12px;
-    margin: 2px;
+    width: 14px;
+    margin: 0;
 }
 QScrollBar::handle:vertical {
     background: #b7c7d5;
     border: 0;
-    border-radius: 5px;
+    border-radius: 4px;
+    margin: 2px 3px;
     min-height: 28px;
 }
 QScrollBar::handle:vertical:hover {
@@ -377,13 +422,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 QScrollBar:horizontal {
     background: transparent;
     border: 0;
-    height: 12px;
-    margin: 2px;
+    height: 14px;
+    margin: 0;
 }
 QScrollBar::handle:horizontal {
     background: #b7c7d5;
     border: 0;
-    border-radius: 5px;
+    border-radius: 4px;
+    margin: 3px 2px;
     min-width: 28px;
 }
 QScrollBar::handle:horizontal:hover {

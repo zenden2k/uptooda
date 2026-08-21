@@ -47,6 +47,15 @@ int ThumbnailListModel::addFiles(const QStringList& fileNames) {
 }
 
 int ThumbnailListModel::addFile(const QString& fileName, const QString& displayText, const QIcon& icon) {
+    return addItem(fileName, displayText, icon, false);
+}
+
+int ThumbnailListModel::addGeneratedMosaic(const QString& fileName, const QString& displayText, const QIcon& icon) {
+    return addItem(fileName, displayText, icon, true);
+}
+
+int ThumbnailListModel::addItem(const QString& fileName, const QString& displayText, const QIcon& icon,
+                                bool generatedMosaic) {
     const QString absoluteFileName = QFileInfo(fileName).absoluteFilePath();
     if (absoluteFileName.isEmpty()) {
         return -1;
@@ -59,8 +68,8 @@ int ThumbnailListModel::addFile(const QString& fileName, const QString& displayT
 
     const int row = items_.size();
     beginInsertRows({ }, row, row);
-    items_.append(
-        { absoluteFileName, displayText.isEmpty() ? QFileInfo(absoluteFileName).fileName() : displayText, icon });
+    items_.append({ absoluteFileName, displayText.isEmpty() ? QFileInfo(absoluteFileName).fileName() : displayText,
+                    icon, generatedMosaic });
     endInsertRows();
     return row;
 }
@@ -92,6 +101,14 @@ void ThumbnailListModel::clear() {
 
 QString ThumbnailListModel::filePath(int row) const {
     return row >= 0 && row < items_.size() ? items_[row].FilePath : QString { };
+}
+
+QString ThumbnailListModel::displayText(int row) const {
+    return row >= 0 && row < items_.size() ? items_[row].DisplayText : QString { };
+}
+
+bool ThumbnailListModel::isGeneratedMosaic(int row) const {
+    return row >= 0 && row < items_.size() && items_[row].generatedMosaic_;
 }
 
 QStringList ThumbnailListModel::filePaths() const {

@@ -6,8 +6,10 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QFontDatabase>
 #include <QFutureWatcher>
 #include <QImageWriter>
+#include <QItemSelectionModel>
 #include <QMessageBox>
 #include <QTemporaryFile>
 #include <QtConcurrentRun>
@@ -18,6 +20,7 @@
 #include "Core/Settings/QtGuiSettings.h"
 #include "Core/Video/VideoUtils.h"
 #include "Func/MediaInfoHelper.h"
+#include "Gui/QtImageGenerator.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "Video/QtImage.h"
@@ -50,12 +53,16 @@ MediaDlg::MediaDlg(QString fileName, QWidget* parent, bool showMediaInfo) : QDia
     ui->browseButton->setFixedSize(42, 40);
     ui->grabButton->setMinimumHeight(40);
     ui->numOfFramesSpinBox->setFixedSize(122, 40);
-    ui->numOfFramesSpinBox->setAlignment(Qt::AlignCenter);
+    ui->numOfFramesSpinBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     ui->numOfFramesSpinBox->setButtonSymbols(QAbstractSpinBox::PlusMinus);
     ui->comboBox->setFixedSize(190, 40);
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
     ui->numOfFramesSpinBox->setValue(settings->VideoSettings.NumOfFrames);
     ui->stopButton->setVisible(false);
+    ui->cancelMosaicButton->setIcon(QIcon(QStringLiteral(":/res/cancel.svg")));
+    ui->cancelMosaicButton->setIconSize(QSize(16, 16));
+    ui->mosaicProgressBar->setVisible(false);
+    ui->cancelMosaicButton->setVisible(false);
 
     ui->tabBar->setDrawBase(false);
     ui->tabBar->setExpanding(false);
@@ -63,6 +70,7 @@ MediaDlg::MediaDlg(QString fileName, QWidget* parent, bool showMediaInfo) : QDia
     ui->tabBar->setElideMode(Qt::ElideNone);
     ui->tabBar->addTab(tr("Extract frames"));
     ui->tabBar->addTab(tr("Media information"));
+    ui->mediaInfoEdit->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
     for (const auto& engine : CommonGuiSettings::VideoEngines) {
         QString name = QString::fromStdString(engine);
@@ -87,12 +95,18 @@ MediaDlg::MediaDlg(QString fileName, QWidget* parent, bool showMediaInfo) : QDia
         }
     });
     connect(ui->stopButton, &QPushButton::clicked, this, &MediaDlg::onStopButtonClicked);
+    connect(ui->createMosaicButton, &QPushButton::clicked, this, &MediaDlg::createMosaic);
+    connect(ui->cancelMosaicButton, &QToolButton::clicked, this, &MediaDlg::cancelMosaic);
     connect(ui->listWidget, &ThumbnailListView::removeRequested, frameModel_.get(), &ThumbnailListModel::removeItems);
+    connect(frameModel_.get(), &QAbstractItemModel::rowsInserted, this, &MediaDlg::updateMosaicControls);
+    connect(frameModel_.get(), &QAbstractItemModel::rowsRemoved, this, &MediaDlg::updateMosaicControls);
+    connect(frameModel_.get(), &QAbstractItemModel::modelReset, this, &MediaDlg::updateMosaicControls);
     connect(ui->summaryRadioButton, &QRadioButton::toggled, this, &MediaDlg::updateMediaInfoText);
     connect(ui->fullInfoRadioButton, &QRadioButton::toggled, this, &MediaDlg::updateMediaInfoText);
     connect(ui->disableLocalizationCheckBox, &QCheckBox::toggled, this, &MediaDlg::reloadMediaInfo);
     connect(ui->copyMediaInfoButton, &QPushButton::clicked, this, &MediaDlg::copyMediaInfo);
     connect(this, &MediaDlg::finished, this, &MediaDlg::onFinished);
+    updateMosaicControls();
 
     setFileName(fileName);
     if (showMediaInfo && isVideoFile(fileName_)) {
@@ -100,7 +114,10 @@ MediaDlg::MediaDlg(QString fileName, QWidget* parent, bool showMediaInfo) : QDia
     }
 }
 
-MediaDlg::~MediaDlg() { delete ui; }
+MediaDlg::~MediaDlg() {
+    delete mosaicGenerator_;
+    delete ui;
+}
 
 void MediaDlg::frameGrabbed(const std::string& timeString, int64_t time, const std::shared_ptr<AbstractImage>& image) {
     if (!image) {
@@ -151,6 +168,7 @@ void MediaDlg::on_grabButton_clicked() {
     ui->lineEdit->setEnabled(false);
     ui->numOfFramesSpinBox->setEnabled(false);
     ui->comboBox->setEnabled(false);
+    updateMosaicControls();
 
     grabber_ = std::make_unique<VideoGrabber>();
     grabber_->setVideoEngine(getVideoEngine());
@@ -190,6 +208,7 @@ void MediaDlg::grabFinishedSlot(bool success) {
     ui->comboBox->setEnabled(true);
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     ui->progressRing->hide();
+    updateMosaicControls();
 
     if (!success && !grabCanceled_) {
         QMessageBox::warning(this, tr("Frame extraction failed"),
@@ -204,6 +223,100 @@ void MediaDlg::onStopButtonClicked() {
     }
 }
 
+void MediaDlg::createMosaic() {
+    if (mosaicInProgress_) {
+        return;
+    }
+
+    QVector<QtImageGenerator::FileItem> files;
+    for (int row = 0; row < frameModel_->rowCount(); ++row) {
+        if (!frameModel_->isGeneratedMosaic(row)) {
+            files.append({ frameModel_->filePath(row), frameModel_->displayText(row) });
+        }
+    }
+    if (files.isEmpty()) {
+        return;
+    }
+
+    QtImageGenerator::Options options;
+    options.EnableMediaInfoLocalization = !ui->disableLocalizationCheckBox->isChecked();
+    options.OutputDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
+
+    const int sourceCount = files.size();
+    mosaicGenerator_ = new QtImageGenerator(std::move(files), fileName_, std::move(options), this);
+    connect(mosaicGenerator_, &QtImageGenerator::progressChanged, this, [this](int value, int maximum) {
+        ui->mosaicProgressBar->setRange(0, maximum);
+        ui->mosaicProgressBar->setValue(value);
+    });
+    connect(mosaicGenerator_, &QtImageGenerator::finished, this, &MediaDlg::mosaicFinished);
+
+    mosaicInProgress_ = true;
+    ui->mosaicProgressBar->setRange(0, sourceCount);
+    ui->mosaicProgressBar->setValue(0);
+    ui->mosaicProgressBar->setVisible(true);
+    ui->cancelMosaicButton->setEnabled(true);
+    ui->cancelMosaicButton->setVisible(true);
+    ui->buttonBox->setEnabled(false);
+    ui->grabButton->setEnabled(false);
+    ui->browseButton->setEnabled(false);
+    ui->lineEdit->setEnabled(false);
+    ui->numOfFramesSpinBox->setEnabled(false);
+    ui->comboBox->setEnabled(false);
+    ui->listWidget->setEnabled(false);
+    updateMosaicControls();
+    mosaicGenerator_->start();
+}
+
+void MediaDlg::cancelMosaic() {
+    if (mosaicGenerator_) {
+        ui->cancelMosaicButton->setEnabled(false);
+        mosaicGenerator_->cancel();
+    }
+}
+
+void MediaDlg::mosaicFinished(bool success, bool canceled, const QString& outputFileName, const QString& errorMessage) {
+    QtImageGenerator* generator = mosaicGenerator_;
+    mosaicGenerator_ = nullptr;
+    mosaicInProgress_ = false;
+    ui->mosaicProgressBar->setVisible(false);
+    ui->cancelMosaicButton->setVisible(false);
+    ui->buttonBox->setEnabled(true);
+    ui->grabButton->setEnabled(true);
+    ui->browseButton->setEnabled(true);
+    ui->lineEdit->setEnabled(true);
+    ui->numOfFramesSpinBox->setEnabled(true);
+    ui->comboBox->setEnabled(true);
+    ui->listWidget->setEnabled(true);
+
+    if (success && !outputFileName.isEmpty()) {
+        const int mosaicRow = frameModel_->addGeneratedMosaic(outputFileName, tr("Mosaic"), QIcon(outputFileName));
+        if (mosaicRow >= 0) {
+            const QModelIndex mosaicIndex = frameModel_->index(mosaicRow, 0);
+            ui->listWidget->setCurrentIndex(mosaicIndex);
+            ui->listWidget->selectionModel()->select(mosaicIndex, QItemSelectionModel::ClearAndSelect);
+            ui->listWidget->scrollTo(mosaicIndex, QAbstractItemView::PositionAtCenter);
+        }
+    } else if (!canceled) {
+        QMessageBox::warning(this, tr("Mosaic creation failed"), errorMessage);
+    }
+    updateMosaicControls();
+    generator->deleteLater();
+}
+
+void MediaDlg::updateMosaicControls() {
+    bool hasSourceFrames = false;
+    for (int row = 0; row < frameModel_->rowCount(); ++row) {
+        if (!frameModel_->isGeneratedMosaic(row)) {
+            hasSourceFrames = true;
+            break;
+        }
+    }
+    const bool mediaInfoPage = ui->stackedWidget->currentIndex() == MEDIA_INFO_TAB;
+    ui->createMosaicButton->setVisible(hasSourceFrames && !grabInProgress_ && !mediaInfoPage);
+    ui->createMosaicButton->setEnabled(hasSourceFrames && !grabInProgress_ && !mosaicInProgress_);
+    ui->copyMediaInfoButton->setVisible(mediaInfoPage);
+}
+
 void MediaDlg::getGrabbedFrames(QStringList& fileNames) const { fileNames.append(frameModel_->filePaths()); }
 
 void MediaDlg::onFinished() {
@@ -214,6 +327,7 @@ void MediaDlg::onFinished() {
 
 void MediaDlg::onCurrentTabChanged(int index) {
     ui->stackedWidget->setCurrentIndex(index);
+    updateMosaicControls();
     if (index == MEDIA_INFO_TAB) {
         startMediaInfoLoad();
     }
@@ -239,7 +353,7 @@ void MediaDlg::reloadMediaInfo() {
 void MediaDlg::copyMediaInfo() { QApplication::clipboard()->setText(ui->mediaInfoEdit->toPlainText()); }
 
 void MediaDlg::closeEvent(QCloseEvent* event) {
-    if (grabInProgress_) {
+    if (grabInProgress_ || mosaicInProgress_) {
         event->ignore();
         return;
     }
@@ -248,7 +362,7 @@ void MediaDlg::closeEvent(QCloseEvent* event) {
 }
 
 void MediaDlg::reject() {
-    if (!grabInProgress_) {
+    if (!grabInProgress_ && !mosaicInProgress_) {
         QDialog::reject();
     }
 }
@@ -283,6 +397,7 @@ void MediaDlg::setFileName(const QString& fileName) {
         ui->stackedWidget->setCurrentIndex(MEDIA_INFO_TAB);
         startMediaInfoLoad();
     }
+    updateMosaicControls();
 }
 
 void MediaDlg::startMediaInfoLoad() {

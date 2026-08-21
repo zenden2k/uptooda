@@ -18,9 +18,12 @@ public:
 
     int addFiles(const QStringList& fileNames);
     int addFile(const QString& fileName, const QString& displayText = { }, const QIcon& icon = { });
+    int addGeneratedMosaic(const QString& fileName, const QString& displayText, const QIcon& icon = { });
     void removeItems(const QList<int>& rows);
     void clear();
     QString filePath(int row) const;
+    QString displayText(int row) const;
+    bool isGeneratedMosaic(int row) const;
     QStringList filePaths() const;
 
 private:
@@ -28,8 +31,10 @@ private:
         QString FilePath;
         QString DisplayText;
         QIcon Icon;
+        bool generatedMosaic_ = false;
     };
 
+    int addItem(const QString& fileName, const QString& displayText, const QIcon& icon, bool generatedMosaic);
     QIcon thumbnail(const Item& item) const;
 
     QList<Item> items_;

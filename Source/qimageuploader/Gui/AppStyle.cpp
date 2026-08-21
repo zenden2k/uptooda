@@ -9,6 +9,7 @@
 #include <QLayout>
 #include <QMenu>
 #include <QPainter>
+#include <QScreen>
 #include <QScrollBar>
 #include <QStyle>
 #include <QStyledItemDelegate>
@@ -57,8 +58,27 @@ void positionComboBoxPopup(QWidget* popup) {
         return;
     }
 
+    QScreen* screen = comboBox->screen();
+    if (!screen) {
+        return;
+    }
+
+    const QRect availableGeometry = screen->availableGeometry();
+    const QPoint comboTopLeft = comboBox->mapToGlobal(QPoint(0, 0));
     const QPoint comboBottomLeft = comboBox->mapToGlobal(QPoint(0, comboBox->height()));
-    popup->move(comboBottomLeft - QPoint(qRound(MENU_SHADOW_LEFT), qRound(MENU_SHADOW_TOP)));
+    QPoint popupPosition = comboBottomLeft - QPoint(qRound(MENU_SHADOW_LEFT), qRound(MENU_SHADOW_TOP));
+
+    const int maximumX = availableGeometry.x() + availableGeometry.width() - popup->width();
+    popupPosition.setX(qBound(availableGeometry.x(), popupPosition.x(), maximumX));
+
+    const int screenBottom = availableGeometry.y() + availableGeometry.height();
+    if (popupPosition.y() + popup->height() > screenBottom) {
+        const int positionAbove = comboTopLeft.y() - popup->height() + qRound(MENU_SHADOW_BOTTOM);
+        popupPosition.setY(positionAbove >= availableGeometry.y() ? positionAbove : screenBottom - popup->height());
+    }
+    popupPosition.setY(qMax(popupPosition.y(), availableGeometry.y()));
+
+    popup->move(popupPosition);
 }
 
 class RoundedComboBoxItemDelegate final : public QStyledItemDelegate {
@@ -169,8 +189,10 @@ void adjustComboBoxPopupGeometry(QWidget* popup) {
     }
 
     const QMargins margins = popup->contentsMargins();
-    const int desiredWidth = comboBox->width() + qRound(MENU_SHADOW_LEFT + MENU_SHADOW_RIGHT);
-    const int desiredHeight = rowsHeight + margins.top() + margins.bottom();
+    QSize maximumPopupSize = comboBox->screen()->availableGeometry().size();
+    const int desiredWidth
+        = qMin(comboBox->width() + qRound(MENU_SHADOW_LEFT + MENU_SHADOW_RIGHT), maximumPopupSize.width());
+    const int desiredHeight = qMin(rowsHeight + margins.top() + margins.bottom(), maximumPopupSize.height());
     if (popup->size() != QSize(desiredWidth, desiredHeight)) {
         popup->resize(desiredWidth, desiredHeight);
     }

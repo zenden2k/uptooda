@@ -32,6 +32,8 @@ set(SOURCE_FILES
         Gui/styles/Application.qss
         Gui/MediaDlg.cpp
         Gui/MediaDlg.h
+        Gui/QtImageGenerator.cpp
+        Gui/QtImageGenerator.h
         Gui/ImageViewerWindow.cpp
         Gui/ImageViewerWindow.h
         Gui/IImageViewerSource.h

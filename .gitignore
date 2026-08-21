@@ -13,6 +13,7 @@ Data/Snapshots
 Data/History
 Data/.idea
 Data/settings*.xml
+Data/uptooda.xml
 Data/EBWebView
 Source/.idea
 Source/versioninfo.h
