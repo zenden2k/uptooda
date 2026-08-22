@@ -21,6 +21,7 @@
 #include "Gui/AppStyle.h"
 #include "Gui/LogWindow.h"
 #include "Gui/MainWindow.h"
+#include "Gui/VirtualFileDrop.h"
 #include "QtDefaultLogger.h"
 #include "QtScriptDialogProvider.h"
 #include "QtUploadErrorHandler.h"
@@ -107,6 +108,7 @@ int main(int argc, char* argv[]) {
     AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     MyApplication a(argc, argv);
+    VirtualFileDrop::installConverter();
     if (QStyle* fusionStyle = QStyleFactory::create(QStringLiteral("Fusion"))) {
         a.setStyle(fusionStyle);
     }

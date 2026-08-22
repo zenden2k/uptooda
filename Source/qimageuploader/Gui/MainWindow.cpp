@@ -39,10 +39,11 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Video/VideoUtils.h"
-#include "Gui/MediaDlg.h"
 #include "Gui/ImageViewerWindow.h"
 #include "Gui/LogWindow.h"
+#include "Gui/MediaDlg.h"
 #include "Gui/RegionSelect.h"
+#include "Gui/VirtualFileDrop.h"
 #include "Gui/controls/MainWindowTabsWidget.h"
 #include "Gui/controls/UploadSessionListWidget.h"
 #include "Gui/models/ThumbnailListModel.h"
@@ -179,6 +180,10 @@ QStringList LocalFilesFromMimeData(const QMimeData* mimeData) {
         }
     }
     return result;
+}
+
+bool IsThumbnailListInternalDrag(const QMimeData* mimeData) {
+    return mimeData && mimeData->hasFormat(ThumbnailListModel::internalMimeType());
 }
 
 } // namespace
@@ -333,15 +338,26 @@ MainWindow::~MainWindow() {
 void MainWindow::updateView() { }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
+    if (IsThumbnailListInternalDrag(event->mimeData())) {
+        dragContainsFiles_ = false;
+        dropHighlightOverlay_->hide();
+        event->ignore();
+        return;
+    }
+    const bool hasVirtualFiles = VirtualFileDrop::hasFiles(event->mimeData());
     const QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
-    dragContainsFiles_ = !fileNames.isEmpty();
+    const QStringList virtualFileNames
+        = hasVirtualFiles ? VirtualFileDrop::fileNames(event->mimeData()) : QStringList { };
+    const QStringList& detectedFileNames = hasVirtualFiles ? virtualFileNames : fileNames;
+    dragContainsFiles_ = hasVirtualFiles || !fileNames.isEmpty();
     if (!dragContainsFiles_) {
         event->ignore();
         return;
     }
-    const bool singleFile = fileNames.size() == 1;
-    const bool video = singleFile && IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions);
-    const bool audio = singleFile && !video && IsFileOfType(fileNames.first(), VideoUtils::audioFilesExtensions);
+    const bool singleFile = detectedFileNames.size() == 1;
+    const bool video = singleFile && IsFileOfType(detectedFileNames.first(), VideoUtils::videoFilesExtensions);
+    const bool audio
+        = singleFile && !video && IsFileOfType(detectedFileNames.first(), VideoUtils::audioFilesExtensions);
     dropHighlightOverlay_->setMediaFile(video, audio);
     dropHighlightOverlay_->setDragPosition(event->position().toPoint());
     dropHighlightOverlay_->setGeometry(rect());
@@ -367,9 +383,17 @@ void MainWindow::dragLeaveEvent(QDragLeaveEvent* event) {
 
 void MainWindow::dropEvent(QDropEvent* event) {
     dragContainsFiles_ = false;
+    if (IsThumbnailListInternalDrag(event->mimeData())) {
+        dropHighlightOverlay_->hide();
+        event->ignore();
+        return;
+    }
     const FileDropHighlight::Action action = dropHighlightOverlay_->actionAt(event->position().toPoint());
     dropHighlightOverlay_->hide();
-    const QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
+    QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
+    if (fileNames.isEmpty()) {
+        fileNames = VirtualFileDrop::materializeFiles(event->mimeData());
+    }
     if (fileNames.isEmpty()) {
         event->ignore();
         return;

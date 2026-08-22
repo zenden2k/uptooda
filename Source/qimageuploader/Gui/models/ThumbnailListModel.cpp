@@ -1,13 +1,18 @@
 #include "ThumbnailListModel.h"
 
+#include <QDataStream>
 #include <QFileInfo>
+#include <QMimeData>
 #include <QPixmap>
+#include <QUrl>
 
 #include <algorithm>
 
 #include "Gui/FileThumbnailCache.h"
 
 ThumbnailListModel::ThumbnailListModel(QObject* parent) : QAbstractListModel(parent) { }
+
+QString ThumbnailListModel::internalMimeType() { return QStringLiteral("application/x-uptooda-thumbnail-rows"); }
 
 int ThumbnailListModel::rowCount(const QModelIndex& parent) const { return parent.isValid() ? 0 : items_.size(); }
 
@@ -34,6 +39,94 @@ QHash<int, QByteArray> ThumbnailListModel::roleNames() const {
     roles[FILE_PATH_ROLE] = "filePath";
     return roles;
 }
+
+Qt::ItemFlags ThumbnailListModel::flags(const QModelIndex& index) const {
+    Qt::ItemFlags result = QAbstractListModel::flags(index);
+    if (index.isValid()) {
+        result |= Qt::ItemIsDragEnabled;
+    }
+    return result | Qt::ItemIsDropEnabled;
+}
+
+QStringList ThumbnailListModel::mimeTypes() const { return { internalMimeType(), QStringLiteral("text/uri-list") }; }
+
+QMimeData* ThumbnailListModel::mimeData(const QModelIndexList& indexes) const {
+    QList<int> rows;
+    for (const QModelIndex& index : indexes) {
+        if (index.isValid() && index.column() == 0 && !rows.contains(index.row())) {
+            rows.append(index.row());
+        }
+    }
+    std::sort(rows.begin(), rows.end());
+
+    QList<QUrl> urls;
+    QByteArray encodedRows;
+    QDataStream stream(&encodedRows, QIODevice::WriteOnly);
+    for (int row : rows) {
+        stream << row;
+        urls.append(QUrl::fromLocalFile(items_[row].FilePath));
+    }
+
+    auto* result = new QMimeData;
+    result->setData(internalMimeType(), encodedRows);
+    result->setUrls(urls);
+    return result;
+}
+
+bool ThumbnailListModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
+                                      const QModelIndex& parent) {
+    if (action == Qt::IgnoreAction) {
+        return true;
+    }
+    if ((action != Qt::CopyAction && action != Qt::MoveAction) || !data || !data->hasFormat(internalMimeType())
+        || column > 0) {
+        return false;
+    }
+
+    QList<int> rows;
+    QByteArray encodedRows = data->data(internalMimeType());
+    QDataStream stream(&encodedRows, QIODevice::ReadOnly);
+    while (!stream.atEnd()) {
+        int sourceRow = -1;
+        stream >> sourceRow;
+        if (sourceRow >= 0 && sourceRow < items_.size() && !rows.contains(sourceRow)) {
+            rows.append(sourceRow);
+        }
+    }
+    if (rows.isEmpty()) {
+        return false;
+    }
+    std::sort(rows.begin(), rows.end());
+
+    int destinationRow = row;
+    if (destinationRow < 0) {
+        destinationRow = parent.isValid() ? parent.row() : items_.size();
+    }
+    destinationRow = std::clamp(destinationRow, 0, static_cast<int>(items_.size()));
+
+    QList<Item> movedItems;
+    movedItems.reserve(rows.size());
+    for (int sourceRow : rows) {
+        movedItems.append(items_[sourceRow]);
+        if (sourceRow < destinationRow) {
+            --destinationRow;
+        }
+    }
+
+    beginResetModel();
+    for (auto it = rows.crbegin(); it != rows.crend(); ++it) {
+        items_.removeAt(*it);
+    }
+    for (int i = 0; i < movedItems.size(); ++i) {
+        items_.insert(destinationRow + i, movedItems[i]);
+    }
+    endResetModel();
+    return true;
+}
+
+Qt::DropActions ThumbnailListModel::supportedDragActions() const { return Qt::CopyAction | Qt::MoveAction; }
+
+Qt::DropActions ThumbnailListModel::supportedDropActions() const { return Qt::CopyAction | Qt::MoveAction; }
 
 int ThumbnailListModel::addFiles(const QStringList& fileNames) {
     int firstRow = -1;

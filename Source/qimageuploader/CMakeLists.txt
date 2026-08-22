@@ -36,6 +36,7 @@ set(SOURCE_FILES
         Gui/QtImageGenerator.h
         Gui/ImageViewerWindow.cpp
         Gui/ImageViewerWindow.h
+        Gui/VirtualFileDrop.h
         Gui/IImageViewerSource.h
         Gui/ResultsWindow.cpp
         Gui/LogWindow.cpp
@@ -76,7 +77,10 @@ set(SOURCE_FILES
 if(WIN32)
     list(APPEND SOURCE_FILES
             ../Func/GdiPlusInitializer.cpp
+            Gui/WindowsVirtualFileDrop.cpp
     )
+else()
+    list(APPEND SOURCE_FILES Gui/NullVirtualFileDrop.cpp)
 endif()
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
@@ -84,7 +88,7 @@ add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Concurrent Qt6::Core Qt6::Gui Qt6::Widgets)
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE gdi32 dwmapi gdiplus)
+    target_link_libraries(${PROJECT_NAME} PRIVATE gdi32 dwmapi gdiplus ole32)
     configure_webview2_target(${PROJECT_NAME})
     configure_nuget_packages(${PROJECT_NAME})
 endif()

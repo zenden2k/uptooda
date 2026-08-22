@@ -1,7 +1,13 @@
 #include "ThumbnailListView.h"
 
+#include <QApplication>
 #include <QDesktopServices>
+#include <QDrag>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QKeyEvent>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyledItemDelegate>
@@ -79,6 +85,11 @@ ThumbnailListView::ThumbnailListView(QWidget* parent) : QListView(parent) {
     setViewMode(QListView::IconMode);
     setResizeMode(QListView::Adjust);
     setMovement(QListView::Static);
+    setDragEnabled(true);
+    setAcceptDrops(true);
+    setDropIndicatorShown(true);
+    setDragDropMode(QAbstractItemView::DragDrop);
+    setDefaultDropAction(Qt::MoveAction);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setUniformItemSizes(true);
@@ -123,6 +134,35 @@ void ThumbnailListView::revealRow(int row) {
     scrollTo(index, QAbstractItemView::EnsureVisible);
 }
 
+void ThumbnailListView::dragEnterEvent(QDragEnterEvent* event) {
+    if (event->mimeData()->hasFormat(ThumbnailListModel::internalMimeType())) {
+        event->acceptProposedAction();
+        return;
+    }
+    event->ignore();
+}
+
+void ThumbnailListView::dragMoveEvent(QDragMoveEvent* event) {
+    if (event->mimeData()->hasFormat(ThumbnailListModel::internalMimeType())) {
+        event->acceptProposedAction();
+        return;
+    }
+    event->ignore();
+}
+
+void ThumbnailListView::dropEvent(QDropEvent* event) {
+    if (!model() || !event->mimeData()->hasFormat(ThumbnailListModel::internalMimeType())) {
+        event->ignore();
+        return;
+    }
+
+    if (model()->dropMimeData(event->mimeData(), Qt::MoveAction, dropRow(event->position().toPoint()), 0, { })) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
+    }
+}
+
 void ThumbnailListView::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Delete) {
         const QList<int> rows = selectedRows();
@@ -152,6 +192,51 @@ void ThumbnailListView::mousePressEvent(QMouseEvent* event) {
         return;
     }
     QListView::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton && indexAt(event->pos()).isValid()) {
+        dragStartPosition_ = event->pos();
+    } else {
+        dragStartPosition_ = { -1, -1 };
+    }
+}
+
+void ThumbnailListView::mouseMoveEvent(QMouseEvent* event) {
+    if (!(event->buttons() & Qt::LeftButton) || dragStartPosition_.x() < 0) {
+        QListView::mouseMoveEvent(event);
+        return;
+    }
+    if (!internalDragActive_
+        && (event->pos() - dragStartPosition_).manhattanLength() < QApplication::startDragDistance()) {
+        QListView::mouseMoveEvent(event);
+        return;
+    }
+
+    internalDragActive_ = true;
+    if (viewport()->rect().contains(event->pos())) {
+        viewport()->setCursor(Qt::ClosedHandCursor);
+        event->accept();
+        return;
+    }
+
+    internalDragActive_ = false;
+    dragStartPosition_ = { -1, -1 };
+    viewport()->unsetCursor();
+    startDrag(model() ? model()->supportedDragActions() : Qt::CopyAction);
+    event->accept();
+}
+
+void ThumbnailListView::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton && internalDragActive_ && model()) {
+        std::unique_ptr<QMimeData> mimeData(model()->mimeData(selectedIndexes()));
+        if (mimeData) {
+            model()->dropMimeData(mimeData.get(), Qt::MoveAction, dropRow(event->pos()), 0, { });
+        }
+        event->accept();
+    } else {
+        QListView::mouseReleaseEvent(event);
+    }
+    internalDragActive_ = false;
+    dragStartPosition_ = { -1, -1 };
+    viewport()->unsetCursor();
 }
 
 void ThumbnailListView::paintEvent(QPaintEvent* event) {
@@ -164,6 +249,46 @@ void ThumbnailListView::paintEvent(QPaintEvent* event) {
         painter.setFont(font);
         painter.drawText(viewport()->rect(), Qt::AlignCenter, emptyText_);
     }
+}
+
+void ThumbnailListView::startDrag(Qt::DropActions supportedActions) {
+    const QModelIndexList indexes = selectedIndexes();
+    if (indexes.isEmpty() || !model()) {
+        return;
+    }
+
+    QMimeData* mimeData = model()->mimeData(indexes);
+    if (!mimeData) {
+        return;
+    }
+
+    auto* drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    const QIcon icon = qvariant_cast<QIcon>(indexes.front().data(Qt::DecorationRole));
+    if (!icon.isNull()) {
+        drag->setPixmap(icon.pixmap(iconSize()));
+    }
+
+    // Copy is the safe default for other applications. This view requests MoveAction
+    // for its own drops through defaultDropAction().
+    drag->exec(supportedActions, Qt::CopyAction);
+}
+
+int ThumbnailListView::dropRow(const QPoint& position) const {
+    if (!model() || model()->rowCount() == 0) {
+        return 0;
+    }
+
+    const QModelIndex target = indexAt(position);
+    if (!target.isValid()) {
+        const QModelIndex first = model()->index(0, 0);
+        return position.y() < visualRect(first).top() ? 0 : model()->rowCount();
+    }
+
+    const QRect targetRect = visualRect(target);
+    const bool insertAfter = flow() == QListView::LeftToRight ? position.x() >= targetRect.center().x()
+                                                              : position.y() >= targetRect.center().y();
+    return target.row() + (insertAfter ? 1 : 0);
 }
 
 bool ThumbnailListView::openImage(const QModelIndex& index) {

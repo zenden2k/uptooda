@@ -254,8 +254,6 @@ QSpinBox {
 }
 QSpinBox#numOfFramesSpinBox {
     qproperty-alignment: AlignLeft;
-    padding-left: 9px;
-    padding-right: 0;
 }
 QSpinBox::down-button {
     subcontrol-origin: border;

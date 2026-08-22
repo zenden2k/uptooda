@@ -12,9 +12,18 @@ public:
 
     explicit ThumbnailListModel(QObject* parent = nullptr);
 
+    static QString internalMimeType();
+
     int rowCount(const QModelIndex& parent = { }) const override;
     QVariant data(const QModelIndex& index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
+                      const QModelIndex& parent) override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::DropActions supportedDropActions() const override;
 
     int addFiles(const QStringList& fileNames);
     int addFile(const QString& fileName, const QString& displayText = { }, const QIcon& icon = { });
