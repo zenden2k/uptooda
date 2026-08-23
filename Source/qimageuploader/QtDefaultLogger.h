@@ -11,7 +11,7 @@ public:
     QtDefaultLogger(LogWindow* logWindow);
     void write(LogMsgType MsgType, const std::string&  Sender, const std::string&  Msg, const std::string&  Info, const std::string&  FileName, bool fromSink) override;
 #ifdef _WIN32
-    void write(LogMsgType MsgType, const wchar_t*  Sender, const wchar_t*   Msg, const wchar_t*  Info, const wchar_t*  FileName, bool fromSink) override;
+    void write(LogMsgType msgType, const wchar_t*  sender, const wchar_t*   msg, const wchar_t*  info, const wchar_t*  fileName, bool fromSink) override;
 #endif
 protected:
     LogWindow* logWindow_;

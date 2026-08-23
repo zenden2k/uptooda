@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "Core/CommonDefs.h"
-#include "Func/MediaInfoHelper.h"
+#include "../../MediaInfo/MediaInfoHelper.h"
 
 namespace {
 

@@ -48,6 +48,9 @@
 #include "Gui/controls/UploadSessionListWidget.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "ResultsWindow.h"
+#include "controls/AddedFilesTabWidget.h"
+#include "controls/UploadSettingsTabWidget.h"
+#include "controls/UploadsTabWidget.h"
 
 using namespace Uptooda::Core::OutputGenerator;
 
@@ -813,4 +816,6 @@ std::shared_ptr<UploadTask> MainWindow::findTask(UploadTask* task) const {
     return { };
 }
 
-UploadSessionListWidget* MainWindow::uploadSessionList() const { return ui->mainTabs->uploadsTab()->sessionList(); }
+UploadSessionListWidget* MainWindow::uploadSessionList() const {
+    return ui->mainTabs->uploadsTab()->sessionList();
+}

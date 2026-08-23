@@ -30,7 +30,9 @@ constexpr int COMBO_ITEM_VERTICAL_PADDING = 7;
 constexpr int COMBO_ITEM_MINIMUM_HEIGHT = 32;
 constexpr int COMBO_MAXIMUM_VISIBLE_ITEMS = 8;
 
-bool isComboBoxPopup(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateContainer"); }
+bool isComboBoxPopup(QWidget* widget) {
+    return widget && widget->inherits("QComboBoxPrivateContainer");
+}
 
 void configureMenuMargins(QMenu* menu) {
     const QMargins margins(
@@ -41,7 +43,9 @@ void configureMenuMargins(QMenu* menu) {
     }
 }
 
-bool isComboBoxScroller(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateScroller"); }
+bool isComboBoxScroller(QWidget* widget) {
+    return widget && widget->inherits("QComboBoxPrivateScroller");
+}
 
 QComboBox* comboBoxForPopup(QWidget* popup) {
     for (QObject* parent = popup ? popup->parent() : nullptr; parent; parent = parent->parent()) {
@@ -227,74 +231,76 @@ protected:
         }
 
         auto* popup = qobject_cast<QWidget*>(watched);
-        if (isComboBoxScroller(popup)) {
+        if (popup) {
+            if (isComboBoxScroller(popup)) {
+                if (event->type() == QEvent::Polish) {
+                    popup->setFixedHeight(0);
+                    popup->hide();
+                } else if (event->type() == QEvent::Show) {
+                    popup->hide();
+                    return true;
+                }
+                return QObject::eventFilter(watched, event);
+            }
+
+            auto* menu = qobject_cast<QMenu*>(popup);
+            const bool comboBoxPopup = isComboBoxPopup(popup);
+            if (!menu && !comboBoxPopup) {
+                return QObject::eventFilter(watched, event);
+            }
+
             if (event->type() == QEvent::Polish) {
-                popup->setFixedHeight(0);
-                popup->hide();
-            } else if (event->type() == QEvent::Show) {
-                popup->hide();
-                return true;
-            }
-            return QObject::eventFilter(watched, event);
-        }
+                popup->setWindowFlags(popup->windowFlags() | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+                popup->setAttribute(Qt::WA_TranslucentBackground);
+                popup->setAttribute(Qt::WA_NoSystemBackground);
+                popup->setAttribute(Qt::WA_StyledBackground, false);
+                popup->setAutoFillBackground(false);
+                QPalette palette = popup->palette();
+                palette.setColor(QPalette::Window, Qt::transparent);
+                popup->setPalette(palette);
 
-        auto* menu = qobject_cast<QMenu*>(popup);
-        const bool comboBoxPopup = isComboBoxPopup(popup);
-        if (!menu && !comboBoxPopup) {
-            return QObject::eventFilter(watched, event);
-        }
-
-        if (event->type() == QEvent::Polish) {
-            popup->setWindowFlags(popup->windowFlags() | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-            popup->setAttribute(Qt::WA_TranslucentBackground);
-            popup->setAttribute(Qt::WA_NoSystemBackground);
-            popup->setAttribute(Qt::WA_StyledBackground, false);
-            popup->setAutoFillBackground(false);
-            QPalette palette = popup->palette();
-            palette.setColor(QPalette::Window, Qt::transparent);
-            popup->setPalette(palette);
-
-            if (menu) {
-                configureMenuMargins(menu);
-            } else if (comboBoxPopup) {
-                configureComboBoxPopupMargins(popup);
-                if (auto* frame = qobject_cast<QFrame*>(popup)) {
-                    frame->setFrameStyle(QFrame::NoFrame);
+                if (menu) {
+                    configureMenuMargins(menu);
+                } else if (comboBoxPopup) {
+                    configureComboBoxPopupMargins(popup);
+                    if (auto* frame = qobject_cast<QFrame*>(popup)) {
+                        frame->setFrameStyle(QFrame::NoFrame);
+                    }
+                    if (auto* itemView = popup->findChild<QAbstractItemView*>()) {
+                        configureComboBoxView(itemView);
+                    }
                 }
-                if (auto* itemView = popup->findChild<QAbstractItemView*>()) {
-                    configureComboBoxView(itemView);
+            } else if (event->type() == QEvent::Show || event->type() == QEvent::Resize) {
+                if (menu) {
+                    configureMenuMargins(menu);
+                } else if (comboBoxPopup) {
+                    adjustComboBoxPopupGeometry(popup);
                 }
-            }
-        } else if (event->type() == QEvent::Show || event->type() == QEvent::Resize) {
-            if (menu) {
-                configureMenuMargins(menu);
-            } else if (comboBoxPopup) {
-                adjustComboBoxPopupGeometry(popup);
-            }
-        } else if (event->type() == QEvent::Paint) {
-            QPainter painter(popup);
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.setCompositionMode(QPainter::CompositionMode_Source);
-            painter.fillRect(popup->rect(), Qt::transparent);
-            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            painter.setPen(Qt::NoPen);
+            } else if (event->type() == QEvent::Paint) {
+                QPainter painter(popup);
+                painter.setRenderHint(QPainter::Antialiasing);
+                painter.setCompositionMode(QPainter::CompositionMode_Source);
+                painter.fillRect(popup->rect(), Qt::transparent);
+                painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+                painter.setPen(Qt::NoPen);
 
-            const QRectF panelRect
-                = QRectF(popup->rect())
-                      .adjusted(MENU_SHADOW_LEFT, MENU_SHADOW_TOP, -MENU_SHADOW_RIGHT, -MENU_SHADOW_BOTTOM);
-            for (int spread = MENU_SHADOW_BLUR; spread > 0; --spread) {
-                const QRectF shadowRect = panelRect.translated(MENU_SHADOW_OFFSET_X, MENU_SHADOW_OFFSET_Y)
-                                              .adjusted(-spread, -spread, spread, spread);
-                painter.setBrush(QColor(26, 38, 50, 3 + (MENU_SHADOW_BLUR + 1 - spread) * 2));
-                painter.drawRoundedRect(shadowRect, MENU_RADIUS + spread, MENU_RADIUS + spread);
-            }
+                const QRectF panelRect
+                    = QRectF(popup->rect())
+                          .adjusted(MENU_SHADOW_LEFT, MENU_SHADOW_TOP, -MENU_SHADOW_RIGHT, -MENU_SHADOW_BOTTOM);
+                for (int spread = MENU_SHADOW_BLUR; spread > 0; --spread) {
+                    const QRectF shadowRect = panelRect.translated(MENU_SHADOW_OFFSET_X, MENU_SHADOW_OFFSET_Y)
+                                                  .adjusted(-spread, -spread, spread, spread);
+                    painter.setBrush(QColor(26, 38, 50, 3 + (MENU_SHADOW_BLUR + 1 - spread) * 2));
+                    painter.drawRoundedRect(shadowRect, MENU_RADIUS + spread, MENU_RADIUS + spread);
+                }
 
-            painter.setBrush(QColor(QStringLiteral("#ffffff")));
-            painter.setPen(QPen(QColor(QStringLiteral("#cfd8e2")), 1.0));
-            painter.drawRoundedRect(panelRect.adjusted(0.5, 0.5, -0.5, -0.5), MENU_RADIUS, MENU_RADIUS);
+                painter.setBrush(QColor(QStringLiteral("#ffffff")));
+                painter.setPen(QPen(QColor(QStringLiteral("#cfd8e2")), 1.0));
+                painter.drawRoundedRect(panelRect.adjusted(0.5, 0.5, -0.5, -0.5), MENU_RADIUS, MENU_RADIUS);
 
-            if (comboBoxPopup) {
-                return true;
+                if (comboBoxPopup) {
+                    return true;
+                }
             }
         }
         return QObject::eventFilter(watched, event);

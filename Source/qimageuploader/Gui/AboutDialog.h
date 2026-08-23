@@ -14,7 +14,7 @@ class AboutDialog : public QDialog
     
 public:
     AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+    ~AboutDialog() override;
 private:
 	std::unique_ptr<Ui::AboutDialog> ui;
 };

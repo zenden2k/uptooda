@@ -72,6 +72,12 @@ set(SOURCE_FILES
         Gui/ui/LoginDialog.ui
         Gui/ui/AboutDialog.ui
         qimageuploader.qrc
+        Gui/controls/AddedFilesTabWidget.cpp
+        Gui/controls/AddedFilesTabWidget.h
+        Gui/controls/UploadSettingsTabWidget.cpp
+        Gui/controls/UploadSettingsTabWidget.h
+        Gui/controls/UploadsTabWidget.cpp
+        Gui/controls/UploadsTabWidget.h
 )
 
 if(WIN32)

@@ -3,10 +3,11 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMetaObject>
+#include <QDesktopServices>
 #include <qapplication.h>
+
 #include "Core/Network/NetworkClient.h"
 #include "Core/ProgramWindow.h"
-#include "Core/Utils/DesktopUtils.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 
@@ -17,7 +18,7 @@ QtScriptDialogProvider::QtScriptDialogProvider() {
 std::string QtScriptDialogProvider::askUserCaptcha(INetworkClient* nm, const std::string& url) {
     std::lock_guard<std::mutex> lk(mutex_);
     // TODO: Implement this
-    DesktopUtils::ShellOpenUrl(url);
+    QDesktopServices::openUrl(QString::fromStdString(url));
     return showDialog("Enter text from the image:", "");
 }
 

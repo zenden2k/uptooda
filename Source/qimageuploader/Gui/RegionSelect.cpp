@@ -1,30 +1,9 @@
-/***************************************************************************
- *   Copyright (C) 2009 by Artem 'DOOMer' Galichkin                        *
- *   doomer3d@gmail.com                                                    *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
-
 #include "RegionSelect.h"
 
 #include <QGuiApplication>
 #include <QScreen>
 
 namespace {
-
 constexpr int ZOOM_SIDE = 200;
 constexpr int ZOOM_FACTOR = 8;
 constexpr qreal CROSS_HALF_SIZE = 12.0;
@@ -66,15 +45,11 @@ QRect centeredRect(const QPoint& center, const QSize& size, const QRect& bounds)
 
     return rect;
 }
-
 }
 
-RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
-    :QDialog(parent)
-{
-	 //conf = mainconf;
+RegionSelect::RegionSelect(QWidget* parent, QPixmap* src) : QDialog(parent) {
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setWindowState(Qt::WindowFullScreen);
     setCursor(Qt::CrossCursor);
 
@@ -82,81 +57,65 @@ RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
     sizeDesktop = desktopRect.size();
     resize(sizeDesktop);
 
-	 desktopPixmapBkg = *src;
+    desktopPixmapBkg = *src;
     desktopPixmapClr = desktopPixmapBkg;
 
     move(desktopRect.topLeft());
-    drawBackGround();
+    drawBackground();
 }
 
-RegionSelect::~RegionSelect()
-{
+RegionSelect::~RegionSelect() = default;
 
+bool RegionSelect::event(QEvent* event) {
+    if (event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::KeyPress) {
+        accept();
+    }
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 
+        if (mouseEvent->button() != Qt::LeftButton)
+            reject();
+
+        selStartPoint = mouseEvent->pos();
+        selectRect = QRect(selStartPoint, QSize());
+    }
+
+    return QDialog::event(event);
 }
 
-bool RegionSelect::event(QEvent *event)
-{
-  if (event->type() == QEvent::MouseButtonRelease
-   || event->type() == QEvent::KeyPress)
-  {
-    accept();
-  }
-  if (event->type() == QEvent::MouseButtonPress)
-  {
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent*> (event);
-
-    if (mouseEvent->button() != Qt::LeftButton)
-      reject();
-
-    selStartPoint = mouseEvent->pos();
-    selectRect = QRect(selStartPoint, QSize());
-  }
-
-  return QDialog::event(event);
-}
-
-void RegionSelect::paintEvent(QPaintEvent *event)
-{
+void RegionSelect::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
 
-    if (!palBackground)
-      painter.drawPixmap(QPoint(0, 0), desktopPixmapBkg);
+    painter.drawPixmap(QPoint(0, 0), desktopPixmapBkg);
 
     drawRectSelection(painter);
 }
 
-void RegionSelect::mouseMoveEvent(QMouseEvent *event)
-{
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent*> (event);
-    selectRect = QRect(selStartPoint, mouseEvent->pos()).normalized();
-    selEndPoint  = mouseEvent->pos();
+void RegionSelect::mouseMoveEvent(QMouseEvent* event) {
+    selectRect = QRect(selStartPoint, event->pos()).normalized();
+    selEndPoint = event->pos();
     update();
 }
 
-void RegionSelect::drawBackGround()
-{
-    // create painter on  pixelmap of desktop
+void RegionSelect::drawBackground() {
     QPainter painter(&desktopPixmapBkg);
 
-    // set painter brush on 85% transparency
     painter.setBrush(QBrush(QColor(0, 0, 0, 85), Qt::SolidPattern));
 
-    // draw rect of desktop size in poainter
     painter.drawRect(desktopPixmapBkg.rect());
 
     QScreen* primaryScreen = QGuiApplication::primaryScreen();
     QRect txtRect = primaryScreen ? primaryScreen->geometry() : desktopPixmapBkg.rect();
     txtRect.translate(-desktopGeometry().topLeft());
-    QString txtTip = QApplication::tr("Use your mouse to draw a rectangle to screenshot or  exit pressing\nany key or using the right or middle mouse buttons.");
+    QString txtTip = QApplication::tr("Use your mouse to draw a rectangle to screenshot or  exit pressing\nany key or "
+                                      "using the right or middle mouse buttons.");
 
-    txtRect.setHeight(qRound((double)txtRect.height() / 10)); // rounded val of text rect height
+    txtRect.setHeight(qRound(static_cast<double>(txtRect.height()) / 10));
 
     painter.setPen(QPen(Qt::red)); // ste message rect border color
     painter.setBrush(QBrush(QColor(255, 255, 255, 180), Qt::SolidPattern));
     QRect txtBgRect = painter.boundingRect(txtRect, Qt::AlignCenter, txtTip);
 
-    // set height & width of bkg rect
     txtBgRect.setX(txtBgRect.x() - 6);
     txtBgRect.setY(txtBgRect.y() - 4);
     txtBgRect.setWidth(txtBgRect.width() + 12);
@@ -164,19 +123,8 @@ void RegionSelect::drawBackGround()
 
     painter.drawRect(txtBgRect);
 
-      // Draw the text
     painter.setPen(QPen(Qt::black)); // black color pen
     painter.drawText(txtBgRect, Qt::AlignCenter, txtTip);
-
-    palBackground = (QGuiApplication::screens().size() > 1);
-
-    // set bkg to pallette widget
-    if (palBackground)
-    {
-        QPalette newPalette = palette();
-        newPalette.setBrush(QPalette::Window, QBrush(desktopPixmapBkg));
-        setPalette(newPalette);
-    }
 }
 
 void RegionSelect::drawRectSelection(QPainter& painter) {
@@ -188,7 +136,7 @@ void RegionSelect::drawRectSelection(QPainter& painter) {
     QString txtSize = QApplication::tr("%1 x %2 pixels ").arg(sourceRect.width()).arg(sourceRect.height());
     painter.drawText(selectRect, Qt::AlignBottom | Qt::AlignRight, txtSize);
 
-    if (!selEndPoint.isNull() /*&& conf->getZoomAroundMouse() == true*/) {
+    if (!selEndPoint.isNull()) {
         const qreal devicePixelRatio = desktopPixmapClr.devicePixelRatio();
         const QSize zoomPixmapSize(qRound(ZOOM_SIDE * devicePixelRatio), qRound(ZOOM_SIDE * devicePixelRatio));
         const QSize zoomSourceSize((zoomPixmapSize.width() + ZOOM_FACTOR - 1) / ZOOM_FACTOR,
@@ -210,18 +158,18 @@ void RegionSelect::drawRectSelection(QPainter& painter) {
         zoomPixmap.setDevicePixelRatio(devicePixelRatio);
         const QRect zoomPixmapRect(QPoint(), zoomPixmap.deviceIndependentSize().toSize());
 
-        QPainter zoomPainer(&zoomPixmap); // create painter from pixmap maignifer
-        zoomPainer.setPen(QPen(QBrush(QColor(255, 0, 0, 180)), 2));
-        zoomPainer.drawRect(zoomPixmapRect); // draw
+        QPainter zoomPainter(&zoomPixmap);
+        zoomPainter.setPen(QPen(QBrush(QColor(255, 0, 0, 180)), 2));
+        zoomPainter.drawRect(zoomPixmapRect); // draw
 
         const QPointF crossCenter = zoomCursor / devicePixelRatio;
-        zoomPainer.setCompositionMode(QPainter::CompositionMode_Difference);
+        zoomPainter.setCompositionMode(QPainter::CompositionMode_Difference);
         QPen crossPen(Qt::white);
         crossPen.setWidthF(ZOOM_FACTOR / devicePixelRatio);
         crossPen.setCapStyle(Qt::FlatCap);
-        zoomPainer.setPen(crossPen);
-        zoomPainer.drawLine(crossCenter - QPointF(CROSS_HALF_SIZE, 0), crossCenter + QPointF(CROSS_HALF_SIZE, 0));
-        zoomPainer.drawLine(crossCenter - QPointF(0, CROSS_HALF_SIZE), crossCenter + QPointF(0, CROSS_HALF_SIZE));
+        zoomPainter.setPen(crossPen);
+        zoomPainter.drawLine(crossCenter - QPointF(CROSS_HALF_SIZE, 0), crossCenter + QPointF(CROSS_HALF_SIZE, 0));
+        zoomPainter.drawLine(crossCenter - QPointF(0, CROSS_HALF_SIZE), crossCenter + QPointF(0, CROSS_HALF_SIZE));
 
         // position for drawing preview
         QPoint zoomCenter = selectRect.bottomRight();
@@ -236,13 +184,11 @@ void RegionSelect::drawRectSelection(QPainter& painter) {
     }
 }
 
-QPixmap RegionSelect::getSelection() {
-    QPixmap sel;
-    sel = desktopPixmapClr.copy(toPixmapCoordinates(selectRect, desktopPixmapClr));
-    return sel;
+QPixmap RegionSelect::getSelection() const {
+    return desktopPixmapClr.copy(toPixmapCoordinates(selectRect, desktopPixmapClr));
 }
 
-CScreenshotRegion* RegionSelect::selectedRegion() {
+CScreenshotRegion* RegionSelect::selectedRegion() const {
     const QRect sourceRect = toPixmapCoordinates(selectRect, desktopPixmapClr);
     return new CRectRegion(sourceRect.x(), sourceRect.y(), sourceRect.width(), sourceRect.height());
 }

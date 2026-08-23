@@ -13,8 +13,8 @@ void QtDefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const
 }
 
 #ifdef _WIN32
-void QtDefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t*  FileName, bool fromSink) {
-    logWindow_->writeLog(MsgType, QString::fromWCharArray(Sender), QString::fromWCharArray(Msg),
-                         QString::fromWCharArray(Info));
+void QtDefaultLogger::write(LogMsgType msgType, const wchar_t* sender, const wchar_t* msg, const wchar_t* info, const wchar_t*  fileName, bool fromSink) {
+    logWindow_->writeLog(msgType, QString::fromWCharArray(sender), QString::fromWCharArray(msg),
+                         QString::fromWCharArray(info));
 }
 #endif

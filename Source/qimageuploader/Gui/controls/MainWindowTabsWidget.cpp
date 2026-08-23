@@ -8,10 +8,13 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+#include "AddedFilesTabWidget.h"
 #include "Gui/controls/ServerSelectorWidget.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "UploadSessionListWidget.h"
+#include "UploadSettingsTabWidget.h"
+#include "UploadsTabWidget.h"
 
 TabSwitcherWidget::TabSwitcherWidget(QWidget* parent) : QWidget(parent) {
     setObjectName(QStringLiteral("tabSwitcher"));
@@ -32,18 +35,21 @@ TabSwitcherWidget::TabSwitcherWidget(QWidget* parent) : QWidget(parent) {
     layout->addWidget(addedFilesButton_);
     layout->addWidget(createTabButton(tr("Upload settings"), 4));
 
+
     setStyleSheet(
         QStringLiteral("QPushButton { background: transparent; border: 0; border-bottom: 3px solid transparent;"
-                       " border-radius: 0;"
-                       " color: #5b697b; padding: 0 18px; }"
-                       "QPushButton:hover { background: #edf6fc; }"
-                       "QPushButton:checked { color: #2789c9; border-bottom-color: #55afe8; }"));
+            " border-radius: 0;"
+            " color: #5b697b; padding: 0 18px; }"
+            "QPushButton:hover { background: #edf6fc; }"
+            "QPushButton:checked { color: #2789c9; border-bottom-color: #55afe8; }"));
 
     buttonGroup_->button(0)->setChecked(true);
     connect(buttonGroup_, &QButtonGroup::idClicked, this, &TabSwitcherWidget::setCurrentIndex);
 }
 
-int TabSwitcherWidget::currentIndex() const { return currentIndex_; }
+int TabSwitcherWidget::currentIndex() const {
+    return currentIndex_;
+}
 
 void TabSwitcherWidget::setCurrentIndex(int index) {
     QPushButton* button = qobject_cast<QPushButton*>(buttonGroup_->button(index));
@@ -55,7 +61,9 @@ void TabSwitcherWidget::setCurrentIndex(int index) {
     emit currentChanged(index);
 }
 
-void TabSwitcherWidget::setAddedFilesCount(int count) { addedFilesButton_->setText(tr("Added files (%1)").arg(count)); }
+void TabSwitcherWidget::setAddedFilesCount(int count) {
+    addedFilesButton_->setText(tr("Added files (%1)").arg(count));
+}
 
 QPushButton* TabSwitcherWidget::createTabButton(const QString& text, int index) {
     auto* button = new QPushButton(text, this);
@@ -66,157 +74,7 @@ QPushButton* TabSwitcherWidget::createTabButton(const QString& text, int index) 
     return button;
 }
 
-UploadsTabWidget::UploadsTabWidget(QWidget* parent) : QWidget(parent) {
-    auto* layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    stack_ = new QStackedWidget(this);
-    stack_->addWidget(new EmptyTabWidget(tr("Uploads"), tr("Your uploads will appear here"), stack_));
-    sessionList_ = new UploadSessionListWidget(stack_);
-    stack_->addWidget(sessionList_);
-    layout->addWidget(stack_);
 
-    connect(sessionList_, &UploadSessionListWidget::hasItemsChanged, this,
-            [this](bool hasItems) { stack_->setCurrentWidget(hasItems ? sessionList_ : stack_->widget(0)); });
-}
-
-UploadSessionListWidget* UploadsTabWidget::sessionList() const { return sessionList_; }
-
-AddedFilesTabWidget::AddedFilesTabWidget(QWidget* parent) : QWidget(parent) {
-    auto* layout = new QVBoxLayout(this);
-    layout->setContentsMargins(18, 18, 18, 18);
-    layout->setSpacing(12);
-
-    listView_ = new ThumbnailListView(this);
-    listView_->setEmptyText(tr("The added files list is empty"));
-    layout->addWidget(listView_, 1);
-
-    auto* buttonLayout = new QHBoxLayout;
-    clearButton_ = new QPushButton(tr("Clear list"), this);
-    removeButton_ = new QPushButton(tr("Remove selected"), this);
-    nextButton_ = new QPushButton(tr("Next >"), this);
-    buttonLayout->addWidget(clearButton_);
-    buttonLayout->addWidget(removeButton_);
-    buttonLayout->addStretch(1);
-    buttonLayout->addWidget(nextButton_);
-    layout->addLayout(buttonLayout);
-
-    connect(clearButton_, &QPushButton::clicked, this, &AddedFilesTabWidget::clearRequested);
-    connect(removeButton_, &QPushButton::clicked, this, [this] { emit removeRequested(listView_->selectedRows()); });
-    connect(nextButton_, &QPushButton::clicked, this, &AddedFilesTabWidget::nextRequested);
-    connect(listView_, &ThumbnailListView::removeRequested, this, &AddedFilesTabWidget::removeRequested);
-    connect(listView_, &ThumbnailListView::openRequested, this, &AddedFilesTabWidget::openRequested);
-}
-
-void AddedFilesTabWidget::setModel(ThumbnailListModel* model) {
-    if (model_ == model) {
-        return;
-    }
-    model_ = model;
-    listView_->setModel(model_);
-    if (model_) {
-        connect(model_, &QAbstractItemModel::rowsInserted, this, &AddedFilesTabWidget::updateState);
-        connect(model_, &QAbstractItemModel::rowsRemoved, this, &AddedFilesTabWidget::updateState);
-        connect(model_, &QAbstractItemModel::modelReset, this, &AddedFilesTabWidget::updateState);
-        connect(listView_->selectionModel(), &QItemSelectionModel::selectionChanged, this,
-                &AddedFilesTabWidget::updateState);
-    }
-    updateState();
-}
-
-void AddedFilesTabWidget::revealRow(int row) {
-    if (!model_ || row < 0 || row >= model_->rowCount()) {
-        return;
-    }
-    listView_->revealRow(row);
-}
-
-void AddedFilesTabWidget::updateState() {
-    const bool hasFiles = model_ && model_->rowCount() > 0;
-    clearButton_->setEnabled(hasFiles);
-    nextButton_->setEnabled(hasFiles);
-    removeButton_->setEnabled(hasFiles && listView_->selectionModel() && listView_->selectionModel()->hasSelection());
-}
-
-UploadSettingsTabWidget::UploadSettingsTabWidget(QWidget* parent) : QWidget(parent) {
-    auto* outerLayout = new QHBoxLayout(this);
-    outerLayout->setContentsMargins(24, 28, 24, 24);
-    outerLayout->addStretch(1);
-    form_ = new QWidget(this);
-    form_->setMaximumWidth(960);
-    auto* formLayout = new QVBoxLayout(form_);
-    formLayout->setContentsMargins(0, 0, 0, 0);
-    formLayout->setSpacing(14);
-
-    auto* titleLabel = new QLabel(tr("Upload settings"), form_);
-    QFont titleFont = titleLabel->font();
-    titleFont.setPointSize(titleFont.pointSize() + 4);
-    titleFont.setBold(true);
-    titleLabel->setFont(titleFont);
-    titleLabel->setStyleSheet(QStringLiteral("color: #263548;"));
-    formLayout->addWidget(titleLabel);
-
-    fileCountLabel_ = new QLabel(form_);
-    fileCountLabel_->setStyleSheet(QStringLiteral("color: #6a7889;"));
-    formLayout->addWidget(fileCountLabel_);
-
-    auto* buttonLayout = new QHBoxLayout;
-    buttonLayout->addStretch(1);
-    auto* backButton = new QPushButton(tr("< Back"), form_);
-    uploadButton_ = new QPushButton(tr("Upload"), form_);
-    buttonLayout->addWidget(backButton);
-    buttonLayout->addWidget(uploadButton_);
-    formLayout->addLayout(buttonLayout);
-    formLayout->addStretch(1);
-    outerLayout->addWidget(form_, 6);
-    outerLayout->addStretch(1);
-
-    connect(backButton, &QPushButton::clicked, this, &UploadSettingsTabWidget::backRequested);
-    connect(uploadButton_, &QPushButton::clicked, this, &UploadSettingsTabWidget::uploadRequested);
-    setFileCount(0);
-}
-
-void UploadSettingsTabWidget::configure(UploadEngineManager* uploadEngineManager, const ServerProfile& imageProfile,
-                                        const ServerProfile& fileProfile) {
-    if (imageServerWidget_ || !uploadEngineManager) {
-        return;
-    }
-    auto* formLayout = qobject_cast<QVBoxLayout*>(form_->layout());
-    imageServerWidget_ = new ServerSelectorWidget(uploadEngineManager, false, form_);
-    imageServerWidget_->setTitle(tr("Image server"));
-    imageServerWidget_->setServersMask(ServerSelectorWidget::smImageServers);
-    imageServerWidget_->updateServerList();
-    imageServerWidget_->setServerProfile(imageProfile);
-    formLayout->insertWidget(2, imageServerWidget_);
-
-    fileServerWidget_ = new ServerSelectorWidget(uploadEngineManager, false, form_);
-    fileServerWidget_->setTitle(tr("Server for other files"));
-    fileServerWidget_->setServersMask(ServerSelectorWidget::smFileServers);
-    fileServerWidget_->updateServerList();
-    fileServerWidget_->setServerProfile(fileProfile);
-    formLayout->insertWidget(3, fileServerWidget_);
-}
-
-void UploadSettingsTabWidget::setFileCount(int count) {
-    fileCountLabel_->setText(tr("Selected files: %1").arg(count));
-    uploadButton_->setEnabled(count > 0);
-}
-
-ServerProfile UploadSettingsTabWidget::imageServerProfile() const {
-    return imageServerWidget_ ? imageServerWidget_->serverProfile() : ServerProfile();
-}
-
-ServerProfile UploadSettingsTabWidget::fileServerProfile() const {
-    return fileServerWidget_ ? fileServerWidget_->serverProfile() : ServerProfile();
-}
-
-void UploadSettingsTabWidget::fillServerIcons() {
-    if (imageServerWidget_) {
-        imageServerWidget_->fillServerIcons();
-    }
-    if (fileServerWidget_) {
-        fileServerWidget_->fillServerIcons();
-    }
-}
 
 EmptyTabWidget::EmptyTabWidget(const QString& title, const QString& description, QWidget* parent) : QWidget(parent) {
     auto* layout = new QVBoxLayout(this);
@@ -266,11 +124,17 @@ MainWindowTabsWidget::MainWindowTabsWidget(QWidget* parent) : QWidget(parent) {
     connect(tabSwitcher_, &TabSwitcherWidget::currentChanged, this, &MainWindowTabsWidget::currentChanged);
 }
 
-UploadsTabWidget* MainWindowTabsWidget::uploadsTab() const { return uploadsTab_; }
+UploadsTabWidget* MainWindowTabsWidget::uploadsTab() const {
+    return uploadsTab_;
+}
 
-AddedFilesTabWidget* MainWindowTabsWidget::addedFilesTab() const { return addedFilesTab_; }
+AddedFilesTabWidget* MainWindowTabsWidget::addedFilesTab() const {
+    return addedFilesTab_;
+}
 
-UploadSettingsTabWidget* MainWindowTabsWidget::uploadSettingsTab() const { return uploadSettingsTab_; }
+UploadSettingsTabWidget* MainWindowTabsWidget::uploadSettingsTab() const {
+    return uploadSettingsTab_;
+}
 
 void MainWindowTabsWidget::configureUploadSettings(UploadEngineManager* uploadEngineManager,
                                                    const ServerProfile& imageProfile,
@@ -278,13 +142,19 @@ void MainWindowTabsWidget::configureUploadSettings(UploadEngineManager* uploadEn
     uploadSettingsTab_->configure(uploadEngineManager, imageProfile, fileProfile);
 }
 
-void MainWindowTabsWidget::setPendingFilesModel(ThumbnailListModel* model) { addedFilesTab_->setModel(model); }
+void MainWindowTabsWidget::setPendingFilesModel(ThumbnailListModel* model) {
+    addedFilesTab_->setModel(model);
+}
 
 void MainWindowTabsWidget::setPendingFilesCount(int count) {
     tabSwitcher_->setAddedFilesCount(count);
     uploadSettingsTab_->setFileCount(count);
 }
 
-int MainWindowTabsWidget::currentIndex() const { return tabSwitcher_->currentIndex(); }
+int MainWindowTabsWidget::currentIndex() const {
+    return tabSwitcher_->currentIndex();
+}
 
-void MainWindowTabsWidget::setCurrentIndex(int index) { tabSwitcher_->setCurrentIndex(index); }
+void MainWindowTabsWidget::setCurrentIndex(int index) {
+    tabSwitcher_->setCurrentIndex(index);
+}

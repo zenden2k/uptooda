@@ -35,7 +35,7 @@
 #include "Core/AppRuntimeInfo.h"
 #include "Core/CommonDefs.h"
 #ifdef IU_ENABLE_MEDIAINFO
-#include "Func/MediaInfoHelper.h"
+#include "../../MediaInfo/MediaInfoHelper.h"
 #endif
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/IuCommonFunctions.h"

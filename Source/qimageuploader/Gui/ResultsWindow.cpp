@@ -26,9 +26,6 @@ ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> obje
     generateCode();
 }
 
-
-ResultsWindow::~ResultsWindow() { }
-
 void ResultsWindow::generateCode() {
     OutputCodeGenerator::OutputGeneratorFactory factory;
 
@@ -73,3 +70,5 @@ void ResultsWindow::onCopyToClipboard() {
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(ui->plainTextEdit->toPlainText());
 }
+
+ResultsWindow::~ResultsWindow() = default;

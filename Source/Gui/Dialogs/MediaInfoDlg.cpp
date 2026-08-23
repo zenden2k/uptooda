@@ -22,7 +22,7 @@
 
 #include <boost/format.hpp>
 
-#include "Func/MediaInfoHelper.h"
+#include "../../MediaInfo/MediaInfoHelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"

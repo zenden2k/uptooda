@@ -1,11 +1,11 @@
 add_library(iu_mediainfo STATIC
-    ../Func/MediaInfoHelper.cpp
-    ../Func/MediaInfoHelper.h
+        MediaInfoHelper.cpp
+        MediaInfoHelper.h
 )
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES
-    ../Func/MediaInfoHelper.cpp
-    ../Func/MediaInfoHelper.h
+        MediaInfoHelper.cpp
+        MediaInfoHelper.h
 )
 
 target_link_libraries(iu_mediainfo PRIVATE iu_core mediainfo)

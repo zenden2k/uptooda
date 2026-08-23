@@ -15,8 +15,8 @@ class ResultsWindow : public QDialog
     Q_OBJECT
     
 public:
-    explicit ResultsWindow(std::vector<Uptooda::Core::OutputGenerator::UploadObject> uploadObjects, QWidget *parent = 0);
-    ~ResultsWindow();
+    explicit ResultsWindow(std::vector<Uptooda::Core::OutputGenerator::UploadObject> uploadObjects, QWidget *parent = nullptr);
+    ~ResultsWindow() override;
 protected:
 	
 private slots:
@@ -28,4 +28,4 @@ private:
     std::vector<Uptooda::Core::OutputGenerator::UploadObject> uploadObjects_;
 };
 
-#endif // FRAMEGRABBERDLG_H
+#endif // QIMAGEUPLOADER_GUI_RESULTSWINDOW_H

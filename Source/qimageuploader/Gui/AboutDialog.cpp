@@ -23,6 +23,4 @@ AboutDialog::AboutDialog(QWidget *parent):
     ui->buttonBox->addButton(btn, QDialogButtonBox::ActionRole);
 }
 
-AboutDialog::~AboutDialog() {
-    
-}
+AboutDialog::~AboutDialog() = default;

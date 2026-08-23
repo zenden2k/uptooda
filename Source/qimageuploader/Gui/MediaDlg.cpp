@@ -19,7 +19,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/QtGuiSettings.h"
 #include "Core/Video/VideoUtils.h"
-#include "Func/MediaInfoHelper.h"
+#include "../../MediaInfo/MediaInfoHelper.h"
 #include "Gui/QtImageGenerator.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"

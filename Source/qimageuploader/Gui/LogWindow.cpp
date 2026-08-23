@@ -5,11 +5,11 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
 
-LogWindow::LogWindow(QWidget *parent) :
+LogWindow::LogWindow(QWidget* parent) :
     QDialog(parent),
-	ui(new Ui::LogWindow) 
-{
-	ui->setupUi(this);
+    ui(new Ui::LogWindow) {
+    separator.fill(  QLatin1Char('-'), 70);
+    ui->setupUi(this);
     ui->plainTextEdit->setReadOnly(true);
 
     connect(ui->clearButton, &QPushButton::clicked, ui->plainTextEdit, &QPlainTextEdit::clear);
@@ -19,17 +19,15 @@ LogWindow::LogWindow(QWidget *parent) :
     setAttribute(Qt::WA_QuitOnClose, false);
 }
 
+LogWindow::~LogWindow() = default;
 
-LogWindow::~LogWindow()
-{
-}
+void LogWindow::writeLog(ILogger::LogMsgType msgType, const QString &sender,
+                          const QString &msg, const QString &info) {
 
-void LogWindow::writeLog(ILogger::LogMsgType MsgType, QString Sender, QString Msg, QString Info)
-{
-    QString line;
-    line.fill('-', 70);
-	QString msg = "Sender:" + Sender + "\r\n" + Info + "\r\n" + Msg + "\r\n" + line + "\r\n";
-    QMetaObject::invokeMethod(this, "writeLogInMainThread", Q_ARG(int, MsgType), Q_ARG(QString, msg));
+    QString message = QStringLiteral("Sender:%1\r\n%2\r\n%3\r\n%4\r\n")
+                           .arg(sender, info, msg, separator);
+
+    QMetaObject::invokeMethod(this, "writeLogInMainThread", Q_ARG(int, msgType), Q_ARG(QString, message));
 }
 
 void LogWindow::writeLogInMainThread(int msgType, QString msg) {
@@ -43,4 +41,3 @@ void LogWindow::writeLogInMainThread(int msgType, QString msg) {
         }
     }
 }
-

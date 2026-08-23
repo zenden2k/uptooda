@@ -294,7 +294,7 @@ QString ImageViewerWindow::findImageFile(bool forward, bool includeCurrent) {
         return { };
     }
 
-    const QString initialFile = source_->currentFile();
+    QString initialFile = source_->currentFile();
     if (includeCurrent && isSupportedImageFile(initialFile)) {
         return initialFile;
     }

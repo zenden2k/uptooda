@@ -24,22 +24,28 @@ public:
     QString currentFile() const override {
         return currentIndex_ >= 0 && currentIndex_ < fileNames_.size() ? fileNames_[currentIndex_] : QString { };
     }
+
     QString nextFile() override {
         if (hasNext()) {
             currentIndex_ = (currentIndex_ + 1) % fileNames_.size();
         }
         return currentFile();
     }
+
     QString previousFile() override {
         if (hasPrevious()) {
             currentIndex_ = (currentIndex_ - 1 + fileNames_.size()) % fileNames_.size();
         }
         return currentFile();
     }
+
     bool hasNext() const override {
         return currentIndex_ >= 0 && currentIndex_ < fileNames_.size() && fileNames_.size() > 1;
     }
-    bool hasPrevious() const override { return hasNext(); }
+
+    bool hasPrevious() const override {
+        return hasNext();
+    }
 
 private:
     QStringList fileNames_;

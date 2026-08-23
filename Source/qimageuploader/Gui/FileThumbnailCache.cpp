@@ -19,8 +19,6 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-
-// shellapi.h requires the base Windows types declared by windows.h.
 #include <shellapi.h>
 #endif
 

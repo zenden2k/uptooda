@@ -1,7 +1,7 @@
 #include "ImageGenerator.h"
 
 #ifdef IU_ENABLE_MEDIAINFO
-#include "MediaInfoHelper.h"
+#include "../MediaInfo/MediaInfoHelper.h"
 #endif
 #include "Core/ServiceLocator.h"
 #include "3rdpart/GdiplusH.h"

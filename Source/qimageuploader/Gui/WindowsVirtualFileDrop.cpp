@@ -18,7 +18,6 @@
 #include <objidl.h>
 
 namespace {
-
 const QString VIRTUAL_FILE_NAMES_MIME_TYPE = QStringLiteral("application/x-uptooda-windows-virtual-file-names");
 const QString VIRTUAL_FILE_CONTENTS_MIME_TYPE = QStringLiteral("application/x-uptooda-windows-virtual-file-contents");
 
@@ -35,8 +34,8 @@ bool IsValidDescriptorGroup(HGLOBAL handle, const DescriptorGroup* group) {
 QString SafeFileName(const QString& fileName) {
     const QString result = QFileInfo(QDir::fromNativeSeparators(fileName)).fileName();
     return result.isEmpty() || result == QStringLiteral(".") || result == QStringLiteral("..")
-        ? QStringLiteral("phone-file")
-        : result;
+               ? QStringLiteral("phone-file")
+               : result;
 }
 
 QString UniqueDestination(const QString& fileName) {
@@ -46,7 +45,7 @@ QString UniqueDestination(const QString& fileName) {
     for (int suffixNumber = 2; QFileInfo::exists(destination); ++suffixNumber) {
         const QString suffix = fileInfo.suffix();
         const QString numberedName = fileInfo.completeBaseName() + QStringLiteral("_%1").arg(suffixNumber)
-            + (suffix.isEmpty() ? QString { } : QStringLiteral(".") + suffix);
+            + (suffix.isEmpty() ? QString{} : QStringLiteral(".") + suffix);
         destination = directory.filePath(numberedName);
     }
     return destination;
@@ -85,7 +84,7 @@ bool SaveStream(IStream* stream, QFile& destination) {
     if (!stream) {
         return false;
     }
-    LARGE_INTEGER start { };
+    LARGE_INTEGER start{};
     stream->Seek(start, STREAM_SEEK_SET, nullptr);
     char buffer[64 * 1024];
     while (true) {
@@ -106,9 +105,11 @@ bool SaveStream(IStream* stream, QFile& destination) {
 template <typename FileDescriptor>
 bool SaveFileContents(IDataObject* dataObject, LONG index, const FileDescriptor& descriptor,
                       const QString& descriptorFileName, QString* savedFileName) {
-    FORMATETC contentsFormat { static_cast<CLIPFORMAT>(RegisterClipboardFormatW(CFSTR_FILECONTENTS)), nullptr,
-                               DVASPECT_CONTENT, index, TYMED_HGLOBAL | TYMED_ISTREAM };
-    STGMEDIUM contents { };
+    FORMATETC contentsFormat{
+        static_cast<CLIPFORMAT>(RegisterClipboardFormatW(CFSTR_FILECONTENTS)), nullptr,
+        DVASPECT_CONTENT, index, TYMED_HGLOBAL | TYMED_ISTREAM
+    };
+    STGMEDIUM contents{};
     if (FAILED(dataObject->GetData(&contentsFormat, &contents))) {
         return false;
     }
@@ -137,10 +138,10 @@ bool SaveFileContents(IDataObject* dataObject, LONG index, const FileDescriptor&
 
 template <typename DescriptorGroup, typename FileNameConverter>
 QStringList MaterializeDescriptorGroup(IDataObject* dataObject, CLIPFORMAT format, FileNameConverter convertName) {
-    FORMATETC descriptorFormat { format, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-    STGMEDIUM descriptors { };
+    FORMATETC descriptorFormat{format, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    STGMEDIUM descriptors{};
     if (FAILED(dataObject->GetData(&descriptorFormat, &descriptors))) {
-        return { };
+        return {};
     }
 
     QStringList result;
@@ -164,10 +165,10 @@ QStringList MaterializeDescriptorGroup(IDataObject* dataObject, CLIPFORMAT forma
 
 template <typename DescriptorGroup, typename FileNameConverter>
 QStringList ReadDescriptorNames(IDataObject* dataObject, CLIPFORMAT format, FileNameConverter convertName) {
-    FORMATETC descriptorFormat { format, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-    STGMEDIUM descriptors { };
+    FORMATETC descriptorFormat{format, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    STGMEDIUM descriptors{};
     if (FAILED(dataObject->GetData(&descriptorFormat, &descriptors))) {
-        return { };
+        return {};
     }
 
     QStringList result;
@@ -196,36 +197,37 @@ class VirtualFileMimeConverter final : public QWindowsMimeConverter {
 public:
     bool canConvertFromMime(const FORMATETC&, const QMimeData*) const override { return false; }
     bool convertFromMime(const FORMATETC&, const QMimeData*, STGMEDIUM*) const override { return false; }
-    QList<FORMATETC> formatsForMime(const QString&, const QMimeData*) const override { return { }; }
+    QList<FORMATETC> formatsForMime(const QString&, const QMimeData*) const override { return {}; }
 
     bool canConvertToMime(const QString& mimeType, IDataObject* dataObject) const override {
         if ((mimeType != VIRTUAL_FILE_NAMES_MIME_TYPE && mimeType != VIRTUAL_FILE_CONTENTS_MIME_TYPE) || !dataObject) {
             return false;
         }
-        FORMATETC format { descriptorFormat(dataObject), nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        FORMATETC format{descriptorFormat(dataObject), nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
         return format.cfFormat && SUCCEEDED(dataObject->QueryGetData(&format));
     }
 
     QVariant convertToMime(const QString& mimeType, IDataObject* dataObject, QMetaType) const override {
         if ((mimeType != VIRTUAL_FILE_NAMES_MIME_TYPE && mimeType != VIRTUAL_FILE_CONTENTS_MIME_TYPE) || !dataObject) {
-            return { };
+            return {};
         }
-        return EncodeFileNames(mimeType == VIRTUAL_FILE_NAMES_MIME_TYPE ? readFileNames(dataObject)
-                                                                        : materializeFiles(dataObject));
+        return EncodeFileNames(mimeType == VIRTUAL_FILE_NAMES_MIME_TYPE
+                                   ? readFileNames(dataObject)
+                                   : materializeFiles(dataObject));
     }
 
     QString mimeForFormat(const FORMATETC& format) const override {
         const CLIPFORMAT unicodeFormat = RegisterClipboardFormatW(CFSTR_FILEDESCRIPTORW);
         const CLIPFORMAT ansiFormat = RegisterClipboardFormatA("FileGroupDescriptor");
         return format.tymed & TYMED_HGLOBAL && (format.cfFormat == unicodeFormat || format.cfFormat == ansiFormat)
-            ? VIRTUAL_FILE_NAMES_MIME_TYPE
-            : QString { };
+                   ? VIRTUAL_FILE_NAMES_MIME_TYPE
+                   : QString{};
     }
 
 private:
     static QStringList readFileNames(IDataObject* dataObject) {
         const CLIPFORMAT unicodeFormat = RegisterClipboardFormatW(CFSTR_FILEDESCRIPTORW);
-        FORMATETC format { unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        FORMATETC format{unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
         if (SUCCEEDED(dataObject->QueryGetData(&format))) {
             return ReadDescriptorNames<FILEGROUPDESCRIPTORW>(dataObject, unicodeFormat, [](const wchar_t* name) {
                 return QString::fromWCharArray(name, wcsnlen(name, MAX_PATH));
@@ -238,7 +240,7 @@ private:
 
     static QStringList materializeFiles(IDataObject* dataObject) {
         const CLIPFORMAT unicodeFormat = RegisterClipboardFormatW(CFSTR_FILEDESCRIPTORW);
-        FORMATETC format { unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        FORMATETC format{unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
         if (SUCCEEDED(dataObject->QueryGetData(&format))) {
             return MaterializeDescriptorGroup<FILEGROUPDESCRIPTORW>(dataObject, unicodeFormat, [](const wchar_t* name) {
                 return QString::fromWCharArray(name, wcsnlen(name, MAX_PATH));
@@ -251,36 +253,42 @@ private:
 
     static CLIPFORMAT descriptorFormat(IDataObject* dataObject) {
         const CLIPFORMAT unicodeFormat = RegisterClipboardFormatW(CFSTR_FILEDESCRIPTORW);
-        FORMATETC unicodeDescriptor { unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        FORMATETC unicodeDescriptor{unicodeFormat, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
         if (SUCCEEDED(dataObject->QueryGetData(&unicodeDescriptor))) {
             return unicodeFormat;
         }
         return RegisterClipboardFormatA("FileGroupDescriptor");
     }
 };
-
 } // namespace
+
 namespace VirtualFileDrop {
 
-void installConverter() { new VirtualFileMimeConverter; }
+void installConverter() {
+    new VirtualFileMimeConverter;
+}
 
-bool hasFiles(const QMimeData* mimeData) { return mimeData && mimeData->hasFormat(VIRTUAL_FILE_NAMES_MIME_TYPE); }
+bool hasFiles(const QMimeData* mimeData) {
+    return mimeData && mimeData->hasFormat(VIRTUAL_FILE_NAMES_MIME_TYPE);
+}
 
 QStringList DecodeFileNames(const QMimeData* mimeData, const QString& mimeType) {
     if (!mimeData) {
-        return { };
+        return {};
     }
     QByteArray encoded = mimeData->data(mimeType);
     QDataStream stream(&encoded, QIODevice::ReadOnly);
     QStringList result;
     stream >> result;
-    return stream.status() == QDataStream::Ok ? result : QStringList { };
+    return stream.status() == QDataStream::Ok ? result : QStringList{};
 }
 
-QStringList fileNames(const QMimeData* mimeData) { return DecodeFileNames(mimeData, VIRTUAL_FILE_NAMES_MIME_TYPE); }
+QStringList fileNames(const QMimeData* mimeData) {
+    return DecodeFileNames(mimeData, VIRTUAL_FILE_NAMES_MIME_TYPE);
+}
 
 QStringList materializeFiles(const QMimeData* mimeData) {
-    return hasFiles(mimeData) ? DecodeFileNames(mimeData, VIRTUAL_FILE_CONTENTS_MIME_TYPE) : QStringList { };
+    return hasFiles(mimeData) ? DecodeFileNames(mimeData, VIRTUAL_FILE_CONTENTS_MIME_TYPE) : QStringList{};
 }
 
 } // namespace VirtualFileDrop

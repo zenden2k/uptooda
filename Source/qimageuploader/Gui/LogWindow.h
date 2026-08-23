@@ -14,13 +14,14 @@ class LogWindow : public QDialog
     Q_OBJECT
  
 public:
-    explicit LogWindow(QWidget *parent = 0);
-    ~LogWindow();
-	void writeLog(ILogger::LogMsgType MsgType, QString Sender, QString  Msg, QString Info);
+    explicit LogWindow(QWidget *parent = nullptr);
+    ~LogWindow() override;
+    void writeLog(ILogger::LogMsgType msgType, const QString &sender,
+                          const QString &msg, const QString &info);
 protected:
 	std::unique_ptr<Ui::LogWindow> ui;
     Q_INVOKABLE void writeLogInMainThread(int msgType, QString msg);
-
+    QString separator;
 };
 
-#endif // FRAMEGRABBERDLG_H
+#endif // QIMAGEUPLOADER_GUI_LOGWINDOW_H

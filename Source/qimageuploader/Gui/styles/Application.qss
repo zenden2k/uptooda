@@ -41,11 +41,11 @@ QMenu::separator {
     background: #e6ebf0;
     margin: 2px 0;
 }
-QToolBar#mainToolBar {
+QToolBar {
     background-color: #f9fbfd;
     border: 1px solid #e1e7ee;
     spacing: 0;
-    padding: 5px 10px;
+    padding: 5px 5px 5px 5px;
 }
 QWidget#tabSwitcher {
     background-color: #ffffff;
@@ -114,7 +114,7 @@ QPushButton:disabled, QToolButton:disabled {
     background: #eef2f6;
     border-color: #d5dee7;
 }
-QPushButton#grabButton {
+QPushButton.highlighted {
     color: #ffffff;
     background: #2789c9;
     border-color: #1f78b4;

@@ -14,6 +14,9 @@ class ThumbnailListModel;
 class ThumbnailListView;
 class UploadEngineManager;
 class UploadSessionListWidget;
+class AddedFilesTabWidget;
+class UploadSettingsTabWidget;
+class UploadsTabWidget;
 
 class TabSwitcherWidget : public QWidget {
     Q_OBJECT
@@ -36,68 +39,6 @@ private:
     int currentIndex_ = 0;
 };
 
-class AddedFilesTabWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit AddedFilesTabWidget(QWidget* parent = nullptr);
-
-    void setModel(ThumbnailListModel* model);
-    void revealRow(int row);
-
-signals:
-    void clearRequested();
-    void removeRequested(const QList<int>& rows);
-    void openRequested(int row);
-    void nextRequested();
-
-private:
-    void updateState();
-
-    ThumbnailListView* listView_ = nullptr;
-    QPushButton* removeButton_ = nullptr;
-    QPushButton* clearButton_ = nullptr;
-    QPushButton* nextButton_ = nullptr;
-    ThumbnailListModel* model_ = nullptr;
-};
-
-class UploadSettingsTabWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit UploadSettingsTabWidget(QWidget* parent = nullptr);
-
-    void configure(UploadEngineManager* uploadEngineManager, const ServerProfile& imageProfile,
-                   const ServerProfile& fileProfile);
-    void setFileCount(int count);
-    ServerProfile imageServerProfile() const;
-    ServerProfile fileServerProfile() const;
-    void fillServerIcons();
-
-signals:
-    void backRequested();
-    void uploadRequested();
-
-private:
-    QWidget* form_ = nullptr;
-    QLabel* fileCountLabel_ = nullptr;
-    ServerSelectorWidget* imageServerWidget_ = nullptr;
-    ServerSelectorWidget* fileServerWidget_ = nullptr;
-    QPushButton* uploadButton_ = nullptr;
-};
-
-class UploadsTabWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit UploadsTabWidget(QWidget* parent = nullptr);
-
-    UploadSessionListWidget* sessionList() const;
-
-private:
-    QStackedWidget* stack_ = nullptr;
-    UploadSessionListWidget* sessionList_ = nullptr;
-};
 
 class EmptyTabWidget : public QWidget {
     Q_OBJECT
