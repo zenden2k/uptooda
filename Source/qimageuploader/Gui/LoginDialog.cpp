@@ -57,10 +57,10 @@ void LoginDialog::onAccept() {
         QMessageBox::critical(this, tr("Error"), tr("Login cannot be empty"));
         return;
     }
-    std::string serverNameA = serverProfile_.serverName();
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
+    std::string serverNameU8 = serverProfile_.serverName();
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
     // /* !ignoreExistingAccount_ &&  */
-    if (createNew_ && Settings.ServersSettings[serverNameA].find(li.Login) != Settings.ServersSettings[serverNameA].
+    if (createNew_ && settings->ServersSettings[serverNameU8].find(li.Login) != settings->ServersSettings[serverNameU8].
         end()) {
         QMessageBox::critical(this, tr("Error"), tr("Account with such name already exists."));
         return;
@@ -77,7 +77,7 @@ void LoginDialog::onAccept() {
     li.DoAuth = true;
     //uploadEngineManager_->resetAuthorization(serverProfile_);
 
-    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
+    ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_, true);
     if (serverSettings) {
         serverSettings->authData = li;
     }

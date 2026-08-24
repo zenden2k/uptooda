@@ -177,7 +177,7 @@ FileThumbnailCache::FileThumbnailCache() : impl_(std::make_unique<Impl>()) {
 
 FileThumbnailCache::~FileThumbnailCache() = default;
 
-std::optional<FileThumbnailCache::Thumbnail> FileThumbnailCache::cached(const QString& fileName) {
+std::optional<FileThumbnailCache::Thumbnail> FileThumbnailCache::cached(const QString& fileName) const {
     const QString key = CacheKey(fileName);
     const auto cached = impl_->Cache.constFind(key);
     if (cached == impl_->Cache.cend() || cached->LastModified != QFileInfo(key).lastModified()) {

@@ -266,7 +266,11 @@ QString sizeText(qint64 bytes) {
     if (bytes < 1024 * 1024) {
         return QStringLiteral("%1 KB").arg(bytes / 1024.0, 0, 'f', 1);
     }
-    return QStringLiteral("%1 MB").arg(bytes / (1024.0 * 1024.0), 0, 'f', 1);
+
+    if (bytes < 1024 * 1024 * 1024) {
+        return QStringLiteral("%1 MB").arg(bytes / (1024.0 * 1024.0), 0, 'f', 1);
+    }
+    return QStringLiteral("%1 GB").arg(bytes / (1024.0 * 1024.0 * 1024.0), 0, 'f', 1);
 }
 
 QIcon serverIcon(const std::string& serverName) {
@@ -277,9 +281,7 @@ QIcon serverIcon(const std::string& serverName) {
 
 void clearLayout(QLayout* layout) {
     while (QLayoutItem* item = layout->takeAt(0)) {
-        if (QWidget* widget = item->widget()) {
-            delete widget;
-        }
+        delete item->widget();
         delete item;
     }
 }
@@ -521,7 +523,7 @@ void UploadSessionListWidget::refresh() {
                 } else {
                     const QPointer<ThumbnailLabel> guardedThumbnail(thumbnail);
                     cache.request(
-                        fileName, this, [this, guardedThumbnail, session, task](FileThumbnailCache::Thumbnail result) {
+                        fileName, this, [this, guardedThumbnail, session, task](const FileThumbnailCache::Thumbnail& result) {
                             if (!guardedThumbnail) {
                                 return;
                             }

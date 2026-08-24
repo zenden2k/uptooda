@@ -17,11 +17,11 @@ public:
         bool IsImage = false;
     };
 
-    using Callback = std::function<void(Thumbnail)>;
+    using Callback = std::function<void(const Thumbnail&)>;
 
     static FileThumbnailCache& instance();
 
-    std::optional<Thumbnail> cached(const QString& fileName);
+    std::optional<Thumbnail> cached(const QString& fileName) const;
     void request(const QString& fileName, QObject* context, Callback callback);
 
 private:

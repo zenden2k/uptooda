@@ -26,9 +26,9 @@ void ProgressRingWidget::paintEvent(QPaintEvent*) {
     const QRectF rectangle((width() - diameter) / 2.0, (height() - diameter) / 2.0, diameter, diameter);
 
     // int startAngle = (int)(qMin(0.0, current_) * 360);
-    int startAngle = (int)(current_ * 360 * -16);
+    int startAngle = static_cast<int>(current_ * 360 * -16);
     // int spanAngle = (int)(qMin(0.2, current_+0.2) * 360);
-    int spanAngle = (int)((0.5) * 360 * -16);
+    int spanAngle = static_cast<int>((0.5) * 360 * -16);
 
 
     p.drawArc(rectangle, startAngle, spanAngle);
