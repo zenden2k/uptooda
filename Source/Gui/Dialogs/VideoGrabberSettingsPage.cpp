@@ -40,7 +40,7 @@ LRESULT CVideoGrabberSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     SetDlgItemInt(IDC_TILEWIDTH, Settings.VideoSettings.TileWidth);
     SetDlgItemInt(IDC_GAPWIDTH, Settings.VideoSettings.GapWidth);
     SetDlgItemInt(IDC_GAPHEIGHT, Settings.VideoSettings.GapHeight);
-    WinUtils::StringToFont(Settings.VideoSettings.Font, &m_Font);
+    WinUtils::StringToFont(U2W(Settings.VideoSettings.Font), &m_Font);
     SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_SETCHECK, Settings.VideoSettings.ShowMediaInfo);
 
     SetWindowText(TR("Appearance options"));
@@ -78,8 +78,8 @@ LRESULT CVideoGrabberSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 
     textColorButton_.SubclassWindow(GetDlgItem(IDC_TEXTCOLOR));
     textColorButton_.SetColor(Settings.VideoSettings.TextColor);
-    SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT, Settings.VideoSettings.SnapshotsFolder);
-    SetDlgItemText(IDC_SNAPSHOTFILENAMEEDIT, Settings.VideoSettings.SnapshotFileTemplate);
+    SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT, U2W(Settings.VideoSettings.SnapshotsFolder));
+    SetDlgItemText(IDC_SNAPSHOTFILENAMEEDIT, U2W(Settings.VideoSettings.SnapshotFileTemplate));
 
     BOOL b;
     OnShowMediaInfoTextBnClicked(IDC_MEDIAINFOONIMAGE, 0, 0, b);
@@ -116,9 +116,11 @@ bool CVideoGrabberSettingsPage::apply()
     Settings.VideoSettings.GapWidth = GetDlgItemInt(IDC_GAPWIDTH);
     Settings.VideoSettings.GapHeight = GetDlgItemInt(IDC_GAPHEIGHT);
     Settings.VideoSettings.ShowMediaInfo = SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_GETCHECK);
-    WinUtils::FontToString(&m_Font, Settings.VideoSettings.Font);
-    Settings.VideoSettings.SnapshotsFolder = GuiTools::GetDlgItemText(m_hWnd, IDC_VIDEOSNAPSHOTSFOLDEREDIT);
-    Settings.VideoSettings.SnapshotFileTemplate = GuiTools::GetDlgItemText(m_hWnd, IDC_SNAPSHOTFILENAMEEDIT);
+    CString font;
+    WinUtils::FontToString(&m_Font, font);
+    Settings.VideoSettings.Font = W2U(font);
+    Settings.VideoSettings.SnapshotsFolder = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_VIDEOSNAPSHOTSFOLDEREDIT));
+    Settings.VideoSettings.SnapshotFileTemplate = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_SNAPSHOTFILENAMEEDIT));
 
     Settings.VideoSettings.TextColor = textColorButton_.GetColor();
 

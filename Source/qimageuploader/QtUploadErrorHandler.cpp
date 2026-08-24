@@ -20,7 +20,8 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
         infoText += QString::fromUtf8(_("File: ").str().c_str()) + U2Q(errorInfo.FileName) + "\n";
 
     if (!errorInfo.ServerName.empty()) {
-        std::string serverNameU8 = (errorInfo.uploadEngineData && engineList_) ? engineList_->getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName;
+        std::string serverNameU8 = (errorInfo.uploadEngineData && engineList_)
+        ? CUploadEngineListBase::getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName;
         QString serverName = U2Q(serverNameU8);
         if (!errorInfo.sender.empty())
             serverName += "(" + U2Q(errorInfo.sender) + ")";

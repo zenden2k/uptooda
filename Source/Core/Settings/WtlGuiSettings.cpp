@@ -492,19 +492,6 @@ WtlGuiSettings::WtlGuiSettings() :
     AutoShowLog = true;
 
     //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
-    VideoSettings.Font = _T("Tahoma,12,,204");
-
-    VideoSettings.Columns = 3;
-    VideoSettings.TileWidth = 200;
-    VideoSettings.GapWidth = 5;
-    VideoSettings.GapHeight = 7;
-    VideoSettings.NumOfFrames = 8;
-    VideoSettings.JPEGQuality = 100;
-    VideoSettings.ShowMediaInfo = TRUE;
-    VideoSettings.TextColor = RGB(0, 0, 0);
-    VideoSettings.SnapshotsFolder.Empty();
-    VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
-
     VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
 
     MediaInfoSettings.InfoType = 0; // generate short summary
@@ -825,20 +812,6 @@ void WtlGuiSettings::BindToManager() {
     thumbnails["Text"]["@Font"].bind(ThumbSettings.ThumbFont);
     thumbnails["Text"]["@TextOverThumb"].bind(ThumbSettings.TextOverThumb);
     thumbnails["Text"]["@ThumbAlpha"].bind(ThumbSettings.ThumbAlpha);*/
-
-    SettingsNode& video = mgr_["VideoGrabber"];
-    video.nm_bind(VideoSettings, Columns);
-    video.nm_bind(VideoSettings, TileWidth);
-    video.nm_bind(VideoSettings, GapWidth);
-    video.nm_bind(VideoSettings, GapHeight);
-    video.nm_bind(VideoSettings, NumOfFrames);
-    video.nm_bind(VideoSettings, JPEGQuality);
-    video.nm_bind(VideoSettings, ShowMediaInfo);
-    video.nm_bind(VideoSettings, TextColor);
-    video.nm_bind(VideoSettings, Font);
-    video.nm_bind(VideoSettings, Engine);
-    video.nm_bind(VideoSettings, SnapshotsFolder);
-    video.nm_bind(VideoSettings, SnapshotFileTemplate);
 
     SettingsNode& mediaInfo = mgr_["MediaInfo"];
     mediaInfo.nm_bind(MediaInfoSettings, InfoType);

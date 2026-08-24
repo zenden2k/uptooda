@@ -4,7 +4,8 @@
 
 namespace VirtualFileDrop {
 
-void installConverter() { }
+void installConverter() {
+}
 
 bool hasFiles(const QMimeData*) {
     return false;

@@ -404,14 +404,16 @@ void MainWindow::dropEvent(QDropEvent* event) {
     if (action == FileDropHighlight::Action::ExtractFrames && fileNames.size() == 1
         && IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions)) {
         event->acceptProposedAction();
-        openMediaDialog(fileNames.first());
+        const QString fileName = fileNames.first();
+        QTimer::singleShot(0, this, [this, fileName] { openMediaDialog(fileName); });
         return;
     }
     if (action == FileDropHighlight::Action::FileInformation && fileNames.size() == 1
         && (IsFileOfType(fileNames.first(), VideoUtils::videoFilesExtensions)
             || IsFileOfType(fileNames.first(), VideoUtils::audioFilesExtensions))) {
         event->acceptProposedAction();
-        openMediaDialog(fileNames.first(), true);
+        const QString fileName = fileNames.first();
+        QTimer::singleShot(0, this, [this, fileName] { openMediaDialog(fileName, true); });
         return;
     }
     addMultipleFilesToList(fileNames);
@@ -816,6 +818,4 @@ std::shared_ptr<UploadTask> MainWindow::findTask(UploadTask* task) const {
     return { };
 }
 
-UploadSessionListWidget* MainWindow::uploadSessionList() const {
-    return ui->mainTabs->uploadsTab()->sessionList();
-}
+UploadSessionListWidget* MainWindow::uploadSessionList() const { return ui->mainTabs->uploadsTab()->sessionList(); }

@@ -11,14 +11,28 @@
 #include <limits>
 #include <utility>
 
-#include "Core/CommonDefs.h"
 #include "../../MediaInfo/MediaInfoHelper.h"
+#include "Core/CommonDefs.h"
 
 namespace {
 
 constexpr int LABEL_FONT_SIZE = 14;
 constexpr int INFO_FONT_SIZE = 12;
 constexpr int INFO_TO_FRAMES_GAP = 3;
+
+QFont mediaInfoFont(const std::string& serializedFont) {
+    const QStringList parts = QString::fromStdString(serializedFont).split(QLatin1Char(','));
+    QFont font(parts.value(0, QStringLiteral("Tahoma")));
+    bool validSize = false;
+    const int size = parts.value(1).toInt(&validSize);
+    font.setPixelSize(validSize && size > 0 ? size : INFO_FONT_SIZE);
+    font.setBold(parts.value(2).contains(QLatin1Char('b'), Qt::CaseInsensitive));
+    return font;
+}
+
+QColor colorFromRgbValue(uint32_t color) {
+    return QColor::fromRgb(color & 0xff, (color >> 8) & 0xff, (color >> 16) & 0xff);
+}
 
 QImage loadImage(const QString& fileName) {
     QImageReader reader(fileName);
@@ -51,8 +65,10 @@ void drawImageTitle(QPainter& painter, const QRect& tileRect, const QString& tit
 
 } // namespace
 
-QtImageGenerator::QtImageGenerator(QVector<FileItem> files, QString mediaFile, Options options, QObject* parent) :
-    QObject(parent), files_(std::move(files)), mediaFile_(std::move(mediaFile)), options_(std::move(options)) {
+QtImageGenerator::QtImageGenerator(QVector<FileItem> files, QString mediaFile, VideoSettingsStruct videoSettings,
+                                   Options options, QObject* parent) :
+    QObject(parent), files_(std::move(files)), mediaFile_(std::move(mediaFile)),
+    videoSettings_(std::move(videoSettings)), options_(std::move(options)) {
     connect(&watcher_, &QFutureWatcher<GenerationResult>::finished, this, [this] {
         const GenerationResult result = watcher_.result();
         emit finished(result.Success, result.Canceled, result.OutputFileName, result.ErrorMessage);
@@ -84,7 +100,7 @@ QtImageGenerator::GenerationResult QtImageGenerator::generate() {
 
     QString mediaInfo;
 #ifdef IU_ENABLE_MEDIAINFO
-    if (options_.ShowMediaInfo && !mediaFile_.isEmpty()) {
+    if (videoSettings_.ShowMediaInfo && !mediaFile_.isEmpty()) {
         std::string summary;
         std::string fullInfo;
         MediaInfoHelper::GetMediaFileInfo(Q2U(mediaFile_), summary, fullInfo, options_.EnableMediaInfoLocalization);
@@ -106,17 +122,16 @@ QtImageGenerator::GenerationResult QtImageGenerator::generate() {
         return { false, false, { }, tr("None of the selected frame images could be loaded.") };
     }
 
-    const int columns = qMax(1, qMin(options_.Columns, maximum));
+    const int columns = qMax(1, qMin(videoSettings_.Columns, maximum));
     const int rows = (maximum + columns - 1) / columns;
-    const int tileWidth = qMax(1, options_.TileWidth);
+    const int tileWidth = qMax(1, videoSettings_.TileWidth);
     const int tileHeight
         = qMax(1, qRound(static_cast<qreal>(tileWidth) * referenceImage.height() / referenceImage.width()));
-    const int gapWidth = qMax(0, options_.GapWidth);
-    const int gapHeight = qMax(0, options_.GapHeight);
+    const int gapWidth = qMax(0, videoSettings_.GapWidth);
+    const int gapHeight = qMax(0, videoSettings_.GapHeight);
     const int mosaicWidth = gapWidth + columns * (tileWidth + gapWidth);
 
-    QFont infoFont(QStringLiteral("Tahoma"));
-    infoFont.setPixelSize(INFO_FONT_SIZE);
+    const QFont infoFont = mediaInfoFont(videoSettings_.Font);
     const QFontMetrics infoMetrics(infoFont);
     const int infoTextWidth = qMax(1, mosaicWidth - gapWidth * 2);
     const int infoTextHeight = mediaInfo.isEmpty()
@@ -143,7 +158,7 @@ QtImageGenerator::GenerationResult QtImageGenerator::generate() {
     if (!mediaInfo.isEmpty()) {
         painter.save();
         painter.setFont(infoFont);
-        painter.setPen(Qt::black);
+        painter.setPen(colorFromRgbValue(videoSettings_.TextColor));
         painter.drawText(QRect(gapWidth, gapHeight, infoTextWidth, infoTextHeight), Qt::TextWordWrap, mediaInfo);
         painter.restore();
     }

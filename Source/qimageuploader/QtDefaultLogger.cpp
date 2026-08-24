@@ -7,9 +7,9 @@ QtDefaultLogger::QtDefaultLogger(LogWindow* logWindow) {
     logWindow_ = logWindow;
 }
 
-void QtDefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg,
-                            const std::string& Info, const std::string&  FileName, bool fromSink) {
-    logWindow_->writeLog(MsgType, U2Q(Sender), U2Q(Msg), U2Q(Info));
+void QtDefaultLogger::write(LogMsgType msgType, const std::string& sender, const std::string& msg,
+                            const std::string& info, const std::string&  fileName, bool fromSink) {
+    logWindow_->writeLog(msgType, U2Q(sender), U2Q(msg), U2Q(info));
 }
 
 #ifdef _WIN32

@@ -3,7 +3,12 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QCloseEvent>
+#include <QCoreApplication>
 #include <QDir>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDatabase>
@@ -11,16 +16,20 @@
 #include <QImageWriter>
 #include <QItemSelectionModel>
 #include <QMessageBox>
+#include <QMimeData>
+#include <QPainter>
+#include <QResizeEvent>
 #include <QTemporaryFile>
 #include <QtConcurrentRun>
 
+#include "../../MediaInfo/MediaInfoHelper.h"
 #include "Core/AppRuntimeInfo.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/QtGuiSettings.h"
 #include "Core/Video/VideoUtils.h"
-#include "../../MediaInfo/MediaInfoHelper.h"
 #include "Gui/QtImageGenerator.h"
+#include "Gui/VirtualFileDrop.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "Video/QtImage.h"
@@ -29,12 +38,60 @@
 
 Q_DECLARE_METATYPE(AbstractImage*)
 
+class MediaDropHighlight final : public QWidget {
+public:
+    explicit MediaDropHighlight(QWidget* parent = nullptr) : QWidget(parent) { }
+
+protected:
+    void paintEvent(QPaintEvent*) override {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.fillRect(rect(), QColor(232, 246, 255, 235));
+
+        const QRectF borderRect = QRectF(rect()).adjusted(10.5, 10.5, -10.5, -10.5);
+        QPen borderPen(QColor(QStringLiteral("#399bd8")), 3, Qt::DashLine);
+        borderPen.setDashPattern({ 7, 5 });
+        painter.setPen(borderPen);
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRoundedRect(borderRect, 12, 12);
+
+        QFont font = painter.font();
+        font.setPointSize(qMax(20, font.pointSize() + 10));
+        font.setBold(true);
+        painter.setFont(font);
+        painter.setPen(QColor(QStringLiteral("#197db8")));
+        painter.drawText(rect().adjusted(24, 24, -24, -24), Qt::AlignCenter | Qt::TextWordWrap,
+                         QCoreApplication::translate("MediaDlg", "Drop a media file"));
+    }
+};
+
 namespace {
 
 struct MediaInfoResult {
     std::string Summary;
     std::string FullInfo;
 };
+
+QStringList LocalFilesFromMimeData(const QMimeData* mimeData) {
+    QStringList result;
+    if (!mimeData || !mimeData->hasUrls()) {
+        return result;
+    }
+    for (const QUrl& url : mimeData->urls()) {
+        if (!url.isLocalFile()) {
+            continue;
+        }
+        const QString fileName = QFileInfo(url.toLocalFile()).absoluteFilePath();
+        if (QFileInfo(fileName).isFile()) {
+            result.append(fileName);
+        }
+    }
+    return result;
+}
+
+bool IsThumbnailListInternalDrag(const QMimeData* mimeData) {
+    return mimeData && mimeData->hasFormat(ThumbnailListModel::internalMimeType());
+}
 
 } // namespace
 
@@ -43,6 +100,13 @@ MediaDlg::MediaDlg(QString fileName, QWidget* parent, bool showMediaInfo) : QDia
     auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    setAcceptDrops(true);
+
+    dropHighlightOverlay_ = new MediaDropHighlight(this);
+    dropHighlightOverlay_->setAttribute(Qt::WA_TransparentForMouseEvents);
+    dropHighlightOverlay_->setGeometry(rect());
+    dropHighlightOverlay_->hide();
+
     resize(820, 560);
     setMinimumSize(720, 500);
     ui->verticalLayout->setContentsMargins(20, 20, 20, 18);
@@ -174,8 +238,10 @@ void MediaDlg::on_grabButton_clicked() {
     grabber_->setVideoEngine(getVideoEngine());
 
     using namespace std::placeholders;
-    grabber_->setOnFrameGrabbed(std::bind(&MediaDlg::frameGrabbed, this, _1, _2, _3));
-    grabber_->setOnFinished(std::bind(&MediaDlg::onGrabFinished, this, _1));
+    grabber_->setOnFrameGrabbed([this](auto&& timeString, auto&& time, auto&& image) {
+        frameGrabbed(std::forward<decltype(timeString)>(timeString), time, std::forward<decltype(image)>(image));
+    });
+    grabber_->setOnFinished([this](bool success) { onGrabFinished(success); });
 
     int frameCount = ui->numOfFramesSpinBox->value();
     if (frameCount < 1) {
@@ -243,7 +309,9 @@ void MediaDlg::createMosaic() {
     options.OutputDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
 
     const int sourceCount = files.size();
-    mosaicGenerator_ = new QtImageGenerator(std::move(files), fileName_, std::move(options), this);
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    mosaicGenerator_
+        = new QtImageGenerator(std::move(files), fileName_, settings->VideoSettings, std::move(options), this);
     connect(mosaicGenerator_, &QtImageGenerator::progressChanged, this, [this](int value, int maximum) {
         ui->mosaicProgressBar->setRange(0, maximum);
         ui->mosaicProgressBar->setValue(value);
@@ -361,13 +429,76 @@ void MediaDlg::closeEvent(QCloseEvent* event) {
     reject();
 }
 
+void MediaDlg::dragEnterEvent(QDragEnterEvent* event) {
+    if (grabInProgress_ || mosaicInProgress_ || IsThumbnailListInternalDrag(event->mimeData())) {
+        dragContainsFiles_ = false;
+        dropHighlightOverlay_->hide();
+        event->ignore();
+        return;
+    }
+
+    dragContainsFiles_
+        = !LocalFilesFromMimeData(event->mimeData()).isEmpty() || VirtualFileDrop::hasFiles(event->mimeData());
+    if (!dragContainsFiles_) {
+        event->ignore();
+        return;
+    }
+
+    dropHighlightOverlay_->setGeometry(rect());
+    dropHighlightOverlay_->raise();
+    dropHighlightOverlay_->show();
+    event->acceptProposedAction();
+}
+
+void MediaDlg::dragMoveEvent(QDragMoveEvent* event) {
+    if (dragContainsFiles_) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
+    }
+}
+
+void MediaDlg::dragLeaveEvent(QDragLeaveEvent* event) {
+    dragContainsFiles_ = false;
+    dropHighlightOverlay_->hide();
+    event->accept();
+}
+
+void MediaDlg::dropEvent(QDropEvent* event) {
+    dragContainsFiles_ = false;
+    dropHighlightOverlay_->hide();
+    if (grabInProgress_ || mosaicInProgress_ || IsThumbnailListInternalDrag(event->mimeData())) {
+        event->ignore();
+        return;
+    }
+
+    QStringList fileNames = LocalFilesFromMimeData(event->mimeData());
+    if (fileNames.isEmpty()) {
+        fileNames = VirtualFileDrop::materializeFiles(event->mimeData());
+    }
+    if (fileNames.isEmpty()) {
+        event->ignore();
+        return;
+    }
+
+    setFileName(fileNames.first());
+    event->acceptProposedAction();
+}
+
+void MediaDlg::resizeEvent(QResizeEvent* event) {
+    QDialog::resizeEvent(event);
+    if (dropHighlightOverlay_) {
+        dropHighlightOverlay_->setGeometry(rect());
+    }
+}
+
 void MediaDlg::reject() {
     if (!grabInProgress_ && !mosaicInProgress_) {
         QDialog::reject();
     }
 }
 
-bool MediaDlg::isVideoFile(const QString& fileName) const {
+bool MediaDlg::isVideoFile(const QString& fileName) {
     const std::string extension = QFileInfo(fileName).suffix().toLower().toStdString();
     return VideoUtils::videoFilesExtensions.find(extension) != VideoUtils::videoFilesExtensions.end();
 }
@@ -432,18 +563,17 @@ void MediaDlg::startMediaInfoLoad() {
 }
 
 VideoGrabber::VideoEngine MediaDlg::getVideoEngine() const {
-    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
     std::string videoEngine = ui->comboBox->currentData().toString().toStdString();
 
     if (videoEngine == QtGuiSettings::VideoEngineAuto) {
-        if (!settings->IsFFmpegAvailable()) {
-            videoEngine = QtGuiSettings::VideoEngineDirectshow;
+        if (!QtGuiSettings::IsFFmpegAvailable()) {
+            videoEngine = QtGuiSettings::VideoEngineDirectshow2;
         } else {
             videoEngine = QtGuiSettings::VideoEngineFFmpeg;
             QFileInfo info(ui->lineEdit->text());
             const QString fileExtension = info.suffix().toLower();
             if (fileExtension == "wmv" || fileExtension == "asf") {
-                videoEngine = QtGuiSettings::VideoEngineDirectshow;
+                videoEngine = QtGuiSettings::VideoEngineDirectshow2;
             }
         }
     }

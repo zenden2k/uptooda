@@ -7,6 +7,8 @@
 #include <QString>
 #include <QVector>
 
+#include "Core/Settings/CommonGuiSettings.h"
+
 class QtImageGenerator final : public QObject {
     Q_OBJECT
 
@@ -17,16 +19,12 @@ public:
     };
 
     struct Options {
-        int Columns = 3;
-        int TileWidth = 200;
-        int GapWidth = 5;
-        int GapHeight = 7;
-        bool ShowMediaInfo = true;
         bool EnableMediaInfoLocalization = true;
         QString OutputDirectory;
     };
 
-    explicit QtImageGenerator(QVector<FileItem> files, QString mediaFile, Options options, QObject* parent = nullptr);
+    explicit QtImageGenerator(QVector<FileItem> files, QString mediaFile, VideoSettingsStruct videoSettings,
+                              Options options, QObject* parent = nullptr);
     ~QtImageGenerator() override;
 
     void start();
@@ -49,6 +47,7 @@ private:
 
     QVector<FileItem> files_;
     QString mediaFile_;
+    VideoSettingsStruct videoSettings_;
     Options options_;
     QAtomicInt canceled_ = 0;
     QFutureWatcher<GenerationResult> watcher_;

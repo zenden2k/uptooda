@@ -214,8 +214,8 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 
     if ( snapshotsFolder.IsEmpty() ) {
-        if ( !settings->VideoSettings.SnapshotsFolder.IsEmpty() ) {
-            CString path = settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate;
+        if ( !settings->VideoSettings.SnapshotsFolder.empty() ) {
+            CString path = U2W(settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate);
             CString snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
             snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
             std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
@@ -239,7 +239,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
         wOutDir = snapshotsFolder;
     }
-    CString snapshotFileTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(settings->VideoSettings.SnapshotFileTemplate)) );
+    CString snapshotFileTemplate = U2W(IuCoreUtils::ExtractFileNameNoExt(settings->VideoSettings.SnapshotFileTemplate));
 
 
     CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);

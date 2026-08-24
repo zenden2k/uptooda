@@ -191,9 +191,18 @@ void CommonGuiSettings::BindToManager() {
     ServerListSettings.bind(upload["ServerList"]);
 
     SettingsNode& video = mgr_["VideoGrabber"];
+    video.nm_bind(VideoSettings, Columns);
+    video.nm_bind(VideoSettings, TileWidth);
+    video.nm_bind(VideoSettings, GapWidth);
+    video.nm_bind(VideoSettings, GapHeight);
     video.nm_bind(VideoSettings, NumOfFrames);
     video.nm_bind(VideoSettings, JPEGQuality);
+    video.nm_bind(VideoSettings, ShowMediaInfo);
+    video.nm_bind(VideoSettings, TextColor);
+    video.nm_bind(VideoSettings, Font);
     video.nm_bind(VideoSettings, Engine);
+    video.nm_bind(VideoSettings, SnapshotsFolder);
+    video.nm_bind(VideoSettings, SnapshotFileTemplate);
 
     SettingsNode& screenRecording = mgr_["ScreenRecording"];
     screenRecording.nm_bind(ScreenRecordingSettings, Backend);

@@ -11,6 +11,12 @@
 #include "Video/VideoGrabber.h"
 
 class QCloseEvent;
+class QDragEnterEvent;
+class QDragLeaveEvent;
+class QDragMoveEvent;
+class QDropEvent;
+class QResizeEvent;
+class MediaDropHighlight;
 class QtImageGenerator;
 class ThumbnailListModel;
 class VideoGrabber;
@@ -45,6 +51,11 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
     void onGrabFinished(bool success);
     void reject() override;
 
@@ -52,7 +63,7 @@ private:
     static constexpr int EXTRACT_FRAMES_TAB = 0;
     static constexpr int MEDIA_INFO_TAB = 1;
 
-    bool isVideoFile(const QString& fileName) const;
+    static bool isVideoFile(const QString& fileName);
     void setFileName(const QString& fileName);
     void startMediaInfoLoad();
     void updateMosaicControls();
@@ -63,6 +74,7 @@ private:
     std::unique_ptr<VideoGrabber> grabber_;
     std::unique_ptr<ThumbnailListModel> frameModel_;
     QtImageGenerator* mosaicGenerator_ = nullptr;
+    MediaDropHighlight* dropHighlightOverlay_ = nullptr;
     QString fileName_;
     QString mediaInfoSummary_;
     QString mediaInfoFull_;
@@ -72,6 +84,7 @@ private:
     bool grabInProgress_ = false;
     bool grabCanceled_ = false;
     bool mosaicInProgress_ = false;
+    bool dragContainsFiles_ = false;
 };
 
 #endif // MEDIADLG_H

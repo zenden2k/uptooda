@@ -4,7 +4,9 @@
 #pragma once
 
 
+#include <cstdint>
 #include <map>
+#include <string>
 #include <unordered_set>
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
@@ -39,20 +41,18 @@ typedef std::map<SettingsString, ServerProfile> ServerProfilesMap;
 
 
 struct VideoSettingsStruct {
-    int Columns;
-    int TileWidth;
-    int GapWidth;
-    int GapHeight;
-    int NumOfFrames;
-    int JPEGQuality;
-    std::string Engine;
-#ifndef IU_QT
-    bool ShowMediaInfo;
-    CString Font;
-    COLORREF TextColor;
-    CString SnapshotsFolder;
-    CString SnapshotFileTemplate;
-#endif
+    int Columns = 3;
+    int TileWidth = 200;
+    int GapWidth = 5;
+    int GapHeight = 7;
+    int NumOfFrames = 8;
+    int JPEGQuality = 100;
+    std::string Engine = "Auto";
+    bool ShowMediaInfo = true;
+    std::string Font = "Tahoma,12,,204";
+    uint32_t TextColor = 0;
+    std::string SnapshotsFolder;
+    std::string SnapshotFileTemplate = "%f%_%cx%_%cy%_%uid%\\grab_%i%.png";
 };
 
 struct FFMpegSettingsStruct {

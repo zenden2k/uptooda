@@ -37,7 +37,6 @@ LoginDialog::LoginDialog(ServerProfile& serverProfile, bool createNew, QWidget* 
     ui->loginEdit->setText(accountName_);
     ui->passwordEdit->setText(U2Q(li.Password));
 
-
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::onAccept);
 }
 

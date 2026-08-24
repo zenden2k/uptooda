@@ -37,7 +37,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         Bitmap bm(100, 100, PixelFormat32bppARGB);
         Graphics g1(&bm);
 
-        auto font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
+        auto font = ImageUtils::StringToGdiplusFont(U2W(Settings.VideoSettings.Font));
 
         FontFamily ff;
         font->GetFamily(&ff);
@@ -106,7 +106,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         StringFormat format;
         format.SetAlignment(StringAlignmentNear);
         format.SetLineAlignment(StringAlignmentNear);
-        std::unique_ptr<Gdiplus::Font> font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
+        std::unique_ptr<Gdiplus::Font> font = ImageUtils::StringToGdiplusFont(U2W(Settings.VideoSettings.Font));
 
         SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
         RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));

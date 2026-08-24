@@ -47,7 +47,7 @@ protected:
         painter.rotate(angle_);
         for (int segment = 0; segment < 12; ++segment) {
             QColor color(QStringLiteral("#f0f2f4"));
-            color.setAlphaF(0.18 + segment * 0.07);
+            color.setAlphaF(0.18f + segment * 0.07f);
             painter.setPen(QPen(color, 3.2, Qt::SolidLine, Qt::RoundCap));
             painter.drawLine(QPointF(0, -11), QPointF(0, -17));
             painter.rotate(30);

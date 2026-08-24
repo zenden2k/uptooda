@@ -171,7 +171,9 @@ FileThumbnailCache& FileThumbnailCache::instance() {
     return cache;
 }
 
-FileThumbnailCache::FileThumbnailCache() : impl_(std::make_unique<Impl>()) { }
+FileThumbnailCache::FileThumbnailCache() : impl_(std::make_unique<Impl>()) {
+
+}
 
 FileThumbnailCache::~FileThumbnailCache() = default;
 
