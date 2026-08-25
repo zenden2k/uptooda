@@ -58,6 +58,8 @@ set(SOURCE_FILES
         QtScriptDialogProvider.cpp
         QtScriptFunctionsImpl.cpp
         Gui/controls/ServerSelectorWidget.cpp
+        Gui/controls/MultiServerSelectorWidget.cpp
+        Gui/controls/MultiServerSelectorWidget.h
         Gui/controls/ServerListPopup.cpp
         Gui/controls/ServerListPopup.h
         Gui/controls/ProgressRingWidget.cpp

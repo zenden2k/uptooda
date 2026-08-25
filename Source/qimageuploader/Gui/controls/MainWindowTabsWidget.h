@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "Core/Upload/ServerProfile.h"
+#include "Core/Upload/ServerProfileGroup.h"
 
 class QButtonGroup;
 class QLabel;
@@ -56,8 +56,8 @@ public:
     UploadsTabWidget* uploadsTab() const;
     AddedFilesTabWidget* addedFilesTab() const;
     UploadSettingsTabWidget* uploadSettingsTab() const;
-    void configureUploadSettings(UploadEngineManager* uploadEngineManager, const ServerProfile& imageProfile,
-                                 const ServerProfile& fileProfile);
+    void configureUploadSettings(UploadEngineManager* uploadEngineManager, const ServerProfileGroup& imageProfiles,
+                                 const ServerProfileGroup& fileProfiles);
     void setPendingFilesModel(ThumbnailListModel* model);
     void setPendingFilesCount(int count);
     int currentIndex() const;

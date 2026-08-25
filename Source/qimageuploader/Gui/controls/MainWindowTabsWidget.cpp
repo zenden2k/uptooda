@@ -9,7 +9,6 @@
 #include <QVBoxLayout>
 
 #include "AddedFilesTabWidget.h"
-#include "Gui/controls/ServerSelectorWidget.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "UploadSessionListWidget.h"
@@ -137,9 +136,9 @@ UploadSettingsTabWidget* MainWindowTabsWidget::uploadSettingsTab() const {
 }
 
 void MainWindowTabsWidget::configureUploadSettings(UploadEngineManager* uploadEngineManager,
-                                                   const ServerProfile& imageProfile,
-                                                   const ServerProfile& fileProfile) {
-    uploadSettingsTab_->configure(uploadEngineManager, imageProfile, fileProfile);
+                                                   const ServerProfileGroup& imageProfiles,
+                                                   const ServerProfileGroup& fileProfiles) {
+    uploadSettingsTab_->configure(uploadEngineManager, imageProfiles, fileProfiles);
 }
 
 void MainWindowTabsWidget::setPendingFilesModel(ThumbnailListModel* model) {

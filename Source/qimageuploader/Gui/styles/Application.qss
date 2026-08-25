@@ -446,9 +446,8 @@ QStatusBar {
 }
 
 QDialog#serverListPopup {
-    background: #f3f7fa;
-    border: 1px solid #cfdbe6;
-    border-radius: 12px;
+    background: transparent;
+    border: 0;
 }
 QDialog#serverListPopup QRadioButton {
     padding: 3px 4px;

@@ -3,11 +3,11 @@
 
 #include <QWidget>
 
-#include "Core/Upload/ServerProfile.h"
+#include "Core/Upload/ServerProfileGroup.h"
 
 class QLabel;
 class QPushButton;
-class ServerSelectorWidget;
+class MultiServerSelectorWidget;
 class UploadEngineManager;
 
 class UploadSettingsTabWidget : public QWidget {
@@ -16,23 +16,25 @@ class UploadSettingsTabWidget : public QWidget {
 public:
     explicit UploadSettingsTabWidget(QWidget* parent = nullptr);
 
-    void configure(UploadEngineManager* uploadEngineManager, const ServerProfile& imageProfile,
-                   const ServerProfile& fileProfile);
+    void configure(UploadEngineManager* uploadEngineManager, const ServerProfileGroup& imageProfiles,
+                   const ServerProfileGroup& fileProfiles);
     void setFileCount(int count);
-    ServerProfile imageServerProfile() const;
-    ServerProfile fileServerProfile() const;
+    ServerProfileGroup imageServerProfileGroup() const;
+    ServerProfileGroup fileServerProfileGroup() const;
     void fillServerIcons();
 
-    signals:
-        void backRequested();
+signals:
+    void backRequested();
     void uploadRequested();
 
 private:
+    bool validateServerGroups();
+
     QWidget* form_ = nullptr;
     QLabel* fileCountLabel_ = nullptr;
-    ServerSelectorWidget* imageServerWidget_ = nullptr;
-    ServerSelectorWidget* fileServerWidget_ = nullptr;
+    MultiServerSelectorWidget* imageServerWidget_ = nullptr;
+    MultiServerSelectorWidget* fileServerWidget_ = nullptr;
     QPushButton* uploadButton_ = nullptr;
 };
 
-#endif //UPTOODA_UPLOADSETTINGSTABWIDGET_H
+#endif // UPTOODA_UPLOADSETTINGSTABWIDGET_H

@@ -281,11 +281,9 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     uploadSessionList()->addAction(copyDirectLinkAction_);
     uploadSessionList()->addAction(copyFilePathAction_);
 
-    const ServerProfile& imageProfile = settings->imageServer.getByIndex(0);
-    const ServerProfile& fileServerProfile = settings->fileServer.getByIndex(0);
     pendingFilesModel_ = std::make_unique<ThumbnailListModel>(this);
     ui->mainTabs->setPendingFilesModel(pendingFilesModel_.get());
-    ui->mainTabs->configureUploadSettings(uploadEngineManager_.get(), imageProfile, fileServerProfile);
+    ui->mainTabs->configureUploadSettings(uploadEngineManager_.get(), settings->imageServer, settings->fileServer);
     ui->mainTabs->setPendingFilesCount(0);
     connect(ui->mainTabs->addedFilesTab(), &AddedFilesTabWidget::clearRequested, this, &MainWindow::clearPendingFiles);
     connect(ui->mainTabs->addedFilesTab(), &AddedFilesTabWidget::removeRequested, this,
@@ -565,28 +563,30 @@ void MainWindow::startPendingUpload() {
     }
 
     auto* settingsTab = ui->mainTabs->uploadSettingsTab();
-    const ServerProfile imageProfile = settingsTab->imageServerProfile();
-    const ServerProfile fileProfile = settingsTab->fileServerProfile();
-    if (imageProfile.serverName().empty() || fileProfile.serverName().empty()) {
+    ServerProfileGroup imageProfiles = settingsTab->imageServerProfileGroup();
+    ServerProfileGroup fileProfiles = settingsTab->fileServerProfileGroup();
+    if (imageProfiles.isEmpty() || fileProfiles.isEmpty()) {
         return;
     }
 
     auto uploadSession = std::make_shared<UploadSession>();
     QMimeDatabase mimeDatabase;
     for (const QString& fileName : fileNames) {
-        auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
         const bool isImage = mimeDatabase.mimeTypeForFile(fileName, QMimeDatabase::MatchExtension)
                                  .name()
                                  .startsWith(QStringLiteral("image/"));
-        ServerProfile profile = isImage ? imageProfile : fileProfile;
-        if (profile.useDefaultSettings()) {
-            auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-            profile.setImageUploadParams(settings->DefaultImageUploadParams);
+        ServerProfileGroup& profiles = isImage ? imageProfiles : fileProfiles;
+        for (ServerProfile profile : profiles.getItems()) {
+            auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
+            if (profile.useDefaultSettings()) {
+                auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+                profile.setImageUploadParams(settings->DefaultImageUploadParams);
+            }
+            task->setIsImage(isImage);
+            task->setServerProfile(profile);
+            task->setIndex(uploadSession->taskCount());
+            uploadSession->addTask(task);
         }
-        task->setIsImage(isImage);
-        task->setServerProfile(profile);
-        task->setIndex(uploadSession->taskCount());
-        uploadSession->addTask(task);
     }
 
     uploadManager_->addSession(uploadSession);
@@ -772,8 +772,8 @@ void MainWindow::on_actionAboutProgram_triggered() {
 
 void MainWindow::saveOptions() {
     auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
-    settings->imageServer = ui->mainTabs->uploadSettingsTab()->imageServerProfile();
-    settings->fileServer = ui->mainTabs->uploadSettingsTab()->fileServerProfile();
+    settings->imageServer = ui->mainTabs->uploadSettingsTab()->imageServerProfileGroup();
+    settings->fileServer = ui->mainTabs->uploadSettingsTab()->fileServerProfileGroup();
 }
 
 void MainWindow::quitApp() {

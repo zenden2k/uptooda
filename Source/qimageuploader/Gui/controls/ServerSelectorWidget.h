@@ -22,6 +22,7 @@ public:
     void setShowFilesizeLimits(bool show);
     void updateServerList();
     const ServerProfile& serverProfile() const;
+    void focusServerSelection();
     enum ServerMaskEnum { smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4 };
 
 public slots:
@@ -30,6 +31,9 @@ public slots:
     void noAccountSelected();
     void addAccountClicked();
     void fillServerIcons();
+
+signals:
+    void serverProfileChanged();
 
 protected:
     QToolButton* accountButton;

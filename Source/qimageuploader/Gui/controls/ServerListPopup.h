@@ -9,6 +9,8 @@ class QAbstractItemView;
 class QButtonGroup;
 class QLineEdit;
 class QListView;
+class QMouseEvent;
+class QResizeEvent;
 class QTableView;
 class QToolButton;
 class ServerTableModel;
@@ -21,10 +23,15 @@ public:
     ~ServerListPopup() override;
 
     std::string selectedServer() const;
-    int showPopup(const QRect& anchorRect);
+    void showPopup(const QRect& anchorRect);
 
 protected:
+    bool event(QEvent* event) override;
     bool eventFilter(QObject* watched, QEvent* event) override;
+    void leaveEvent(QEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
 private slots:
     void applyFilter();
@@ -35,8 +42,10 @@ private slots:
 private:
     int selectedTypeMask() const;
     QAbstractItemView* activeView() const;
+    Qt::Edges resizeEdges(const QPointF& position) const;
     void selectServer(const std::string& serverName);
     void setIconMode(bool enabled);
+    void updateResizeCursor(Qt::Edges edges);
 
     int serversMask_;
     std::string selectedServer_;

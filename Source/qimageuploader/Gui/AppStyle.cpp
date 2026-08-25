@@ -30,9 +30,9 @@ constexpr int COMBO_ITEM_VERTICAL_PADDING = 7;
 constexpr int COMBO_ITEM_MINIMUM_HEIGHT = 32;
 constexpr int COMBO_MAXIMUM_VISIBLE_ITEMS = 8;
 
-bool isComboBoxPopup(QWidget* widget) {
-    return widget && widget->inherits("QComboBoxPrivateContainer");
-}
+bool isComboBoxPopup(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateContainer"); }
+
+bool isServerListPopup(QWidget* widget) { return widget && widget->objectName() == QStringLiteral("serverListPopup"); }
 
 void configureMenuMargins(QMenu* menu) {
     const QMargins margins(
@@ -43,9 +43,19 @@ void configureMenuMargins(QMenu* menu) {
     }
 }
 
-bool isComboBoxScroller(QWidget* widget) {
-    return widget && widget->inherits("QComboBoxPrivateScroller");
+void configureServerListPopupMargins(QWidget* popup) {
+    const QMargins margins(
+        qRound(MENU_SHADOW_LEFT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_TOP) + MENU_CONTENT_PADDING,
+        qRound(MENU_SHADOW_RIGHT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_BOTTOM) + MENU_CONTENT_PADDING);
+    if (popup->contentsMargins() != margins) {
+        popup->setContentsMargins(margins);
+    }
+    if (popup->layout() && popup->layout()->contentsMargins() != QMargins()) {
+        popup->layout()->setContentsMargins(0, 0, 0, 0);
+    }
 }
+
+bool isComboBoxScroller(QWidget* widget) { return widget && widget->inherits("QComboBoxPrivateScroller"); }
 
 QComboBox* comboBoxForPopup(QWidget* popup) {
     for (QObject* parent = popup ? popup->parent() : nullptr; parent; parent = parent->parent()) {
@@ -245,7 +255,8 @@ protected:
 
             auto* menu = qobject_cast<QMenu*>(popup);
             const bool comboBoxPopup = isComboBoxPopup(popup);
-            if (!menu && !comboBoxPopup) {
+            const bool serverListPopup = isServerListPopup(popup);
+            if (!menu && !comboBoxPopup && !serverListPopup) {
                 return QObject::eventFilter(watched, event);
             }
 
@@ -269,12 +280,16 @@ protected:
                     if (auto* itemView = popup->findChild<QAbstractItemView*>()) {
                         configureComboBoxView(itemView);
                     }
+                } else if (serverListPopup) {
+                    configureServerListPopupMargins(popup);
                 }
             } else if (event->type() == QEvent::Show || event->type() == QEvent::Resize) {
                 if (menu) {
                     configureMenuMargins(menu);
                 } else if (comboBoxPopup) {
                     adjustComboBoxPopupGeometry(popup);
+                } else if (serverListPopup) {
+                    configureServerListPopupMargins(popup);
                 }
             } else if (event->type() == QEvent::Paint) {
                 QPainter painter(popup);
@@ -294,11 +309,11 @@ protected:
                     painter.drawRoundedRect(shadowRect, MENU_RADIUS + spread, MENU_RADIUS + spread);
                 }
 
-                painter.setBrush(QColor(QStringLiteral("#ffffff")));
+                painter.setBrush(QColor(serverListPopup ? QStringLiteral("#f3f7fa") : QStringLiteral("#ffffff")));
                 painter.setPen(QPen(QColor(QStringLiteral("#cfd8e2")), 1.0));
                 painter.drawRoundedRect(panelRect.adjusted(0.5, 0.5, -0.5, -0.5), MENU_RADIUS, MENU_RADIUS);
 
-                if (comboBoxPopup) {
+                if (comboBoxPopup || serverListPopup) {
                     return true;
                 }
             }

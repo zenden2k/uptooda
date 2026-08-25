@@ -71,14 +71,16 @@ void ServerSelectorWidget::setShowFilesizeLimits(bool show) { showFileSizeLimits
 void ServerSelectorWidget::updateServerList() { updateServerButton(); }
 
 void ServerSelectorWidget::serverButtonClicked() {
-    ServerListPopup popup(serversMask, serverProfile_.serverName(), this);
+    auto* popup = new ServerListPopup(serversMask, serverProfile_.serverName(), this);
+    popup->setAttribute(Qt::WA_DeleteOnClose);
+    connect(popup, &QDialog::accepted, this, [this, popup] { serverChanged(popup->selectedServer()); });
     const QRect anchorRect(serverButton_->mapToGlobal(QPoint(0, 0)), serverButton_->size());
-    if (popup.showPopup(anchorRect) == QDialog::Accepted) {
-        serverChanged(popup.selectedServer());
-    }
+    popup->showPopup(anchorRect);
 }
 
 const ServerProfile& ServerSelectorWidget::serverProfile() const { return serverProfile_; }
+
+void ServerSelectorWidget::focusServerSelection() { serverButton_->setFocus(Qt::OtherFocusReason); }
 
 void ServerSelectorWidget::serverChanged(const std::string& serverName) {
     serverProfile_.setServerName(serverName);
@@ -90,6 +92,7 @@ void ServerSelectorWidget::serverChanged(const std::string& serverName) {
     updateServerButton();
     updateAccountButton();
     updateAccountButtonMenu();
+    emit serverProfileChanged();
 }
 
 void ServerSelectorWidget::accountButtonClicked(bool /*checked*/) {
