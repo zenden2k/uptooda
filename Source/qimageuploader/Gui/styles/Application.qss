@@ -444,3 +444,120 @@ QStatusBar {
     background: #f9fbfd;
     border-top: 1px solid #e1e7ee;
 }
+
+QDialog#serverListPopup {
+    background: #f3f7fa;
+    border: 1px solid #cfdbe6;
+    border-radius: 12px;
+}
+QDialog#serverListPopup QRadioButton {
+    padding: 3px 4px;
+}
+QLineEdit#serverSearchEdit {
+    min-height: 36px;
+    background: #ffffff;
+    border-color: #c6d5e3;
+}
+QLineEdit#serverSearchEdit:hover {
+    border-color: #a9bfd2;
+}
+QLineEdit#serverSearchEdit:focus {
+    border-color: #55afe8;
+}
+QLineEdit#serverSearchEdit QToolButton {
+    min-width: 20px;
+    max-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+QLineEdit#serverSearchEdit QToolButton:hover,
+QLineEdit#serverSearchEdit QToolButton:pressed {
+    background: transparent;
+}
+QToolButton#serverOptionsButton {
+    min-width: 36px;
+    max-width: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    padding: 0;
+    background: #f1f6fb;
+    border-color: #c6d5e3;
+}
+QToolButton#serverOptionsButton:hover {
+    background: #ffffff;
+    border-color: #a9bfd2;
+}
+QToolButton#serverOptionsButton:pressed {
+    background: #dff1fc;
+    border-color: #65aee8;
+}
+QTableView#serverTable {
+    color: #263548;
+    background: #ffffff;
+    alternate-background-color: #f8fbfd;
+    border: 1px solid #d5e0e9;
+    border-radius: 9px;
+    gridline-color: #edf2f6;
+    outline: 0;
+    selection-background-color: #e5f3ff;
+    selection-color: #205574;
+}
+QTableView#serverTable::item {
+    border: 0;
+    border-bottom: 1px solid #edf2f6;
+    padding: 7px 9px;
+}
+QTableView#serverTable::item:hover {
+    background: #edf6fc;
+}
+QTableView#serverTable::item:selected {
+    color: #205574;
+    background: #dff1fc;
+}
+QTableView#serverTable QHeaderView {
+    background: #edf4f9;
+}
+QTableView#serverTable QHeaderView::section {
+    color: #526273;
+    background: #edf4f9;
+    border: 0;
+    border-right: 1px solid #dbe5ed;
+    border-bottom: 1px solid #d5e0e9;
+    min-height: 34px;
+    padding: 3px 9px;
+    font-weight: 600;
+}
+QTableView#serverTable QTableCornerButton::section {
+    background: #edf4f9;
+    border: 0;
+    border-bottom: 1px solid #d5e0e9;
+}
+QListView#serverIconView {
+    color: #263548;
+    background: #ffffff;
+    border: 1px solid #d5e0e9;
+    border-radius: 9px;
+    outline: 0;
+    padding: 8px;
+    selection-background-color: #dff1fc;
+    selection-color: #205574;
+}
+QListView#serverIconView::item {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 7px;
+}
+QListView#serverIconView::item:hover {
+    background: #edf6fc;
+    border-color: #d9e8f2;
+}
+QListView#serverIconView::item:selected {
+    color: #205574;
+    background: #dff1fc;
+    border-color: #9fd3ef;
+}

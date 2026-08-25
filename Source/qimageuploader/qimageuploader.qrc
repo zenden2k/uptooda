@@ -18,6 +18,8 @@
         <file>res/checkbox-indeterminate.svg</file>
         <file>res/radio-dot.svg</file>
         <file>res/cancel.svg</file>
+        <file>res/search.svg</file>
+        <file>res/options.svg</file>
         <file alias="styles/Application.qss">Gui/styles/Application.qss</file>
     </qresource>
 </RCC>

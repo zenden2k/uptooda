@@ -253,6 +253,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(),
                                                      uploadErrorHandler, networkClientFactory, settings, 3);
+    serviceLocator->setUploadManager(uploadManager_.get());
     std::string dataDirectory = AppRuntimeInfo::instance()->dataDirectory();
     std::string iconsDir = dataDirectory + "Favicons/";
     serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);
@@ -334,6 +335,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 
 MainWindow::~MainWindow() {
     uploadSessionList()->detach();
+    ServiceLocator::instance()->setUploadManager(nullptr);
     uploadManager_.reset(); // Must be destroyed first
     iconsLoadingThread_->wait();
 }

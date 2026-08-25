@@ -41,11 +41,16 @@ set(SOURCE_FILES
         Gui/ResultsWindow.cpp
         Gui/LogWindow.cpp
         Gui/LoginDialog.cpp
+        Gui/LoginDialog.h
+        Gui/ServerFolderSelectDialog.cpp
+        Gui/ServerFolderSelectDialog.h
         Gui/AboutDialog.cpp
         ../ScreenCapture/ScreenCaptureQt.cpp
         Gui/RegionSelect.cpp
         Gui/models/ThumbnailListModel.cpp
         Gui/models/ThumbnailListModel.h
+        Gui/models/ServerTableModel.cpp
+        Gui/models/ServerTableModel.h
         Gui/controls/ThumbnailListView.cpp
         Gui/controls/ThumbnailListView.h
         QtUploadErrorHandler.cpp
@@ -53,6 +58,8 @@ set(SOURCE_FILES
         QtScriptDialogProvider.cpp
         QtScriptFunctionsImpl.cpp
         Gui/controls/ServerSelectorWidget.cpp
+        Gui/controls/ServerListPopup.cpp
+        Gui/controls/ServerListPopup.h
         Gui/controls/ProgressRingWidget.cpp
         Gui/controls/MainWindowTabsWidget.cpp
         Gui/controls/MainWindowTabsWidget.h

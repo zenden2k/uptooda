@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>297</width>
-    <height>147</height>
+    <width>470</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,6 +61,25 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="folderWidget" native="true">
+     <layout class="QHBoxLayout" name="folderLayout">
+      <property name="leftMargin"><number>0</number></property>
+      <property name="topMargin"><number>0</number></property>
+      <property name="rightMargin"><number>0</number></property>
+      <property name="bottomMargin"><number>0</number></property>
+      <item><widget class="QLabel" name="folderLabel"><property name="text"><string>Folder/album:</string></property></widget></item>
+      <item><widget class="QLabel" name="folderNameLabel"><property name="text"><string>&lt;not selected&gt;</string></property><property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"/></property></widget></item>
+      <item><widget class="QPushButton" name="selectFolderButton"><property name="text"><string>Select...</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="parametersGroup">
+     <property name="title"><string>Parameters:</string></property>
+     <layout class="QFormLayout" name="parametersFormLayout"/>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
