@@ -38,10 +38,12 @@ class UploadSession
         // Should be called only after session has been finished
         void restartFailedTasks(CFileQueueUploader* uploadManager);
 
-		void setUserData(void* data);
-		void* userData() const;
+        void setUserData(void* data);
+        void* userData() const;
 
         bool isHistoryEnabled() const;
+        void setService(bool service);
+        bool isService() const;
 
         bool isFatalErrorSet(const std::string& serverName, const std::string& profileName);
         void setFatalErrorForServer(const std::string& serverName, const std::string& profileName);
@@ -69,10 +71,12 @@ class UploadSession
         std::mutex historySessionMutex_;
         std::mutex finishMutex_;
         std::atomic<bool> stopSignal_;
-		void* userData_;
+        void* userData_;
         bool enableHistory_;
-private:
-    DISALLOW_COPY_AND_ASSIGN(UploadSession);
+        bool service_;
+
+    private:
+        DISALLOW_COPY_AND_ASSIGN(UploadSession);
 };
 
 #endif

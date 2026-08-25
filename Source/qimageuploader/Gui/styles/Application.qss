@@ -78,7 +78,7 @@ QToolBar#mainToolBar QToolButton {
     color: #205574;
     background: #c5eafd;
     border: 1px solid #9fd3ef;
-    border-radius: 7px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 400;
     min-height: 28px;
@@ -138,13 +138,13 @@ QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QSpinBox {
     color: #1f2c3d;
     background: #f1f6fb;
     border: 1px solid #c6d5e3;
-    border-radius: 9px;
-    min-height: 38px;
+    border-radius: 8px;
+    min-height: 32px;
     selection-background-color: #9fd5f6;
     selection-color: #1f2c3d;
 }
 QLineEdit, QTextEdit, QPlainTextEdit {
-    padding: 0 11px;
+    padding: 0 10px;
 }
 QLineEdit:hover, QTextEdit:hover, QPlainTextEdit:hover,
 QComboBox:hover, QSpinBox:hover {
@@ -178,7 +178,7 @@ QToolButton#serverAccountButton {
     color: #1f2c3d;
     background: #f1f6fb;
     border: 1px solid #c6d5e3;
-    border-radius: 9px;
+    border-radius: 8px;
     min-height: 38px;
     padding: 0 41px 0 11px;
     text-align: left;
@@ -292,7 +292,7 @@ QSpinBox::up-arrow {
 QGroupBox {
     color: #526273;
     border: 1px solid #d5e0e9;
-    border-radius: 10px;
+    border-radius: 8px;
     margin-top: 10px;
     padding-top: 8px;
     font-weight: 600;
@@ -559,4 +559,55 @@ QListView#serverIconView::item:selected {
     color: #205574;
     background: #dff1fc;
     border-color: #9fd3ef;
+}
+
+QTreeWidget#serverFolderTree {
+    color: #263548;
+    background: #ffffff;
+    alternate-background-color: #f8fbfd;
+    show-decoration-selected: 1;
+    border: 1px solid #d5e0e9;
+    border-radius: 9px;
+    outline: 0;
+    padding: 6px;
+    selection-background-color: #dff1fc;
+    selection-color: #205574;
+}
+QTreeWidget#serverFolderTree::item {
+    min-height: 28px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 2px 6px;
+}
+QTreeWidget#serverFolderTree::item:hover {
+    color: #205574;
+    background: #edf6fc;
+    border-color: transparent;
+    border-radius: 0;
+}
+QTreeWidget#serverFolderTree::item:selected {
+    color: #205574;
+    background: #dff1fc;
+    border-color: transparent;
+    border-radius: 0;
+}
+QTreeWidget#serverFolderTree::item:disabled {
+    color: #8794a3;
+}
+QTreeWidget#serverFolderTree::branch {
+    background: transparent;
+}
+QTreeWidget#serverFolderTree::branch:hover {
+    background: #edf6fc;
+}
+QTreeWidget#serverFolderTree::branch:selected,
+QTreeWidget#serverFolderTree::branch:selected:active,
+QTreeWidget#serverFolderTree::branch:selected:!active {
+    background: #dff1fc;
+}
+QTreeWidget#serverFolderTree::branch:has-children:closed {
+    image: url(:/res/tree-branch-closed.svg);
+}
+QTreeWidget#serverFolderTree::branch:has-children:open {
+    image: url(:/res/tree-branch-open.svg);
 }

@@ -11,9 +11,12 @@
         <file>res/icon-screenshot.png</file>
         <file>res/icon-settings.png</file>
         <file>res/icon-user.png</file>
+        <file alias="res/icon-folder.png">../res/icon_folder2.png</file>
         <file>res/spin-plus.svg</file>
         <file>res/spin-minus.svg</file>
         <file>res/chevron-down.svg</file>
+        <file>res/tree-branch-closed.svg</file>
+        <file>res/tree-branch-open.svg</file>
         <file>res/checkbox-check.svg</file>
         <file>res/checkbox-indeterminate.svg</file>
         <file>res/radio-dot.svg</file>

@@ -4,14 +4,12 @@
 #include "UploadTask.h"
 #include "Core/Upload/UploadManager.h"
 
-UploadSession::UploadSession(bool enableHistory) :
-    enableHistory_(enableHistory)
-{
+UploadSession::UploadSession(bool enableHistory) : enableHistory_(enableHistory), service_(false) {
     finishedSignalSent_ = false;
     stopSignal_ = true;
     finishedCount_ = 0;
     isStopped_ = false;
-	userData_ = nullptr;
+    userData_ = nullptr;
 }
 
 UploadSession::~UploadSession() {
@@ -275,20 +273,20 @@ void UploadSession::notifyTaskAdded(UploadTask* task)
 void UploadSession::setUserData(void* data) {
 	userData_ = data;
 }
-void* UploadSession::userData() const {
-	return userData_;
-}
+void* UploadSession::userData() const { return userData_; }
 
-bool UploadSession::isHistoryEnabled() const {
-    return enableHistory_;
-}
+bool UploadSession::isHistoryEnabled() const { return enableHistory_; }
+
+void UploadSession::setService(bool service) { service_ = service; }
+
+bool UploadSession::isService() const { return service_; }
 
 void UploadSession::recalcFinishedCount() {
     int res = 0;
     try {
         //        std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
         if (tasks_.empty()) {
-            finishedCount_  = 0;
+            finishedCount_ = 0;
             return;
         }
         for (size_t i = 0; i < tasks_.size(); i++) {
@@ -299,7 +297,8 @@ void UploadSession::recalcFinishedCount() {
             }
             //tasksMutex_.lock();
         }
-    } catch (std::exception& ex) {
+    }
+    catch (std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
     finishedCount_ = res;

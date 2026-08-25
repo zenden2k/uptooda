@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <algorithm>
+#include <unordered_set>
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
@@ -167,6 +168,7 @@ void LoginDialog::browseServerFolders() {
 }
 
 void LoginDialog::loadServerParameters() {
+    ui->parametersGroup->setVisible(false);
     while (ui->parametersFormLayout->rowCount() > 0) {
         ui->parametersFormLayout->removeRow(0);
     }
@@ -175,8 +177,24 @@ void LoginDialog::loadServerParameters() {
 
     auto uploadEngine
         = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile_));
-    if (!uploadEngine || uploadEngine->getServerParamList(parameterList_) <= 0) {
-        ui->parametersGroup->setVisible(false);
+    if (!uploadEngine) {
+        return;
+    }
+
+    ParameterList returnedParameters;
+    if (uploadEngine->getServerParamList(returnedParameters) <= 0) {
+        return;
+    }
+
+    std::unordered_set<std::string> returnedParameterNames;
+    returnedParameters.erase(std::remove_if(returnedParameters.begin(), returnedParameters.end(),
+                                            [&](const auto& parameter) {
+                                                return !parameter || parameter->getName().empty()
+                                                    || !returnedParameterNames.insert(parameter->getName()).second;
+                                            }),
+                             returnedParameters.end());
+    parameterList_ = std::move(returnedParameters);
+    if (parameterList_.empty()) {
         return;
     }
 

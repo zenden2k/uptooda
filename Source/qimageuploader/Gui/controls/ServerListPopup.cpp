@@ -130,7 +130,7 @@ ServerListPopup::ServerListPopup(int serversMask, const std::string& selectedSer
     optionsButton_->setObjectName(QStringLiteral("serverOptionsButton"));
     optionsButton_->setIcon(QIcon(QStringLiteral(":/res/options.svg")));
     optionsButton_->setToolTip(tr("Options"));
-    optionsButton_->setCursor(Qt::PointingHandCursor);
+    optionsButton_->setCursor(Qt::ArrowCursor);
     bottomLayout->addWidget(optionsButton_);
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     if (auto* okButton = buttons->button(QDialogButtonBox::Ok)) {
@@ -145,11 +145,17 @@ ServerListPopup::ServerListPopup(int serversMask, const std::string& selectedSer
     connect(tableView_, &QTableView::customContextMenuRequested, this, &ServerListPopup::showServerContextMenu);
     connect(iconView_, &QListView::doubleClicked, this, &ServerListPopup::acceptCurrent);
     connect(iconView_, &QListView::customContextMenuRequested, this, &ServerListPopup::showServerContextMenu);
+    auto* iconLayoutTimer = new QTimer(this);
+    iconLayoutTimer->setSingleShot(true);
+    iconLayoutTimer->setInterval(40);
+    connect(iconLayoutTimer, &QTimer::timeout, this, [this] {
+        iconView_->doItemsLayout();
+        iconView_->viewport()->update();
+    });
     connect(model_.get(), &ServerTableModel::dataChanged, this,
-            [this](const QModelIndex&, const QModelIndex&, const QList<int>& roles) {
+            [iconLayoutTimer](const QModelIndex&, const QModelIndex&, const QList<int>& roles) {
                 if (roles.empty() || roles.contains(Qt::DecorationRole) || roles.contains(Qt::SizeHintRole)) {
-                    iconView_->doItemsLayout();
-                    iconView_->viewport()->update();
+                    iconLayoutTimer->start();
                 }
             });
     connect(optionsButton_, &QToolButton::clicked, this, &ServerListPopup::showOptionsMenu);

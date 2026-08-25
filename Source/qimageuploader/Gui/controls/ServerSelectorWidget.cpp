@@ -19,9 +19,18 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
     showFileSizeLimits = false;
     serversMask = smImageServers | smFileServers;
 
-    setStyleSheet("QGroupBox {font-weight: bold;}");
+    setStyleSheet(QStringLiteral(
+        "ServerSelectorWidget { margin-top: 0; padding-top: 0; font-weight: bold; }"
+        "QToolButton#serverSelectButton, QToolButton#serverAccountButton { min-height: 28px; max-height: 28px; "
+        "border-radius: 7px; padding-top: 0; padding-bottom: 0; }"
+        "QToolButton#serverSelectButton { padding-left: 7px; padding-right: 7px; }"
+        "QToolButton#serverAccountButton { padding-left: 8px; padding-right: 34px; }"
+        "QToolButton#serverAccountButton::menu-button { width: 28px; height: 28px; "
+        "border-top-right-radius: 6px; border-bottom-right-radius: 6px; }"));
     QGridLayout* grid = new QGridLayout(this);
+    grid->setContentsMargins(4, 2, 4, 2);
     serverButton_ = new QToolButton(this);
+    serverButton_->setObjectName(QStringLiteral("serverSelectButton"));
     serverButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     serverButton_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     serverButton_->setCursor(Qt::PointingHandCursor);
@@ -35,7 +44,7 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
     accountButton->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
     accountButton->setCursor(Qt::PointingHandCursor);
 
-    grid->setHorizontalSpacing(10);
+    grid->setHorizontalSpacing(6);
     grid->setColumnStretch(0, 1);
     grid->setColumnStretch(1, 1);
     grid->addWidget(serverButton_, 0, 0);

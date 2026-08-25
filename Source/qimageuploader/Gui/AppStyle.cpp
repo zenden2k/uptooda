@@ -14,6 +14,10 @@
 #include <QStyle>
 #include <QStyledItemDelegate>
 
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#endif
+
 namespace {
 
 constexpr qreal MENU_RADIUS = 8.0;
@@ -34,19 +38,35 @@ bool isComboBoxPopup(QWidget* widget) { return widget && widget->inherits("QComb
 
 bool isServerListPopup(QWidget* widget) { return widget && widget->objectName() == QStringLiteral("serverListPopup"); }
 
+bool systemDropShadowsEnabled() {
+#ifdef Q_OS_WIN
+    BOOL enabled = TRUE;
+    return SystemParametersInfoW(SPI_GETDROPSHADOW, 0, &enabled, 0) && enabled;
+#else
+    return true;
+#endif
+}
+
+QMargins popupShadowMargins() {
+    if (!systemDropShadowsEnabled()) {
+        return { };
+    }
+    return { qRound(MENU_SHADOW_LEFT), qRound(MENU_SHADOW_TOP), qRound(MENU_SHADOW_RIGHT), qRound(MENU_SHADOW_BOTTOM) };
+}
+
 void configureMenuMargins(QMenu* menu) {
-    const QMargins margins(
-        qRound(MENU_SHADOW_LEFT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_TOP) + MENU_CONTENT_PADDING,
-        qRound(MENU_SHADOW_RIGHT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_BOTTOM) + MENU_CONTENT_PADDING);
+    const QMargins shadowMargins = popupShadowMargins();
+    const QMargins margins(shadowMargins.left() + MENU_CONTENT_PADDING, shadowMargins.top() + MENU_CONTENT_PADDING,
+                           shadowMargins.right() + MENU_CONTENT_PADDING, shadowMargins.bottom() + MENU_CONTENT_PADDING);
     if (menu->contentsMargins() != margins) {
         menu->setContentsMargins(margins);
     }
 }
 
 void configureServerListPopupMargins(QWidget* popup) {
-    const QMargins margins(
-        qRound(MENU_SHADOW_LEFT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_TOP) + MENU_CONTENT_PADDING,
-        qRound(MENU_SHADOW_RIGHT) + MENU_CONTENT_PADDING, qRound(MENU_SHADOW_BOTTOM) + MENU_CONTENT_PADDING);
+    const QMargins shadowMargins = popupShadowMargins();
+    const QMargins margins(shadowMargins.left() + MENU_CONTENT_PADDING, shadowMargins.top() + MENU_CONTENT_PADDING,
+                           shadowMargins.right() + MENU_CONTENT_PADDING, shadowMargins.bottom() + MENU_CONTENT_PADDING);
     if (popup->contentsMargins() != margins) {
         popup->setContentsMargins(margins);
     }
@@ -80,14 +100,15 @@ void positionComboBoxPopup(QWidget* popup) {
     const QRect availableGeometry = screen->availableGeometry();
     const QPoint comboTopLeft = comboBox->mapToGlobal(QPoint(0, 0));
     const QPoint comboBottomLeft = comboBox->mapToGlobal(QPoint(0, comboBox->height()));
-    QPoint popupPosition = comboBottomLeft - QPoint(qRound(MENU_SHADOW_LEFT), qRound(MENU_SHADOW_TOP));
+    const QMargins shadowMargins = popupShadowMargins();
+    QPoint popupPosition = comboBottomLeft - QPoint(shadowMargins.left(), shadowMargins.top());
 
     const int maximumX = availableGeometry.x() + availableGeometry.width() - popup->width();
     popupPosition.setX(qBound(availableGeometry.x(), popupPosition.x(), maximumX));
 
     const int screenBottom = availableGeometry.y() + availableGeometry.height();
     if (popupPosition.y() + popup->height() > screenBottom) {
-        const int positionAbove = comboTopLeft.y() - popup->height() + qRound(MENU_SHADOW_BOTTOM);
+        const int positionAbove = comboTopLeft.y() - popup->height() + shadowMargins.bottom();
         popupPosition.setY(positionAbove >= availableGeometry.y() ? positionAbove : screenBottom - popup->height());
     }
     popupPosition.setY(qMax(popupPosition.y(), availableGeometry.y()));
@@ -158,7 +179,9 @@ void configureComboBoxView(QAbstractItemView* itemView) {
 }
 
 void configureComboBoxPopupMargins(QWidget* popup) {
-    popup->setContentsMargins(8, 7, 13, 13);
+    const QMargins shadowMargins = popupShadowMargins();
+    popup->setContentsMargins(shadowMargins.left() + 4, shadowMargins.top() + 4, shadowMargins.right() + 4,
+                              shadowMargins.bottom() + 4);
     if (popup->layout()) {
         popup->layout()->setContentsMargins(0, 0, 0, 0);
         popup->layout()->setSpacing(0);
@@ -194,7 +217,7 @@ void adjustComboBoxPopupGeometry(QWidget* popup) {
     const int visibleItemCount = qMin(comboBox->count(), COMBO_MAXIMUM_VISIBLE_ITEMS);
     const bool scrollBarExpected = comboBox->count() > COMBO_MAXIMUM_VISIBLE_ITEMS;
     QMargins popupMargins = popup->contentsMargins();
-    popupMargins.setRight(qRound(MENU_SHADOW_RIGHT) + (scrollBarExpected ? 0 : 4));
+    popupMargins.setRight(popupShadowMargins().right() + (scrollBarExpected ? 0 : 4));
     popup->setContentsMargins(popupMargins);
 
     int rowsHeight = 0;
@@ -204,8 +227,9 @@ void adjustComboBoxPopupGeometry(QWidget* popup) {
 
     const QMargins margins = popup->contentsMargins();
     QSize maximumPopupSize = comboBox->screen()->availableGeometry().size();
+    const QMargins shadowMargins = popupShadowMargins();
     const int desiredWidth
-        = qMin(comboBox->width() + qRound(MENU_SHADOW_LEFT + MENU_SHADOW_RIGHT), maximumPopupSize.width());
+        = qMin(comboBox->width() + shadowMargins.left() + shadowMargins.right(), maximumPopupSize.width());
     const int desiredHeight = qMin(rowsHeight + margins.top() + margins.bottom(), maximumPopupSize.height());
     if (popup->size() != QSize(desiredWidth, desiredHeight)) {
         popup->resize(desiredWidth, desiredHeight);
@@ -299,14 +323,18 @@ protected:
                 painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
                 painter.setPen(Qt::NoPen);
 
-                const QRectF panelRect
-                    = QRectF(popup->rect())
-                          .adjusted(MENU_SHADOW_LEFT, MENU_SHADOW_TOP, -MENU_SHADOW_RIGHT, -MENU_SHADOW_BOTTOM);
-                for (int spread = MENU_SHADOW_BLUR; spread > 0; --spread) {
-                    const QRectF shadowRect = panelRect.translated(MENU_SHADOW_OFFSET_X, MENU_SHADOW_OFFSET_Y)
-                                                  .adjusted(-spread, -spread, spread, spread);
-                    painter.setBrush(QColor(26, 38, 50, 3 + (MENU_SHADOW_BLUR + 1 - spread) * 2));
-                    painter.drawRoundedRect(shadowRect, MENU_RADIUS + spread, MENU_RADIUS + spread);
+                const bool drawShadow = systemDropShadowsEnabled();
+                const QMargins shadowMargins = popupShadowMargins();
+                const QRectF panelRect = QRectF(popup->rect())
+                                             .adjusted(shadowMargins.left(), shadowMargins.top(),
+                                                       -shadowMargins.right(), -shadowMargins.bottom());
+                if (drawShadow) {
+                    for (int spread = MENU_SHADOW_BLUR; spread > 0; --spread) {
+                        const QRectF shadowRect = panelRect.translated(MENU_SHADOW_OFFSET_X, MENU_SHADOW_OFFSET_Y)
+                                                      .adjusted(-spread, -spread, spread, spread);
+                        painter.setBrush(QColor(26, 38, 50, 3 + (MENU_SHADOW_BLUR + 1 - spread) * 2));
+                        painter.drawRoundedRect(shadowRect, MENU_RADIUS + spread, MENU_RADIUS + spread);
+                    }
                 }
 
                 painter.setBrush(QColor(serverListPopup ? QStringLiteral("#f3f7fa") : QStringLiteral("#ffffff")));

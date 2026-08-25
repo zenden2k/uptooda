@@ -4,7 +4,7 @@
 
 - Uptooda is a C++17 application for uploading images, screenshots, and other files to multiple file-hosting services.
 - It can capture screenshots, record screen video, and edit images using its integrated image editor.
-- The UI stack consists of Qt 6 and a legacy WTL UI.
+- The UI stack consists of Qt 6.11.0 (qimageuploader project) and a legacy WTL UI (GUI project).
 - All C++ source code is located under `Source/`.
 - Dependencies are managed with Conan 2. The main recipe is `Source/conanfile.py`.
 - The project is configured and built with CMake.

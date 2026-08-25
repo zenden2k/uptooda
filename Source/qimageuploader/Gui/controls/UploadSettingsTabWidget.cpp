@@ -86,7 +86,7 @@ void UploadSettingsTabWidget::configure(UploadEngineManager* uploadEngineManager
     auto* formLayout = qobject_cast<QVBoxLayout*>(form_->layout());
     imageServerWidget_ = new MultiServerSelectorWidget(uploadEngineManager, form_);
     imageServerWidget_->setTitle(tr("Image servers"));
-    imageServerWidget_->setServersMask(ServerSelectorWidget::smImageServers);
+    imageServerWidget_->setServersMask(ServerSelectorWidget::smImageServers | ServerSelectorWidget::smFileServers);
     imageServerWidget_->setServerProfileGroup(imageProfiles);
     formLayout->insertWidget(2, imageServerWidget_);
 
@@ -134,7 +134,7 @@ bool UploadSettingsTabWidget::validateServerGroups() {
     QString message;
     if (serverName.isEmpty()) {
         const MultiServerSelectorWidget* invalidGroup = imageGroupHasError ? imageServerWidget_ : fileServerWidget_;
-        message = tr("You have not selected a server for \"%1\"").arg(invalidGroup->title());
+        message = tr("You have not selected a server for \"%1\"").arg(invalidGroup->baseTitle());
     } else {
         message = tr("You have not selected account for server \"%1\"").arg(serverName);
     }

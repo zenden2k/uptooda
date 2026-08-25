@@ -277,6 +277,7 @@ void CServerFolderSelect::NewFolder(const CFolderItem& parentFolder)
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
             uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->setService(true);
             uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
             uploadSession_->addTask(task);
             ++sessionsRunning_;
@@ -416,6 +417,7 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
             uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->setService(true);
             uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
             uploadSession_->addTask(task);
             ++sessionsRunning_;
@@ -557,6 +559,7 @@ void CServerFolderSelect::refreshList(const std::string& parentFolderId) {
 
     isRunning_ = true;
     uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->setService(true);
     uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
     uploadSession_->addTask(task);
     BlockWindow(true);
@@ -614,6 +617,7 @@ LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh,
 
             isRunning_ = true;
             uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->setService(true);
             uploadSession_->addTask(task);
             uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
             tid->childrenStartedLoading = true;
@@ -682,6 +686,7 @@ void CServerFolderSelect::loadInitialTree() {
     CFolderItem folder = m_SelectedFolder;
 
     uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->setService(true);
     uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
     std::vector<std::string> parentIds = folder.parentIds;
     parentIds.insert(parentIds.begin(), "");

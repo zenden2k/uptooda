@@ -8,7 +8,10 @@
 #include <QColor>
 #include <QFutureWatcher>
 #include <QIcon>
+#include <QImage>
+#include <QPixmap>
 #include <QStringList>
+#include <QThreadPool>
 #include <QtConcurrentRun>
 
 #include "Core/AbstractServerIconCache.h"
@@ -18,6 +21,16 @@
 #include "Core/Utils/CoreUtils.h"
 
 namespace {
+
+class ServerIconThreadPool final : public QThreadPool {
+public:
+    ServerIconThreadPool() { setMaxThreadCount(1); }
+};
+
+QThreadPool* IconThreadPool() {
+    static ServerIconThreadPool threadPool;
+    return &threadPool;
+}
 
 QString MaxFileSizeText(const CUploadEngineData* server) {
     std::vector<std::optional<int64_t>> fileSizes(server->userTypes.size());
@@ -294,12 +307,10 @@ void ServerTableModel::requestIcon(const std::string& serverName) const {
 
     pendingIcons_.insert(key);
     auto* model = const_cast<ServerTableModel*>(this);
-    auto* watcher = new QFutureWatcher<QIcon>(model);
-    connect(watcher, &QFutureWatcher<QIcon>::finished, model, [this, model, watcher, key, serverName] {
-        QIcon icon = watcher->result();
-        if (icon.isNull()) {
-            icon = defaultIcon_;
-        }
+    auto* watcher = new QFutureWatcher<QImage>(model);
+    connect(watcher, &QFutureWatcher<QImage>::finished, model, [this, model, watcher, key, serverName] {
+        const QImage image = watcher->result();
+        const QIcon icon = image.isNull() ? defaultIcon_ : QIcon(QPixmap::fromImage(image));
         model->icons_.insert(key, icon);
         model->pendingIcons_.remove(key);
 
@@ -310,6 +321,9 @@ void ServerTableModel::requestIcon(const std::string& serverName) const {
         }
         watcher->deleteLater();
     });
-    watcher->setFuture(
-        QtConcurrent::run([iconCache, serverName] { return iconCache->getIconForServer(serverName, 96, true); }));
+    watcher->setFuture(QtConcurrent::run(IconThreadPool(), [iconCache, serverName] {
+        QImage image;
+        image.load(QString::fromStdString(iconCache->getIconNameForServer(serverName, true)));
+        return image;
+    }));
 }

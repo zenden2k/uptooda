@@ -17,10 +17,11 @@ MultiServerSelectorWidget::MultiServerSelectorWidget(UploadEngineManager* upload
     QGroupBox(parent), uploadEngineManager_(uploadEngineManager) {
     setCursor(Qt::PointingHandCursor);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    setStyleSheet(QStringLiteral("MultiServerSelectorWidget::title { font-weight: normal; }"));
+    updateStyle();
 
     auto* layout = new QHBoxLayout(this);
-    layout->setSpacing(8);
+    layout->setContentsMargins(6, 3, 6, 4);
+    layout->setSpacing(6);
 
     scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
@@ -31,7 +32,7 @@ MultiServerSelectorWidget::MultiServerSelectorWidget(UploadEngineManager* upload
     selectorContainer_ = new QWidget(scrollArea_);
     selectorLayout_ = new QVBoxLayout(selectorContainer_);
     selectorLayout_->setContentsMargins(0, 0, 0, 0);
-    selectorLayout_->setSpacing(6);
+    selectorLayout_->setSpacing(3);
     selectorLayout_->addStretch(1);
     scrollArea_->setWidget(selectorContainer_);
     layout->addWidget(scrollArea_, 1);
@@ -52,6 +53,8 @@ void MultiServerSelectorWidget::setTitle(const QString& title) {
     baseTitle_ = title;
     updateTitle();
 }
+
+QString MultiServerSelectorWidget::baseTitle() const { return baseTitle_; }
 
 void MultiServerSelectorWidget::setServerProfileGroup(ServerProfileGroup serverProfileGroup) {
     for (const SelectorRow& row : rows_) {
@@ -150,10 +153,12 @@ void MultiServerSelectorWidget::mousePressEvent(QMouseEvent* event) {
 
 void MultiServerSelectorWidget::addSelector(const ServerProfile& serverProfile) {
     auto* container = new QWidget(selectorContainer_);
+    container->setObjectName(QStringLiteral("multiServerSelectorRow"));
+    container->setAttribute(Qt::WA_StyledBackground);
     container->setCursor(Qt::ArrowCursor);
     auto* rowLayout = new QHBoxLayout(container);
     rowLayout->setContentsMargins(0, 0, 0, 0);
-    rowLayout->setSpacing(6);
+    rowLayout->setSpacing(4);
 
     auto* selector = new ServerSelectorWidget(uploadEngineManager_, false, container);
     selector->setServersMask(serversMask_);
@@ -168,16 +173,18 @@ void MultiServerSelectorWidget::addSelector(const ServerProfile& serverProfile) 
     rowLayout->addWidget(selector, 1);
 
     auto* deleteButton = new QToolButton(container);
-    deleteButton->setText(QStringLiteral("\u00d7"));
+    deleteButton->setIcon(QIcon(QStringLiteral(":/res/cancel.svg")));
+    deleteButton->setIconSize(QSize(20, 20));
+    deleteButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
     deleteButton->setToolTip(tr("Delete server"));
     deleteButton->setAutoRaise(true);
-    deleteButton->setCursor(Qt::ArrowCursor);
+    deleteButton->setCursor(Qt::PointingHandCursor);
     deleteButton->setFixedSize(34, 34);
-    deleteButton->setStyleSheet(QStringLiteral(
-        "QToolButton { color: #d9363e; border: 0; border-radius: 5px; font-size: 26px; font-weight: bold; }"
-        "QToolButton:hover { background: #fde8e9; color: #bd2028; }"
-        "QToolButton:pressed { background: #f8cfd1; }"
-        "QToolButton:disabled { color: #e7a6aa; }"));
+    deleteButton->setStyleSheet(QStringLiteral("QToolButton { background: transparent; border: 0; border-radius: 5px; "
+                                               "padding: 0; }"
+                                               "QToolButton:hover { background: #fde8e9; }"
+                                               "QToolButton:pressed { background: #f8cfd1; }"
+                                               "QToolButton:disabled { background: transparent; }"));
     rowLayout->addWidget(deleteButton, 0, Qt::AlignVCenter);
 
     selectorLayout_->insertWidget(selectorLayout_->count() - 1, container);
@@ -222,10 +229,10 @@ void MultiServerSelectorWidget::updateTitle() {
 }
 
 void MultiServerSelectorWidget::setValidationError(SelectorRow& row, bool hasError) {
-    row.selector->setStyleSheet(
-        hasError ? QStringLiteral("ServerSelectorWidget { background-color: #fde7eb; border: 1px solid #e8a2ae; "
-                                  "border-radius: 6px; font-weight: bold; }")
-                 : QStringLiteral("QGroupBox { font-weight: bold; }"));
+    row.container->setStyleSheet(hasError
+                                     ? QStringLiteral("QWidget#multiServerSelectorRow { background-color: #fde7eb; "
+                                                      "border: 1px solid #e8a2ae; border-radius: 6px; }")
+                                     : QString());
 }
 
 void MultiServerSelectorWidget::updateHeight() {
@@ -245,7 +252,12 @@ void MultiServerSelectorWidget::setExpanded(bool expanded) {
         return;
     }
     expanded_ = expanded;
-    setStyleSheet(expanded_ ? QStringLiteral("MultiServerSelectorWidget::title { font-weight: bold; }")
-                            : QStringLiteral("MultiServerSelectorWidget::title { font-weight: normal; }"));
+    updateStyle();
     updateHeight();
+}
+
+void MultiServerSelectorWidget::updateStyle() {
+    setStyleSheet(QStringLiteral("MultiServerSelectorWidget { margin-top: 10px; padding-top: 6px; }"
+                                 "MultiServerSelectorWidget::title { font-weight: %1; }")
+                      .arg(expanded_ ? QStringLiteral("bold") : QStringLiteral("normal")));
 }

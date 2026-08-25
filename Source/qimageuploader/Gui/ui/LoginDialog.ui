@@ -70,6 +70,14 @@
       <property name="rightMargin"><number>0</number></property>
       <property name="bottomMargin"><number>0</number></property>
       <item><widget class="QLabel" name="folderLabel"><property name="text"><string>Folder/album:</string></property></widget></item>
+      <item>
+       <widget class="QLabel" name="folderIconLabel">
+        <property name="minimumSize"><size><width>16</width><height>16</height></size></property>
+        <property name="maximumSize"><size><width>16</width><height>16</height></size></property>
+        <property name="pixmap"><pixmap resource="../../qimageuploader.qrc">:/res/icon-folder.png</pixmap></property>
+        <property name="scaledContents"><bool>true</bool></property>
+       </widget>
+      </item>
       <item><widget class="QLabel" name="folderNameLabel"><property name="text"><string>&lt;not selected&gt;</string></property><property name="sizePolicy"><sizepolicy hsizetype="Expanding" vsizetype="Preferred"/></property></widget></item>
       <item><widget class="QPushButton" name="selectFolderButton"><property name="text"><string>Select...</string></property></widget></item>
      </layout>

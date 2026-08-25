@@ -14,6 +14,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
@@ -35,6 +36,7 @@
 
 namespace {
 constexpr QSize TASK_THUMBNAIL_SIZE(64, 64);
+constexpr qreal TASK_THUMBNAIL_RADIUS = 6.0;
 
 class InteractiveFrame : public QFrame {
 public:
@@ -211,6 +213,23 @@ public:
     using QLabel::QLabel;
     std::function<void()> clicked;
 
+    void setRoundedPixmap(const QPixmap& pixmap) {
+        QPixmap roundedPixmap(TASK_THUMBNAIL_SIZE);
+        roundedPixmap.fill(Qt::transparent);
+
+        QPainter painter(&roundedPixmap);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QPainterPath clipPath;
+        clipPath.addRoundedRect(QRectF(QPointF(0, 0), TASK_THUMBNAIL_SIZE), TASK_THUMBNAIL_RADIUS,
+                                TASK_THUMBNAIL_RADIUS);
+        painter.setClipPath(clipPath);
+        const QPoint position((roundedPixmap.width() - pixmap.width()) / 2,
+                              (roundedPixmap.height() - pixmap.height()) / 2);
+        painter.drawPixmap(position, pixmap);
+
+        setPixmap(roundedPixmap);
+    }
+
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override {
         if (event->button() == Qt::LeftButton && clicked) {
@@ -285,6 +304,20 @@ void clearLayout(QLayout* layout) {
         delete item;
     }
 }
+
+bool IsVisibleUploadTask(const UploadTask* task) { return dynamic_cast<const FileUploadTask*>(task) != nullptr; }
+
+bool HasVisibleUploadTasks(UploadSession* session) {
+    if (!session) {
+        return false;
+    }
+    for (int index = 0; index < session->taskCount(); ++index) {
+        if (IsVisibleUploadTask(session->getTask(index).get())) {
+            return true;
+        }
+    }
+    return false;
+}
 }
 
 UploadSessionListWidget::UploadSessionListWidget(QWidget* parent) : QScrollArea(parent) {
@@ -305,7 +338,7 @@ UploadSessionListWidget::UploadSessionListWidget(QWidget* parent) : QScrollArea(
         "QFrame#sessionCard { background: white; border: 1px solid #d8e1ea; border-radius: 9px; }"
         "QFrame#taskCard { background: #f8fafc; border: 1px solid #dce4ec; border-radius: 8px; }"
         "QFrame#taskCard:hover { background: #f1f7fb; border-color: #b8d3e5; }"
-        "QPushButton { background: #e9f6fd; border: 1px solid #b8dcef; border-radius: 7px; padding: 5px 12px; }"
+        "QPushButton { background: #e9f6fd; border: 1px solid #b8dcef; border-radius: 7px; padding: 2px 12px; }"
         "QPushButton:hover { background: #d8effd; }"
         "QToolButton { border: 0; border-radius: 8px; padding: 4px; }"
         "QToolButton:hover { background: #eaf3fa; }"
@@ -326,15 +359,19 @@ void UploadSessionListWidget::setUploadManager(UploadManager* uploadManager) {
         return;
     }
     uploadManager_->setOnSessionAddedCallback([this](UploadSession* session) {
+        if (!session || session->isService() || !HasVisibleUploadTasks(session)) {
+            return;
+        }
         QMetaObject::invokeMethod(this, [this, session] {
             attachSession(session);
             refresh();
         });
     });
     uploadManager_->setOnTaskAddedCallback([this](UploadTask* task) {
-        if (task) {
+        if (IsVisibleUploadTask(task) && task->session() && !task->session()->isService()) {
             task->setOnUploadProgressCallback([this](UploadTask* changedTask) { queueTaskUpdate(changedTask); });
             task->setOnStatusChangedCallback([this](UploadTask* changedTask) { queueTaskUpdate(changedTask); });
+            queueRefresh();
         }
     });
     for (int i = 0; i < uploadManager_->sessionCount(); ++i) {
@@ -351,9 +388,16 @@ void UploadSessionListWidget::detach() {
     uploadManager_->setOnTaskAddedCallback({ });
     for (int i = 0; i < uploadManager_->sessionCount(); ++i) {
         auto session = uploadManager_->session(i);
+        if (session->isService()) {
+            continue;
+        }
         for (int j = 0; j < session->taskCount(); ++j) {
-            session->getTask(j)->setOnUploadProgressCallback({ });
-            session->getTask(j)->setOnStatusChangedCallback({ });
+            auto task = session->getTask(j);
+            if (!IsVisibleUploadTask(task.get())) {
+                continue;
+            }
+            task->setOnUploadProgressCallback({ });
+            task->setOnStatusChangedCallback({ });
         }
     }
     uploadManager_ = nullptr;
@@ -372,7 +416,24 @@ void UploadSessionListWidget::refresh() {
     bool hasItems = false;
     for (int sessionIndex = uploadManager_->sessionCount() - 1; sessionIndex >= 0; --sessionIndex) {
         const auto session = uploadManager_->session(sessionIndex);
-        if (hiddenSessions_.contains(session.get())) {
+        if (session->isService() || hiddenSessions_.contains(session.get())) {
+            continue;
+        }
+
+        QStringList servers;
+        int visibleTaskCount = 0;
+        for (int i = 0; i < session->taskCount(); ++i) {
+            const auto task = session->getTask(i);
+            if (!IsVisibleUploadTask(task.get()) || hiddenTasks_.contains(task.get())) {
+                continue;
+            }
+            ++visibleTaskCount;
+            const QString server = U2Q(task->serverName());
+            if (!server.isEmpty() && !servers.contains(server)) {
+                servers.append(server);
+            }
+        }
+        if (visibleTaskCount == 0) {
             continue;
         }
         hasItems = true;
@@ -390,20 +451,6 @@ void UploadSessionListWidget::refresh() {
         auto* headerLayout = new QHBoxLayout(header);
         headerLayout->setContentsMargins(4, 1, 2, 1);
         headerLayout->setSpacing(10);
-
-        QStringList servers;
-        int visibleTaskCount = 0;
-        for (int i = 0; i < session->taskCount(); ++i) {
-            const auto task = session->getTask(i);
-            if (hiddenTasks_.contains(task.get())) {
-                continue;
-            }
-            ++visibleTaskCount;
-            const QString server = U2Q(task->serverName());
-            if (!server.isEmpty() && !servers.contains(server)) {
-                servers.append(server);
-            }
-        }
 
         auto* iconLabel = new QLabel(header);
         iconLabel->setPixmap(serverIcon(servers.isEmpty() ? std::string() : Q2U(servers.first())).pixmap(30, 30));
@@ -456,7 +503,7 @@ void UploadSessionListWidget::refresh() {
                 UploadTask* candidate = session->getTask(i).get();
                 if (candidate == card->Task) {
                     fromIndex = i;
-                } else if (!hiddenTasks_.contains(candidate)) {
+                } else if (IsVisibleUploadTask(candidate) && !hiddenTasks_.contains(candidate)) {
                     remainingVisibleTasks.append(candidate);
                 }
             }
@@ -476,7 +523,7 @@ void UploadSessionListWidget::refresh() {
                     break;
                 }
                 ++destinationIndex;
-                if (!beforeTask && !hiddenTasks_.contains(candidate)
+                if (!beforeTask && IsVisibleUploadTask(candidate) && !hiddenTasks_.contains(candidate)
                     && candidate == remainingVisibleTasks.value(visualDestination - 1, nullptr)) {
                     break;
                 }
@@ -491,7 +538,7 @@ void UploadSessionListWidget::refresh() {
 
         for (int taskIndex = 0; taskIndex < session->taskCount(); ++taskIndex) {
             const auto task = session->getTask(taskIndex);
-            if (hiddenTasks_.contains(task.get())) {
+            if (!IsVisibleUploadTask(task.get()) || hiddenTasks_.contains(task.get())) {
                 continue;
             }
 
@@ -508,12 +555,12 @@ void UploadSessionListWidget::refresh() {
             auto* thumbnail = new ThumbnailLabel(taskCard);
             thumbnail->setFixedSize(64, 64);
             thumbnail->setAlignment(Qt::AlignCenter);
-            thumbnail->setStyleSheet(QStringLiteral("background: #eaf0f5; border: 0; border-radius: 2px;"));
+            thumbnail->setStyleSheet(QStringLiteral("background: #eaf0f5; border: 0; border-radius: 6px;"));
             if (auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task)) {
                 const QString fileName = U2Q(fileTask->getFileName());
                 FileThumbnailCache& cache = FileThumbnailCache::instance();
                 if (const auto cached = cache.cached(fileName)) {
-                    thumbnail->setPixmap(QPixmap::fromImage(cached->Image.scaled(
+                    thumbnail->setRoundedPixmap(QPixmap::fromImage(cached->Image.scaled(
                         TASK_THUMBNAIL_SIZE, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation)));
                     if (cached->IsImage) {
                         thumbnail->setCursor(Qt::PointingHandCursor);
@@ -522,20 +569,22 @@ void UploadSessionListWidget::refresh() {
                     }
                 } else {
                     const QPointer<ThumbnailLabel> guardedThumbnail(thumbnail);
-                    cache.request(
-                        fileName, this, [this, guardedThumbnail, session, task](const FileThumbnailCache::Thumbnail& result) {
-                            if (!guardedThumbnail) {
-                                return;
-                            }
-                            const QImage image = result.Image.scaled(
-                                TASK_THUMBNAIL_SIZE, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-                            guardedThumbnail->setPixmap(QPixmap::fromImage(image));
-                            if (result.IsImage) {
-                                guardedThumbnail->setCursor(Qt::PointingHandCursor);
-                                guardedThumbnail->clicked
-                                    = [this, session, task] { emit imageViewerRequested(session.get(), task.get()); };
-                            }
-                        });
+                    cache.request(fileName, this,
+                                  [this, guardedThumbnail, session, task](const FileThumbnailCache::Thumbnail& result) {
+                                      if (!guardedThumbnail) {
+                                          return;
+                                      }
+                                      const QImage image
+                                          = result.Image.scaled(TASK_THUMBNAIL_SIZE, Qt::KeepAspectRatioByExpanding,
+                                                                Qt::SmoothTransformation);
+                                      guardedThumbnail->setRoundedPixmap(QPixmap::fromImage(image));
+                                      if (result.IsImage) {
+                                          guardedThumbnail->setCursor(Qt::PointingHandCursor);
+                                          guardedThumbnail->clicked = [this, session, task] {
+                                              emit imageViewerRequested(session.get(), task.get());
+                                          };
+                                      }
+                                  });
                 }
             }
             taskLayout->addWidget(thumbnail);
@@ -638,11 +687,14 @@ std::shared_ptr<UploadSession> UploadSessionListWidget::selectedSession() const 
 std::shared_ptr<UploadTask> UploadSessionListWidget::selectedTask() const { return findTask(selectedTask_); }
 
 void UploadSessionListWidget::attachSession(UploadSession* session) {
-    if (!session) {
+    if (!session || session->isService()) {
         return;
     }
     for (int i = 0; i < session->taskCount(); ++i) {
         const auto task = session->getTask(i);
+        if (!IsVisibleUploadTask(task.get())) {
+            continue;
+        }
         task->setOnUploadProgressCallback([this](UploadTask* changedTask) { queueTaskUpdate(changedTask); });
         task->setOnStatusChangedCallback([this](UploadTask* changedTask) { queueTaskUpdate(changedTask); });
     }
@@ -661,7 +713,7 @@ void UploadSessionListWidget::queueRefresh() {
 }
 
 void UploadSessionListWidget::queueTaskUpdate(UploadTask* task) {
-    if (!task) {
+    if (!IsVisibleUploadTask(task) || !task->session() || task->session()->isService()) {
         return;
     }
     QMetaObject::invokeMethod(
@@ -711,7 +763,7 @@ std::shared_ptr<UploadSession> UploadSessionListWidget::findSession(UploadSessio
     }
     for (int i = 0; i < uploadManager_->sessionCount(); ++i) {
         auto candidate = uploadManager_->session(i);
-        if (candidate.get() == session) {
+        if (candidate.get() == session && !candidate->isService()) {
             return candidate;
         }
     }
@@ -726,7 +778,7 @@ std::shared_ptr<UploadTask> UploadSessionListWidget::findTask(UploadTask* task) 
         auto session = uploadManager_->session(i);
         for (int j = 0; j < session->taskCount(); ++j) {
             auto candidate = session->getTask(j);
-            if (candidate.get() == task) {
+            if (candidate.get() == task && !session->isService() && IsVisibleUploadTask(candidate.get())) {
                 return candidate;
             }
         }

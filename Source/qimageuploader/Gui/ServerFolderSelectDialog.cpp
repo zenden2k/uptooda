@@ -51,7 +51,14 @@ ServerFolderSelectDialog::ServerFolderSelectDialog(ServerProfile& serverProfile,
     layout->addWidget(descriptionLabel_);
 
     folderTree_ = new QTreeWidget(this);
+    folderTree_->setObjectName(QStringLiteral("serverFolderTree"));
     folderTree_->setHeaderHidden(true);
+    folderTree_->setAlternatingRowColors(true);
+    folderTree_->setAnimated(true);
+    folderTree_->setIndentation(22);
+    folderTree_->setIconSize(QSize(20, 20));
+    folderTree_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    folderTree_->setUniformRowHeights(true);
     folderTree_->setContextMenuPolicy(Qt::CustomContextMenu);
     layout->addWidget(folderTree_, 1);
 
@@ -188,6 +195,7 @@ void ServerFolderSelectDialog::runFolderTask(FolderOperationType operation, cons
     });
 
     currentSession_ = std::make_shared<UploadSession>();
+    currentSession_->setService(true);
     currentSession_->addTask(task);
     setBusy(true);
     uploadManager->addSession(currentSession_);

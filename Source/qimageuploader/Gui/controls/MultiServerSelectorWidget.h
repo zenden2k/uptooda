@@ -22,6 +22,7 @@ public:
     explicit MultiServerSelectorWidget(UploadEngineManager* uploadEngineManager, QWidget* parent = nullptr);
 
     void setTitle(const QString& title);
+    QString baseTitle() const;
     void setServerProfileGroup(ServerProfileGroup serverProfileGroup);
     ServerProfileGroup serverProfileGroup() const;
     void setServersMask(int mask);
@@ -43,6 +44,7 @@ private:
     void removeSelector(QWidget* container);
     void updateDeleteButtons();
     void updateTitle();
+    void updateStyle();
     void setValidationError(SelectorRow& row, bool hasError);
     void updateHeight();
     void setExpanded(bool expanded);
