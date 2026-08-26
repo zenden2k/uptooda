@@ -326,6 +326,7 @@ void OnQueueFinished(CFileQueueUploader*) {
 int func() {
 #ifdef _WIN32
     GdiPlusInitializer gdiPlusInitializer;
+    AbstractImage::autoRegisterFactory<void>();
     std::string dFolder = dataFolder;
     if (!dFolder.empty() && dFolder.back() == '\\') {
         dFolder.pop_back();
