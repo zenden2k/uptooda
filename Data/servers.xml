@@ -918,15 +918,15 @@
         </Actions>
         <Result ImageUrlTemplate="$(UploadedUrl)" />
     </Server>
-    <Server Name="fileditch.com" MaxFileSize="107374182400" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
+    <Server Name="fileditch.com" MaxFileSize="161061273600" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com" MaxThreads="1">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="107374182400" UserTypes="anon,reg">
+                <FormatGroup MaxFileSize="161061273600" UserTypes="anon,reg">
                     <Format>*</Format>
-                </FormatGroup>  
+                </FormatGroup>
             </SupportedFormats>
             <StorageTimeInfo>
-                <StorageTime AfterLastDownload="1">30</StorageTime>
+                <StorageTime AfterLastDownload="1">45</StorageTime>
             </StorageTimeInfo>
         </Info>
         <Actions>

@@ -187,6 +187,7 @@ public:
     }
 
     void initServices() {
+        AbstractImage::autoRegisterFactory<void>();
         CString dataFolder = settings_.DataFolder;
         if (dataFolder.Right(1) == "\\") {
             dataFolder.Truncate(dataFolder.GetLength() - 1);

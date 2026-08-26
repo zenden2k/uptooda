@@ -62,7 +62,7 @@ class MyApplication : public QApplication
 public:
     MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
     {
-
+        AbstractImage::autoRegisterFactory<void>();
     }
 #ifdef _WIN32
     MediaFoundationInitializer mediaFoundationInitializer_;
