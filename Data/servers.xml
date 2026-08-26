@@ -925,6 +925,123 @@
                     <Format>*</Format>
                 </FormatGroup>
             </SupportedFormats>
+            <ForbiddenFormats>
+                <FormatGroup>
+                    <!-- Web / серверные скрипты -->
+                    <Format>*.php</Format>
+                    <Format>*.php3</Format>
+                    <Format>*.php4</Format>
+                    <Format>*.php5</Format>
+                    <Format>*.php6</Format>
+                    <Format>*.php7</Format>
+                    <Format>*.php8</Format>
+                    <Format>*.phtml</Format>
+                    <Format>*.html</Format>
+                    <Format>*.htm</Format>
+                    <Format>*.asp</Format>
+                    <Format>*.aspx</Format>
+                    <Format>*.jsp</Format>
+                    <Format>*.cgi</Format>
+
+                    <!-- JavaScript / Node -->
+                    <Format>*.js</Format>
+                    <Format>*.mjs</Format>
+                    <Format>*.cjs</Format>
+                    <Format>*.jse</Format>
+
+                    <!-- Windows исполняемые -->
+                    <Format>*.exe</Format>
+                    <Format>*.com</Format>
+                    <Format>*.msi</Format>
+                    <Format>*.msp</Format>
+                    <Format>*.msc</Format>
+                    <Format>*.scr</Format>
+                    <Format>*.pif</Format>
+                    <Format>*.cpl</Format>
+                    <Format>*.dll</Format>
+                    <Format>*.sys</Format>
+                    <Format>*.drv</Format>
+                    <Format>*.ocx</Format>
+                    <Format>*.vxd</Format>
+                    <Format>*.application</Format>
+                    <Format>*.gadget</Format>
+                    <Format>*.hta</Format>
+                    <Format>*.lnk</Format>
+                    <Format>*.inf</Format>
+                    <Format>*.reg</Format>
+                    <Format>*.scf</Format>
+                    <Format>*.bat</Format>
+                    <Format>*.cmd</Format>
+
+                    <!-- Windows Script Host / PowerShell -->
+                    <Format>*.vbs</Format>
+                    <Format>*.vbe</Format>
+                    <Format>*.ws</Format>
+                    <Format>*.wsf</Format>
+                    <Format>*.wsc</Format>
+                    <Format>*.wsh</Format>
+                    <Format>*.ps1</Format>
+                    <Format>*.ps1xml</Format>
+                    <Format>*.ps2</Format>
+                    <Format>*.ps2xml</Format>
+                    <Format>*.psc1</Format>
+                    <Format>*.psc2</Format>
+                    <Format>*.msh</Format>
+                    <Format>*.msh1</Format>
+                    <Format>*.msh2</Format>
+                    <Format>*.mshxml</Format>
+                    <Format>*.msh1xml</Format>
+                    <Format>*.msh2xml</Format>
+
+                    <!-- macOS -->
+                    <Format>*.app</Format>
+                    <Format>*.command</Format>
+                    <Format>*.workflow</Format>
+                    <Format>*.action</Format>
+                    <Format>*.pkg</Format>
+                    <Format>*.dmg</Format>
+
+                    <!-- Linux / Unix shell и бинарники -->
+                    <Format>*.sh</Format>
+                    <Format>*.bash</Format>
+                    <Format>*.zsh</Format>
+                    <Format>*.csh</Format>
+                    <Format>*.ksh</Format>
+                    <Format>*.run</Format>
+                    <Format>*.bin</Format>
+                    <Format>*.out</Format>
+                    <Format>*.elf</Format>
+                    <Format>*.so</Format>
+                    <Format>*.deb</Format>
+                    <Format>*.rpm</Format>
+                    <Format>*.dylib</Format>
+
+                    <!-- Мобильные пакеты -->
+                    <Format>*.apk</Format>
+                    <Format>*.ipa</Format>
+
+                    <!-- Python -->
+                    <Format>*.py</Format>
+                    <Format>*.py3</Format>
+                    <Format>*.pyw</Format>
+                    <Format>*.pyc</Format>
+                    <Format>*.pyo</Format>
+                    <Format>*.pyz</Format>
+
+                    <!-- Perl / Ruby -->
+                    <Format>*.pl</Format>
+                    <Format>*.pm</Format>
+                    <Format>*.rb</Format>
+
+                    <!-- Java -->
+                    <Format>*.jar</Format>
+
+                    <!-- Прочие скриптовые/автоматизация -->
+                    <Format>*.au3</Format>
+                    <Format>*.vb</Format>
+                    <Format>*.vbscript</Format>
+                </FormatGroup>
+            </ForbiddenFormats>
             <StorageTimeInfo>
                 <StorageTime AfterLastDownload="1">45</StorageTime>
             </StorageTimeInfo>
