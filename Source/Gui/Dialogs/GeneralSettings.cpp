@@ -45,7 +45,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_ENABLETOASTS, "Enable Toast notifications (Windows 8+)");
     TRC(IDC_THUMBNAILSFORVIDEOCHECKBOX, "Show preview for video files in file list");
     TRC(IDC_CLEARSERVERSETTINGS, "Clear server settings");
-    SetDlgItemText(IDC_IMAGEEDITORPATH, settings->ImageEditorPath);
+    SetDlgItemText(IDC_IMAGEEDITORPATH, U2W(settings->ImageEditorPath));
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
@@ -59,7 +59,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
-    std::string selectedLocale = W2U(settings->Language);
+    const std::string& selectedLocale = settings->Language;
 
     int selectedIndex = -1;
     for (const auto& [key, title] : languageList) {
@@ -115,11 +115,11 @@ bool CGeneralSettings::apply()
     if (index != -1) {
         char* key = static_cast<char*>(langListCombo_.GetItemDataPtr(index));
         if (key) {
-            settings->Language = U2W(key);
+            settings->Language = key;
         }
     }
 
-    settings->ImageEditorPath = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH));
+    settings->ImageEditorPath = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH)));
 
     settings->AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
     settings->ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;

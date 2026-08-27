@@ -5,6 +5,72 @@ QWidget {
 QMainWindow, QDialog {
     background: #f3f7fa;
 }
+QDialog#settingsDialog {
+    background: #f3f7fa;
+}
+QListWidget#settingsPageList {
+    color: #526273;
+    background: #e9f0f5;
+    border: 0;
+    border-right: 1px solid #d8e1e9;
+    outline: 0;
+    padding: 18px 10px;
+}
+QListWidget#settingsPageList::item {
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0 13px;
+}
+QListWidget#settingsPageList::item:hover {
+    color: #205574;
+    background: #edf6fc;
+}
+QListWidget#settingsPageList::item:selected {
+    color: #1f78b4;
+    background: #ffffff;
+    border-color: #c9e3f3;
+}
+QStackedWidget#settingsPageStack {
+    background: #f3f7fa;
+}
+QLabel#settingsPageTitle {
+    color: #24354a;
+    font-size: 21px;
+    font-weight: 600;
+}
+QLabel#settingsHint {
+    color: #718096;
+    font-size: 12px;
+}
+QFrame#settingsFooter {
+    background: #f9fbfd;
+    border-top: 1px solid #dce5ec;
+}
+QLabel#settingsSavedLabel {
+    color: #25835a;
+}
+QPushButton#settingsOkButton {
+    color: #ffffff;
+    background: #2789c9;
+    border-color: #1f78b4;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+QPushButton#settingsOkButton:hover {
+    background: #1f7fbe;
+}
+QPushButton#settingsOkButton:pressed {
+    background: #196fa9;
+}
+QPushButton#destructiveSettingsButton {
+    color: #9b3c47;
+    background: #fff1f2;
+    border-color: #efc0c5;
+}
+QPushButton#destructiveSettingsButton:hover {
+    background: #ffe2e5;
+}
 QMenuBar {
     background: #e9edf2;
     border: 1px solid #d7dde5;

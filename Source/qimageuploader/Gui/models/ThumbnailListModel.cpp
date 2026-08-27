@@ -12,9 +12,13 @@
 
 ThumbnailListModel::ThumbnailListModel(QObject* parent) : QAbstractListModel(parent) { }
 
-QString ThumbnailListModel::internalMimeType() { return QStringLiteral("application/x-uptooda-thumbnail-rows"); }
+QString ThumbnailListModel::internalMimeType() {
+    return QStringLiteral("application/x-uptooda-thumbnail-rows");
+}
 
-int ThumbnailListModel::rowCount(const QModelIndex& parent) const { return parent.isValid() ? 0 : items_.size(); }
+int ThumbnailListModel::rowCount(const QModelIndex& parent) const {
+    return parent.isValid() ? 0 : items_.size();
+}
 
 QVariant ThumbnailListModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid() || index.row() < 0 || index.row() >= items_.size()) {
@@ -124,9 +128,13 @@ bool ThumbnailListModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
     return true;
 }
 
-Qt::DropActions ThumbnailListModel::supportedDragActions() const { return Qt::CopyAction | Qt::MoveAction; }
+Qt::DropActions ThumbnailListModel::supportedDragActions() const {
+    return Qt::CopyAction | Qt::MoveAction;
+}
 
-Qt::DropActions ThumbnailListModel::supportedDropActions() const { return Qt::CopyAction | Qt::MoveAction; }
+Qt::DropActions ThumbnailListModel::supportedDropActions() const {
+    return Qt::CopyAction | Qt::MoveAction;
+}
 
 int ThumbnailListModel::addFiles(const QStringList& fileNames) {
     int firstRow = -1;
@@ -169,7 +177,7 @@ int ThumbnailListModel::addItem(const QString& fileName, const QString& displayT
 
 void ThumbnailListModel::removeItems(const QList<int>& rows) {
     QList<int> sortedRows = rows;
-    std::sort(sortedRows.begin(), sortedRows.end(), std::greater<int>());
+    std::sort(sortedRows.begin(), sortedRows.end(), std::greater());
     sortedRows.erase(std::unique(sortedRows.begin(), sortedRows.end()), sortedRows.end());
     for (int row : sortedRows) {
         if (row < 0 || row >= items_.size()) {

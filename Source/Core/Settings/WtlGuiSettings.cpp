@@ -468,10 +468,6 @@ WtlGuiSettings::WtlGuiSettings() :
     GroupByFilename = false;
     UseDirectLinks = true;
     TrayResult = trJustURL;
-    DropVideoFilesToTheList = false;
-    ConfirmOnExit = 1;
-    EnableToastNotifications = true;
-
     ExplorerContextMenu = false;
     ExplorerVideoContextMenu = true;
     ExplorerContextMenu_changed = false;
@@ -483,11 +479,7 @@ WtlGuiSettings::WtlGuiSettings() :
     RememberImageServer = true;
     RememberFileServer = true;
 
-    AutomaticallyCheckUpdates = true;
     CheckFileTypesBeforeUpload = true;
-    ShowPreviewForVideoFiles = true;
-
-    ImageEditorPath = _T("mspaint.exe \"%1\"");
     AutoCopyToClipboard = false;
     AutoShowLog = true;
 
@@ -552,12 +544,12 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
-    if (Language == L"T\u00FCrk\u00E7e") {  //fixes
-        Language = _T("Turkish");
-    } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
-        Language = _T("Ukrainian");
-    } else if (Language == L"\u0420\u0443\u0441\u0441\u043a\u0438\u0439") {
-        Language = _T("Russian");
+    if (Language == u8"Türkçe") {  //fixes
+        Language = "Turkish";
+    } else if (Language == u8"Українська") {
+        Language = "Ukrainian";
+    } else if (Language == u8"Русский") {
+        Language = "Russian";
     }
 
     if (!settingsNode["Image"]["Format"].IsNull()) {
@@ -670,7 +662,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
                 Reg.WriteBool("ExplorerCascadedMenu", ExplorerCascadedMenu);
                 Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
                 Reg.WriteBool("ExplorerVideoContextMenu", ExplorerVideoContextMenu);
-                Reg.WriteString("Language", Language);
+                Reg.WriteString("Language", U2W(Language));
             } else {
                 Reg.DeleteValue("ExplorerCascadedMenu");
                 Reg.DeleteValue("ExplorerContextMenu");
@@ -732,20 +724,15 @@ void WtlGuiSettings::BindToManager() {
     /* binding settings */
     SettingsNode& general = mgr_["General"];
     general.n_bind(LastUpdateTime);
-    general.n_bind(Language);
     general.n_bind(ExplorerContextMenu);
     /*general.n_bind(ExplorerVideoContextMenu);
     general.n_bind(ExplorerCascadedMenu);*/
 
-    general.n_bind(ConfirmOnExit);
     general.n_bind(SendToContextMenu);
     general.n_bind(ParseSubDirs);
-    general.n_bind(ImageEditorPath);
     //general.n_bind(AutoStartup);
     general.n_bind(ShowTrayIcon);
     general.n_bind(AutoCopyToClipboard);
-    general.n_bind(EnableToastNotifications);
-    general.n_bind(AutoShowLog);
     general.n_bind(ImagesFolder);
     general.n_bind(VideoFolder);
     general.n_bind(WatchClipboard);
@@ -840,15 +827,11 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(UseDirectLinks);
     upload.n_bind(UseTxtTemplate);
     upload.n_bind(GroupByFilename);
-    upload.n_bind(DropVideoFilesToTheList);
     upload.n_bind(CodeType);
     upload.n_bind(MaxThreads);
     upload.n_bind(ScriptFileName);
     upload.n_bind(ExecuteScript);
-    upload.n_bind(DeveloperMode);
-    upload.n_bind(AutomaticallyCheckUpdates);
     upload.n_bind(CheckFileTypesBeforeUpload);
-    upload.n_bind(ShowPreviewForVideoFiles);
     upload.n_bind(TrayResult);
     /*urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);*/

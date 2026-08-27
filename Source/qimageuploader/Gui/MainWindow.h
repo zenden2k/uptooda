@@ -54,6 +54,7 @@ private slots:
     void on_actionMedia_info_triggered();
     void on_actionScreenshot_triggered();
     void on_actionAdd_files_triggered();
+    void on_actionSettings_triggered();
     void on_actionAboutProgram_triggered();
     void showCodes(UploadSession* session, UploadTask* task);
     void openImageViewer(UploadSession* session, UploadTask* task);

@@ -38,9 +38,9 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    std::string selectedLocale = W2U(settings->Language);
+    std::string selectedLocale = settings->Language;
 
-    if (settings->Language.IsEmpty()) {
+    if (settings->Language.empty()) {
         TCHAR buffer[LOCALE_NAME_MAX_LENGTH];
         GetUserDefaultLocaleName(buffer, LOCALE_NAME_MAX_LENGTH);
         CString locale = buffer;

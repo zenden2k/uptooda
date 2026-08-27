@@ -110,15 +110,9 @@ public:
     ScreenshotSettingsStruct ScreenshotSettings;
     ImageReuploaderSettingsStruct ImageReuploaderSettings;
     TrayIconSettingsStruct TrayIconSettings;
-    CString ImageEditorPath;
-    
     bool ExplorerContextMenu;
     bool ExplorerContextMenu_changed;
     bool ExplorerVideoContextMenu;
-    bool DropVideoFilesToTheList;
-    bool ConfirmOnExit;
-    bool AutomaticallyCheckUpdates;
-    bool EnableToastNotifications;
     enum TrayResult {
         trJustURL, trLastCodeType
     };
@@ -128,8 +122,6 @@ public:
     bool ParseSubDirs;
     bool ExplorerCascadedMenu;
     bool CheckFileTypesBeforeUpload;
-    bool ShowPreviewForVideoFiles;
-
     CHotkeyList Hotkeys;
     bool Hotkeys_changed;
 

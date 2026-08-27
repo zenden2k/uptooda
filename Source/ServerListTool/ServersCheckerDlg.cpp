@@ -23,7 +23,7 @@ CServersCheckerDlg::CServersCheckerDlg(WtlGuiSettings* settings, UploadEngineMan
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
     engineList_ = engineList;
-    contextMenuItemId = -1;
+    contextMenuItemId_ = -1;
 }
 
 LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -95,7 +95,7 @@ LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM l
             menu.AppendMenu(MF_STRING, ID_COPYVIEWURL, _T("Copy view url"));
             menu.EnableMenuItem(ID_COPYVIEWURL, sd->viewurl().empty() ? MF_DISABLED : MF_ENABLED);
 
-            contextMenuItemId = hti.iItem;
+            contextMenuItemId_ = hti.iItem;
             menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
         } 
     }
@@ -244,7 +244,7 @@ LRESULT CServersCheckerDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 }
 
 LRESULT CServersCheckerDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
-    ServerData* sd = model_.getDataByIndex(contextMenuItemId);
+    ServerData* sd = model_.getDataByIndex(contextMenuItemId_);
     if (sd) {
         std::string directUrl = sd->directUrl();
         if (!directUrl.empty()) {
@@ -256,7 +256,7 @@ LRESULT CServersCheckerDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
 }
 
 LRESULT CServersCheckerDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
-    ServerData* sd = model_.getDataByIndex(contextMenuItemId);
+    ServerData* sd = model_.getDataByIndex(contextMenuItemId_);
     if (sd) {
         std::string thumbUrl = sd->thumbUrl();
         if (!thumbUrl.empty()) {
@@ -268,7 +268,7 @@ LRESULT CServersCheckerDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
 }
 
 LRESULT CServersCheckerDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
-    ServerData* sd = model_.getDataByIndex(contextMenuItemId);
+    ServerData* sd = model_.getDataByIndex(contextMenuItemId_);
     if (sd) {
         std::string viewUrl = sd->viewurl();
         if (!viewUrl.empty()) {

@@ -31,6 +31,9 @@ CommonGuiSettings::CommonGuiSettings()
     // Default values of settings
     MaxThreads = 3;
     DeveloperMode = false;
+#ifdef _WIN32
+    ImageEditorPath = "mspaint.exe \"%1\"";
+#endif
 
 #ifndef IU_QT
     HistorySettings.EnableDownloading = true;
@@ -183,7 +186,18 @@ void CommonGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
 
 void CommonGuiSettings::BindToManager() {
     BasicSettings::BindToManager();
+    SettingsNode& general = mgr_["General"];
+    general.n_bind(Language);
+    general.n_bind(ConfirmOnExit);
+    general.n_bind(ImageEditorPath);
+    general.n_bind(EnableToastNotifications);
+    general.n_bind(AutoShowLog);
+
     SettingsNode& upload = mgr_["Uploading"];
+    upload.n_bind(DropVideoFilesToTheList);
+    upload.n_bind(DeveloperMode);
+    upload.n_bind(AutomaticallyCheckUpdates);
+    upload.n_bind(ShowPreviewForVideoFiles);
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);

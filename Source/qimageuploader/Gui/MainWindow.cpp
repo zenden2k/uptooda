@@ -48,6 +48,7 @@
 #include "Gui/controls/UploadSessionListWidget.h"
 #include "Gui/models/ThumbnailListModel.h"
 #include "ResultsWindow.h"
+#include "SettingsDialog.h"
 #include "controls/AddedFilesTabWidget.h"
 #include "controls/UploadSettingsTabWidget.h"
 #include "controls/UploadsTabWidget.h"
@@ -218,6 +219,8 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     toolsMenu->addAction(ui->actionMedia_info);
     QAction* showLogAction = toolsMenu->addAction(tr("Show log"));
     connect(showLogAction, &QAction::triggered, this, &MainWindow::onShowLog);
+    toolsMenu->addSeparator();
+    toolsMenu->addAction(ui->actionSettings);
 
     auto* helpMenu = ui->menuBar->addMenu(tr("&Help"));
     helpMenu->addAction(ui->actionAboutProgram);
@@ -225,6 +228,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->actionGrab_frames->setIconVisibleInMenu(false);
     ui->actionMedia_info->setIconVisibleInMenu(false);
     ui->actionScreenshot->setIconVisibleInMenu(false);
+    ui->actionSettings->setIconVisibleInMenu(false);
     ui->actionAboutProgram->setIconVisibleInMenu(false);
 
     ui->mainToolBar->setFixedHeight(50);
@@ -768,6 +772,12 @@ void MainWindow::on_actionAboutProgram_triggered() {
     dlg.setModal(true);
     dlg.setWindowModality(Qt::WindowModal);
     dlg.exec();
+}
+
+void MainWindow::on_actionSettings_triggered() {
+    auto* settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    SettingsDialog dialog(settings, logWindow_, this);
+    dialog.exec();
 }
 
 void MainWindow::saveOptions() {

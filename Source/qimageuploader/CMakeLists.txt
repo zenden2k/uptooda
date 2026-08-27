@@ -45,6 +45,11 @@ set(SOURCE_FILES
         Gui/ServerFolderSelectDialog.cpp
         Gui/ServerFolderSelectDialog.h
         Gui/AboutDialog.cpp
+        Gui/SettingsPage.h
+        Gui/SettingsDialog.cpp
+        Gui/SettingsDialog.h
+        Gui/GeneralSettingsPage.cpp
+        Gui/GeneralSettingsPage.h
         ../ScreenCapture/ScreenCaptureQt.cpp
         Gui/RegionSelect.cpp
         Gui/models/ThumbnailListModel.cpp
@@ -80,6 +85,7 @@ set(SOURCE_FILES
         Gui/ui/LogWindow.ui
         Gui/ui/LoginDialog.ui
         Gui/ui/AboutDialog.ui
+        Gui/ui/GeneralSettingsPage.ui
         qimageuploader.qrc
         Gui/controls/AddedFilesTabWidget.cpp
         Gui/controls/AddedFilesTabWidget.h

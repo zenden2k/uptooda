@@ -110,7 +110,7 @@ public:
     LRESULT OnBnClickedStopButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 private:
-    int contextMenuItemId;
+    int contextMenuItemId_;
     CString sourceFileHash_;
     Helpers::MyFileInfo sourceFileInfo_;
     UploadEngineManager* uploadEngineManager_;

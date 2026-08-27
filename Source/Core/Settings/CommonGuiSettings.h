@@ -139,6 +139,14 @@ class CommonGuiSettings : public BasicSettings {
         CommonGuiSettings();
         ~CommonGuiSettings() override;
 
+        std::string Language;
+        std::string ImageEditorPath;
+        bool ConfirmOnExit = true;
+        bool DropVideoFilesToTheList = false;
+        bool AutomaticallyCheckUpdates = true;
+        bool EnableToastNotifications = true;
+        bool ShowPreviewForVideoFiles = true;
+
         bool UseDirectLinks = true;
 
         ServerProfile urlShorteningServer, temporaryServer, imageSearchServer;
@@ -151,7 +159,6 @@ class CommonGuiSettings : public BasicSettings {
         ServerListSettingsStruct ServerListSettings;
 
 #ifndef IU_QT
-        CString Language;
         CString DataFolder;
         CString m_SettingsDir;
         bool ShowTrayIcon = false;

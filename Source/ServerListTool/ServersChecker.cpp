@@ -29,10 +29,10 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     isRunning_ = false;
 
     fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppRuntimeInfo::instance()->tempDirectory());
-    fileDownloader_->setOnFileFinishedCallback([this](auto && ok, auto && statusCode, auto && downloadItem) {
+    fileDownloader_->setOnFileFinishedCallback([this](bool ok, int statusCode, auto && downloadItem) {
         onFileFinished(
-            std::forward<decltype(ok)>(ok),
-            std::forward<decltype(statusCode)>(statusCode),
+            ok,
+            statusCode,
             std::forward<decltype(downloadItem)>(downloadItem)
         );
     });
@@ -40,7 +40,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
 
 bool ServersChecker::start(const std::string& testFileName, const std::string& testUrl) {
     linksToCheck_ = 0;
-    BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
+    auto* settings = ServiceLocator::instance()->settings<BasicSettings>();
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
     uploadSession_ = std::make_shared<UploadSession>(false);
@@ -65,8 +65,8 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
         }
 
         ServerSettingsStruct  ss;
-        auto serverIt = Settings.ServersSettings.find(ue->Name);
-        if (serverIt != Settings.ServersSettings.end()) {
+        auto serverIt = settings->ServersSettings.find(ue->Name);
+        if (serverIt != settings->ServersSettings.end()) {
             std::map <std::string, ServerSettingsStruct>::const_iterator it = serverIt->second.begin();
 
             if (!useAccounts_) {

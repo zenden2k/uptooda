@@ -440,7 +440,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    CString editorCmd = settings->ImageEditorPath;
+    CString editorCmd = U2W(settings->ImageEditorPath);
     editorCmd.Replace(_T("%1"), FileName);
     CString editorCmdLine = WinUtils::ExpandEnvironmentStrings(editorCmd);
 

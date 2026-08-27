@@ -27,7 +27,7 @@ QRegion QRegionFromHRGN(HRGN winRegion)
         return result;
     }
     auto buffer = std::make_unique<BYTE[]>(size);
-    LPRGNDATA data = reinterpret_cast<LPRGNDATA>(buffer.get());
+    auto data = reinterpret_cast<LPRGNDATA>(buffer.get());
     data->rdh.dwSize = sizeof(RGNDATAHEADER);
     if (GetRegionData(winRegion, size, data) != 0) {
         RECT *rects = reinterpret_cast<RECT*>(data->Buffer);
