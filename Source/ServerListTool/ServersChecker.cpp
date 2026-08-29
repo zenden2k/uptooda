@@ -111,11 +111,11 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
 
         if (task) {
             task->setServerProfile(serverProfile);
-            task->setOnStatusChangedCallback([this](auto && PH1) {
-                onTaskStatusChanged(std::forward<decltype(PH1)>(PH1));
+            task->setOnStatusChangedCallback([this](UploadTask* task) {
+                onTaskStatusChanged(task);
             });
-            task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) {
-                onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+            task->addTaskFinishedCallback([this](UploadTask* task, bool ok) {
+                onTaskFinished(task, ok);
             });
             auto userData = std::make_unique<UploadTaskUserData>();
             userData->rowIndex = i;

@@ -1,9 +1,9 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-16 17:46+0300\n"
+"POT-Creation-Date: 2026-08-29 10:45+0300\n"
 "PO-Revision-Date: 2026-07-03 16:04+0300\n"
 "Last-Translator: Максим Горпиніч <gorpinicmaksim0@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -56,6 +56,16 @@ msgstr ""
 #: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr "\"%1%\": сервер %2% не підтримує цей тип файлу (%3% %4%)\n"
+
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:41
+#, fuzzy
+#| msgid "%s server settings"
+msgid "%1 server settings"
+msgstr "Налаштування сервера %s"
+
+#: ../Source/qimageuploader/Gui/RegionSelect.cpp:136
+msgid "%1 x %2 pixels "
+msgstr "%1 x %2 пікселів"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:680
 msgctxt "upload_settings_wizard_page.server_button"
@@ -110,6 +120,13 @@ msgstr[2] "Загалом вибрані %d серверів..."
 msgid "%d%%"
 msgstr "%d%%"
 
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:468
+#, fuzzy, c-format
+#| msgid "%d file"
+#| msgid_plural "%d files"
+msgid "%n file(s)"
+msgstr "%d файл"
+
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:617
 #, c-format
 msgid "%s (screen recording)"
@@ -120,7 +137,7 @@ msgstr "%s (запис екрану)"
 msgid "%s - Quick Setup"
 msgstr "%s - швидке налаштування"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:978
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:969
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - доступні оновлення"
@@ -148,6 +165,22 @@ msgstr[0] "Помилку %u не виправлено."
 msgstr[1] "%u помилок не виправлено."
 msgstr[2] "%u помилки не виправлено."
 
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:210
+#, fuzzy
+#| msgid "File"
+msgid "&File"
+msgstr "Файл"
+
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:225
+#, fuzzy
+#| msgid "Help"
+msgid "&Help"
+msgstr "Довідка"
+
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:217
+msgid "&Tools"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
 msgstr "&Відвантажити"
@@ -168,7 +201,8 @@ msgstr "(код скопійовано в буфер обміну)"
 msgid "(the link has been copied to the clipboard)"
 msgstr "(посилання скопійовано до буфера обміну)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:526
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:517
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:62
 msgid "< Back"
 msgstr "< Назад"
 
@@ -177,24 +211,45 @@ msgstr "< Назад"
 msgid "<no authentication>"
 msgstr "<без автентифікації>"
 
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:63
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:279
+#, fuzzy
+#| msgid "not selected"
+msgid "<not selected>"
+msgstr "не вибрано"
+
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:41
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:150
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:222
+msgid "<without account>"
+msgstr "<без облікового запису>"
+
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:182
 msgid "A new version is available:"
 msgstr "Доступна нова версія:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:271
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:272
 #, c-format
 msgid "About %s"
 msgstr "Про %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2892
+#: ../Source/qimageuploader/Gui/AboutDialog.cpp:20
+#, fuzzy
+#| msgid "About %s"
+msgid "About Qt"
+msgstr "Про %s"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2883
 msgid "About..."
 msgstr "Про програму ..."
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:356
 msgid "Access:"
 msgstr "Доступ:"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:192
 msgid "Account"
 msgstr "Обліковий запис"
 
@@ -204,6 +259,8 @@ msgstr "Обліковий запис не ввімкнено"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:91
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:135
 msgid "Account with such name already exists."
 msgstr "Обліковий запис із таким іменем уже існує."
 
@@ -216,6 +273,7 @@ msgid "Action"
 msgstr "Дія"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:63
+#: ../Source/qimageuploader/QtUploadErrorHandler.cpp:35
 msgid "Action:"
 msgstr "Дія:"
 
@@ -237,15 +295,15 @@ msgstr "Додати %s сервер..."
 msgid "Add Files"
 msgstr "Додати файли"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:324
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:321
 msgid "Add Files..."
 msgstr "Додати файли..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:328
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:325
 msgid "Add Folder..."
 msgstr "Додати папку..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:322
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:319
 msgid "Add Images"
 msgstr "Додати зображення"
 
@@ -259,6 +317,7 @@ msgstr "Додати елемент меню"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:439
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:891
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:156
 msgid "Add account..."
 msgstr "Додати обліковий запис..."
 
@@ -287,6 +346,7 @@ msgid "Add item to video files' context menu"
 msgstr "Додати елемент до контекстного меню відеофайлів"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
+#: ../Source/qimageuploader/Gui/controls/MultiServerSelectorWidget.cpp:40
 msgid "Add server"
 msgstr "Додати сервер"
 
@@ -307,18 +367,20 @@ msgid "Add to Wizard"
 msgstr "Додати до майстра"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:742
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:361
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Add to blacklist"
 msgstr "Додати до списку"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:736
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:360
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Add to favorites"
 msgstr "Додати до списку"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:535
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:526
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1014
 msgid "Add to the list"
@@ -332,11 +394,23 @@ msgstr "Додавати відеофайли до списку після пе�
 msgid "Add watermark"
 msgstr "Додавати водяний знак"
 
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:64
+#, fuzzy
+#| msgid "Add files..."
+msgid "Added files (%1)"
+msgstr "Додати файли..."
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:33
+#, fuzzy
+#| msgid "Add files..."
+msgid "Added files (0)"
+msgstr "Додати файли..."
+
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:45
 msgid "Adding directory as server"
 msgstr "Додавання каталога в якості сервера"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:459
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:458
 msgid "Additional options..."
 msgstr "Додаткові налаштування..."
 
@@ -352,13 +426,20 @@ msgstr "Додаткові налаштування"
 msgid "Address:"
 msgstr "Адреса:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:59
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:56
 msgid "Advice:"
 msgstr "Порада:"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Aero only (Windows Vista or later)"
 msgstr "Тільки Aero (Windows Vista або новіше)"
+
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:70
+#, fuzzy
+#| msgctxt "serverlist.servertype"
+#| msgid "All"
+msgid "All"
+msgstr "Усі"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 msgctxt "serverlist.servertype"
@@ -374,6 +455,18 @@ msgstr ""
 "Усі дані облікового запису будуть видалені, включаючи логіни, паролі та інші "
 "налаштування. Також будуть видалені налаштування таких типів серверів: %s."
 
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:126
+#, fuzzy
+#| msgid ""
+#| "All account data will be deleted, including logins, passwords and other "
+#| "settings. The following server types' settings will also be deleted: %s."
+msgid ""
+"All account data will be deleted, including logins, passwords, and other "
+"server settings."
+msgstr ""
+"Усі дані облікового запису будуть видалені, включаючи логіни, паролі та інші "
+"налаштування. Також будуть видалені налаштування таких типів серверів: %s."
+
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:96
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
@@ -384,14 +477,22 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:717
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:179
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:111
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1782
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1612
 msgid "All files"
 msgstr "Усі файли"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:623
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:435
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:452
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:517
+#, fuzzy
+#| msgid "All files"
+msgid "All files (*.*)"
+msgstr "Усі файли"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:616
 msgid "All files have been successfully uploaded."
 msgstr "Усі файли було успішно відвантажено."
 
@@ -419,7 +520,7 @@ msgstr "Дозволити редагування зображень у повн
 msgid "Always copy captured image to clipboard"
 msgstr "Завжди копіювати захоплене зображення до буфера обміну"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:434
 msgid "An error occured while extracting video frames."
 msgstr "Сталася помилка під час вилучення відеокадрів."
 
@@ -438,8 +539,8 @@ msgid ""
 msgstr ""
 "Під час запису екрана сталася помилка. Докладніше див. у журналі помилок."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1551
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2110
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1542
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2101
 msgid "Any file"
 msgstr "Будь-який файл"
 
@@ -448,7 +549,7 @@ msgid "Appearance options"
 msgstr "Опції зовнішнього вигляду"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:86
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 msgid "Apply"
 msgstr "Застосувати"
 
@@ -464,7 +565,7 @@ msgstr ""
 "Ви справді хочете розмістити текст і логотип в одному й тому ж місці на "
 "зображенні?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1984
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1975
 msgid "Are you sure to quit?"
 msgstr "Ви дійсно хочете вийти?"
 
@@ -503,17 +604,12 @@ msgstr ""
 "Увага! Глобальні cполучення клавіш активні тільки тоді, коли відображається "
 "піктограма у треї."
 
-#: ../Source/Func/MediaInfoHelper.cpp:221
-#: ../Source/Func/MediaInfoHelper.cpp:226
-msgid "Audio"
-msgstr "Аудіо"
-
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:26
 msgid "Audio codec:"
 msgstr "Аудіокодек:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2081
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2072
 msgid "Audio files"
 msgstr "Звукові файли"
 
@@ -531,7 +627,7 @@ msgstr "Автентифіковано успішно."
 msgid "Authenticaton:"
 msgstr "Автентифікація:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:268
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:269
 msgid "Author:"
 msgstr "Автор:"
 
@@ -574,7 +670,7 @@ msgstr "Початок відвантаження"
 msgid "Best (slowest)"
 msgstr "Найкращий (найповільніший)"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:108
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:109
 msgid "Beta-testers:"
 msgstr "Бета-тестерам:"
 
@@ -617,7 +713,8 @@ msgstr "Переносити вікно на передній план при в
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:39
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:232
 msgid "Browse..."
 msgstr "Огляд..."
 
@@ -644,7 +741,7 @@ msgstr "Пензель"
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:35
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:69
@@ -782,7 +879,7 @@ msgstr "Змінювати ширину:"
 msgid "Check file types before upload"
 msgstr "Перевірте типи файлів перед завантаженням"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2889
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2880
 msgid "Check for Updates"
 msgstr "Перевірити наявність оновлень"
 
@@ -795,16 +892,29 @@ msgstr "Перевірка форматів файлів..."
 msgid "Checking for updates..."
 msgstr "Перевірка оновлень..."
 
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:108
+#, fuzzy
+#| msgid "Choose monitor"
+msgid "Choose an image editor"
+msgstr "Виберіть монітор"
+
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:58
 msgid "Choose executable file"
 msgstr "Виберіть виконуваний файл"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2112
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:238
+#, fuzzy
+#| msgid "Choose files"
+msgid "Choose file"
+msgstr "Виберіть файли"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2103
 msgid "Choose files"
 msgstr "Виберіть файли"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:180
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1915
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1906
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:237
 msgid "Choose folder"
 msgstr "Вибрати папку"
 
@@ -812,7 +922,7 @@ msgstr "Вибрати папку"
 msgid "Choose folder..."
 msgstr "Виберіть папку..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2085
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2076
 msgid "Choose media file"
 msgstr "Виберіть мультимедійний файл"
 
@@ -837,6 +947,7 @@ msgstr "Виберіть програму"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:674
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:54
 msgid "Choose server"
 msgstr "Вибір сервера"
 
@@ -845,6 +956,7 @@ msgid "Choose server for uploading images"
 msgstr "Оберіть сервер для відвантаження зображень"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:640
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:196
 msgid "Choose server..."
 msgstr "Виберіть сервер..."
 
@@ -852,8 +964,8 @@ msgstr "Виберіть сервер..."
 msgid "Choose servers"
 msgstr "Виберіть сервери"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1794
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:351
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1785
 msgid "Choose video file"
 msgstr "Виберіть відеофайл"
 
@@ -884,6 +996,7 @@ msgid "Clear filters"
 msgstr "Очистити фільтри"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:134
+#: ../Source/qimageuploader/Gui/controls/AddedFilesTabWidget.cpp:21
 msgid "Clear list"
 msgstr "Очистити список"
 
@@ -892,6 +1005,7 @@ msgid "Clear log"
 msgstr "Очистити всі"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:47
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:125
 msgid "Clear server settings"
 msgstr "Очистити налаштування сервера"
 
@@ -927,6 +1041,7 @@ msgstr "Інтерактивні ескізи"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:260
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:151
 msgid "Close"
 msgstr "Закрити"
 
@@ -940,6 +1055,13 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:93
 msgid "Code type:"
 msgstr "Тип коду:"
+
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:473
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:630
+#, fuzzy
+#| msgid "Color codes"
+msgid "Codes"
+msgstr "Код кольру"
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:31
 msgid "Collecting files..."
@@ -969,7 +1091,7 @@ msgstr "Компоненти:"
 msgid "Concatenation..."
 msgstr "Конкатенація..."
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:214
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:213
 msgctxt "settings.menu"
 msgid "Connection"
 msgstr "З'єднання"
@@ -998,7 +1120,7 @@ msgstr "Користувацькі елементи контекстного м�
 msgid "Continue"
 msgstr "Продовжити"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:89
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:90
 msgid "Contributors:"
 msgstr "Контрибуторам:"
 
@@ -1006,7 +1128,7 @@ msgstr "Контрибуторам:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "Перетворення UNC шляху \"\\\\\" на \"file://\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:498
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:494
 msgid "Converting history"
 msgstr "Конвертування історії"
 
@@ -1035,16 +1157,27 @@ msgstr "Копіювати URL-адресу %1%->%2%"
 msgid "Copy automatically results to clipboard"
 msgstr "Автоматично копіювати результати до буфера обміну"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:283
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:278
 msgid "Copy delete link"
 msgstr "Копіювати посилання для видалення"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:314
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:277
+#, fuzzy
+#| msgid "Copy delete link"
+msgid "Copy direct link"
+msgstr "Копіювати посилання для видалення"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:315
 msgid "Copy e-mail"
 msgstr "Копіювати електронну пошту"
 
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:387
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:281
+msgid "Copy file path to clipboard"
+msgstr "Копіювати шлях до файлу до буфера обміну"
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:388
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:969
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:388
 msgid "Copy folder's ID"
 msgstr "Копіювати ідентифікатор папки"
 
@@ -1065,17 +1198,17 @@ msgid "Copy in data:URI format (html)"
 msgstr "Копіювати у форматі data:URI (HTML)"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:209
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:274
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:269
 msgid "Copy link"
 msgstr "Копіювати посилання"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:213
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:280
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:275
 msgid "Copy link to thumbnail"
 msgstr "Копіювати посилання на мініатюру"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:210
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:277
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:272
 msgid "Copy link to view page"
 msgstr "Копіювати посилання для перегляду сторінки"
 
@@ -1084,7 +1217,7 @@ msgid "Copy to Clipboard"
 msgstr "Копіювати до буфера обміну"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:78
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:53
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:54
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:296
 msgid "Copy to clipboard"
 msgstr "Копіювати до буфера"
@@ -1102,6 +1235,12 @@ msgstr "Скопіювати до буфера обміну і закрити (%
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:20
 msgid "Copy to the clipboard:"
 msgstr "Копіювати до буфера:"
+
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:656
+#, fuzzy
+#| msgid "Copy link"
+msgid "Copy view link"
+msgstr "Копіювати посилання"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:332
@@ -1129,7 +1268,7 @@ msgstr "У цьому тексті знайти посилання не вдал
 msgid "Could not read package %s"
 msgstr "Не вдалося прочитати пакет %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1041
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1032
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "Не вдалося зберегти файл параметрів. Для отримання додаткової інформації "
@@ -1139,7 +1278,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr "Не вдалося відвантажити знімок екрана :("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:434
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:430
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1171,14 +1310,17 @@ msgid "Create a Copy"
 msgstr "Створення копії"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:82
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:70
 msgid "Create folder"
 msgstr "Створити папку"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:43
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:343
 msgid "Create folder (album)"
 msgstr "Створити папку (альбом)"
 
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:382
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:383
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:387
 msgid "Create nested folder"
 msgstr "Створити вкладені папки"
 
@@ -1209,7 +1351,7 @@ msgstr "Зміни поточного профілю не були збереж�
 msgid "Cut"
 msgstr "Вирізати"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:161
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:162
 msgid "Data file path:"
 msgstr "Шлях до файлу даних:"
 
@@ -1233,7 +1375,7 @@ msgstr "Типовий сервер для відвантаження зобра
 msgid "Default settings"
 msgstr "Типові налаштування"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:458
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:457
 msgid "Deinterlace"
 msgstr "Деінтерлейсинг"
 
@@ -1257,6 +1399,12 @@ msgstr "Видалити обліковий запис"
 msgid "Delete file from server"
 msgstr "Видалити файл із сервера"
 
+#: ../Source/qimageuploader/Gui/controls/MultiServerSelectorWidget.cpp:179
+#, fuzzy
+#| msgid "Selected server: %s"
+msgid "Delete server"
+msgstr "Вибраний сервер: %s"
+
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:429
 msgid "Deleting the file from the server"
 msgstr "Видалити файл із сервера"
@@ -1269,7 +1417,7 @@ msgstr "Режим розробника"
 msgid "Directory to save screenshots:"
 msgstr "Папка для збереження знімків екрана:"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:56
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:57
 msgid "Disable localization"
 msgstr "Вимкнути локалізацію"
 
@@ -1277,7 +1425,7 @@ msgstr "Вимкнути локалізацію"
 msgid "Display video file information on resulting picture"
 msgstr "Відображати інформацію про відеофайл на зображенні"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1982
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1973
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:341
 msgid "Do not ask again"
 msgstr "Більше не питати"
@@ -1290,7 +1438,7 @@ msgstr "Не запускати нові копії програми з трею
 msgid "Do nothing"
 msgstr "Нічого не робити"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2891
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2882
 msgid "Documentation"
 msgstr "Документація (російською)"
 
@@ -1331,13 +1479,10 @@ msgstr "Обводити рамкою"
 msgid "Draw frame"
 msgstr "Обводити рамкою"
 
-#: ../Source/Func/MediaInfoHelper.cpp:155
-msgid "Duration: "
-msgstr "Тривалість: "
-
 #: ../Source/Gui/Dialogs/MainDlg.cpp:213
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:368
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:369
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:386
 msgid "Edit"
 msgstr "Редагувати"
 
@@ -1350,6 +1495,7 @@ msgid "Edit file on server"
 msgstr "Редагувати файл на сервері"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:45
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:343
 msgid "Edit folder"
 msgstr "Редагувати папку"
 
@@ -1429,8 +1575,8 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:682
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:173
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:190
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
@@ -1439,6 +1585,10 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/TextViewDlg.cpp:81
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:324
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:343
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:141
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:83
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:91
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:135
 msgid "Error"
 msgstr "Помилка"
 
@@ -1473,11 +1623,11 @@ msgstr "Помилка під час перевірки формату файл�
 msgid "Error while updating component "
 msgstr "Помилка під час оновлення компонентів "
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:94
 msgid "Error:"
 msgstr "Помилка:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:628
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:621
 #, c-format
 msgid "Errors: %d"
 msgstr "Помилок: %d"
@@ -1494,8 +1644,10 @@ msgstr "Виконувати сценарій Squirrel для кожного з�
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:284
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:230
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:521
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1928
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:512
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1919
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:214
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:316
 msgid "Exit"
 msgstr "Вихід"
 
@@ -1508,22 +1660,29 @@ msgid "Extension"
 msgstr "Розширення"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:219
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:135
 msgid "Extract frames"
 msgstr "Видобути кадри"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:198
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:152
+#, fuzzy
+#| msgid "Extracting video frames was stopped by user."
+msgid "Extracted frames will appear here"
+msgstr "Витягнення відеокадрів зупинено користувачем."
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:197
 msgid "Extracting frame "
 msgstr "Витягнення кадрів "
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:75
 msgid "Extracting frames from video"
 msgstr "Витягнення кадрів із відео"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:434
 msgid "Extracting video frames was finished."
 msgstr "Витягнення відеокадрів закінчено."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:279
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:278
 msgid "Extracting video frames was stopped by user."
 msgstr "Витягнення відеокадрів зупинено користувачем."
 
@@ -1540,18 +1699,36 @@ msgstr "FTP"
 msgid "Failed to create the directory '%s'."
 msgstr "Не вдалося створити каталог '%s'."
 
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:281
+#, fuzzy
+#| msgid "Video engine which is used to extract frames from a video file."
+msgid "Failed to extract frames from the selected file."
+msgstr "Відеомодуль, який використовується для витягнення кадрів з відеофайлу."
+
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:238
 msgid "Failed to load folder list."
+msgstr "Не вдалося завантажити список папок."
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:176
+#, fuzzy
+#| msgid "Failed to load folder list."
+msgid "Failed to load frame: %1"
 msgstr "Не вдалося завантажити список папок."
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:342
 msgid "Failed to logout."
 msgstr "Не вдалося вийти з облікового запису."
 
-#: ../Source/Video/VideoGrabber.cpp:75
+#: ../Source/Video/VideoGrabber.cpp:66
 #, c-format
 msgid "Failed to open video file '%s'."
 msgstr "Не вдалося відкрити відеофайл '%s'."
+
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:209
+#, fuzzy
+#| msgid "Failed to load folder list."
+msgid "Failed to perform the folder operation."
+msgstr "Не вдалося завантажити список папок."
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:489
 msgid "Fetching filesystem..."
@@ -1559,7 +1736,8 @@ msgstr "Отримання файлової системи..."
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:20
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:93
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:70
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:67
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:72
 msgid "File"
 msgstr "Файл"
 
@@ -1568,8 +1746,8 @@ msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "Файл"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:96
-#: ../Source/Video/VideoGrabber.cpp:61
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:97
+#: ../Source/Video/VideoGrabber.cpp:59
 #, c-format
 msgid "File \"%s\" not found!"
 msgstr "Файл \"%s\" не знайдено!"
@@ -1579,7 +1757,7 @@ msgstr "Файл \"%s\" не знайдено!"
 msgid "File %s doesn't exist"
 msgstr "Файл %s не існує"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:151
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:150
 #, c-format
 msgid ""
 "File doesn't exist:\n"
@@ -1594,6 +1772,7 @@ msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "Розмір файлу перевищує межу сервера \"%s\" (%s)."
 
 #: ../Source/Gui/Controls/ServerListView.cpp:37
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:194
 msgid "File formats"
 msgstr "Формати файлів"
 
@@ -1612,7 +1791,7 @@ msgstr ""
 msgid "File size exceeding"
 msgstr "Розмір файлу перевищує"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:626
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:619
 msgid "File uploading was cancelled by user."
 msgstr "Відвантаження файлу скасовано користувачем."
 
@@ -1621,6 +1800,7 @@ msgid "File:"
 msgstr "Файл:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
+#: ../Source/qimageuploader/QtUploadErrorHandler.cpp:20
 msgid "File: "
 msgstr "Файл: "
 
@@ -1634,13 +1814,9 @@ msgstr "Формат імені файлу:"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:78
 msgid "Filename:"
 msgstr "Ім'я файлу:"
-
-#: ../Source/Func/MediaInfoHelper.cpp:140
-msgid "Filename: "
-msgstr "Ім'я файлу: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:716
 msgid "Files"
@@ -1649,10 +1825,6 @@ msgstr "Файли"
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
 msgid "Files total:"
 msgstr "Усього файлів:"
-
-#: ../Source/Func/MediaInfoHelper.cpp:144
-msgid "Filesize: "
-msgstr "Розмір файлу: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:263
 msgid "Fill background"
@@ -1679,7 +1851,7 @@ msgstr "Фільтри"
 msgid "Finish"
 msgstr "Готово"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:310
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:305
 msgid "Finish >"
 msgstr "Готово >"
 
@@ -1714,8 +1886,15 @@ msgid "Folder for snapshots:"
 msgstr "Папка для збереження кадрів:"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:83
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:43
 msgid "Folder list"
 msgstr "Список папок"
+
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:49
+#, fuzzy
+#| msgid "Folder list on server %s for account '%s':"
+msgid "Folder list on server %1 for account '%2':"
+msgstr "Список папок на сервері %s для облікового запису '%s':"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:108
 #, c-format
@@ -1723,6 +1902,7 @@ msgid "Folder list on server %s for account '%s':"
 msgstr "Список папок на сервері %s для облікового запису '%s':"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:34
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:353
 msgid "Folder name:"
 msgstr "Ім'я папки:"
 
@@ -1756,13 +1936,19 @@ msgstr "Формат:"
 msgid "Forum code (BBCode)"
 msgstr "Код для форуму (BBCode)"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:67
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:68
 msgid "Found a bug? Send a bug report to the author."
 msgstr "Знайшли помилку? Надішліть звіт про помилку автору."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 msgid "Frame color:"
 msgstr "Колір рамки:"
+
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:280
+#, fuzzy
+#| msgid "Extracting frame "
+msgid "Frame extraction failed"
+msgstr "Витягнення кадрів "
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:22
 msgid "Frame rate:"
@@ -1778,29 +1964,37 @@ msgstr "Макет розташування кадрів"
 msgid "Freehand Capture"
 msgstr "Знімок довільної області"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:330 ../Source/Gui/Win7JumpList.cpp:203
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:327 ../Source/Gui/Win7JumpList.cpp:203
 msgid "From Clipboard"
 msgstr "З буфера обміну"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:326
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:323
 msgid "From Web"
 msgstr "З Інтернету"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:55
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:56
 msgid "Full information"
 msgstr "Детально"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:423
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:446
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:148
 msgid "Full screen"
 msgstr "Повний екран"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:206
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:58
+#, fuzzy
+#| msgctxt "settings.menu"
+#| msgid "General"
+msgid "General"
+msgstr "Загальні"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:205
 msgctxt "settings.menu"
 msgid "General"
 msgstr "Загальні"
 
-#: ../Source/Func/ImageGenerator.cpp:47 ../Source/Func/ImageGenerator.cpp:97
+#: ../Source/Func/ImageGenerator.cpp:51 ../Source/Func/ImageGenerator.cpp:101
 msgid "Generating image..."
 msgstr "Створення зображення..."
 
@@ -1810,7 +2004,7 @@ msgstr "Створення зображення..."
 msgid "Get color's code..."
 msgstr "Отримання коду кольору..."
 
-#: ../Source/Func/ImageGenerator.cpp:30
+#: ../Source/Func/ImageGenerator.cpp:32
 msgid "Getting info about file..."
 msgstr "Отримання інформації про файл..."
 
@@ -1824,6 +2018,7 @@ msgstr "Глобальне сполучення клавіш:"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:746
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1074
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:365
 msgid "Go to signup page"
 msgstr "Перейти до сторінки підписки"
 
@@ -1831,8 +2026,8 @@ msgstr "Перейти до сторінки підписки"
 msgid "Good (default)"
 msgstr "Добре (за замовчуванням)"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:400
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:399
 msgid "Grab"
 msgstr "Захопити"
 
@@ -1862,17 +2057,18 @@ msgstr "Висота:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:124
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:100
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:413
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:409
 msgid "Help"
 msgstr "Довідка"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:523
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:514
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1921
 msgid "Hide"
 msgstr "Сховати"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:630
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:305
 msgid "Hide blacklisted"
 msgstr ""
 
@@ -1881,7 +2077,7 @@ msgid "Highlight"
 msgstr "Виділення кольором"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:668
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2874
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2865
 msgid "History"
 msgstr "Історія"
 
@@ -1893,7 +2089,7 @@ msgstr "Історію успішно очищено."
 msgid "Horizontal interval:"
 msgstr "Горизонтальний інтервал:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:218
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:217
 msgctxt "settings.menu"
 msgid "Hotkeys"
 msgstr "Сполучення клавіш"
@@ -1903,6 +2099,7 @@ msgid "I have an account on this server"
 msgstr "У мене є обліковий запис на цьому сервері"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:627
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:314
 msgid "Icons"
 msgstr ""
 
@@ -1914,6 +2111,13 @@ msgstr "Ігнорувати"
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:28
 msgid "Ignore all"
 msgstr "Ігнорувати"
+
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:71
+#, fuzzy
+#| msgctxt "serverlist.servertype"
+#| msgid "Image"
+msgid "Image"
+msgstr "Зображенням"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 msgctxt "serverlist.servertype"
@@ -1929,7 +2133,7 @@ msgstr "Завантажувач зображень"
 msgid "Image Editor"
 msgstr "Редактор зображень"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:211
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:210
 msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Редактор зображень"
@@ -1950,9 +2154,15 @@ msgstr ""
 "Редактор зображень не вміє працювати з анімованими зображеннями. Якщо ви "
 "відредагуєте цей файл, анімацію буде втрачено. Бажаєте продовжити?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1022
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1013
 msgid "Image Settings and Server Selection"
 msgstr "Параметри зображення та вибір сервера"
+
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:328
+#, fuzzy
+#| msgid "Updates are available"
+msgid "Image is unavailable"
+msgstr "Є доступні оновлення"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:47
 msgid "Image processing"
@@ -1962,6 +2172,12 @@ msgstr "Обробка зображень"
 msgid "Image processing settings..."
 msgstr "Параметри обробки зображень..."
 
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:88
+#, fuzzy
+#| msgid "Choose servers"
+msgid "Image servers"
+msgstr "Виберіть сервери"
+
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:245
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:421
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:49
@@ -1969,14 +2185,20 @@ msgstr "Параметри обробки зображень..."
 msgid "Image settings"
 msgstr "Параметри зображення"
 
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:133
+#, fuzzy
+#| msgid "Image Editor"
+msgid "Image viewer"
+msgstr "Редактор зображень"
+
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:131
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:123
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1549
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2108
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1540
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2099
 msgid "Images"
 msgstr "Зображення"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:208
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:207
 msgctxt "settings.menu"
 msgid "Images"
 msgstr "Зображення"
@@ -2005,8 +2227,8 @@ msgstr "Неявний"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:536 ../Source/Gui/Win7JumpList.cpp:291
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:527 ../Source/Gui/Win7JumpList.cpp:291
 msgid "Import Video File"
 msgstr "Імпортувати відеофайл"
 
@@ -2015,7 +2237,7 @@ msgstr "Імпортувати відеофайл"
 msgid "In queue"
 msgstr "У черзі"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1907
 msgid "Including subdirectories"
 msgstr "Включаючи підкаталоги"
 
@@ -2025,12 +2247,12 @@ msgstr "Інформація про останнє відео"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:244
 #: ../Source/Gui/Dialogs/MainDlg.cpp:223
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:53
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
 msgid "Information about file"
 msgstr "Інформація про файл"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:107
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:108
 #, c-format
 msgid "Information about file \"%s\" :"
 msgstr "Інформація про файл \"%s\" :"
@@ -2039,7 +2261,7 @@ msgstr "Інформація про файл \"%s\" :"
 msgid "Initial value:"
 msgstr "Початкове значення:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:216
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:215
 msgctxt "settings.menu"
 msgid "Integration"
 msgstr "Інтеграція"
@@ -2056,6 +2278,12 @@ msgstr "Перехоплювати сполучення PrintScreen та Alt+Pri
 msgid "Interface language:"
 msgstr "Мова інтерфейсу:"
 
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:96
+#, fuzzy
+#| msgid "Image settings"
+msgid "Invalid settings"
+msgstr "Параметри зображення"
+
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:411
 #, c-format
 msgid ""
@@ -2069,7 +2297,7 @@ msgstr ""
 msgid "Invert selection"
 msgstr "Інвертувати вибір"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:322
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:319
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr " JPEG, PNG, GIF, BMP або будь-які інші файли"
 
@@ -2081,7 +2309,7 @@ msgstr "JSON-файли"
 msgid "Just URL"
 msgstr "Просто URL-адреса"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:60
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:57
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
@@ -2089,11 +2317,11 @@ msgstr ""
 "Просто перетягніть ваші файли до вікна Image Uploader, і програма обробить "
 "їх."
 
-#: ../Source/Func/LangClass.cpp:107
+#: ../Source/Func/LangClass.cpp:96
 msgid "LAYOUT_DIRECTION"
 msgstr "НАПРЯМОК_МАКЕТУВАННЯ"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:335
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:332
 msgid "Last Region"
 msgstr "Остання область"
 
@@ -2114,7 +2342,7 @@ msgstr "Подвійне лівою кнопкою:"
 msgid "Left button single click:"
 msgstr "Одне лівою кнопкою:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:173
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:174
 msgid "Libraries:"
 msgstr "Бібліотеки:"
 
@@ -2127,11 +2355,11 @@ msgstr "Лінія"
 msgid "Line thickness"
 msgstr "Товщина лінії"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:492
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:485
 msgid "Links"
 msgstr "Посилання"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:420
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:413
 #, c-format
 msgid "Links (%d)"
 msgstr "Посилання (%d)"
@@ -2152,8 +2380,12 @@ msgstr "Список зображень"
 msgid "List of URLs"
 msgstr "Перелік посилань"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:58
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:581
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:59
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:584
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:417
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:540
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:35
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:408
 msgid "Loading..."
 msgstr "Відвантаження..."
 
@@ -2165,7 +2397,7 @@ msgstr "Локальні"
 msgid "Local hotkey:"
 msgstr "Локальне сполучення клавіш:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:493
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:486
 msgid "Log"
 msgstr "Журнал помилок"
 
@@ -2182,12 +2414,17 @@ msgstr "Автентифікація..."
 msgid "Login"
 msgstr "Ім'я"
 
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:83
+msgid "Login cannot be empty"
+msgstr "Ім'я не може бути порожнім"
+
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:206
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:251
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:42
 msgid "Login:"
 msgstr "Ім'я:"
 
@@ -2217,16 +2454,15 @@ msgid "Macros list"
 msgstr "Очистити список"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:34
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:188
 msgid "Max. file size"
 msgstr "Макс. розмір файлу"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:517
-msgid ""
-"MediaInfo.dll Not found! \n"
-"Getting technical information of media files will not be accessible."
-msgstr ""
-"Бібліотеку MediaInfo.dll не знайдено! \n"
-"Отримання технічної інформації про медіафайли буде недоступно."
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:136
+#, fuzzy
+#| msgid "View Media File Information"
+msgid "Media information"
+msgstr "Інформація про медіафайл"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:32
 msgid "Middle button click:"
@@ -2235,6 +2471,10 @@ msgstr "Середньою кнопкою:"
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:21
 msgid "Mime-type"
 msgstr "MIME-тип"
+
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:145
+msgid "Minimize"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:597
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:97
@@ -2250,6 +2490,14 @@ msgstr "Монітор:"
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:35
 msgid "More colors..."
 msgstr "Більше кольорів..."
+
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:360
+msgid "Mosaic"
+msgstr ""
+
+#: ../Source/qimageuploader/Gui/MediaDlg.cpp:368
+msgid "Mosaic creation failed"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:29
 msgid "Mouse clicks handlers"
@@ -2281,7 +2529,7 @@ msgid "Name:"
 msgstr "Ім'я:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:21
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2880
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2871
 msgid "Network Debugger"
 msgstr "Мережевий налагоджувач"
 
@@ -2297,8 +2545,9 @@ msgstr "Нова папка"
 msgid "New profile"
 msgstr "Новий профіль"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:813
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:170
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:804
+#: ../Source/qimageuploader/Gui/controls/AddedFilesTabWidget.cpp:23
 msgid "Next >"
 msgstr "Далі >"
 
@@ -2334,6 +2583,10 @@ msgstr "Немає оновлень для %s компонентів"
 msgid "None"
 msgstr "Жоден"
 
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:122
+msgid "None of the selected frame images could be loaded."
+msgstr ""
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:16
 msgid "Num of retries per action:"
 msgstr "Кількість спроб для кожної операції:"
@@ -2346,11 +2599,11 @@ msgstr "Кількість спроб для кожного файлу:"
 msgid "Number of columns:"
 msgstr "Кількість стовпців:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
 msgid "Number of frames:"
 msgstr "Кількість кадрів:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:267
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:268
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:33
@@ -2359,13 +2612,13 @@ msgstr "Кількість кадрів:"
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:58
 #: ../Source/Gui/Dialogs/InputDialog.cpp:55
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:91
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:81
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:80
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:67
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:36
@@ -2377,7 +2630,7 @@ msgstr "Гаразд"
 msgid "Older than 30 days"
 msgstr "Старіше 30 днів"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:462
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:461
 msgid "Open containing folder"
 msgstr "Відкрити папку із вмістом"
 
@@ -2385,15 +2638,24 @@ msgstr "Відкрити папку із вмістом"
 msgid "Open download page"
 msgstr "Відкрити сторінку завантаження"
 
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:673
+msgid "Open file in default program"
+msgstr "Відкрити файл у типовій програмі"
+
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:207
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:375
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:376
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:973
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:384
 msgid "Open in Web Browser"
 msgstr "Відкрити у веб-браузері"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:636
 msgid "Open in Wizard"
 msgstr "Відкрити у майстрі"
+
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:666
+msgid "Open in browser"
+msgstr "Відкрити в браузері"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:214
 msgid "Open in external editor"
@@ -2408,13 +2670,19 @@ msgstr "Відкрити у папці"
 msgid "Open in the editor"
 msgstr "Відкрити в редакторі"
 
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:452
+#, fuzzy
+#| msgid "Choose media file"
+msgid "Open multimedia file"
+msgstr "Виберіть мультимедійний файл"
+
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:53
 msgid "Open screenshot in the editor"
 msgstr "Відкрити знімок у редакторі"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:662
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:221
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2876
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2867
 msgid "Open screenshots folder"
 msgstr "Відкрити папку зі знімками екрана"
 
@@ -2429,6 +2697,7 @@ msgstr "Відкрити налаштування системного підк�
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:745
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1081
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:363
 msgid "Open the website"
 msgstr "Відкрийте веб-сайт"
 
@@ -2444,13 +2713,10 @@ msgstr "Операцію скасовано користувачем."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:298
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:81
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:132
 msgid "Options"
 msgstr "Параметри"
-
-#: ../Source/Func/MediaInfoHelper.cpp:159
-msgid "Overall bitrate: "
-msgstr "Загальний бітрейт: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
 msgid "Parameters:"
@@ -2462,6 +2728,7 @@ msgstr "Параметри:"
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:207
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
+#: ../Source/qimageuploader/Gui/LoginDialog.cpp:44
 msgid "Password:"
 msgstr "Пароль:"
 
@@ -2520,7 +2787,7 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Вкажіть параметри перевірки автентичності для сервера '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:498
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:494
 msgid "Please wait while your history is being converted..."
 msgstr "Зачекайте, поки історія конвертується..."
 
@@ -2588,7 +2855,7 @@ msgstr "Обробляти зображення перед відвантаже�
 msgid "Processing folder:"
 msgstr "Обробка папки:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:641
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:632
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2609,7 +2876,7 @@ msgstr "Профіль з таким ім'ям вже існує!"
 msgid "Profile:"
 msgstr "Профіль:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:91
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:88
 msgid "Progress:"
 msgstr "Перебіг:"
 
@@ -2682,6 +2949,8 @@ msgid "Remote directory:"
 msgstr "Віддалений каталог:"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:272
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:636
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:679
 msgid "Remove"
 msgstr "Вилучити"
 
@@ -2694,12 +2963,14 @@ msgid "Remove all"
 msgstr "Видалити все"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:740
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:361
 #, fuzzy
 #| msgid "Remove from list"
 msgid "Remove from blacklist"
 msgstr "Видалити зі списку"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:734
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:360
 #, fuzzy
 #| msgid "Remove from list"
 msgid "Remove from favorites"
@@ -2708,6 +2979,18 @@ msgstr "Видалити зі списку"
 #: ../Source/Gui/Dialogs/MainDlg.cpp:77
 msgid "Remove from list"
 msgstr "Видалити зі списку"
+
+#: ../Source/qimageuploader/Gui/controls/AddedFilesTabWidget.cpp:22
+#, fuzzy
+#| msgid "not selected"
+msgid "Remove selected"
+msgstr "не вибрано"
+
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:689
+#, fuzzy
+#| msgid "Remove Item"
+msgid "Remove session"
+msgstr "Видалити елемент"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:145
 msgid "Remove this account from the list (not from the remote server)"
@@ -2726,12 +3009,18 @@ msgstr "Резюме"
 msgid "Retrieve thumbnails from the Internet"
 msgstr "Отримувати ескізи з Інтернету"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:267
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:262
 msgid "Retry"
 msgstr "Повторити"
 
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:683
+#, fuzzy
+#| msgid "Test failed"
+msgid "Retry failed"
+msgstr "Тест не пройшов"
+
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:76
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:332 ../Source/Gui/Win7JumpList.cpp:211
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:329 ../Source/Gui/Win7JumpList.cpp:211
 msgid "Reupload"
 msgstr "Перевідвантажити"
 
@@ -2807,7 +3096,7 @@ msgstr "Пошук на %1% та закриття (%2%)"
 msgid "Save as..."
 msgstr "Зберегти як..."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 msgid "Save as:"
 msgstr "Зберегти як:"
 
@@ -2823,7 +3112,7 @@ msgstr "Зберегти файл журналу"
 msgid "Save to file"
 msgstr "Зберегти у файл"
 
-#: ../Source/Func/ImageGenerator.cpp:116
+#: ../Source/Func/ImageGenerator.cpp:120
 msgid "Saving image..."
 msgstr "Збереження зображення..."
 
@@ -2836,11 +3125,11 @@ msgid "Scaling:"
 msgstr "Масштабувати до:"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:50
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:333
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:330
 msgid "Screen Capture"
 msgstr "Знімок екрана"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:210
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:209
 msgctxt "settings.menu"
 msgid "Screen Capture"
 msgstr "Знімок екрана"
@@ -2849,7 +3138,7 @@ msgstr "Знімок екрана"
 msgid "Screen Recoding"
 msgstr "Перекодування екрана"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:212
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:211
 msgctxt "settings.menu"
 msgid "Screen Recording"
 msgstr "Запис екрана"
@@ -2875,7 +3164,7 @@ msgid "Screen Recording Window"
 msgstr "Вікно запису екрана"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336 ../Source/Gui/Win7JumpList.cpp:267
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:333 ../Source/Gui/Win7JumpList.cpp:267
 msgid "Screen Recording..."
 msgstr "Запис екрану..."
 
@@ -2883,6 +3172,14 @@ msgstr "Запис екрану..."
 #, c-format
 msgid "Screen recording backend: %s"
 msgstr "Бекенд запису екрана: %s"
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:31
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:115
+#, fuzzy
+#| msgctxt "settings.menu"
+#| msgid "Screen Recording"
+msgid "Screen recordings"
+msgstr "Запис екрана"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:207
@@ -2894,19 +3191,19 @@ msgstr "Знімок екрана"
 msgid "Screenshot Action"
 msgstr "Дія зі знімком екрана"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2534
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2525
 #, fuzzy
 #| msgid "Screenshot has been copied to clipboard."
 msgid "Screenshot has been copied to the clipboard."
 msgstr "Знімок екрана збережено до буфера обміну."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2532
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2523
 #, fuzzy
 #| msgid "Screenshot has been copied to clipboard."
 msgid "Screenshot has been saved and copied to the clipboard."
 msgstr "Знімок екрана збережено до буфера обміну."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2536
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2527
 #, fuzzy
 #| msgid "Settings have been saved."
 msgid "Screenshot has been saved."
@@ -2920,6 +3217,13 @@ msgstr "Знімок екрана відвантажено"
 #: ../Source/Gui/Win7JumpList.cpp:227
 msgid "Screenshot..."
 msgstr "Знімок екрана..."
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:30
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:113
+#, fuzzy
+#| msgid "Screenshot"
+msgid "Screenshots"
+msgstr "Знімок екрана"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:52
 msgid "Script: "
@@ -2949,6 +3253,12 @@ msgstr "Пошук на %1% та закриття (%2%)"
 msgid "Search on %s"
 msgstr "Пошук у %s"
 
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:81
+#, fuzzy
+#| msgid "Selected server: %s"
+msgid "Search servers"
+msgstr "Вибраний сервер: %s"
+
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:31
 msgid "Searching for picture files..."
 msgstr "Пошук графічних файлів..."
@@ -2957,7 +3267,7 @@ msgstr "Пошук графічних файлів..."
 msgid "Secured connection:"
 msgstr "Захищене з'єднання:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:334
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:331
 msgid "Select Region..."
 msgstr "Вибір області..."
 
@@ -2972,7 +3282,7 @@ msgstr "Виділити все"
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:379
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:233
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:155
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:145
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:147
 msgid "Select folder"
 msgstr "Виберіть папку"
 
@@ -2993,6 +3303,12 @@ msgstr "Вибрати вікно..."
 msgid "Select..."
 msgstr "Огляд..."
 
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:101
+#, fuzzy
+#| msgid "Selected servers: %d"
+msgid "Selected files: %1"
+msgstr "Вибрані сервери: %d"
+
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:99
 #, c-format
 msgid "Selected server: %s"
@@ -3002,6 +3318,7 @@ msgstr "Вибраний сервер: %s"
 #: ../Source/Gui/Controls/ServerListView.cpp:33
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:186
 msgid "Server"
 msgstr "Сервер"
 
@@ -3065,13 +3382,26 @@ msgid "Server's name cannot be empty"
 msgstr "Ім'я сервера не може бути порожнім"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
+#: ../Source/qimageuploader/QtUploadErrorHandler.cpp:28
 msgid "Server: "
 msgstr "Сервер: "
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:207
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:601
+#, fuzzy
+#| msgid "Server: "
+msgid "Server: %1"
+msgstr "Сервер: "
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:206
 msgctxt "settings.menu"
 msgid "Servers"
 msgstr "Сервери"
+
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:94
+#, fuzzy
+#| msgid "Server for other file types"
+msgid "Servers for other files"
+msgstr "Сервер для інших типів файлів"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
 msgid "Session total:"
@@ -3080,16 +3410,20 @@ msgstr "Усього за сесію:"
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:667
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:222
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2873
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:71
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2864
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:133
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:20
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:104
 msgid "Settings"
 msgstr "Налаштування"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:160
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:161
 msgid "Settings file path:"
 msgstr "Шлях до файлу налаштувань:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:71
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:47
 msgid "Settings have been saved."
 msgstr "Налаштування збережено."
 
@@ -3125,7 +3459,7 @@ msgstr "Скорочені URL-адреси"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:659
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:227
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:341
 msgid "Shorten a Link"
 msgstr "Скоротити посилання"
 
@@ -3148,7 +3482,7 @@ msgstr "Знімок вибраної прямокутної ділянки..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2885
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2876
 msgid "Show Error Log"
 msgstr "Показати журнал помилок"
 
@@ -3157,6 +3491,7 @@ msgid "Show automatically log window in case of error"
 msgstr "У разі помилки, автоматично показувати вікно журналу помилок"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:629
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:301
 #, fuzzy
 #| msgid "Add to the list"
 msgid "Show favorites only"
@@ -3166,7 +3501,13 @@ msgstr "Додати до списку"
 msgid "Show in default viewer"
 msgstr "Показати в типовій програмі перегляду"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:270
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:220
+#, fuzzy
+#| msgid "Show Error Log"
+msgid "Show log"
+msgstr "Показати журнал помилок"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:265
 msgid "Show log for this file"
 msgstr "Показати журнал для цього файлу"
 
@@ -3229,7 +3570,7 @@ msgid "Start"
 msgstr "Початок"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:656
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:337 ../Source/Gui/Win7JumpList.cpp:275
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:334 ../Source/Gui/Win7JumpList.cpp:275
 msgid "Start Recording"
 msgstr "Почати запис"
 
@@ -3238,7 +3579,7 @@ msgid "Starting upload"
 msgstr "Початок відвантаження"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:61
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:71
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:68
 msgid "Status"
 msgstr "Статус"
 
@@ -3248,9 +3589,9 @@ msgstr "Крок"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:115
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:721
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:175
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:714
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:174
 msgid "Stop"
 msgstr "Зупинити"
 
@@ -3261,6 +3602,12 @@ msgstr "Припинити відвантаження"
 #: ../Source/Core/Upload/UploadTask.cpp:371
 msgid "Stopped"
 msgstr "Зупинено"
+
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:190
+#, fuzzy
+#| msgid "Storage time (days)"
+msgid "Storage time"
+msgstr "Термін зберігання (дні)"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:35
 msgid "Storage time (days)"
@@ -3276,19 +3623,16 @@ msgstr "Розтягнути"
 msgid "Stroke color:"
 msgstr "Колір обведення:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:266
-msgid "Subtitles: "
-msgstr "Субтитри: "
-
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
 msgstr "Успіх"
 
-#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:54
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:55
 msgid "Summary"
 msgstr "Зведено"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:35
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:354
 msgid "Summary:"
 msgstr "Короткий зміст:"
 
@@ -3297,6 +3641,7 @@ msgid "Swap colors"
 msgstr "Поміняти кольори"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:626
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:311
 msgid "Table"
 msgstr ""
 
@@ -3353,13 +3698,23 @@ msgstr "Розташування тексту:"
 msgid "Text:"
 msgstr "Текст:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:112
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:113
 msgid "Thanks to the authors of the following open-source libraries:"
 msgstr "Дякуємо авторам таких бібліотек з відкритим вихідним кодом:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:88
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:89
 msgid "Thanks to:"
 msgstr "Щиро дякуємо:"
+
+#: ../Source/qimageuploader/Gui/controls/AddedFilesTabWidget.cpp:17
+msgid "The added files list is empty"
+msgstr ""
+
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:87
+msgid ""
+"The external image editor command must contain %1, which is replaced with "
+"the image file name."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:271
 #, c-format
@@ -3390,9 +3745,17 @@ msgstr "Ім'я файлу не може бути порожнім."
 msgid "The filename template contains forbidden characters!"
 msgstr "Ім'я файлу містить заборонені символи."
 
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:143
+msgid "The resulting mosaic is too large."
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
 msgid "The short link has been copied to the clipboard!"
 msgstr "Коротке посилання скопійовано до буфера обміну!"
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:95
+msgid "There are no frames to include in the mosaic."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:22
 msgid "These files cannot be uploaded to chosen servers:"
@@ -3401,6 +3764,14 @@ msgstr "Ці файли не можна завантажити на вибран
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:201
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr "Це означає, що ескіз буде створено на сайті, не програмою."
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:115
+msgid "This section will display screen recordings."
+msgstr ""
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:113
+msgid "This section will display screenshot history."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1098
 msgid "This server doesn't have any settings."
@@ -3414,7 +3785,7 @@ msgstr "Нитка"
 msgid "Threads number:"
 msgstr "Кількість потоків:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:72
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:69
 msgid "Thumbnail"
 msgstr "Ескіз"
 
@@ -3448,7 +3819,7 @@ msgstr "Розмір мініатюри:"
 msgid "Thumbnails"
 msgstr "Ескізи"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:209
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:208
 msgctxt "settings.menu"
 msgid "Thumbnails"
 msgstr "Ескізи"
@@ -3486,11 +3857,11 @@ msgstr "Верхній правий кут"
 msgid "Total size:"
 msgstr "Загальний розмір:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:99
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:100
 msgid "Translators:"
 msgstr "Перекладачам:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:217
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:216
 msgctxt "settings.menu"
 msgid "Tray icon"
 msgstr "Піктограма у треї"
@@ -3527,14 +3898,56 @@ msgstr "Сервер для скорочення посилань"
 msgid "URL:"
 msgstr "URL:"
 
+#: ../Source/qimageuploader/QtUploadErrorHandler.cpp:32
+#, fuzzy
+#| msgid "URL:"
+msgid "URL: "
+msgstr "URL:"
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:148
+msgid "Unable to allocate the resulting mosaic image."
+msgstr ""
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:202
+#, fuzzy
+#| msgid "Unable to shorten the link..."
+msgid "Unable to create the mosaic file."
+msgstr "Не вдалося скоротити посилання..."
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:197
+#, fuzzy
+#| msgid "Failed to create the directory '%s'."
+msgid "Unable to create the output directory."
+msgstr "Не вдалося створити каталог '%s'."
+
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:364
+#: ../Source/qimageuploader/Gui/ImageViewerWindow.cpp:387
+#, fuzzy
+#| msgid "Unable to load picture"
+msgid "Unable to load image"
+msgstr "Неможливо відвантажити зображення"
+
 #: ../Source/Gui/Controls/MyImage.cpp:176
 #: ../Source/Gui/Controls/ThumbsView.cpp:325
 msgid "Unable to load picture"
 msgstr "Неможливо відвантажити зображення"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2501
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2492
 msgid "Unable to make screenshot!"
 msgstr "Не вдається зробити знімок екрана!"
+
+#: ../Source/qimageuploader/Gui/QtImageGenerator.cpp:209
+#, fuzzy
+#| msgid "Unable to shorten the link..."
+msgid "Unable to save the mosaic image."
+msgstr "Не вдалося скоротити посилання..."
+
+#: ../Source/qimageuploader/Gui/GeneralSettingsPage.cpp:133
+#: ../Source/qimageuploader/Gui/SettingsDialog.cpp:104
+#, fuzzy
+#| msgid "Unable to shorten the link..."
+msgid "Unable to save the settings file."
+msgstr "Не вдалося скоротити посилання..."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:949
 msgid "Unable to shorten the link..."
@@ -3562,6 +3975,12 @@ msgstr "Оновити компоненти"
 #, c-format
 msgid "Update finished. Updated %d of %d files "
 msgstr "Оновлення завершено. Оновлено %d із %d файлів "
+
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:63
+#, fuzzy
+#| msgid "&Upload"
+msgid "Upload"
+msgstr "&Відвантажити"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
 msgid "Upload Buffer Size:"
@@ -3604,13 +4023,33 @@ msgstr "Відвантажити зображення"
 msgid "Upload images only"
 msgstr "Відвантажити тільки зображення"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:491
+#: ../Source/qimageuploader/Gui/ServerFolderSelectDialog.cpp:163
+#, fuzzy
+#| msgid "Updates are available"
+msgid "Upload manager is not available."
+msgstr "Є доступні оновлення"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:484
 msgid "Upload progress"
 msgstr "Перебіг відвантаження"
 
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:74
 msgid "Upload results"
 msgstr "Результати відвантаження"
+
+#: ../Source/qimageuploader/Gui/controls/UploadSessionListWidget.cpp:462
+#, fuzzy
+#| msgid "Upload results"
+msgid "Upload session"
+msgstr "Результати відвантаження"
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:35
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:35
+#, fuzzy
+#| msgctxt "settings.menu"
+#| msgid "Uploading"
+msgid "Upload settings"
+msgstr "Відвантаження"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
 msgid "Upload speed limit per thread:"
@@ -3642,12 +4081,12 @@ msgstr ""
 msgid "Uploaded images: "
 msgstr "Відвантажені зображення: "
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:215
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:214
 msgctxt "settings.menu"
 msgid "Uploading"
 msgstr "Відвантаження"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1024
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1015
 msgid "Uploading Files to Server"
 msgstr "Відвантаження файлів на сервер"
 
@@ -3661,7 +4100,7 @@ msgstr "Помилки відвантаження"
 msgid "Uploading file \"%1%\" to server \"%2%\"..."
 msgstr "Відправлення файлу на сервер..."
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:629
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:622
 msgid "Uploading has been finished."
 msgstr "Відвантаження завершено."
 
@@ -3674,12 +4113,20 @@ msgid "Uploading initiated from tray"
 msgstr "Завантаження розпочато з трея"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:77
+#: ../Source/qimageuploader/QtUploadErrorHandler.cpp:50
 msgid "Uploading module"
 msgstr "Відвантаження модуля"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:883
 msgid "Uploading screenshot"
 msgstr "Відвантаження знімка екрана"
+
+#: ../Source/qimageuploader/Gui/controls/MainWindowTabsWidget.cpp:29
+#: ../Source/qimageuploader/Gui/controls/UploadsTabWidget.cpp:13
+#, fuzzy
+#| msgid "&Upload"
+msgid "Uploads"
+msgstr "&Відвантажити"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:55
 msgid "Url Shortener"
@@ -3714,6 +4161,15 @@ msgstr "Використовувати системні налаштування
 msgid "Use template"
 msgstr "Використовувати шаблон"
 
+#: ../Source/qimageuploader/Gui/RegionSelect.cpp:110
+msgid ""
+"Use your mouse to draw a rectangle to screenshot or  exit pressing\n"
+"any key or using the right or middle mouse buttons."
+msgstr ""
+"Використовуйте мишу, щоб намалювати прямокутник, щоб зробити знімок екрана "
+"або вийти, натиснувши будь-яку клавішу або за допомогою правої або середньої "
+"кнопки миші."
+
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:90
 msgid "User name"
 msgstr "Ім'я користувача"
@@ -3727,17 +4183,24 @@ msgstr "ВІДЕО %s"
 msgid "Vertical interval:"
 msgstr "Вертикальний інтервал:"
 
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:73
+#, fuzzy
+#| msgctxt "serverlist.servertype"
+#| msgid "Video"
+msgid "Video"
+msgstr "Відео"
+
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:79
 msgctxt "serverlist.servertype"
 msgid "Video"
 msgstr "Відео"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:213
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:212
 msgctxt "settings.menu"
 msgid "Video"
 msgstr "Відео"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:457
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:456
 msgid "Video backend"
 msgstr "Відео-бекенд"
 
@@ -3746,10 +4209,10 @@ msgstr "Відео-бекенд"
 msgid "Video codec:"
 msgstr "Відеокодек:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2080
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2109
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:347
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1781
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2071
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2100
 msgid "Video files"
 msgstr "Відеофайли"
 
@@ -3761,12 +4224,8 @@ msgstr "Папка відеозаписів:"
 msgid "Video source:"
 msgstr "Джерело відео:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:166
-msgid "Video: "
-msgstr "Відео: "
-
 #: ../Source/Gui/Dialogs/MainDlg.cpp:203
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:265
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:260
 msgid "View"
 msgstr "Переглянути"
 
@@ -3774,8 +4233,14 @@ msgstr "Переглянути"
 msgid "View BBCode/HTML codes"
 msgstr "Переглянути BBCode/HTML-коди"
 
+#: ../Source/qimageuploader/Gui/MainWindow.cpp:642
+#, fuzzy
+#| msgid "View HTML/BBCode"
+msgid "View HTML/BBCode"
+msgstr "Переглянути HTML/BBCode"
+
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:225
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:343
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
 msgid "View Media File Information"
 msgstr "Інформація про медіафайл"
 
@@ -3789,6 +4254,12 @@ msgstr "Переглянути HTML/BBCode"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
 msgid "View log for details."
 msgstr "Щоб отримати додаткову інформацію, перегляньте журнал помилок."
+
+#: ../Source/qimageuploader/Gui/controls/ServerListPopup.cpp:310
+#, fuzzy
+#| msgid "View HTML/BBCode"
+msgid "View mode"
+msgstr "Переглянути HTML/BBCode"
 
 #: ../Source/Core/Upload/UploadTask.cpp:386
 msgid "Waiting for child tasks"
@@ -3814,11 +4285,11 @@ msgstr "Розташування водяного знака:"
 msgid "WebDAV"
 msgstr "WebDAV"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:269
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:270
 msgid "Website:"
 msgstr "Веб-сайт:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:58
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
@@ -3839,7 +4310,7 @@ msgstr "Вікно"
 msgid "Windows Explorer integration"
 msgstr "Інтеграція до провідника Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2728
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2719
 msgid "Work in progress"
 msgstr "Робота триває"
 
@@ -3857,6 +4328,18 @@ msgstr "Ви використовуєте останню версію %s."
 #, c-format
 msgid "You have not selected \"%s\""
 msgstr "Ви не вибрали \"%s\""
+
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:137
+#, fuzzy
+#| msgid "You have not selected server"
+msgid "You have not selected a server for \"%1\""
+msgstr "Ви не обрали сервер"
+
+#: ../Source/qimageuploader/Gui/controls/UploadSettingsTabWidget.cpp:139
+#, fuzzy
+#| msgid "You have not selected account for server \"%s\""
+msgid "You have not selected account for server \"%1\""
+msgstr "Ви не обрали обліковий запис для сервера \"%s\""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:168
@@ -3884,7 +4367,11 @@ msgstr "Ви не обрали сервер"
 msgid "You have not selected server!"
 msgstr "Ви не обрали сервер!"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:333
+#: ../Source/qimageuploader/Gui/controls/UploadsTabWidget.cpp:13
+msgid "Your uploads will appear here"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:330
 msgid "a pic of the whole screen or selected region"
 msgstr " Усього або вибраної області"
 
@@ -3893,13 +4380,19 @@ msgstr " Усього або вибраної області"
 msgid "and/or height:"
 msgstr "та/або висоту:"
 
+#: ../Source/qimageuploader/Gui/controls/ServerSelectorWidget.cpp:224
+#, fuzzy
+#| msgid "New account..."
+msgid "choose account..."
+msgstr "Новий обліковий запис..."
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
 msgid "day"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
 msgid "extracting frames from video"
 msgstr "витягнення кадрів із відео"
 
@@ -3912,7 +4405,7 @@ msgstr "розмір файлу"
 msgid "folder \"%s\""
 msgstr "папка \"%s\""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:341
 msgid "for easier link sharing"
 msgstr ""
 
@@ -3923,7 +4416,7 @@ msgstr "висока якість (100)"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:251
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:174
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
 msgid "hour"
 msgstr ""
 
@@ -3939,7 +4432,7 @@ msgstr "ширина зображення"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:254
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:177
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
 msgid "index"
 msgstr ""
 
@@ -3950,13 +4443,13 @@ msgstr "низька якість (0)"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:252
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:175
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:166
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:168
 msgid "minute"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:249
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:172
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:165
 msgid "month"
 msgstr ""
 
@@ -3964,7 +4457,7 @@ msgstr ""
 msgid "msec"
 msgstr "мс"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
 msgid "multiple files"
 msgstr "кілька файлів"
 
@@ -3972,6 +4465,13 @@ msgstr "кілька файлів"
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:227
 msgid "not selected"
 msgstr "не вибрано"
+
+#: ../Source/qimageuploader/Gui/models/ServerTableModel.cpp:289
+#, fuzzy
+#| msgctxt "serverlist.account"
+#| msgid "required"
+msgid "required"
+msgstr "обов'язковий"
 
 #: ../Source/Gui/Models/ServerListModel.cpp:292
 msgctxt "serverlist.account"
@@ -3986,11 +4486,11 @@ msgstr "с"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:253
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:176
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:167
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
 msgid "second"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
 msgid "single file (mosaic)"
 msgstr "один файл (мозаїка)"
 
@@ -3998,7 +4498,7 @@ msgstr "один файл (мозаїка)"
 msgid "to:"
 msgstr "до:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:94
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:95
 msgid "translator_name"
 msgstr "Юрій Петрашко (a.k.a. YuriPet)"
 
@@ -4006,31 +4506,31 @@ msgstr "Юрій Петрашко (a.k.a. YuriPet)"
 msgid "unknown server"
 msgstr "невідомий сервер"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:163
 #, fuzzy
 #| msgid "Extension"
 msgid "video file extension"
 msgstr "Розширення"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:160
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 #, fuzzy
 #| msgid "Video files"
 msgid "video file name"
 msgstr "Відеофайли"
 
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:159
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:161
 msgid "video file name without extension"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:256
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:170
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:172
 #, fuzzy
 #| msgid "image height"
 msgid "video height"
 msgstr "висота зображення"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:255
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:169
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:171
 #, fuzzy
 #| msgid "image width"
 msgid "video width"
@@ -4038,9 +4538,37 @@ msgstr "ширина зображення"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:248
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:171
-#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
+#: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
 msgid "year"
 msgstr ""
+
+#~ msgid "Audio"
+#~ msgstr "Аудіо"
+
+#~ msgid "Duration: "
+#~ msgstr "Тривалість: "
+
+#~ msgid "Filename: "
+#~ msgstr "Ім'я файлу: "
+
+#~ msgid "Filesize: "
+#~ msgstr "Розмір файлу: "
+
+#~ msgid ""
+#~ "MediaInfo.dll Not found! \n"
+#~ "Getting technical information of media files will not be accessible."
+#~ msgstr ""
+#~ "Бібліотеку MediaInfo.dll не знайдено! \n"
+#~ "Отримання технічної інформації про медіафайли буде недоступно."
+
+#~ msgid "Overall bitrate: "
+#~ msgstr "Загальний бітрейт: "
+
+#~ msgid "Subtitles: "
+#~ msgstr "Субтитри: "
+
+#~ msgid "Video: "
+#~ msgstr "Відео: "
 
 #, fuzzy
 #~| msgid "Height:"
@@ -4108,9 +4636,6 @@ msgstr ""
 
 #~ msgid "Add FTP/SFTP server"
 #~ msgstr "Додати FTP/SFTP-сервер"
-
-#~ msgid "Selected servers: %d"
-#~ msgstr "Вибрані сервери: %d"
 
 #, fuzzy
 #~| msgid "Undo"
@@ -4190,12 +4715,6 @@ msgstr ""
 #~ msgid "Loading file..."
 #~ msgstr "Завантаження файлу..."
 
-#~ msgid "Login cannot be empty"
-#~ msgstr "Ім'я не може бути порожнім"
-
-#~ msgid "New account..."
-#~ msgstr "Новий обліковий запис..."
-
 #~ msgid "Preserve EXIF data"
 #~ msgstr ""
 #~ "Зберігати EXIF (інформація про камеру, параметри зйомки, GPS, тощо.)"
@@ -4208,10 +4727,6 @@ msgstr ""
 
 #~ msgid "Unable to start process '%s'"
 #~ msgstr "Не вдалося запустити процес '%s'"
-
-#~ msgid "Video engine which is used to extract frames from a video file."
-#~ msgstr ""
-#~ "Відеомодуль, який використовується для витягнення кадрів з відеофайлу."
 
 #~ msgid ""
 #~ "Would you like to grab frames from this video?\n"
@@ -4240,9 +4755,6 @@ msgstr ""
 
 #~ msgid "Creating folder \""
 #~ msgstr "Створення папки \""
-
-#~ msgid "Updates are available"
-#~ msgstr "Є доступні оновлення"
 
 #~ msgid "not set"
 #~ msgstr "не встановлено"
@@ -4277,37 +4789,14 @@ msgstr ""
 #~ msgid "Value"
 #~ msgstr "Значення"
 
-#~ msgid "<without account>"
-#~ msgstr "<без облікового запису>"
-
 #~ msgid "Server for images:"
 #~ msgstr "Сервер для зображень:"
 
 #~ msgid "Server for other file types:"
 #~ msgstr "Сервер для інших типів файлів:"
 
-#~ msgid "Open in browser"
-#~ msgstr "Відкрити в браузері"
-
-#~ msgid "Open file in default program"
-#~ msgstr "Відкрити файл у типовій програмі"
-
-#~ msgid "Copy file path to clipboard"
-#~ msgstr "Копіювати шлях до файлу до буфера обміну"
-
 #~ msgid "Session %1 (%2 files)"
 #~ msgstr "Сеанс %1 (%2 файлів)"
 
 #~ msgid "Progress"
 #~ msgstr "Перебіг"
-
-#~ msgid ""
-#~ "Use your mouse to draw a rectangle to screenshot or  exit pressing\n"
-#~ "any key or using the right or middle mouse buttons."
-#~ msgstr ""
-#~ "Використовуйте мишу, щоб намалювати прямокутник, щоб зробити знімок "
-#~ "екрана або вийти, натиснувши будь-яку клавішу або за допомогою правої або "
-#~ "середньої кнопки миші."
-
-#~ msgid "%1 x %2 pixels "
-#~ msgstr "%1 x %2 пікселів"

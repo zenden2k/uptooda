@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDesktopServices>
+#include <QDir>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -18,7 +19,6 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QSystemTrayIcon>
-#include <QTemporaryFile>
 #include <QThread>
 #include <QTimer>
 #include <QToolButton>
@@ -47,6 +47,7 @@
 #include "Gui/controls/MainWindowTabsWidget.h"
 #include "Gui/controls/UploadSessionListWidget.h"
 #include "Gui/models/ThumbnailListModel.h"
+#include "Helpers.h"
 #include "ResultsWindow.h"
 #include "SettingsDialog.h"
 #include "controls/AddedFilesTabWidget.h"
@@ -498,16 +499,29 @@ void MainWindow::on_actionScreenshot_triggered() {
     }
 
     QPixmap* screen = eng.capturedBitmap(); // QPixmap::grabWindow(QApplication::desktop()->winId());
-    QTemporaryFile f(U2Q(AppRuntimeInfo::instance()->tempDirectory()) + "/screenshot_XXXXXX.png");
-    f.setAutoRemove(false);
-    QString uniqueFileName;
-    if (f.open()) {
-        uniqueFileName = f.fileName();
-        f.close();
+    const auto* settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    const ScreenshotSettingsStruct& screenshotSettings = settings->ScreenshotSettings;
+    const QString formats[] = { QStringLiteral("JPEG"), QStringLiteral("PNG"), QStringLiteral("GIF"),
+                                QStringLiteral("WEBP"), QStringLiteral("WEBP") };
+    const QString extensions[] = { QStringLiteral(".jpg"), QStringLiteral(".png"), QStringLiteral(".gif"),
+                                   QStringLiteral(".webp"), QStringLiteral(".webp") };
+    const int formatIndex = qBound(0, screenshotSettings.Format, static_cast<int>(std::size(formats)) - 1);
+    const QString fileName
+        = Helpers::GenerateFileNameFromTemplate(QString::fromUtf8(screenshotSettings.FilenameTemplate),
+                                                screenshotIndex_, screen->size(), QString(), tr("Screenshot"))
+        + extensions[formatIndex];
+    QString outputDirectory = QDir::fromNativeSeparators(QString::fromUtf8(screenshotSettings.Folder));
+    if (outputDirectory.isEmpty()) {
+        outputDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
     }
-    if (!uniqueFileName.isEmpty()) {
-        if (screen->save(uniqueFileName)) {
-            addFileToList(uniqueFileName);
+
+    QString outputFileName = QDir(outputDirectory).filePath(fileName);
+    if (QDir().mkpath(QFileInfo(outputFileName).absolutePath())) {
+        outputFileName = Helpers::MakeUniqueFileName(outputFileName);
+        const int quality = formatIndex == 4 ? 100 : screenshotSettings.Quality;
+        if (screen->save(outputFileName, formats[formatIndex].toLatin1().constData(), quality)) {
+            ++screenshotIndex_;
+            addFileToList(outputFileName);
         }
     }
     show();
@@ -776,8 +790,9 @@ void MainWindow::on_actionAboutProgram_triggered() {
 
 void MainWindow::on_actionSettings_triggered() {
     auto* settings = ServiceLocator::instance()->settings<QtGuiSettings>();
-    SettingsDialog dialog(settings, logWindow_, this);
+    SettingsDialog dialog(settings, uploadEngineManager_.get(), logWindow_, this);
     dialog.exec();
+    ui->mainTabs->configureUploadSettings(uploadEngineManager_.get(), settings->imageServer, settings->fileServer);
 }
 
 void MainWindow::saveOptions() {

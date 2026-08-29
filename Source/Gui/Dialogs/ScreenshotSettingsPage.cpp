@@ -67,9 +67,10 @@ LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     createResources();
 
-    SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT, Settings.ScreenshotSettings.FilenameTemplate);
+    SetDlgItemText(IDC_SCREENSHOTFILENAMEEDIT,
+                   IuCoreUtils::Utf8ToWstring(Settings.ScreenshotSettings.FilenameTemplate).c_str());
 
-    SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, Settings.ScreenshotSettings.Folder);
+    SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, IuCoreUtils::Utf8ToWstring(Settings.ScreenshotSettings.Folder).c_str());
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
     SendDlgItemMessage(IDC_QUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 
@@ -123,14 +124,15 @@ bool CScreenshotSettingsPage::apply()
     }
 
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.FilenameTemplate = fileNameTemplate;
+    Settings.ScreenshotSettings.FilenameTemplate = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(fileNameTemplate));
 
     Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
     Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
     Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
 
-    Settings.ScreenshotSettings.Folder = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
+    Settings.ScreenshotSettings.Folder = IuCoreUtils::WstringToUtf8(
+        static_cast<LPCTSTR>(GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT))));
     Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
     Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
@@ -165,21 +167,22 @@ LRESULT CScreenshotSettingsPage::OnScreenshotsFolderSelect(WORD wNotifyCode, WOR
     return 0;
 }
 
-LRESULT CScreenshotSettingsPage::OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    const std::vector<std::pair<CString, CString>> items{
-        {_T("%y"), TR("year")},
-        {_T("%m"), TR("month")},
-        {_T("%d"), TR("day")},
-        {_T("%h"), TR("hour")},
-        {_T("%n"), TR("minute")},
-        {_T("%s"), TR("second")},
-        {_T("%i"), TR("index")},
-        {_T("%width%"), TR("image width")},
-        {_T("%height%"), TR("image height")},
+LRESULT CScreenshotSettingsPage::OnMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    const std::vector<std::pair<CString, CString>> items {
+        { _T("%y%"), TR("year") },
+        { _T("%m%"), TR("month") },
+        { _T("%d%"), TR("day") },
+        { _T("%h%"), TR("hour") },
+        { _T("%n%"), TR("minute") },
+        { _T("%s%"), TR("second") },
+        { _T("%i%"), TR("index") },
+        { _T("%width%"), TR("image width") },
+        { _T("%height%"), TR("image height") },
+        { _T("%random(N)%"), TR("random string of N characters") },
+        { _T("%type%"), TR("object type") },
     };
 
-    RECT rc {};
+    RECT rc { };
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin { rc.left, rc.bottom };
 
@@ -198,9 +201,11 @@ LRESULT CScreenshotSettingsPage::OnMacrosButtonClicked(WORD wNotifyCode, WORD wI
     excludeArea.cbSize = sizeof(excludeArea);
     excludeArea.rcExclude = rc;
 
-    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY,
+                                             menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
     if (result && (result - 1 < items.size())) {
-        filepathTemplateEdit_.ReplaceSel(items[result - 1].first, TRUE);
+        const CString& macro = items[result - 1].first;
+        filepathTemplateEdit_.ReplaceSel(macro == _T("%random(N)%") ? _T("%random(6)%") : macro, TRUE);
     }
 
     return 0;

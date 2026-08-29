@@ -245,6 +245,8 @@ public:
 
     int Run(LPTSTR lpstrCmdLine, int nCmdShow)
     {
+        std::filesystem::path messagesPath = std::filesystem::path(W2U(WinUtils::GetAppFolder())) / "Lang/locale/";
+
         for (const auto& CurrentParam : CmdLine) {
             if (CurrentParam.Left(12) == _T("/waitforpid=")) {
                 CString pidStr = CurrentParam.Right(CurrentParam.GetLength() - 12);
@@ -283,7 +285,7 @@ public:
         // for Windows Vista and later versions
         if (CmdLine.IsOption(_T("integration"))) {
             settings_.LoadSettings("", "", false);
-            lang_.LoadLanguage(U2W(settings_.Language));
+            lang_.LoadLanguage(settings_.Language, messagesPath);
             settings_.ApplyRegSettingsRightNow();
             CScriptUploadEngine::DestroyScriptEngine();
             return 0;
@@ -341,7 +343,6 @@ public:
             }
         }
 
-        lang_.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
         bool isFirstRun = settings_.Language.empty() || FALSE;
         for (size_t i = 0; i < CmdLine.GetCount(); i++) {
             CString CurrentParam = CmdLine[i];
@@ -370,7 +371,7 @@ public:
             }
             settings_.Language = W2U(LS.getLanguage());
 
-            lang_.LoadLanguage(U2W(settings_.Language));
+            lang_.LoadLanguage(settings_.Language, messagesPath);
             settings_.SaveSettings();
         }
         else {
@@ -390,7 +391,7 @@ public:
             if (it != oldLangs.end()) {
                 settings_.Language = it->second;
             }
-            lang_.LoadLanguage(U2W(settings_.Language));
+            lang_.LoadLanguage(settings_.Language, messagesPath);
         }
 
         //AppRuntimeInfo::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));

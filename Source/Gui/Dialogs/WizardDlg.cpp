@@ -2455,10 +2455,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 ImageUtils::MySaveImage(result.get(), WinUtils::DoExtractFileName(suggestingFileName), outFileName,
                                         savingFormat,
                                         Settings.ScreenshotSettings.Quality,
-                                        Settings.ScreenshotSettings.Folder.IsEmpty() ? nullptr : folder.GetString()
+                                        Settings.ScreenshotSettings.Folder.empty() ? nullptr : folder.GetString()
                 );
 
-                if (!Settings.ScreenshotSettings.Folder.IsEmpty()) {
+                if (!Settings.ScreenshotSettings.Folder.empty()) {
                     saved = true;
                 }
             }
@@ -2599,7 +2599,7 @@ bool CWizardDlg::funcShortenUrl() {
 }
 
 bool CWizardDlg::funcOpenScreenshotFolder() {
-    CString screenshotFolder = Settings.ScreenshotSettings.Folder;
+    CString screenshotFolder = IuCoreUtils::Utf8ToWstring(Settings.ScreenshotSettings.Folder).c_str();
 
     if (screenshotFolder.IsEmpty()) {
         screenshotFolder = AppRuntimeInfo::instance()->tempDirectoryW();

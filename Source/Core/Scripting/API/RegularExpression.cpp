@@ -20,6 +20,8 @@
 
 #include "RegularExpression.h"
 
+#include <memory>
+
 #include "Core/Logging.h"
 #include "../Squirrelnc.h"
 #include "ScriptAPI.h"
@@ -30,13 +32,10 @@ namespace ScriptAPI {
 
 RegularExpression::RegularExpression(const std::string& expression, const std::string& flags)
 {
-    pcre_.reset( new Pcre(expression, flags));
+    pcre_ = std::make_shared<Pcre>( expression, flags);
 }
 
-RegularExpression::RegularExpression()
-{
-
-}
+RegularExpression::RegularExpression() = default;
 /*
 RegularExpression::RegularExpression(const RegularExpression& r)
 {

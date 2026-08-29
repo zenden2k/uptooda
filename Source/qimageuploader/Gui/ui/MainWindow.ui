@@ -113,7 +113,7 @@
      <normaloff>:/res/icon-information.png</normaloff>:/res/icon-information.png</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>About...</string>
    </property>
   </action>
  </widget>

@@ -94,19 +94,18 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
         LRESULT OnDeinterlace(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnMenuVideoEngine(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-		int GrabBitmaps(const CString& szFile );
-		bool SetGrabbingStatusText(LPCTSTR String);
-		int ThreadTerminated();
-		bool OnAddImage(Gdiplus::Bitmap *bm, CString title);
-		void SavingMethodChanged(void);
-		int GenPicture(CString& outFileName);
-		static CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName);
-		CThumbsView ThumbsView;
-		void CheckEnableNext();
-		bool OnNext() override; // Reimplemented function of CWizardPage
-		bool OnShow() override; // Reimplemented function of CWizardPage
-		void OnFrameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
-		void OnFrameGrabbingFinished(bool success);
+        int GrabBitmaps(const CString& szFile);
+        bool SetGrabbingStatusText(LPCTSTR String);
+        int ThreadTerminated();
+        bool OnAddImage(Gdiplus::Bitmap* bm, CString title);
+        void SavingMethodChanged(void);
+        int GenPicture(CString& outFileName);
+        CThumbsView ThumbsView;
+        void CheckEnableNext();
+        bool OnNext() override; // Reimplemented function of CWizardPage
+        bool OnShow() override; // Reimplemented function of CWizardPage
+        void OnFrameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
+        void OnFrameGrabbingFinished(bool success);
         void optionsButtonClicked();
 		std::unique_ptr<VideoGrabber> videoGrabber_ ;
 

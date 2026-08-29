@@ -80,7 +80,12 @@ UploadSettingsTabWidget::UploadSettingsTabWidget(QWidget* parent) : QWidget(pare
 void UploadSettingsTabWidget::configure(UploadEngineManager* uploadEngineManager,
                                         const ServerProfileGroup& imageProfiles,
                                         const ServerProfileGroup& fileProfiles) {
-    if (imageServerWidget_ || !uploadEngineManager) {
+    if (!uploadEngineManager) {
+        return;
+    }
+    if (imageServerWidget_) {
+        imageServerWidget_->setServerProfileGroup(imageProfiles);
+        fileServerWidget_->setServerProfileGroup(fileProfiles);
         return;
     }
     auto* formLayout = qobject_cast<QVBoxLayout*>(form_->layout());

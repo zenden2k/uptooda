@@ -22,11 +22,9 @@
 #define IU_FUNC_LANGCLASS_H
 #pragma once
 
-#include "atlheaders.h"
-
-
+#include <filesystem>
 #include <string>
-#include <unordered_map>
+
 #ifndef IU_SHELLEXT
     #include "Core/i18n/Translator.h"
     #define ITRANLATOR_OVERRIDE override
@@ -35,44 +33,30 @@
     #define TR(str) _T(str)
 #endif
 
-class CLang
-#ifndef IU_SHELLEXT
-: public ITranslator
-#endif
-{
+class CLang : public ITranslator {
     public:
         CLang();
-        void SetDirectory(LPCTSTR Directory);
-        bool LoadLanguage(LPCTSTR Lang);
-        CString GetLanguageName() const;
-        CString getLanguage() const;
-        CString getLocale() const;
-        CString getCurrentLanguageFile() const;
+        bool LoadLanguage(const std::string& lang, const std::filesystem::path& messagesDir);
+        std::string GetLanguageName() const;
+        std::string getLanguage() const;
+        std::string getLocale() const;
+        std::string getCurrentLanguageFile() const;
         /**
             The RTL option is not being changed during program lifetime
         **/
         bool isRTL() const ITRANLATOR_OVERRIDE;
-#ifndef IU_SHELLEXT
         std::string getCurrentLanguage() ITRANLATOR_OVERRIDE;
         std::string getCurrentLocale() ITRANLATOR_OVERRIDE;
         std::string translate(const char* str) ITRANLATOR_OVERRIDE;
         std::wstring translateW(const char* str) ITRANLATOR_OVERRIDE;
         std::string getLanguageDisplayName() const ITRANLATOR_OVERRIDE;
-#endif
         CLang(const CLang&) = delete;
         CLang& operator=(const CLang&) = delete;
     private:
-        struct TranslateListItem
-        {
-            TCHAR *Name;
-            TCHAR *Text;
-        };
-        CString m_Directory;
-        CString m_sLang;
-        std::vector<CString> LanguagesList;
-        CString localeName_;
-        CString language_;
-        CString currentLanguageFile_;
+        std::string lang_;
+        std::string localeName_;
+        std::string language_;
+        std::string currentLanguageFile_;
         bool isRTL_;
 };
 

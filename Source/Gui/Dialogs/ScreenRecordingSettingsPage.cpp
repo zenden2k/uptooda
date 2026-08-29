@@ -242,20 +242,19 @@ LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode
     return 0;
 }
 
-LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-    const std::vector<std::pair<CString, CString>> items {
-            { _T("%y"), TR("year")},
-            { _T("%m"), TR("month")},
-            { _T("%d"), TR("day")},
-            { _T("%h"), TR("hour")},
-            { _T("%n"), TR("minute")},
-            { _T("%s"), TR("second")},
-            { _T("%i"), TR("index")},
-            { _T("%width%"), TR("video width")},
-            { _T("%height%"), TR("video height") }
-        };
-    RECT rc {};
+LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    const std::vector<std::pair<CString, CString>> items { { _T("%y%"), TR("year") },
+                                                           { _T("%m%"), TR("month") },
+                                                           { _T("%d%"), TR("day") },
+                                                           { _T("%h%"), TR("hour") },
+                                                           { _T("%n%"), TR("minute") },
+                                                           { _T("%s%"), TR("second") },
+                                                           { _T("%i%"), TR("index") },
+                                                           { _T("%width%"), TR("video width") },
+                                                           { _T("%height%"), TR("video height") },
+                                                           { _T("%random(N)%"), TR("random string of N characters") },
+                                                           { _T("%type%"), TR("object type") } };
+    RECT rc { };
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin { rc.left, rc.bottom };
 
@@ -274,9 +273,11 @@ LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotify
     excludeArea.cbSize = sizeof(excludeArea);
     excludeArea.rcExclude = rc;
 
-    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY,
+                                             menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
     if (result && (result - 1 < items.size())) {
-        fileNameTemplateEditControl_.ReplaceSel(items[result - 1].first, TRUE);
+        const CString& macro = items[result - 1].first;
+        fileNameTemplateEditControl_.ReplaceSel(macro == _T("%random(N)%") ? _T("%random(6)%") : macro, TRUE);
     }
 
     return 0;

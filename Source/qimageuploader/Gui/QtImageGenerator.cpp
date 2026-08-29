@@ -2,10 +2,10 @@
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QImageReader>
 #include <QPainter>
 #include <QPen>
-#include <QTemporaryFile>
 #include <QtConcurrentRun>
 
 #include <limits>
@@ -13,6 +13,7 @@
 
 #include "../../MediaInfo/MediaInfoHelper.h"
 #include "Core/CommonDefs.h"
+#include "Helpers.h"
 
 namespace {
 
@@ -192,17 +193,30 @@ QtImageGenerator::GenerationResult QtImageGenerator::generate() {
         return { false, true, { }, { } };
     }
 
-    QDir outputDirectory(options_.OutputDirectory);
-    if (!outputDirectory.exists() && !outputDirectory.mkpath(QStringLiteral("."))) {
+    const QString templatePath = QDir::fromNativeSeparators(QString::fromUtf8(videoSettings_.SnapshotFileTemplate));
+    const QFileInfo templateInfo(templatePath);
+    QString templateWithoutExtension = templateInfo.completeBaseName();
+    if (templateInfo.path() != QStringLiteral(".")) {
+        templateWithoutExtension = QDir(templateInfo.path()).filePath(templateWithoutExtension);
+    }
+
+    const QString relativeFileName = Helpers::GenerateFileNameFromTemplate(
+                                         templateWithoutExtension, 1, referenceImage.size(), mediaFile_, tr("Mosaic"))
+        + QStringLiteral(".png");
+    QString baseDirectory = QDir::fromNativeSeparators(QString::fromUtf8(videoSettings_.SnapshotsFolder));
+    if (baseDirectory.isEmpty()) {
+        baseDirectory = options_.OutputDirectory;
+    }
+
+    QString outputFileName = QDir(baseDirectory).filePath(relativeFileName);
+    if (!QDir().mkpath(QFileInfo(outputFileName).absolutePath()) && baseDirectory != options_.OutputDirectory) {
+        baseDirectory = options_.OutputDirectory;
+        outputFileName = QDir(baseDirectory).filePath(relativeFileName);
+    }
+    if (!QDir().mkpath(QFileInfo(outputFileName).absolutePath())) {
         return { false, false, { }, tr("Unable to create the output directory.") };
     }
-    QTemporaryFile outputFile(outputDirectory.filePath(QStringLiteral("grab_mosaic_XXXXXX.png")));
-    outputFile.setAutoRemove(false);
-    if (!outputFile.open()) {
-        return { false, false, { }, tr("Unable to create the mosaic file.") };
-    }
-    const QString outputFileName = outputFile.fileName();
-    outputFile.close();
+    outputFileName = Helpers::MakeUniqueFileName(outputFileName);
 
     if (!mosaic.save(outputFileName, "PNG")) {
         QFile::remove(outputFileName);

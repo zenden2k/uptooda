@@ -19,7 +19,6 @@
 #include <QMimeData>
 #include <QPainter>
 #include <QResizeEvent>
-#include <QTemporaryFile>
 #include <QtConcurrentRun>
 
 #include "../../MediaInfo/MediaInfoHelper.h"
@@ -32,6 +31,7 @@
 #include "Gui/VirtualFileDrop.h"
 #include "Gui/controls/ThumbnailListView.h"
 #include "Gui/models/ThumbnailListModel.h"
+#include "Helpers.h"
 #include "Video/QtImage.h"
 #include "Video/VideoGrabber.h"
 #include "ui_MediaDlg.h"
@@ -184,6 +184,7 @@ MediaDlg::~MediaDlg() {
 }
 
 void MediaDlg::frameGrabbed(const std::string& timeString, int64_t time, const std::shared_ptr<AbstractImage>& image) {
+    Q_UNUSED(time);
     if (!image) {
         return;
     }
@@ -195,36 +196,55 @@ void MediaDlg::frameGrabbed(const std::string& timeString, int64_t time, const s
     QImage img = qtImage->toQImage();
 
     if (!img.isNull()) {
-        QString tempDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
-        QTemporaryFile f(tempDirectory + "/grab_XXXXXX.png");
-        f.setAutoRemove(false);
-        QString uniqueFileName;
-        if (f.open()) {
-            uniqueFileName = f.fileName();
-            f.close();
+        const auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+        const QString templatePath
+            = QDir::fromNativeSeparators(QString::fromUtf8(settings->VideoSettings.SnapshotFileTemplate));
+        const QFileInfo templateInfo(templatePath);
+        QString templateWithoutExtension = templateInfo.completeBaseName();
+        if (templateInfo.path() != QStringLiteral(".")) {
+            templateWithoutExtension = QDir(templateInfo.path()).filePath(templateWithoutExtension);
         }
-        if (!uniqueFileName.isEmpty()) {
-            QImageWriter writer(uniqueFileName);
+
+        const QString relativeFileName
+            = Helpers::GenerateFileNameFromTemplate(templateWithoutExtension, grabbedFramesCount_ + 1, img.size(),
+                                                    fileName_, tr("Frame"))
+            + QStringLiteral(".png");
+        QString baseDirectory = QDir::fromNativeSeparators(QString::fromUtf8(settings->VideoSettings.SnapshotsFolder));
+        if (baseDirectory.isEmpty()) {
+            baseDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
+        }
+
+        QString outputFileName = QDir(baseDirectory).filePath(relativeFileName);
+        if (!QDir().mkpath(QFileInfo(outputFileName).absolutePath())) {
+            baseDirectory = U2Q(AppRuntimeInfo::instance()->tempDirectory());
+            outputFileName = QDir(baseDirectory).filePath(relativeFileName);
+        }
+
+        if (QDir().mkpath(QFileInfo(outputFileName).absolutePath())) {
+            outputFileName = Helpers::MakeUniqueFileName(outputFileName);
+            QImageWriter writer(outputFileName, "png");
             writer.setCompression(1);
             writer.setQuality(10);
 
             if (writer.write(img)) {
-                QIcon icon(QPixmap::fromImage(img));
+                ++grabbedFramesCount_;
                 QMetaObject::invokeMethod(this, "frameGrabbedSlot", Qt::BlockingQueuedConnection,
-                                          Q_ARG(QString, timeStringQt), Q_ARG(QString, uniqueFileName),
-                                          Q_ARG(QIcon, icon));
+                                          Q_ARG(QString, timeStringQt), Q_ARG(QString, outputFileName),
+                                          Q_ARG(QImage, img));
             }
         }
     }
 }
 
-void MediaDlg::frameGrabbedSlot(QString timeString, QString fileName, QIcon icon) {
+void MediaDlg::frameGrabbedSlot(const QString& timeString, const QString& fileName, const QImage& image) {
+    QIcon icon(QPixmap::fromImage(image));
     frameModel_->addFile(fileName, timeString, icon);
 }
 
 void MediaDlg::on_grabButton_clicked() {
     grabInProgress_ = true;
     grabCanceled_ = false;
+    grabbedFramesCount_ = 0;
     ui->grabButton->setEnabled(false);
     ui->buttonBox->setEnabled(false);
     ui->stopButton->setVisible(true);

@@ -11,6 +11,7 @@ Dist/output/
 Dist/portable/
 Data/Snapshots
 Data/History
+Data/Lang
 Data/.idea
 Data/settings*.xml
 Data/uptooda.xml

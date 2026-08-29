@@ -44,25 +44,6 @@ struct TrayIconSettingsStruct {
     bool DontLaunchCopy;
 };
 
-struct ScreenshotSettingsStruct {
-    int Format;
-    int Quality, Delay;
-    int WindowHidingDelay;
-    bool ShowForeground;
-    bool CopyToClipboard;
-    COLORREF BrushColor;
-    CString FilenameTemplate;
-    CString Folder;
-    bool RemoveCorners;
-    bool AddShadow;
-    bool RemoveBackground;
-    bool OpenInEditor; // only from screenshot dlg
-    bool UseOldRegionScreenshotMethod;
-    bool CaptureCursor;
-    int MonitorMode;
-};
-
-
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
@@ -107,7 +88,6 @@ public:
 
     bool RememberImageServer;
     bool RememberFileServer;
-    ScreenshotSettingsStruct ScreenshotSettings;
     ImageReuploaderSettingsStruct ImageReuploaderSettings;
     TrayIconSettingsStruct TrayIconSettings;
     bool ExplorerContextMenu;

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScreenshotSettingsPage</class>
+ <widget class="QWidget" name="ScreenshotSettingsPage">
+  <property name="windowTitle">
+   <string>Screenshot settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="leftMargin"><number>28</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>28</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <property name="spacing"><number>18</number></property>
+   <item>
+    <widget class="QLabel" name="settingsPageTitle">
+     <property name="text"><string>Screenshot settings</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="savingGroup">
+     <property name="title"><string>Saving parameters</string></property>
+     <layout class="QGridLayout" name="savingLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>10</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="folderLabel">
+        <property name="text"><string>Directory to save screenshots:</string></property>
+        <property name="buddy"><cstring>folderEdit</cstring></property>
+       </widget>
+      </item>
+      <item row="0" column="1"><widget class="QLineEdit" name="folderEdit"/></item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="folderBrowseButton">
+        <property name="text"><string>Browse…</string></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="filenameTemplateLabel">
+        <property name="text"><string>Filename and path template:</string></property>
+        <property name="buddy"><cstring>filenameTemplateEdit</cstring></property>
+       </widget>
+      </item>
+      <item row="1" column="1"><widget class="QLineEdit" name="filenameTemplateEdit"/></item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="macrosButton">
+        <property name="text"><string>Macros…</string></property>
+        <property name="toolTip"><string>Macros list</string></property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="formatLabel">
+        <property name="text"><string>Format:</string></property>
+        <property name="buddy"><cstring>formatCombo</cstring></property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="formatRow">
+        <item><widget class="QComboBox" name="formatCombo"/></item>
+        <item><widget class="QLabel" name="qualityLabel"><property name="text"><string>Quality:</string></property><property name="buddy"><cstring>qualitySpin</cstring></property></widget></item>
+        <item><widget class="QSpinBox" name="qualitySpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>100</number></property><property name="value"><number>85</number></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="additionalGroup">
+     <property name="title"><string>Additional settings</string></property>
+     <layout class="QVBoxLayout" name="additionalLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="spacing"><number>8</number></property>
+      <item>
+       <layout class="QHBoxLayout" name="delayRow">
+        <item><widget class="QLabel" name="timeoutLabel"><property name="text"><string>Timeout:</string></property><property name="buddy"><cstring>timeoutSpin</cstring></property></widget></item>
+        <item><widget class="QSpinBox" name="timeoutSpin"><property name="maximum"><number>30</number></property><property name="suffix"><string> sec</string></property></widget></item>
+        <item><spacer name="delaySpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property></spacer></item>
+        <item><widget class="QLabel" name="windowHidingDelayLabel"><property name="text"><string>Delay when hiding window:</string></property><property name="buddy"><cstring>windowHidingDelaySpin</cstring></property></widget></item>
+        <item><widget class="QSpinBox" name="windowHidingDelaySpin"><property name="maximum"><number>10000</number></property><property name="singleStep"><number>50</number></property><property name="suffix"><string> msec</string></property></widget></item>
+       </layout>
+      </item>
+      <item><widget class="QCheckBox" name="foregroundCheckBox"><property name="text"><string>Bring window to foreground when selected by mouse</string></property></widget></item>
+      <item><widget class="QCheckBox" name="copyToClipboardCheckBox"><property name="text"><string>Always copy captured image to clipboard</string></property></widget></item>
+      <item><widget class="QCheckBox" name="captureCursorCheckBox"><property name="text"><string>Capture cursor</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="windowCaptureGroup">
+     <property name="title"><string>Window capture</string></property>
+     <layout class="QVBoxLayout" name="windowCaptureLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="spacing"><number>8</number></property>
+      <item><widget class="QCheckBox" name="removeCornersCheckBox"><property name="text"><string>Clear window transparent corners</string></property></widget></item>
+      <item><widget class="QCheckBox" name="addShadowCheckBox"><property name="text"><string>Capture with shadow</string></property></widget></item>
+      <item><widget class="QCheckBox" name="removeBackgroundCheckBox"><property name="text"><string>Clear window's background</string></property></widget></item>
+      <item><widget class="QLabel" name="windowCaptureHint"><property name="text"><string>These options apply to supported Windows desktop effects.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item><spacer name="verticalSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property></spacer></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>VideoGrabberSettingsPage</class>
+ <widget class="QWidget" name="VideoGrabberSettingsPage">
+  <property name="windowTitle"><string>Video grabber settings</string></property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="leftMargin"><number>28</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>28</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <property name="spacing"><number>18</number></property>
+   <item>
+    <widget class="QLabel" name="settingsPageTitle">
+     <property name="text"><string>Video grabber</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="framesLayoutGroup">
+     <property name="title"><string>Frames layout</string></property>
+     <layout class="QGridLayout" name="framesLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>10</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0"><widget class="QLabel" name="columnsLabel"><property name="text"><string>Number of columns:</string></property><property name="buddy"><cstring>columnsSpin</cstring></property></widget></item>
+      <item row="0" column="1"><widget class="QSpinBox" name="columnsSpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>1000</number></property><property name="value"><number>3</number></property></widget></item>
+      <item row="1" column="0"><widget class="QLabel" name="tileWidthLabel"><property name="text"><string>Thumbnail width:</string></property><property name="buddy"><cstring>tileWidthSpin</cstring></property></widget></item>
+      <item row="1" column="1"><widget class="QSpinBox" name="tileWidthSpin"><property name="minimum"><number>10</number></property><property name="maximum"><number>1024</number></property><property name="suffix"><string> px</string></property><property name="value"><number>200</number></property></widget></item>
+      <item row="2" column="0"><widget class="QLabel" name="horizontalGapLabel"><property name="text"><string>Horizontal interval:</string></property><property name="buddy"><cstring>horizontalGapSpin</cstring></property></widget></item>
+      <item row="2" column="1"><widget class="QSpinBox" name="horizontalGapSpin"><property name="maximum"><number>200</number></property><property name="suffix"><string> px</string></property><property name="value"><number>5</number></property></widget></item>
+      <item row="3" column="0"><widget class="QLabel" name="verticalGapLabel"><property name="text"><string>Vertical interval:</string></property><property name="buddy"><cstring>verticalGapSpin</cstring></property></widget></item>
+      <item row="3" column="1"><widget class="QSpinBox" name="verticalGapSpin"><property name="maximum"><number>200</number></property><property name="suffix"><string> px</string></property><property name="value"><number>7</number></property></widget></item>
+      <item row="0" column="2" rowspan="4"><spacer name="framesLayoutSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="mediaInfoGroup">
+     <property name="title"><string>Video information</string></property>
+     <layout class="QGridLayout" name="mediaInfoLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>10</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0" colspan="4"><widget class="QCheckBox" name="showMediaInfoCheckBox"><property name="text"><string>Display video file information on resulting picture</string></property></widget></item>
+      <item row="1" column="0"><widget class="QLabel" name="fontLabel"><property name="text"><string>Font:</string></property><property name="buddy"><cstring>fontButton</cstring></property></widget></item>
+      <item row="1" column="1"><widget class="QPushButton" name="fontButton"><property name="text"><string>Font…</string></property></widget></item>
+      <item row="1" column="2"><widget class="QLabel" name="textColorLabel"><property name="text"><string>Text color:</string></property><property name="buddy"><cstring>textColorButton</cstring></property></widget></item>
+      <item row="1" column="3"><widget class="QPushButton" name="textColorButton"><property name="text"><string>Select…</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="snapshotsGroup">
+     <property name="title"><string>Snapshots</string></property>
+     <layout class="QGridLayout" name="snapshotsLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>10</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0"><widget class="QLabel" name="folderLabel"><property name="text"><string>Folder for snapshots:</string></property><property name="buddy"><cstring>folderEdit</cstring></property></widget></item>
+      <item row="0" column="1"><widget class="QLineEdit" name="folderEdit"/></item>
+      <item row="0" column="2"><widget class="QPushButton" name="folderBrowseButton"><property name="text"><string>Select…</string></property></widget></item>
+      <item row="1" column="0"><widget class="QLabel" name="filenameTemplateLabel"><property name="text"><string>Filename and path template:</string></property><property name="buddy"><cstring>filenameTemplateEdit</cstring></property></widget></item>
+      <item row="1" column="1"><widget class="QLineEdit" name="filenameTemplateEdit"/></item>
+      <item row="1" column="2"><widget class="QPushButton" name="macrosButton"><property name="text"><string>Macros…</string></property><property name="toolTip"><string>Macros list</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item><spacer name="verticalSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property></spacer></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

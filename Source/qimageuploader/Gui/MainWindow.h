@@ -103,6 +103,7 @@ private:
     QAction* copyFilePathAction_ = nullptr;
     FileDropHighlight* dropHighlightOverlay_ = nullptr;
     bool dragContainsFiles_ = false;
+    int screenshotIndex_ = 1;
 };
 
 #endif // MAINWINDOW_H

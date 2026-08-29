@@ -24,6 +24,8 @@ endif()
 
 set(SOURCE_FILES
         main.cpp
+        Helpers.cpp
+        Helpers.h
         Gui/MainWindow.cpp
         Gui/FileThumbnailCache.cpp
         Gui/FileThumbnailCache.h
@@ -50,6 +52,12 @@ set(SOURCE_FILES
         Gui/SettingsDialog.h
         Gui/GeneralSettingsPage.cpp
         Gui/GeneralSettingsPage.h
+        Gui/ScreenshotSettingsPage.cpp
+        Gui/ScreenshotSettingsPage.h
+        Gui/VideoGrabberSettingsPage.cpp
+        Gui/VideoGrabberSettingsPage.h
+        Gui/ServersSettingsPage.cpp
+        Gui/ServersSettingsPage.h
         ../ScreenCapture/ScreenCaptureQt.cpp
         Gui/RegionSelect.cpp
         Gui/models/ThumbnailListModel.cpp
@@ -86,6 +94,8 @@ set(SOURCE_FILES
         Gui/ui/LoginDialog.ui
         Gui/ui/AboutDialog.ui
         Gui/ui/GeneralSettingsPage.ui
+        Gui/ui/ScreenshotSettingsPage.ui
+        Gui/ui/VideoGrabberSettingsPage.ui
         qimageuploader.qrc
         Gui/controls/AddedFilesTabWidget.cpp
         Gui/controls/AddedFilesTabWidget.h
@@ -93,6 +103,10 @@ set(SOURCE_FILES
         Gui/controls/UploadSettingsTabWidget.h
         Gui/controls/UploadsTabWidget.cpp
         Gui/controls/UploadsTabWidget.h
+        BoostTranslator.cpp
+        BoostTranslator.h
+        ../Func/LangClass.cpp
+        ../Func/LangClass.h
 )
 
 if(WIN32)

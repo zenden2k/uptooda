@@ -198,14 +198,13 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 std::string ScreenRecorderWindow::prepareFileName(int width, int height) {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     namespace fs = std::filesystem;
-    fs::path basePath = settings->ScreenRecordingSettings.OutDirectory.empty() ?
-        W2U(WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO)):
-        settings->ScreenRecordingSettings.OutDirectory;
+    fs::path basePath = settings->ScreenRecordingSettings.OutDirectory.empty()
+        ? W2U(WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO))
+        : settings->ScreenRecordingSettings.OutDirectory;
 
-    fs::path relPath = W2U(IuCommonFunctions::GenerateFileName(
-        U2WC(settings->ScreenRecordingSettings.FileNameTemplate),
-        fileNameCounter_++, CPoint(width, height), time(nullptr))
-    );
+    fs::path relPath = W2U(IuCommonFunctions::GenerateFileName(U2WC(settings->ScreenRecordingSettings.FileNameTemplate),
+                                                               fileNameCounter_++, CPoint(width, height), time(nullptr),
+                                                               TR("Screen Recording")));
 
     fs::path fullPath = basePath / relPath;
     fs::path parentPath = fullPath.parent_path();

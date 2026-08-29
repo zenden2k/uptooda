@@ -84,7 +84,7 @@ bool CommonGuiSettings::LoadServerProfiles(SimpleXmlNode root)
 
 bool CommonGuiSettings::SaveServerProfiles(SimpleXmlNode root)
 {
-    for (ServerProfilesMap::iterator it = ServerProfiles.begin(); it != ServerProfiles.end(); ++it) {
+    for (auto it = ServerProfiles.begin(); it != ServerProfiles.end(); ++it) {
         SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
 
         std::string profileName = SettingsStringToUtf8(it->first);
@@ -229,6 +229,24 @@ void CommonGuiSettings::BindToManager() {
 
     ScreenRecordingSettings.FFmpegSettings.bind(screenRecording["FFmpeg"]);
     ScreenRecordingSettings.DXGISettings.bind(screenRecording["DirectX"]);
+
+    SettingsNode& screenshot = mgr_["Screenshot"];
+    screenshot.nm_bind(ScreenshotSettings, Delay);
+    screenshot.nm_bind(ScreenshotSettings, Format);
+    screenshot.nm_bind(ScreenshotSettings, Quality);
+    screenshot.nm_bind(ScreenshotSettings, ShowForeground);
+    screenshot.nm_bind(ScreenshotSettings, FilenameTemplate);
+    screenshot.nm_bind(ScreenshotSettings, Folder);
+    screenshot.nm_bind(ScreenshotSettings, AddShadow);
+    screenshot.nm_bind(ScreenshotSettings, RemoveBackground);
+    screenshot.nm_bind(ScreenshotSettings, RemoveCorners);
+    screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
+    screenshot.nm_bind(ScreenshotSettings, BrushColor);
+    screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
+    screenshot.nm_bind(ScreenshotSettings, CaptureCursor);
+    screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
+    screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
+    screenshot.nm_bind(ScreenshotSettings, MonitorMode);
 }
 
 bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {

@@ -31,7 +31,9 @@
 #include "Func/GdiPlusInitializer.h"
 #include "Video/MediaFoundationFrameGrabber.h"
 #endif
+#include "BoostTranslator.h"
 #include "versioninfo.h"
+#include "Func/LangClass.h"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -41,16 +43,6 @@ QString dataFolder = "/usr/share/uptooda/";
 #endif
 QtGuiSettings Settings;
 std::unique_ptr<LogWindow> logWindow;
-class Translator : public ITranslator {
-public:
-    std::string getCurrentLanguage() override { return "English"; }
-    std::string getCurrentLocale() override { return "en_US"; }
-    std::string translate(const char* str) override { return str; }
-#ifdef _WIN32
-    std::wstring translateW(const char* str) override { return IuCoreUtils::Utf8ToWstring(str); }
-#endif
-};
-Translator translator; // dummy translator
 
 class MyApplication : public QApplication {
 public:
@@ -114,9 +106,12 @@ int main(int argc, char* argv[]) {
     AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     MyApplication a(argc, argv);
+    auto *trans = new BoostTranslator(&a);
+
+
     VirtualFileDrop::installConverter();
     if (QStyle* fusionStyle = QStyleFactory::create(QStringLiteral("Fusion"))) {
-        a.setStyle(fusionStyle);
+        MyApplication::setStyle(fusionStyle);
     }
     ApplyApplicationStyle(a);
     logWindow = std::make_unique<LogWindow>();
@@ -132,7 +127,7 @@ int main(int argc, char* argv[]) {
     auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get(), engineList.get());
     QtScriptDialogProvider dlgProvider;
     auto serviceLocator = ServiceLocator::instance();
-    serviceLocator->setTranslator(&translator);
+
     serviceLocator->setUploadErrorHandler(errorHandler);
     serviceLocator->setLogger(logger);
     serviceLocator->setDialogProvider(&dlgProvider);
@@ -180,6 +175,13 @@ int main(int argc, char* argv[]) {
                                   Settings.ServersSettings)) {
         QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
     }
+
+    std::filesystem::path messagesPath = std::filesystem::path(AppRuntimeInfo::instance()->dataDirectory()) / "Lang/locale/";
+    CLang lang;
+    lang.LoadLanguage(Settings.Language, messagesPath);
+    MyApplication::installTranslator(trans);
+
+    serviceLocator->setTranslator(&lang);
     ServiceLocator::instance()->setEngineList(engineList.get());
     // google::AddLogSink(&logSink);
     // serviceLocator->setUploadErrorHandler(&uploadErrorHandler);

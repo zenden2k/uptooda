@@ -52,7 +52,7 @@ struct VideoSettingsStruct {
     std::string Font = "Tahoma,12,,204";
     uint32_t TextColor = 0;
     std::string SnapshotsFolder;
-    std::string SnapshotFileTemplate = "%f%_%cx%_%cy%_%uid%\\grab_%i%.png";
+    std::string SnapshotFileTemplate = "%type%_%i%_%random(6)%.png";
 };
 
 struct FFMpegSettingsStruct {
@@ -97,9 +97,28 @@ struct ScreenRecordingStruct {
     int MonitorMode = -1; // kAllMonitors
     //std::string Preset;
     std::string OutDirectory;
-    std::string FileNameTemplate = "capture %y-%m-%d %h-%n-%s";
+    std::string FileNameTemplate = "%type% %y-%m-%d %h-%n-%s";
     FFMpegSettingsStruct FFmpegSettings;
     DXGISettingsStruct DXGISettings;
+};
+
+struct ScreenshotSettingsStruct {
+    int Format = 1;
+    int Quality = 85;
+    int Delay = 1;
+    int WindowHidingDelay = 200;
+    bool ShowForeground = false;
+    bool CopyToClipboard = false;
+    uint32_t BrushColor = 0x000000ff;
+    std::string FilenameTemplate = "%type% %y-%m-%d %h-%n-%s %i";
+    std::string Folder;
+    bool RemoveCorners = false;
+    bool AddShadow = false;
+    bool RemoveBackground = false;
+    bool OpenInEditor = true;
+    bool UseOldRegionScreenshotMethod = false;
+    bool CaptureCursor = false;
+    int MonitorMode = -1; // kAllMonitors
 };
 
 struct ServerListSettingsStruct: IFavoriteServers {
@@ -154,6 +173,7 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfilesMap ServerProfiles;
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
+        ScreenshotSettingsStruct ScreenshotSettings;
         ImageUploadParams DefaultImageUploadParams;
 
         ServerListSettingsStruct ServerListSettings;

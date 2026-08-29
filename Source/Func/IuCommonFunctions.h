@@ -21,8 +21,9 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);
 void ClearTempFolder(CString folder);
 
 int GetNextImgFile(LPCTSTR folder, CString& szBuffer);
-CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, time_t t,
+CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, time_t t, const CString& objectType,
                          const CString& originalName = _T(""));
+CString ExpandRandomMacros(const CString& value);
 CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size);
 
 bool IsImage(LPCTSTR szFileName);

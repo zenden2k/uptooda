@@ -24,81 +24,70 @@
 #include <boost/locale.hpp>
 
 #include "Core/Utils/CoreUtils.h"
-#include "Func/WinUtils.h"
 #include "Gui/Helpers/LangHelper.h"
 
-CLang::CLang()
-{
+CLang::CLang() {
     localeName_ = "en_US";
     language_ = "en";
     isRTL_ = false;
 }
-void CLang::SetDirectory(LPCTSTR Directory)
-{
-    m_Directory = Directory;
-}
 
-bool CLang::LoadLanguage(LPCTSTR Lang)
-{
+bool CLang::LoadLanguage(const std::string& lang, const std::filesystem::path& messagesDir) {
     boost::locale::generator gen;
-    std::string path = W2U(WinUtils::GetAppFolder() + _T("Lang\\locale\\"));
-    gen.add_messages_path(path);
+    gen.add_messages_path(messagesDir.string());
     gen.add_messages_domain("imageuploader");
 
-    std::string langA = W2U(Lang);
     std::locale locale;
 
     try {
-        locale = gen(langA + ".UTF-8");
+        locale = gen(lang + ".UTF-8");
         std::locale::global(locale);
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
 
-    localeName_ = Lang;
+    localeName_ = lang;
     if (std::has_facet<boost::locale::info>(locale)) {
-        language_ = U2WC(std::use_facet<boost::locale::info>(locale).language());
+        language_ = std::use_facet<boost::locale::info>(locale).language();
     } else {
-        language_ = Lang;
+        language_ = lang;
     }
 
-    const auto& locales = LangHelper::instance()->getLocaleList();
-    auto it = locales.find(langA);
+    /*const auto& locales = LangHelper::instance()->getLocaleList();
+    auto it = locales.find(lang);
 
-    m_sLang = it == locales.end() ? localeName_ : U2W(it->second);
+    lang_ = it == locales.end() ? localeName_ : it->second*;*/
 
     return true;
 }
 
-CString CLang::GetLanguageName() const
-{
-    return m_sLang;
+std::string CLang::GetLanguageName() const {
+    return lang_;
 }
 
-CString CLang::getLanguage() const
-{
+std::string CLang::getLanguage() const {
     return language_;
 }
 
-CString CLang::getLocale() const
-{
+std::string CLang::getLocale() const {
     return localeName_;
 }
 
 #ifndef IU_SHELLEXT
 std::string CLang::getCurrentLanguage() {
-    return W2U(m_sLang);
+    return lang_;
 }
 
 std::string CLang::getCurrentLocale() {
-    return W2U(localeName_);
+    return localeName_;
 }
 
 std::string CLang::translate(const char* str) {
     return boost::locale::translate(str);
 }
 
-std::wstring CLang::translateW(const char* str)  {
+std::wstring CLang::translateW(const char* str) {
     return IuCoreUtils::Utf8ToWstring(boost::locale::translate(str));
 }
 #endif
@@ -107,10 +96,10 @@ bool CLang::isRTL() const {
     return std::string(_("LAYOUT_DIRECTION")) == "RTL";
 }
 
-CString CLang::getCurrentLanguageFile() const {
+std::string CLang::getCurrentLanguageFile() const {
     return currentLanguageFile_;
 }
 
 std::string CLang::getLanguageDisplayName() const {
-    return W2U(m_sLang);
+    return lang_;
 }

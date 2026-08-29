@@ -14,12 +14,14 @@ class QListWidget;
 class QLabel;
 class QStackedWidget;
 class SettingsPage;
+class UploadEngineManager;
 
 class SettingsDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(CommonGuiSettings* settings, LogWindow* logWindow, QWidget* parent = nullptr);
+    explicit SettingsDialog(CommonGuiSettings* settings, UploadEngineManager* uploadEngineManager, LogWindow* logWindow,
+                            QWidget* parent = nullptr);
 
 private slots:
     void showPage(int index);

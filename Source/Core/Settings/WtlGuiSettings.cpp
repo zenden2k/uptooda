@@ -488,21 +488,7 @@ WtlGuiSettings::WtlGuiSettings() :
 
     MediaInfoSettings.InfoType = 0; // generate short summary
 
-    ScreenshotSettings.Format = 1;
-    ScreenshotSettings.Quality = 85;
-    ScreenshotSettings.WindowHidingDelay = 200;
-    ScreenshotSettings.Delay = 1;
-    ScreenshotSettings.BrushColor = RGB(255, 0, 0);
-    ScreenshotSettings.ShowForeground = false;
-    ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
-    ScreenshotSettings.CopyToClipboard = false;
     ScreenshotSettings.RemoveCorners = !IsWindows8OrGreater();
-    ScreenshotSettings.AddShadow = false;
-    ScreenshotSettings.RemoveBackground = false;
-    ScreenshotSettings.OpenInEditor = true;
-    ScreenshotSettings.UseOldRegionScreenshotMethod = false;
-    ScreenshotSettings.CaptureCursor = false;
-    ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
     //ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
 
@@ -741,24 +727,6 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(Hotkeys);
     general.n_bind(DeviceId);
 
-    SettingsNode& screenshot = mgr_["Screenshot"];
-    screenshot.nm_bind(ScreenshotSettings, Delay);
-    screenshot.nm_bind(ScreenshotSettings, Format);
-    screenshot.nm_bind(ScreenshotSettings, Quality);
-    screenshot.nm_bind(ScreenshotSettings, ShowForeground);
-    screenshot.nm_bind(ScreenshotSettings, FilenameTemplate);
-    screenshot.nm_bind(ScreenshotSettings, Folder);
-    screenshot.nm_bind(ScreenshotSettings, AddShadow);
-    screenshot.nm_bind(ScreenshotSettings, RemoveBackground);
-    screenshot.nm_bind(ScreenshotSettings, RemoveCorners);
-    screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
-    screenshot.nm_bind(ScreenshotSettings, BrushColor);
-    screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
-    screenshot.nm_bind(ScreenshotSettings, CaptureCursor);
-    screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
-    screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
-    screenshot.nm_bind(ScreenshotSettings, MonitorMode);
-
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
     imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
@@ -775,6 +743,7 @@ void WtlGuiSettings::BindToManager() {
 
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     imageEditor.nm_bind(ImageEditorSettings, CloseWindowAfterActionInFullScreen);
+    SettingsNode& screenshot = mgr_["Screenshot"];
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
     //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];

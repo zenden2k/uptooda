@@ -39,7 +39,7 @@ private slots:
     void on_grabButton_clicked();
     void on_browseButton_clicked();
     void onStopButtonClicked();
-    void frameGrabbedSlot(QString timeString, QString fileName, QIcon image);
+    void frameGrabbedSlot(const QString& timeString, const QString& fileName, const QImage& image);
     void grabFinishedSlot(bool success);
     void onFinished();
     void onCurrentTabChanged(int index);
@@ -78,6 +78,7 @@ private:
     QString fileName_;
     QString mediaInfoSummary_;
     QString mediaInfoFull_;
+    int grabbedFramesCount_ = 0;
     uint64_t mediaInfoRequest_ = 0;
     bool mediaInfoLoading_ = false;
     bool mediaInfoLoaded_ = false;

@@ -760,13 +760,10 @@ bool CFreeFormRegion::GetImage(QPixmap * src, QPixmap ** res)
 }
 
 CFreeFormRegion::~CFreeFormRegion()
-{
-}
+= default;
 
 CActiveWindowRegion::CActiveWindowRegion()
-{
-
-}
+= default;
 
 bool CActiveWindowRegion::PrepareShooting(bool fromScreen)
 {

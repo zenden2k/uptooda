@@ -23,26 +23,26 @@
 #include <boost/format.hpp>
 
 #include "Core/CommonDefs.h"
-#include "Video/VideoGrabber.h"
 #include "Core/Images/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
+#include "Video/VideoGrabber.h"
 
 #include "Func/WinUtils.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "MediaInfoDlg.h"
 #endif
-#include "Core/Settings/WtlGuiSettings.h"
-#include "Gui/GuiTools.h"
-#include "Core/Utils/CryptoUtils.h"
-#include "Core/Logging.h"
-#include "Core/Utils/StringUtils.h"
-#include "Core/Images/Utils.h"
-#include "Core/ServiceLocator.h"
-#include "Gui/Dialogs/WizardDlg.h"
-#include "Gui/Components/MyFileDialog.h"
 #include "Core/AppRuntimeInfo.h"
+#include "Core/Images/Utils.h"
+#include "Core/Logging.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
+#include "Core/Utils/StringUtils.h"
 #include "Func/ImageGenerator.h"
+#include "Func/IuCommonFunctions.h"
 #include "Func/MyUtils.h"
+#include "Gui/Components/MyFileDialog.h"
+#include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/GuiTools.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
 {
@@ -213,19 +213,24 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 
     CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 
-    if ( snapshotsFolder.IsEmpty() ) {
-        if ( !settings->VideoSettings.SnapshotsFolder.empty() ) {
-            CString path = U2W(settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate);
-            CString snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
-            snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
+    if (snapshotsFolder.IsEmpty()) {
+        if (!settings->VideoSettings.SnapshotsFolder.empty()) {
+            CString path
+                = U2W(settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate);
+            CString snapshotsFolderTemplate = Utf8ToWCstring(IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)));
+            snapshotsFolder = IuCommonFunctions::GenerateFileName(snapshotsFolderTemplate, 1,
+                                                                  CPoint(bm->GetWidth(), bm->GetHeight()),
+                                                                  time(nullptr), TR("Frame"), videoFile);
             std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
 
-            if ( !IuCoreUtils::DirectoryExists(snapshotsFolderUtf8) ) {
-                if ( !IuCoreUtils::CreateDir(snapshotsFolderUtf8) ) {
+            if (!IuCoreUtils::DirectoryExists(snapshotsFolderUtf8)) {
+                if (!IuCoreUtils::CreateDir(snapshotsFolderUtf8)) {
                     CString logMessage;
                     CString lastError = WinUtils::GetLastErrorAsString();
-                    logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
-                    ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage, L"", videoFile);
+                    logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder,
+                                      (LPCTSTR)lastError);
+                    ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage, L"",
+                                                                videoFile);
                     snapshotsFolder = AppRuntimeInfo::instance()->tempDirectoryW();
                 }
             }
@@ -236,13 +241,15 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     }
 
     CString wOutDir;
-    if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
+    if (IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder))) {
         wOutDir = snapshotsFolder;
     }
     CString snapshotFileTemplate = U2W(IuCoreUtils::ExtractFileNameNoExt(settings->VideoSettings.SnapshotFileTemplate));
 
 
-    CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
+    CString outFilename = IuCommonFunctions::GenerateFileName(snapshotFileTemplate, grabbedFramesCount + 1,
+                                                              CPoint(bm->GetWidth(), bm->GetHeight()), time(nullptr),
+                                                              TR("Frame"), videoFile);
     /*CString fullOutFileName = Settings.VideoSettings.SnapshotsFolder + "\\" + outFilename;
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
@@ -252,7 +259,8 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
             ThumbsView.AddImage(fileNameBuffer, title, false, bm);
             grabbedFramesCount++;
         }
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         LOG(ERROR) << "Failed to save image " << outFilename << std::endl << ex.what();
     }
 
@@ -530,46 +538,6 @@ LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD 
     dlg.ShowInfo(m_hWnd, fileName);
 #endif
     return 0;
-}
-
-CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
-{
-    std::mt19937 mt_{ std::random_device{}() };
-    std::uniform_int_distribution<int> dist(0, 100);
-
-    CString result = templateStr;
-    time_t t = time(0);
-    tm* timeinfo = localtime ( &t );
-    CString indexStr;
-    CString day, month, year;
-    CString hours, seconds, minutes;
-    std::string originalNameUtf8  = WCstringToUtf8(originalName);
-    CString fileName = Utf8ToWCstring(IuCoreUtils::ExtractFileName(originalNameUtf8));
-    CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(originalNameUtf8));
-    indexStr.Format(_T("%03d"), index);
-
-    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + dist(mt_))))).c_str();
-    CString uid = md5.Mid(5,6);
-    result.Replace(_T("%md5%"), md5);
-    result.Replace(_T("%uid%"), uid);
-    result.Replace(_T("%cx%"), WinUtils::IntToStr(size.x));
-    result.Replace(_T("%cy%"), WinUtils::IntToStr(size.y));
-    year.Format(_T("%04d"), (int)1900 + timeinfo->tm_year);
-    month.Format(_T("%02d"), timeinfo->tm_mon + 1);
-    day.Format(_T("%02d"), timeinfo->tm_mday);
-    hours.Format(_T("%02d"), timeinfo->tm_hour);
-    seconds.Format(_T("%02d"), timeinfo->tm_sec);
-    minutes.Format(_T("%02d"), timeinfo->tm_min);
-    result.Replace(_T("%y%"), year);
-    result.Replace(_T("%m%"), month);
-    result.Replace(_T("%d%"), day);
-    result.Replace(_T("%h%"), hours);
-    result.Replace(_T("%n%"), minutes);
-    result.Replace(_T("%s%"), seconds);
-    result.Replace(_T("%i%"), indexStr);
-    result.Replace(_T("%fe%"),fileName);
-    result.Replace(_T("%f%"), fileNameNoExt);
-    return result;
 }
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

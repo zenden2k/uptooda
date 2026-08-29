@@ -245,10 +245,13 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         free(pPropBuffer);
         CString resultFileName;
         try {
-            ImageUtils::MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
-                CPoint(), time(nullptr)), resultFileName, fileformat, m_imageConvertingParams.Quality);
+            ImageUtils::MySaveImage(
+                BackBuffer.get(),
+                IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1, CPoint(), time(nullptr), _T("")), resultFileName,
+                fileformat, m_imageConvertingParams.Quality);
             resultFileName_ = W2U(resultFileName);
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
         }
      //   imageFile = resultFileName;
@@ -296,7 +299,7 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
         CString thumbFileName;
         try {
             result = ImageUtils::MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
-                CPoint(), time(nullptr)), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
+                CPoint(), time(nullptr), _T("")), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
             thumbFileName_ = W2U(thumbFileName);
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
@@ -610,7 +613,9 @@ bool ImageConverterPrivate::supposedOutputFormat(SupposedFormat& file){
         fileformat = static_cast<ImageUtils::SaveImageFormat>(m_imageConvertingParams.Format - 1);
 
     // We don't actually save anything, we just ask for the output file name.
-    if (ImageUtils::MySaveImage(nullptr, IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1, CPoint(), time(nullptr)), resultFileName, fileformat, m_imageConvertingParams.Quality)) {
+    if (ImageUtils::MySaveImage(nullptr,
+                                IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1, CPoint(), time(nullptr), _T("")),
+                                resultFileName, fileformat, m_imageConvertingParams.Quality)) {
         file.fileName = W2U(resultFileName);
         file.mimeType = IuCoreUtils::GetFileMimeTypeByName(file.fileName);
         file.fileSize = 0;

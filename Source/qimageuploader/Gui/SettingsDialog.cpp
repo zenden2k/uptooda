@@ -12,10 +12,13 @@
 
 #include "Core/Settings/CommonGuiSettings.h"
 #include "GeneralSettingsPage.h"
+#include "ScreenshotSettingsPage.h"
+#include "ServersSettingsPage.h"
 #include "SettingsPage.h"
+#include "VideoGrabberSettingsPage.h"
 
-SettingsDialog::SettingsDialog(CommonGuiSettings* settings, LogWindow* logWindow, QWidget* parent) :
-    QDialog(parent), settings_(settings) {
+SettingsDialog::SettingsDialog(CommonGuiSettings* settings, UploadEngineManager* uploadEngineManager,
+                               LogWindow* logWindow, QWidget* parent) : QDialog(parent), settings_(settings) {
     setObjectName(QStringLiteral("settingsDialog"));
     setWindowTitle(tr("Settings"));
     setWindowFlag(Qt::WindowContextHelpButtonHint, false);
@@ -56,6 +59,11 @@ SettingsDialog::SettingsDialog(CommonGuiSettings* settings, LogWindow* logWindow
     rootLayout->addWidget(footer);
 
     addPage(tr("General"), [this, logWindow] { return new GeneralSettingsPage(settings_, logWindow, pageStack_); });
+    addPage(tr("Screenshot"), [this] { return new ScreenshotSettingsPage(settings_, pageStack_); });
+    addPage(tr("Video grabber"), [this] { return new VideoGrabberSettingsPage(settings_, pageStack_); });
+    addPage(tr("Servers"), [this, uploadEngineManager] {
+        return new ServersSettingsPage(settings_, uploadEngineManager, pageStack_);
+    });
 
     connect(pageList_, &QListWidget::currentRowChanged, this, &SettingsDialog::showPage);
     connect(buttons, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);

@@ -200,7 +200,7 @@ QPushButton#grabButton:disabled {
     background: #93b7ce;
     border-color: #86a9bf;
 }
-QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QSpinBox, QListView {
     color: #1f2c3d;
     background: #f1f6fb;
     border: 1px solid #c6d5e3;
