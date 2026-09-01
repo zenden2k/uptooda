@@ -23,7 +23,7 @@
 #include <iostream>
 #include <condition_variable>
 #include <csignal>
-#include <gflags/gflags.h>
+#include <string_view>
 
 #include <boost/format.hpp>
 #include <curl/curl.h>
@@ -112,6 +112,25 @@ std::mutex finishSignalMutex;
 std::condition_variable finishSignal;
 volatile bool finished = false;
 int funcResult = 0;
+
+std::string GetLogDirectory(int argc, char* argv[]) {
+    constexpr std::string_view LOG_DIR_OPTION = "--log_dir";
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view argument(argv[i]);
+        if (argument == LOG_DIR_OPTION && i + 1 < argc) {
+            return argv[i + 1];
+        }
+
+        if (argument.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0 && argument.size() > LOG_DIR_OPTION.size()
+            && argument[LOG_DIR_OPTION.size()] == '=') {
+            return std::string(argument.substr(LOG_DIR_OPTION.size() + 1));
+        }
+    }
+
+    return {};
+}
+
 struct TaskUserData {
     int index;
 };
@@ -579,7 +598,11 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
-    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    std::string logDirectory = GetLogDirectory(argc, argv);
+    if (!logDirectory.empty()) {
+        FLAGS_log_dir = logDirectory;
+        FLAGS_logtostderr = false;
+    }
     google::InitGoogleLogging(argv[0]);
     ConsoleUtils::instance();
     AppRuntimeInfo::AppVersionInfo appVersion;
@@ -593,6 +616,11 @@ int main(int argc, char *argv[]){
     AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     argparse::ArgumentParser program("uptooda-cli", appVersion.FullVersion);
+
+    program.add_argument("--log_dir")
+        .help("write log files to DIRECTORY instead of stderr")
+        .metavar("DIRECTORY")
+        .store_into(logDirectory);
 
     program.add_argument("-l", "--list")
         .help("print server list (hosting services) and exit")
