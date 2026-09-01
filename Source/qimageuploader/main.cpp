@@ -1,3 +1,4 @@
+#include <string_view>
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -74,6 +75,24 @@ extern "C" const char* __asan_default_options() {
 }
 #endif
 
+std::string GetLogDirectory(int argc, char* argv[]) {
+    constexpr std::string_view LOG_DIR_OPTION = "--log_dir";
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view argument(argv[i]);
+        if (argument == LOG_DIR_OPTION && i + 1 < argc) {
+            return argv[i + 1];
+        }
+
+        if (argument.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0 && argument.size() > LOG_DIR_OPTION.size()
+            && argument[LOG_DIR_OPTION.size()] == '=') {
+            return std::string(argument.substr(LOG_DIR_OPTION.size() + 1));
+            }
+    }
+
+    return {};
+}
+
 int main(int argc, char* argv[]) {
     ServiceLocator::instance()->setSettings(&Settings);
 #if defined(_WIN32) && !defined(NDEBUG)
@@ -92,6 +111,11 @@ int main(int argc, char* argv[]) {
 #else
     FLAGS_logtostderr = true;
 #endif
+    std::string logDirectory = GetLogDirectory(argc, argv);
+    if (!logDirectory.empty()) {
+        FLAGS_log_dir = logDirectory;
+        FLAGS_logtostderr = false;
+    }
 
     google::InitGoogleLogging(argv[0]);
 

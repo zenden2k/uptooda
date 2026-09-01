@@ -30,7 +30,7 @@ crash_rpt::CrashRpt g_crashRpt(
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
-#include <gflags/gflags.h>
+#include <string_view>
 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
@@ -434,18 +434,6 @@ public:
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-    int argc = __argc;
-    wchar_t** wargv = __wargv;
-    std::vector<std::string> argsStorage(argc); // Should be alive until the program exit
-    std::vector<char*> argv(argc + 1);
-
-    for (int i = 0; i < argc; ++i) {
-        argsStorage[i] = IuCoreUtils::WstringToSystemLocale(wargv[i]);
-        argv[i] = argsStorage[i].data();
-    }
-    argv[argc] = nullptr;
-
-    char** gflagsArgv = argv.data();
     // Create and install global locale
     std::locale::global(boost::locale::generator().generate(""));
     // Make boost.filesystem use it
@@ -467,8 +455,17 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
     FLAGS_logtostderr = true;
 
-    gflags::ParseCommandLineFlags(&argc, &gflagsArgv, true);
-    google::InitGoogleLogging(argsStorage[0].c_str());
+    constexpr std::wstring_view LOG_DIR_OPTION = L"/log_dir=";
+    for (const auto& argument : CmdLine) {
+        const std::wstring_view argumentView(argument.GetString(), argument.GetLength());
+        if (argumentView.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0) {
+            FLAGS_log_dir = IuCoreUtils::WstringToSystemLocale(std::wstring(argumentView.substr(LOG_DIR_OPTION.size())));
+            FLAGS_logtostderr = false;
+            break;
+        }
+    }
+
+    google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
     google::SetLogDestination(google::GLOG_WARNING, "");
     google::SetLogDestination(google::GLOG_ERROR, "");
     google::SetLogDestination(google::GLOG_FATAL, "");
