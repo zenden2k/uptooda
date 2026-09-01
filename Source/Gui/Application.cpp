@@ -453,18 +453,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
-
+    std::string logDir;
     constexpr std::wstring_view LOG_DIR_OPTION = L"/log_dir=";
     for (const auto& argument : CmdLine) {
         const std::wstring_view argumentView(argument.GetString(), argument.GetLength());
         if (argumentView.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0) {
-            FLAGS_log_dir = IuCoreUtils::WstringToSystemLocale(std::wstring(argumentView.substr(LOG_DIR_OPTION.size())));
+            logDir = IuCoreUtils::WstringToSystemLocale(std::wstring(argumentView.substr(LOG_DIR_OPTION.size())));
+            FLAGS_log_dir = logDir;
             FLAGS_logtostderr = false;
             break;
         }
     }
+    std::string argv = WCstringToUtf8(WinUtils::GetAppFileName());
 
-    google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+    google::InitGoogleLogging(argv.c_str());
     google::SetLogDestination(google::GLOG_WARNING, "");
     google::SetLogDestination(google::GLOG_ERROR, "");
     google::SetLogDestination(google::GLOG_FATAL, "");
