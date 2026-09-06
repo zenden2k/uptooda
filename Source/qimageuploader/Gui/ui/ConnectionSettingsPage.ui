@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConnectionSettingsPage</class>
+ <widget class="QWidget" name="ConnectionSettingsPage">
+  <property name="windowTitle"><string>Connection settings</string></property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="leftMargin"><number>28</number></property>
+   <property name="topMargin"><number>24</number></property>
+   <property name="rightMargin"><number>28</number></property>
+   <property name="bottomMargin"><number>24</number></property>
+   <property name="spacing"><number>18</number></property>
+   <item>
+    <widget class="QLabel" name="settingsPageTitle">
+     <property name="text"><string>Connection settings</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="proxyGroup">
+     <property name="title"><string>Proxy server</string></property>
+     <layout class="QGridLayout" name="proxyLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>10</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0" colspan="4"><widget class="QRadioButton" name="noProxyRadio"><property name="text"><string>No proxy (direct connection)</string></property><property name="checked"><bool>true</bool></property></widget></item>
+      <item row="1" column="0" colspan="3"><widget class="QRadioButton" name="systemProxyRadio"><property name="text"><string>Use system proxy settings</string></property></widget></item>
+      <item row="1" column="3"><widget class="QPushButton" name="openSystemSettingsButton"><property name="text"><string>Open system settings…</string></property><property name="toolTip"><string>Open system connection settings</string></property></widget></item>
+      <item row="2" column="0" colspan="4"><widget class="QRadioButton" name="customProxyRadio"><property name="text"><string>Use provided proxy</string></property></widget></item>
+      <item row="3" column="0"><widget class="QLabel" name="addressLabel"><property name="text"><string>Address:</string></property><property name="buddy"><cstring>addressEdit</cstring></property></widget></item>
+      <item row="3" column="1"><widget class="QLineEdit" name="addressEdit"/></item>
+      <item row="3" column="2"><widget class="QLabel" name="portLabel"><property name="text"><string>Port:</string></property><property name="buddy"><cstring>portSpin</cstring></property></widget></item>
+      <item row="3" column="3"><widget class="QSpinBox" name="portSpin"><property name="minimum"><number>0</number></property><property name="maximum"><number>65535</number></property></widget></item>
+      <item row="4" column="0"><widget class="QLabel" name="proxyTypeLabel"><property name="text"><string>Proxy type:</string></property><property name="buddy"><cstring>proxyTypeCombo</cstring></property></widget></item>
+      <item row="4" column="1"><widget class="QComboBox" name="proxyTypeCombo"/></item>
+      <item row="5" column="0" colspan="4"><widget class="QCheckBox" name="authenticationCheckBox"><property name="text"><string>Authorization on proxy</string></property></widget></item>
+      <item row="6" column="0"><widget class="QLabel" name="loginLabel"><property name="text"><string>Login:</string></property><property name="buddy"><cstring>loginEdit</cstring></property></widget></item>
+      <item row="6" column="1"><widget class="QLineEdit" name="loginEdit"/></item>
+      <item row="6" column="2"><widget class="QLabel" name="passwordLabel"><property name="text"><string>Password:</string></property><property name="buddy"><cstring>passwordEdit</cstring></property></widget></item>
+      <item row="6" column="3"><widget class="QLineEdit" name="passwordEdit"><property name="echoMode"><enum>QLineEdit::Password</enum></property></widget></item>
+      <item row="7" column="1"><spacer name="proxyHorizontalSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>180</width><height>20</height></size></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="uploadGroup">
+     <property name="title"><string>Upload connection</string></property>
+     <layout class="QFormLayout" name="uploadLayout">
+      <property name="leftMargin"><number>18</number></property>
+      <property name="topMargin"><number>22</number></property>
+      <property name="rightMargin"><number>18</number></property>
+      <property name="bottomMargin"><number>16</number></property>
+      <property name="horizontalSpacing"><number>18</number></property>
+      <property name="verticalSpacing"><number>10</number></property>
+      <item row="0" column="0"><widget class="QLabel" name="uploadSpeedLimitLabel"><property name="text"><string>Upload speed limit per thread:</string></property><property name="buddy"><cstring>uploadSpeedLimitSpin</cstring></property></widget></item>
+      <item row="0" column="1"><widget class="QSpinBox" name="uploadSpeedLimitSpin"><property name="maximum"><number>2147483647</number></property><property name="specialValueText"><string>Unlimited</string></property><property name="suffix"><string> KB/s</string></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   <item><spacer name="verticalSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property></spacer></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
