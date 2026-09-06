@@ -88,8 +88,6 @@ class MockINetworkClient : public INetworkClient {
       void(const ProgressCallback& func));
   MOCK_METHOD1(setTreatErrorsAsWarnings,
       void(bool treat));
-  MOCK_METHOD1(setUploadBufferSize,
-      void(int size));
   MOCK_METHOD1(setProxyProvider,
       void(ProxyProvider* provider));
   MOCK_METHOD1(setDebugger,

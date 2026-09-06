@@ -64,13 +64,12 @@ bool CommonGuiSettings::IsFFmpegAvailable() {
 #endif
 }
 
-bool CommonGuiSettings::LoadServerProfiles(SimpleXmlNode root)
+bool CommonGuiSettings::LoadServerProfiles(const SimpleXmlNode& root)
 {
     std::vector<SimpleXmlNode> servers;
     root.GetChilds("ServerProfile", servers);
 
-    for (size_t i = 0; i < servers.size(); i++) {
-        SimpleXmlNode serverProfileNode = servers[i];
+    for (const auto& serverProfileNode: servers) {
         std::string profileName = serverProfileNode.Attribute("ServerProfileId");
         ServerProfile sp;
         SettingsManager mgr;
@@ -97,19 +96,19 @@ bool CommonGuiSettings::SaveServerProfiles(SimpleXmlNode root)
     return true;
 }
 
-void CommonGuiSettings::LoadServerProfile(SimpleXmlNode root, ServerProfile& profile) {
+void CommonGuiSettings::LoadServerProfile(const SimpleXmlNode& root, ServerProfile& profile) {
     SettingsManager mgr;
     profile.bind(mgr.root());
     mgr.loadFromXmlNode(root);
 }
 
-bool CommonGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
+bool CommonGuiSettings::LoadServerProfileGroup(const SimpleXmlNode& root, ServerProfileGroup& group) {
     std::vector<SimpleXmlNode> servers;
     root.GetChilds("ServerProfileItem", servers);
+
     if (!servers.empty()) {
         group.getItems().clear();
-        for (size_t i = 0; i < servers.size(); i++) {
-            SimpleXmlNode serverProfileNode = servers[i];
+        for (const auto&serverProfileNode:  servers) {
             ServerProfile sp;
             SettingsManager mgr;
             sp.bind(mgr.root());
@@ -247,6 +246,15 @@ void CommonGuiSettings::BindToManager() {
     screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
     screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
     screenshot.nm_bind(ScreenshotSettings, MonitorMode);
+
+    SettingsNode& proxy = upload["Proxy"];
+    proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
+    proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
+    proxy.nm_bind(ConnectionSettings, ServerAddress);
+    proxy.nm_bind(ConnectionSettings, ProxyPort);
+    proxy.nm_bind(ConnectionSettings, ProxyType);
+    proxy.nm_bind(ConnectionSettings, ProxyUser);
+    proxy.nm_bind(ConnectionSettings, ProxyPassword);
 }
 
 bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {

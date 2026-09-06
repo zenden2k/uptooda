@@ -31,7 +31,6 @@ BasicSettings::BasicSettings()
 {
     rootName_ = "ImageUploader";
     LastUpdateTime = 0;
-    UploadBufferSize = 1024 * 1024;
     FileRetryLimit = MAX_RETRIES_PER_FILE;
     ActionRetryLimit = MAX_RETRIES_PER_ACTION;
     ExecuteScript = false;

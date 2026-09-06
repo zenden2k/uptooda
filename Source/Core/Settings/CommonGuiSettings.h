@@ -205,11 +205,11 @@ class CommonGuiSettings : public BasicSettings {
         void BindToManager();
         bool PostSaveSettings(SimpleXml &xml) override;
         bool PostLoadSettings(SimpleXml &xml) override;
-        bool LoadServerProfiles(SimpleXmlNode root);
+        bool LoadServerProfiles(const SimpleXmlNode& root);
         bool SaveServerProfiles(SimpleXmlNode root);
-        void LoadServerProfile(SimpleXmlNode root, ServerProfile& profile);
-        bool LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
-        bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
+        static void LoadServerProfile(const SimpleXmlNode& root, ServerProfile& profile);
+        static bool LoadServerProfileGroup(const SimpleXmlNode& root, ServerProfileGroup& group);
+        static bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
         void PostLoadServerProfileGroup(ServerProfileGroup& profile);
         virtual void PostLoadServerProfile(ServerProfile& profile);
 

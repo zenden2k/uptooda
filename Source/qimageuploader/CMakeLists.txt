@@ -52,6 +52,8 @@ set(SOURCE_FILES
         Gui/SettingsDialog.h
         Gui/GeneralSettingsPage.cpp
         Gui/GeneralSettingsPage.h
+        Gui/ConnectionSettingsPage.cpp
+        Gui/ConnectionSettingsPage.h
         Gui/ScreenshotSettingsPage.cpp
         Gui/ScreenshotSettingsPage.h
         Gui/VideoGrabberSettingsPage.cpp
@@ -94,6 +96,7 @@ set(SOURCE_FILES
         Gui/ui/LoginDialog.ui
         Gui/ui/AboutDialog.ui
         Gui/ui/GeneralSettingsPage.ui
+        Gui/ui/ConnectionSettingsPage.ui
         Gui/ui/ScreenshotSettingsPage.ui
         Gui/ui/VideoGrabberSettingsPage.ui
         qimageuploader.qrc

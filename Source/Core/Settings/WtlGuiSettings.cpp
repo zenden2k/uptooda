@@ -584,10 +584,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
 
-    if (UploadBufferSize == 65536) {
-        UploadBufferSize = 1024 * 1024;
-    }
-
     // Loading some settings from registry
     if (loadFromRegistry_) {
         CRegistry Reg;
@@ -807,19 +803,8 @@ void WtlGuiSettings::BindToManager() {
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";
-    upload.n_bind(UploadBufferSize);
     upload.n_bind(FileRetryLimit);
-
     upload.n_bind(ActionRetryLimit);
-
-    SettingsNode& proxy = upload["Proxy"];
-    proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
-    proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
-    proxy.nm_bind(ConnectionSettings, ServerAddress);
-    proxy.nm_bind(ConnectionSettings, ProxyPort);
-    proxy.nm_bind(ConnectionSettings, ProxyType);
-    proxy.nm_bind(ConnectionSettings, ProxyUser);
-    proxy.nm_bind(ConnectionSettings, ProxyPassword);
 
     SettingsNode& serversChecker = mgr_["ServersChecker"];
     serversChecker.n_bind(testFileName);

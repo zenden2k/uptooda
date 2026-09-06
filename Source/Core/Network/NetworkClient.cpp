@@ -160,17 +160,6 @@ struct CurlInitializer {
 
 }
 
-int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose)
-{
-    #ifdef _WIN32
-        // See http://support.microsoft.com/kb/823764
-        auto* nm = static_cast<NetworkClient*>(clientp);
-        int val = nm->m_UploadBufferSize + 32;
-        setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&val), sizeof(val));
-    #endif
-    return 0;
-}
-
 size_t NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
 {
     auto* cbd = static_cast<CallBackData*>(buffer_in);
@@ -300,8 +289,6 @@ NetworkClient::NetworkClient()
 
     curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
-    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
-    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 
     //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
 
@@ -1038,11 +1025,6 @@ CURL* NetworkClient::getCurlHandle()
 void NetworkClient::setOutputFile(const std::string &str)
 {
     m_OutFileName = str;
-}
-
-void NetworkClient::setUploadBufferSize(int size)
-{
-    m_UploadBufferSize = size;
 }
 
 void NetworkClient::setChunkOffset(int64_t offset)

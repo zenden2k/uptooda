@@ -236,7 +236,6 @@ class NetworkClient: public INetworkClient
         */
         void setMaxUploadSpeed(uint64_t speed) override;
         void setMaxDownloadSpeed(uint64_t speed) override;
-        void setUploadBufferSize(int size) override;
         CURL* getCurlHandle() override;
         void setCurlShare(CurlShare* share) override;
         void setTimeout(uint32_t timeout) override;
@@ -288,7 +287,6 @@ class NetworkClient: public INetworkClient
         size_t private_header_writer(char *data, size_t size, size_t nmemb);
         size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
         static int private_seek_callback(void *userp, curl_off_t offset, int origin);
-        static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
         static int debug_callback(CURL* handle, curl_infotype type, char* data, size_t size, void* clientp);
         bool private_apply_method();
         void private_parse_headers();

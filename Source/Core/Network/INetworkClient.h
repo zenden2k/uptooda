@@ -111,7 +111,6 @@ class INetworkClient {
         virtual void setErrorLogId(const std::string &str){}
         virtual void setProgressCallback(const ProgressCallback& func){}
         virtual void setTreatErrorsAsWarnings(bool treat){}
-        virtual void setUploadBufferSize(int size){}
         virtual void setProxyProvider(std::shared_ptr<ProxyProvider> provider){}
         virtual void setDebugger(std::shared_ptr<Debugger> debugger) {};
         virtual void setLogger(Logger* logger){}

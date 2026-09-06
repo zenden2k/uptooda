@@ -527,7 +527,7 @@ std::string FileSizeToString(int64_t sizeBytes) {
         return {};
     }
     const char* units[] = { "B", "KB", "MB", "GB", "TB", "PB" };
-    const int numUnits = sizeof(units) / sizeof(units[0]);
+    const int numUnits = std::size(units);
     double size = static_cast<double>(sizeBytes);
     int unitIndex = 0;
 

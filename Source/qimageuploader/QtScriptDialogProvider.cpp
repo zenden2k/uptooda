@@ -52,7 +52,7 @@ void QtScriptDialogProvider::showDialogInMainThread(QString text, QString defaul
     if (dlg.exec() == QDialog::Accepted) {
         this->value_ = Q2U(dlg.textValue());
     } else {
-        this->value_ = std::string();
+        this->value_.clear();
     }
 }
 

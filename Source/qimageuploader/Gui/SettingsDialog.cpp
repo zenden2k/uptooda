@@ -10,6 +10,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+#include "ConnectionSettingsPage.h"
 #include "Core/Settings/CommonGuiSettings.h"
 #include "GeneralSettingsPage.h"
 #include "ScreenshotSettingsPage.h"
@@ -59,6 +60,7 @@ SettingsDialog::SettingsDialog(CommonGuiSettings* settings, UploadEngineManager*
     rootLayout->addWidget(footer);
 
     addPage(tr("General"), [this, logWindow] { return new GeneralSettingsPage(settings_, logWindow, pageStack_); });
+    addPage(tr("Connection"), [this] { return new ConnectionSettingsPage(settings_, pageStack_); });
     addPage(tr("Screenshot"), [this] { return new ScreenshotSettingsPage(settings_, pageStack_); });
     addPage(tr("Video grabber"), [this] { return new VideoGrabberSettingsPage(settings_, pageStack_); });
     addPage(tr("Servers"), [this, uploadEngineManager] {

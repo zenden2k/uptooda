@@ -82,7 +82,7 @@ LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, static_cast<CString>(Settings.ConnectionSettings.ProxyPassword));
-    SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
+
     if(Settings.ConnectionSettings.ProxyPort) 
         SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
@@ -168,10 +168,6 @@ bool CConnectionSettingsPage::apply()
     GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
     Settings.ConnectionSettings.ProxyPassword = Buffer;
     Settings.ConnectionSettings.ProxyType = serverTypeCombo_.GetItemData(serverTypeCombo_.GetCurSel());
-    Settings.UploadBufferSize = static_cast<int>(GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT) * 1024);
-    if (!Settings.UploadBufferSize) {
-        Settings.UploadBufferSize = 65536;
-    }
 
 	int maxUploadSpeed = GetDlgItemInt(IDC_UPLOADSPEEDLIMITEDIT);
 	if (maxUploadSpeed < 0) {
@@ -183,13 +179,13 @@ bool CConnectionSettingsPage::apply()
 }
 
 void CConnectionSettingsPage::proxyRadioChanged() {
-    bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0;
+    bool checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0;
     bool useSystemProxyChecked = useSystemProxy_.GetCheck() == BST_CHECKED;
     openSystemConnectionSettingsButton_.EnableWindow(useSystemProxyChecked);
-    GuiTools::EnableNextN(GetDlgItem(IDC_USEPROXYSERVER), Checked ? 8 : 11, Checked);
+    GuiTools::EnableNextN(GetDlgItem(IDC_USEPROXYSERVER), checked ? 8 : 11, checked);
 
     BOOL bHandled = false;
-    if (Checked) {
+    if (checked) {
         OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, nullptr, bHandled);
     }
 }
