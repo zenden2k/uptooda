@@ -204,7 +204,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
     Reg.SetRootKey(HKEY_CURRENT_USER);
     if (Reg.SetKey(_T("Software\\Uptooda"), false)) {
         ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
-        //	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+        ExplorerContextMenu = Reg.ReadBool(_T("ExplorerContextMenu"), true);
         ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
         /*CString lang = Reg.ReadString(_T("Language"));
 		//MessageBox(0, lang,0,0);
@@ -230,6 +230,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
     }
 #endif
 
+    if (!ExplorerContextMenu) {
+        return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0);
+    }
     UINT currentCommandID = idCmdFirst;
     if ((uFlags & 0x000F) != CMF_NORMAL && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)
         return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
@@ -287,8 +290,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 				if ( !iconFileName.IsEmpty() ) {
                     ico = GetCachedServerIcon(dataFolder + L"\\Favicons\\" + iconFileName, w, h);
 				}
-				MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_SERVER_PROFILE,title,idCmdFirst,keyNames[i],UseBitmaps,0, ico ? 0: IDI_ICONUPLOAD, ico ? ico : nullptr);
-		}
+                const CString groupId = Reg2.ReadString(_T("ServerProfileGroupId"));
+                MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,
+                             groupId.IsEmpty() ? MENUITEM_SERVER_PROFILE : MENUITEM_SERVER_PROFILE_GROUP, title,
+                             idCmdFirst, groupId.IsEmpty() ? keyNames[i] : groupId, UseBitmaps, 0,
+                             ico ? 0 : IDI_ICONUPLOAD, ico ? ico : nullptr);
+        }
 	}
 
 	if (ExplorerVideoContextMenu && m_FileList.GetCount() == 1 && !isDirectory){
@@ -355,13 +362,23 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
    si.cb = sizeof(si);
    ZeroMemory(&pi, sizeof(pi));
 
-	CString TempCmdLine = CString(_T("\""))+GetDllFolder()+_T("uptooda.exe")+CString(_T("\""));
-	if(!params.IsEmpty()) TempCmdLine+=_T(" ")+params+_T(" ");
-	for(int i=0;i <CmdLine.GetCount(); i++)
-		{
-			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
-			TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\"");
-		}
+   CRegistry registry;
+   registry.SetRootKey(HKEY_CURRENT_USER);
+   CString executable;
+   if (registry.SetKey(_T("Software\\Uptooda"), false)) {
+       executable = registry.ReadString(_T("ApplicationPath"));
+   }
+   if (executable.IsEmpty() || !Helpers::FileExists(executable)) {
+       executable = GetDllFolder() + _T("uptooda.exe");
+   }
+   CString TempCmdLine = _T("\"") + executable + _T("\"");
+   if (!params.IsEmpty())
+       TempCmdLine += _T(" ") + params + _T(" ");
+   for (int i = 0; i < CmdLine.GetCount(); i++) {
+       if (!lstrcmpi(CmdLine[i], _T("-Embedding")))
+           continue;
+       TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\"");
+   }
 
     // Start the child process.
     if( !CreateProcess(
@@ -426,7 +443,10 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 			return S_OK;
 		}
 		break;
-	case MENUITEM_SERVER_PROFILE:
+    case MENUITEM_SERVER_PROFILE_GROUP:
+        IULaunchCopy(m_FileList, _T("--serverprofilegroup=\"") + item.commandArgument + _T("\""));
+        return S_OK;
+    case MENUITEM_SERVER_PROFILE:
 		IULaunchCopy(m_FileList,_T("/upload /quick /serverprofile=") +item.commandArgument );
 		return S_OK;
 		break;

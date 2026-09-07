@@ -50,6 +50,7 @@ struct Shell_ContextMenuItem
 #define MENUITEM_IMPORTVIDEO 2
 #define MENUITEM_MEDIAINFO 3
 #define MENUITEM_SERVER_PROFILE 4
+#define MENUITEM_SERVER_PROFILE_GROUP 5
 
 CString GetDllFolder();
 

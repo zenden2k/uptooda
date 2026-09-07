@@ -116,6 +116,10 @@ if(WIN32)
     list(APPEND SOURCE_FILES
             ../Func/GdiPlusInitializer.cpp
             Gui/WindowsVirtualFileDrop.cpp
+            Gui/IntegrationSettingsPage.cpp
+            Gui/IntegrationSettingsPage.h
+            Gui/ContextMenuItemDialog.cpp
+            Gui/ContextMenuItemDialog.h
     )
 else()
     list(APPEND SOURCE_FILES Gui/NullVirtualFileDrop.cpp)
@@ -132,6 +136,20 @@ if(WIN32)
 endif()
 
 target_link_libraries(qimageuploader PRIVATE iu_core iu_video ${COMMON_LIBS_LIST})
+
+add_executable(qimageuploader_settings_tests EXCLUDE_FROM_ALL
+        Tests/IntegrationSettingsTest.cpp
+        QtScriptFunctionsImpl.cpp
+        ../Core/Settings/CommonGuiSettings.cpp
+        ../Core/Settings/QtGuiSettings.cpp
+)
+target_link_libraries(qimageuploader_settings_tests PRIVATE
+        Qt6::Core iu_core iu_video GTest::gtest ${COMMON_LIBS_LIST})
+if(WIN32)
+    configure_webview2_target(qimageuploader_settings_tests)
+    configure_nuget_packages(qimageuploader_settings_tests)
+    target_sources(qimageuploader_settings_tests PRIVATE ../res/qimageuploader.exe.manifest)
+endif()
 
 if(WIN32 AND IU_ENABLE_MEDIAINFO)
     target_link_libraries(qimageuploader PRIVATE iu_mediainfo)

@@ -31,7 +31,40 @@ QListWidget#settingsPageList::item:selected {
     background: #ffffff;
     border-color: #c9e3f3;
 }
+.listbox {
+    outline: 0;
+    padding: 5px;
+}
+.listbox::item {
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    padding: 0 10px;
+}
+.listbox::item:hover {
+    color: #205574;
+    background: #e7f3fb;
+}
+.listbox::item:selected {
+    color: #1f78b4;
+    background: #ffffff;
+    border-color: #acd5ef;
+}
+.listbox::item:disabled {
+    color: #8794a3;
+}
+.listbox[compact="true"] {
+    padding: 2px;
+}
+.listbox[compact="true"]::item {
+    min-height: 30px;
+    padding: 0 7px;
+}
 QStackedWidget#settingsPageStack {
+    background: #f3f7fa;
+}
+QScrollArea#settingsPageScrollArea,
+QScrollArea#settingsPageScrollArea > QWidget > QWidget {
     background: #f3f7fa;
 }
 QLabel#settingsPageTitle {
@@ -436,6 +469,10 @@ QProgressBar {
 QProgressBar::chunk {
     background: #55afe8;
     border-radius: 4px;
+}
+QAbstractScrollArea::corner {
+    background: transparent;
+    border: 0;
 }
 QScrollBar:vertical {
     background: transparent;

@@ -171,6 +171,7 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfile urlShorteningServer, temporaryServer, imageSearchServer;
         ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
         ServerProfilesMap ServerProfiles;
+        std::map<SettingsString, ServerProfileGroup> ServerProfileGroups;
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
         ScreenshotSettingsStruct ScreenshotSettings;

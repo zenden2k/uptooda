@@ -30,6 +30,9 @@ public:
     void fillServerIcons();
     bool validate(QString* firstInvalidServerName = nullptr, bool focusFirstInvalid = true);
 
+signals:
+    void serverProfileGroupChanged();
+
 protected:
     void mousePressEvent(QMouseEvent* event) override;
 

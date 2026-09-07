@@ -8,6 +8,7 @@
 #include <QFontDatabase>
 #include <QFontDialog>
 #include <QIcon>
+#include <QListView>
 #include <QMenu>
 #include <QMetaEnum>
 #include <QPixmap>
@@ -228,6 +229,13 @@ void VideoGrabberSettingsPage::chooseFont() {
     QFontDialog dialog(mediaInfoFont_, this);
     dialog.setWindowTitle(tr("Select font"));
     dialog.setOption(QFontDialog::DontUseNativeDialog);
+    dialog.resize(780, 580);
+
+    for (QListView* list : dialog.findChildren<QListView*>()) {
+        list->setProperty("class", "listbox");
+        list->setProperty("compact", true);
+        list->setSpacing(2);
+    }
 
     QComboBox* writingSystemCombo = dialog.findChild<QComboBox*>();
     if (writingSystemCombo && fontWritingSystem_ >= 0 && fontWritingSystem_ < writingSystemCombo->count()) {

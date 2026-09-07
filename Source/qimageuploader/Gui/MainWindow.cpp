@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
+#include <QDirIterator>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -575,14 +576,138 @@ void MainWindow::showUploadSettings() {
 }
 
 void MainWindow::startPendingUpload() {
+    auto* settingsTab = ui->mainTabs->uploadSettingsTab();
+    uploadPendingFiles(settingsTab->imageServerProfileGroup(), settingsTab->fileServerProfileGroup());
+}
+
+void MainWindow::processCommandLine(const QStringList& arguments) {
+    auto* settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    QString groupId;
+    QString legacyId;
+    QStringList files;
+    bool quick = false;
+    bool fromShell = false;
+    bool imagesOnly = false;
+    bool importVideo = false;
+    bool mediaInfo = false;
+    bool positional = false;
+    for (int i = 1; i < arguments.size(); ++i) {
+        const QString& arg = arguments[i];
+        if (!positional && arg == QStringLiteral("--")) {
+            positional = true;
+        } else if (!positional
+                   && (arg.startsWith(QStringLiteral("--serverprofilegroup="))
+                       || arg.startsWith(QStringLiteral("/serverprofilegroup=")))) {
+            groupId = arg.mid(arg.indexOf(QLatin1Char('=')) + 1);
+            if (groupId.isEmpty()) {
+                QMessageBox::warning(this, tr("Upload"), tr("A server profile group ID is required."));
+                return;
+            }
+        } else if (!positional && arg.startsWith(QStringLiteral("/serverprofile="))) {
+            legacyId = arg.mid(15);
+        } else if (!positional && arg == QStringLiteral("--log_dir")) {
+            ++i;
+        } else if (!positional && arg.startsWith(QStringLiteral("--log_dir="))) {
+            continue;
+        } else if (!positional && (arg == QStringLiteral("/quick") || arg == QStringLiteral("--quick"))) {
+            quick = true;
+        } else if (!positional && arg == QStringLiteral("/fromcontextmenu")) {
+            fromShell = true;
+        } else if (!positional && arg == QStringLiteral("/imagesonly")) {
+            imagesOnly = true;
+        } else if (!positional && arg == QStringLiteral("/importvideo")) {
+            importVideo = true;
+        } else if (!positional && arg == QStringLiteral("/mediainfo")) {
+            mediaInfo = true;
+        } else if (!positional
+                   && (arg == QStringLiteral("/upload") || arg == QStringLiteral("--upload")
+                       || arg == QStringLiteral("-Embedding"))) {
+            continue;
+        } else if (!positional && arg.startsWith(QStringLiteral("--"))) {
+            QMessageBox::warning(this, tr("Upload"), tr("Unknown command line option: %1").arg(arg));
+            return;
+        } else {
+            QFileInfo info(arg);
+            if (info.isDir()) {
+                QDirIterator it(info.absoluteFilePath(), QDir::Files | QDir::Readable, QDirIterator::Subdirectories);
+                while (it.hasNext()) {
+                    files.append(it.next());
+                }
+            } else if (info.isFile() && info.isReadable()) {
+                files.append(info.absoluteFilePath());
+            } else {
+                QMessageBox::warning(this, tr("Upload"), tr("Unable to read file: %1").arg(arg));
+                return;
+            }
+        }
+    }
+    ServerProfileGroup group;
+    const bool explicitGroup = !groupId.isEmpty() || !legacyId.isEmpty();
+    if (!groupId.isEmpty()) {
+        const auto found = settings->ServerProfileGroups.find(groupId);
+        if (found != settings->ServerProfileGroups.end()) {
+            group = found->second;
+        }
+    } else if (!legacyId.isEmpty()) {
+        const auto found = settings->ServerProfiles.find(legacyId);
+        if (found != settings->ServerProfiles.end()) {
+            group = ServerProfileGroup(found->second);
+        }
+    }
+    if (explicitGroup) {
+        bool valid = !group.isEmpty();
+        for (auto& profile : group.getItems()) {
+            const auto* server = profile.uploadEngineData();
+            valid = valid && server && (server->TypeMask & 3)
+                && (server->NeedAuthorization != CUploadEngineData::naObligatory || !profile.profileName().empty());
+        }
+        if (!valid) {
+            QMessageBox::warning(
+                this, tr("Upload"),
+                tr("The server profile group is missing or invalid: %1").arg(groupId.isEmpty() ? legacyId : groupId));
+            return;
+        }
+    }
+    if (files.isEmpty()) {
+        if (explicitGroup) {
+            QMessageBox::warning(this, tr("Upload"), tr("No files were specified for uploading."));
+        }
+        return;
+    }
+    if (importVideo || mediaInfo) {
+        openMediaDialog(files.first(), mediaInfo);
+        return;
+    }
+    if (imagesOnly) {
+        QMimeDatabase database;
+        files.erase(std::remove_if(files.begin(), files.end(),
+                                   [&database](const QString& file) {
+                                       return !database.mimeTypeForFile(file).name().startsWith(
+                                           QStringLiteral("image/"));
+                                   }),
+                    files.end());
+    }
+    if (!addMultipleFilesToList(files)) {
+        return;
+    }
+    if (explicitGroup) {
+        uploadPendingFiles(group, group);
+    } else {
+#ifdef _WIN32
+        quick = quick || (fromShell && settings->QuickUpload);
+#endif
+        if (quick) {
+            startPendingUpload();
+        }
+    }
+}
+
+void MainWindow::uploadPendingFiles(ServerProfileGroup imageProfiles, ServerProfileGroup fileProfiles) {
     const QStringList fileNames = pendingFilesModel_->filePaths();
     if (fileNames.isEmpty()) {
         return;
     }
 
-    auto* settingsTab = ui->mainTabs->uploadSettingsTab();
-    ServerProfileGroup imageProfiles = settingsTab->imageServerProfileGroup();
-    ServerProfileGroup fileProfiles = settingsTab->fileServerProfileGroup();
     if (imageProfiles.isEmpty() || fileProfiles.isEmpty()) {
         return;
     }

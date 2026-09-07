@@ -1,4 +1,3 @@
-#include <string_view>
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -6,6 +5,8 @@
 #include <QMessageBox>
 #include <QStyleFactory>
 #include <QTemporaryDir>
+#include <QTimer>
+#include <string_view>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
@@ -215,6 +216,7 @@ int main(int argc, char* argv[]) {
 
     MainWindow w(engineList.get(), logWindow.get());
     w.show();
+    QTimer::singleShot(0, &w, [&w] { w.processCommandLine(QCoreApplication::arguments()); });
 
     int res = a.exec();
 

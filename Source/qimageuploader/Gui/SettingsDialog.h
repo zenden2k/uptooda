@@ -12,6 +12,7 @@ class CommonGuiSettings;
 class LogWindow;
 class QListWidget;
 class QLabel;
+class QScrollArea;
 class QStackedWidget;
 class SettingsPage;
 class UploadEngineManager;
@@ -33,6 +34,7 @@ private:
         QString title;
         std::function<SettingsPage*()> factory;
         SettingsPage* page = nullptr;
+        QScrollArea* scrollArea = nullptr;
     };
 
     void addPage(const QString& title, std::function<SettingsPage*()> factory);

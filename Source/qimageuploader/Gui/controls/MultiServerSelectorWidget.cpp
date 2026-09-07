@@ -220,6 +220,7 @@ void MultiServerSelectorWidget::updateDeleteButtons() {
 }
 
 void MultiServerSelectorWidget::updateTitle() {
+    emit serverProfileGroupChanged();
     const int selectedServerCount
         = static_cast<int>(std::count_if(rows_.begin(), rows_.end(), [](const SelectorRow& row) {
               return !row.selector->serverProfile().serverName().empty();

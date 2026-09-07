@@ -138,6 +138,17 @@ bool CommonGuiSettings::PostLoadSettings(SimpleXml &xml)
     LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
 
     auto uploading = settingsNode.GetChild("Uploading");
+    ServerProfileGroups.clear();
+    std::vector<SimpleXmlNode> groups;
+    uploading.GetChild("ServerProfileGroups").GetChilds("ServerProfileGroup", groups);
+    for (const auto& node : groups) {
+        const std::string id = node.Attribute("ServerProfileGroupId");
+        if (!id.empty()) {
+            auto& group = ServerProfileGroups[Utf8ToSettingsString(id)];
+            LoadServerProfileGroup(node, group);
+            PostLoadServerProfileGroup(group);
+        }
+    }
 
     ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldContextMenuServer;
     // Load the old format of chosen servers (just reading)
@@ -266,6 +277,11 @@ bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {
     SaveServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
     SaveServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
     SaveServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
+    for (auto& entry : ServerProfileGroups) {
+        auto node = uploading.GetChild("ServerProfileGroups").CreateChild("ServerProfileGroup");
+        node.SetAttribute("ServerProfileGroupId", SettingsStringToUtf8(entry.first));
+        SaveServerProfileGroup(node, entry.second);
+    }
     return true;
 }
 

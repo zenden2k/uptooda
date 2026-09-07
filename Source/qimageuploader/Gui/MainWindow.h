@@ -17,6 +17,7 @@ class ScriptsManager;
 class UploadSession;
 class UploadSessionListWidget;
 class UploadTask;
+class ServerProfileGroup;
 class FileDropHighlight;
 
 namespace Uptooda::Core::OutputGenerator {
@@ -47,6 +48,7 @@ public:
     WindowHandle getHandle() override;
     WindowNativeHandle getNativeHandle() override;
     void setServersChanged(bool changed) override;
+    void processCommandLine(const QStringList& arguments);
 private slots:
     void updateView();
 
@@ -88,6 +90,7 @@ protected:
     UploadSessionListWidget* uploadSessionList() const;
 
 private:
+    void uploadPendingFiles(ServerProfileGroup imageProfiles, ServerProfileGroup fileProfiles);
     std::unique_ptr<Ui::MainWindow> ui;
     std::unique_ptr<UploadManager> uploadManager_;
     std::unique_ptr<UploadEngineManager> uploadEngineManager_;

@@ -4,9 +4,11 @@
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLayout>
 #include <QListWidget>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
@@ -17,6 +19,10 @@
 #include "ServersSettingsPage.h"
 #include "SettingsPage.h"
 #include "VideoGrabberSettingsPage.h"
+#ifdef _WIN32
+#include "Core/Settings/QtGuiSettings.h"
+#include "IntegrationSettingsPage.h"
+#endif
 
 SettingsDialog::SettingsDialog(CommonGuiSettings* settings, UploadEngineManager* uploadEngineManager,
                                LogWindow* logWindow, QWidget* parent) : QDialog(parent), settings_(settings) {
@@ -68,6 +74,11 @@ SettingsDialog::SettingsDialog(CommonGuiSettings* settings, UploadEngineManager*
     });
 
     connect(pageList_, &QListWidget::currentRowChanged, this, &SettingsDialog::showPage);
+#ifdef _WIN32
+    addPage(tr("Integration"), [this, uploadEngineManager] {
+        return new IntegrationSettingsPage(static_cast<QtGuiSettings*>(settings_), uploadEngineManager, pageStack_);
+    });
+#endif
     connect(buttons, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
     connect(buttons->button(QDialogButtonBox::Apply), &QPushButton::clicked, this, &SettingsDialog::applySettings);
@@ -86,14 +97,23 @@ SettingsPage* SettingsDialog::createPage(int index) {
     PageDescriptor& descriptor = pages_[index];
     if (!descriptor.page) {
         descriptor.page = descriptor.factory();
-        pageStack_->addWidget(descriptor.page);
+        if (QLayout* pageLayout = descriptor.page->layout()) {
+            pageLayout->setSizeConstraints(QLayout::SetDefaultConstraint, QLayout::SetMinimumSize);
+        }
+        descriptor.scrollArea = new QScrollArea(pageStack_);
+        descriptor.scrollArea->setObjectName(QStringLiteral("settingsPageScrollArea"));
+        descriptor.scrollArea->setWidgetResizable(true);
+        descriptor.scrollArea->setFrameShape(QFrame::NoFrame);
+        descriptor.scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        descriptor.scrollArea->setWidget(descriptor.page);
+        pageStack_->addWidget(descriptor.scrollArea);
     }
     return descriptor.page;
 }
 
 void SettingsDialog::showPage(int index) {
-    if (SettingsPage* page = createPage(index)) {
-        pageStack_->setCurrentWidget(page);
+    if (createPage(index)) {
+        pageStack_->setCurrentWidget(pages_[index].scrollArea);
     }
 }
 
@@ -113,6 +133,15 @@ bool SettingsDialog::validateAndApply() {
     if (!settings_->SaveSettings()) {
         QMessageBox::critical(this, tr("Settings"), tr("Unable to save the settings file."));
         return false;
+    }
+    for (PageDescriptor& descriptor : pages_) {
+        descriptor.page->afterSave();
+        const QString error = descriptor.page->applyError();
+        if (!error.isEmpty()) {
+            savedLabel_->hide();
+            QMessageBox::critical(this, tr("Settings"), error);
+            return false;
+        }
     }
     savedLabel_->show();
     return true;

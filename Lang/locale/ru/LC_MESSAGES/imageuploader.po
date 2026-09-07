@@ -4758,3 +4758,57 @@ msgstr "год"
 
 #~ msgid "Performing action #%d..."
 #~ msgstr "Выполнение действия #%d..."
+
+msgid "Upload to %1"
+msgstr "Загрузить на %1"
+
+msgid "Context menu item"
+msgstr "Пункт контекстного меню"
+
+msgid "Menu item title:"
+msgstr "Название пункта меню:"
+
+msgid "Leave empty to use the server names."
+msgstr "Оставьте пустым, чтобы использовать названия серверов."
+
+msgid "Select a server and configure its account."
+msgstr "Выберите сервер и настройте учётную запись."
+
+msgid "The selected server is unavailable."
+msgstr "Выбранный сервер недоступен."
+
+msgid "Edit Item"
+msgstr "Редактировать пункт"
+
+msgid "The Explorer shell extension was not found next to the application."
+msgstr "Расширение Проводника не найдено в папке программы."
+
+msgid "The server group is missing. Edit or remove this item."
+msgstr "Группа серверов отсутствует. Отредактируйте или удалите этот пункт."
+
+msgid "Unable to update the Send to shortcut."
+msgstr "Не удалось обновить ярлык в меню «Отправить»."
+
+msgid "Unable to save Windows Explorer integration settings to the registry."
+msgstr "Не удалось сохранить настройки интеграции с Проводником Windows в реестр."
+
+msgid "A server profile group ID is required."
+msgstr "Необходимо указать идентификатор группы серверов."
+
+msgid "Unknown command line option: %1"
+msgstr "Неизвестный параметр командной строки: %1"
+
+msgid "Unable to read file: %1"
+msgstr "Не удалось прочитать файл: %1"
+
+msgid "The server profile group is missing or invalid: %1"
+msgstr "Группа серверов отсутствует или некорректна: %1"
+
+msgid "No files were specified for uploading."
+msgstr "Не указаны файлы для загрузки."
+
+msgid "Upload to %1 and %n more servers"
+msgid_plural "Upload to %1 and %n more servers"
+msgstr[0] "Загрузить на %1 и еще %n сервер"
+msgstr[1] "Загрузить на %1 и еще %n сервера"
+msgstr[2] "Загрузить на %1 и еще %n серверов"

@@ -17,6 +17,8 @@ public:
     virtual void load() = 0;
     virtual bool validate(QString& error) const = 0;
     virtual void apply() = 0;
+    virtual void afterSave() { }
+    virtual QString applyError() const { return { }; }
 };
 
 #endif
