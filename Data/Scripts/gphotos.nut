@@ -9,7 +9,7 @@ function _GetAuthorizationString() {
 
 function Authenticate() {
     local login = ServerParams.getParam("Login");
-    local scope = "https://www.googleapis.com/auth/photoslibrary https://www.googleapis.com/auth/photoslibrary.sharing";
+    local scope = "https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata";
     //local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
     if(login == "" ) {
@@ -352,41 +352,10 @@ function UploadFile(FileName, options) {
         nm.doPost(ToJSON(requestData));
         if (nm.responseCode() == 200) {
             local t = ParseJSON(nm.responseBody());
-            if( "newMediaItemResults" in t && t.newMediaItemResults.len() > 0) {
+            if("newMediaItemResults" in t && t.newMediaItemResults.len() > 0) {
                 local item = t.newMediaItemResults[0];
                 if (albumStr != "") {
-                    local shareUrl = Sync.getValue("shareUrl");
-                    if (shareUrl=="") {
-                        nm.addQueryHeader("Authorization", _GetAuthorizationString());
-                        nm.doGet("https://photoslibrary.googleapis.com/v1/albums/" + albumStr);
-                        if (nm.responseCode() == 200) {
-                            local album = ParseJSON(nm.responseBody());
-                            if ("shareInfo" in album) {
-                                shareUrl = album.shareInfo.shareableUrl;
-                            }
-                        }
-                        
-                        if (shareUrl == "") {
-                            nm.setUrl("https://photoslibrary.googleapis.com/v1/albums/" + albumStr + ":share");
-                            nm.addQueryHeader("Content-Type", "application/json");
-                            local postData = {
-                                sharedAlbumOptions = { 
-                                }
-                            };
-                            nm.addQueryHeader("Authorization", _GetAuthorizationString());
-                            nm.doPost(ToJSON(postData));
-                            if (nm.responseCode() == 200) {
-                                local parsedData = ParseJSON(nm.responseBody());
-                                //options.setDirectUrl(directUrl);
-                                //options.setThumbUrl(thumbUrl);
-                                shareUrl = parsedData.shareInfo.shareableUrl;
-                            }
-                        }
-                        if ( shareUrl != "" ) {
-                            Sync.setValue("shareUrl", shareUrl);
-                        }
-                    }
-                    options.setViewUrl(shareUrl);
+                    options.setViewUrl("https://photos.google.com/");
                 }
                 return 1;
             }  
