@@ -1,12 +1,6 @@
-MyClientId <- "tB3J94mijYhW5Up5fm2c";
-
-function  UploadFile(filePath, options)
+function UploadFile(filePath, options)
 {
-    local clientId = ServerParams.getParam("ClientId");
     local secretKey = ServerParams.getParam("SecretKey");
-    if (clientId == "") {
-        clientId = MyClientId;
-    }
     if (secretKey == "" ){
         WriteLog("error", "imageban.ru: SecretKey parameter cannot be empty. \r\nYou must set SecretKey in server settings.");
         return 0;
@@ -15,10 +9,9 @@ function  UploadFile(filePath, options)
     local displayName = task.getDisplayName();
     
     nm.setUrl("https://api.imageban.ru/v1");
-    nm.addQueryHeader("Authorization", "TOKEN " + clientId);
+    nm.addQueryHeader("Authorization", "Bearer " + secretKey);
     nm.addPostFieldFile("image", filePath, displayName, GetFileMimeType(filePath));
     nm.addPostField("name", displayName);
-    nm.addPostField("secret_key", secretKey);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {
@@ -49,7 +42,6 @@ function  UploadFile(filePath, options)
 function GetServerParamList()
 {
     return {
-        ClientId = "ClientId",
         SecretKey = "SecretKey"
     };
 }
