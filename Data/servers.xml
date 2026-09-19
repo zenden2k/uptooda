@@ -911,13 +911,14 @@
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <!-- Blocked by Roskomnadzor -->
-    <Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="209715200" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" 
-        RegistrationUrl="https://catbox.moe/user/register.php">
-        <Actions>
-            <Action Type="upload" Url="https://catbox.moe/user/api.php" PostParams="reqtype=fileupload;userhash=$(_PASSWORD);fileToUpload=%filename%;" RegExp="^(.+)$" AssignVars="UploadedUrl:0;"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(UploadedUrl)" />
-    </Server>
+<!--    <Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="209715200" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" -->
+<!--        RegistrationUrl="https://catbox.moe/user/register.php">-->
+<!--        <Actions>-->
+<!--            <Action Type="upload" Url="https://catbox.moe/user/api.php" PostParams="reqtype=fileupload;userhash=$(_PASSWORD);fileToUpload=%filename%;"-->
+<!--                    RegExp="^(.+)$" AssignVars="UploadedUrl:0;" CustomHeaders="User-Agent:"/>-->
+<!--        </Actions>-->
+<!--        <Result ImageUrlTemplate="$(UploadedUrl)" />-->
+<!--    </Server>-->
     <Server Name="fileditch.com" MaxFileSize="161061273600" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com" MaxThreads="1">
         <Info>
             <SupportedFormats>

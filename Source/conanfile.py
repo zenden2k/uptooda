@@ -78,6 +78,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("libidn2/2.3.8", force=True)
 
         self.requires("openssl/1.1.1w", force=True)
+        self.requires("xxhash/0.8.3")
 
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
             pass

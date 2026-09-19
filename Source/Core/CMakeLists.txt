@@ -345,7 +345,7 @@ if (IU_ENABLE_SFTP)
 endif()
 
 if (WIN32)
-    target_link_libraries(iu_core PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
+    target_link_libraries(iu_core PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif xxHash::xxhash gdiplus winmm urlmon Dwmapi)
 	configure_webview2_target(iu_core)
 	configure_nuget_packages(iu_core)
 endif()

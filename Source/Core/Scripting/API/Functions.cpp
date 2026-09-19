@@ -535,6 +535,16 @@ std::string Md5Crypt(const std::string& password, const std::string& salt) {
     return {};
 }
 
+std::string XXH64FromFile(const std::string& path, int64_t offset, size_t chunkSize) {
+    try {
+        return IuCoreUtils::CryptoUtils::CalcXXH64HashFromFile(path, offset, chunkSize);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in XXH64FromFile:" << std::endl
+                   << e.what();
+    }
+    return {};
+}
+
 std::string GetAppLanguage() {
     return Impl::GetAppLanguageImpl();
 }
@@ -690,6 +700,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Sha256FromFile", &CryptoUtils::CalcSHA256HashFromFile)
         .Func("Sha512", &CryptoUtils::CalcSHA512HashFromString)
         .Func("Sha512FromFile", &CryptoUtils::CalcSHA512HashFromFile)
+        .Func("XXH64", &CryptoUtils::CalcXXH64HashFromString)
+        .Func("XXH64FromFile", XXH64FromFile)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)
