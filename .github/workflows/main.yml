@@ -383,33 +383,33 @@ jobs:
           path: Dist/Packages/**
           if-no-files-found: error
 
-  upload-release-assets:
-    name: Upload release assets
-    runs-on: ubuntu-24.04
-    needs:
-      - build-windows
-      - build-linux
-    if: github.event_name == 'release'
-    steps:
-      - name: Download package artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: packages-*
-          path: release-assets
-          merge-multiple: true
-
-      - name: Upload assets to release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        run: |
-          mapfile -t files < <(find release-assets -type f \
-            ! -name 'build_info.json' \
-            ! -name 'builds.json' \
-            ! -name 'iu_core*.xml' \
-            ! -name 'iu_serversinfo*.xml')
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No release files found."
-            exit 1
-          fi
-          gh release upload "$TAG_NAME" "${files[@]}" --clobber
+#  upload-release-assets:
+#    name: Upload release assets
+#    runs-on: ubuntu-24.04
+#    needs:
+#      - build-windows
+#      - build-linux
+#    if: github.event_name == 'release'
+#    steps:
+#      - name: Download package artifacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          pattern: packages-*
+#          path: release-assets
+#          merge-multiple: true
+#
+#      - name: Upload assets to release
+#        env:
+#          GH_TOKEN: ${{ github.token }}
+#          TAG_NAME: ${{ github.event.release.tag_name }}
+#        run: |
+#          mapfile -t files < <(find release-assets -type f \
+#            ! -name 'build_info.json' \
+#            ! -name 'builds.json' \
+#            ! -name 'iu_core*.xml' \
+#            ! -name 'iu_serversinfo*.xml')
+#          if [ "${#files[@]}" -eq 0 ]; then
+#            echo "No release files found."
+#            exit 1
+#          fi
+#          gh release upload "$TAG_NAME" "${files[@]}" --clobber

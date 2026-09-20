@@ -2,7 +2,41 @@
 #
 # https://svistunov.dev/uptooda
 
-1.4.6.5402 (2026-01-02)
+v1.4.7 build 5522 (2026-01-02)
+
+New features and improvements
+
+- Added server Favorites and Blacklist functionality: favorite servers are displayed at the top of the list, with an option to show favorites only.
+- Added an icon view mode to the server selection window.
+- Added OpenDrive cloud storage support.
+- Added the 0.mk URL shortener.
+- Added custom filename format support for screen recordings.
+- Screenshot paths can now include folders.
+- Added macro insertion buttons to screenshot and video grabber settings.
+- Added file logging through command-line options.
+- The CLI server list now displays hosting groups.
+- CLI JSON output now includes edit links and server messages.
+- Added quick save with Ctrl+S in the Image Editor when a default screenshot path is configured.
+- Added adaptive auto-scrolling when dragging objects beyond the Image Editor viewport.
+- Added a border option for filled shapes.
+- Updated the Image Editor toolbar appearance.
+- Moved Settings and History to the Help menu.
+- The built-in Print Screen key capture in Windows 10/11 is now automatically disabled.
+- Updated Bulgarian, Korean, and Ukrainian translations.
+
+Fixes
+- Fixed copying images to the clipboard after taking a screenshot.
+- Fixed screen recording and screenshot filename generation.
+- Fixed several crashes in the History Manager and logging system.
+- Fixed command-line argument parsing.
+- Fixed Google Photos authorization.
+- Fixed VK authorization and token refresh.
+- Fixed uploads to multiple services, including 2i.cz, abcvg.org, 8upload, fileditch.com, ImageBan, and others.
+- Fixed the u.to URL shortener.
+- Improved handling of unavailable and discontinued hosting services.
+- Various stability and usability improvements.
+
+v1.4.6.5402 (2026-01-02)
 
 Improvements:
 
