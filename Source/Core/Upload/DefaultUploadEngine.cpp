@@ -241,7 +241,14 @@ bool CDefaultUploadEngine::DoUploadAction(const UploadAction& Action, bool bUplo
                 bool res = m_NetworkClient->doUploadMultipartData();
             }
         } else {
-            m_NetworkClient->setMethod(IuStringUtils::ToUpper(Action.Type));
+            std::string method;
+            if (Action.Type == "login") {
+                method = "POST";
+            } else {
+                method = IuStringUtils::ToUpper(Action.Type);
+            }
+
+            m_NetworkClient->setMethod(method);
             m_NetworkClient->doPost(ReplaceVars(Action.Body));
         }
 
@@ -275,7 +282,7 @@ bool CDefaultUploadEngine::DoGetAction(const UploadAction& Action)
 
 bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
 {
-    pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
+    pcrepp::Pcre reg(pattern, "imc"); // Case-insensitive match
     if (reg.search(text)) {
         if ( reg.matches() > 0 ) {
             res = reg.get_match(1);

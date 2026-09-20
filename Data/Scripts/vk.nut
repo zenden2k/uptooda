@@ -480,7 +480,7 @@ function UploadFile(FileName, options) {
 
         nm.setUrl("https://api.vk.ru/method/photos.save?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
-        nm.doPost("");
+        nm.doUploadMultipartData();
         if ( nm.responseCode() >= 200 && nm.responseCode() <= 299 ) {
             local t = ParseJSON(nm.responseBody());
             if ( !checkResponse(t) ) {

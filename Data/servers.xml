@@ -105,12 +105,12 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>-->
-    <Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1" WebsiteUrl="https://imageshack.com"
-        RegistrationUrl="https://imageshack.com/signup">
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
-    </Server>
+<!--    <Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1" WebsiteUrl="https://imageshack.com"-->
+<!--        RegistrationUrl="https://imageshack.com/signup">-->
+<!--        <Actions>-->
+<!--        </Actions>-->
+<!--        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>-->
+<!--    </Server>-->
     <Server Name="directupload.net" DisplayName="directupload.eu" Authorize="1" MaxFileSize="67108864" DefaultForTypes="image" Plugin="directupload" SupportsFolders="1" 
         WebsiteUrl="https://www.directupload.eu" RegistrationUrl="https://www.directupload.eu/index.php?mode=register">
         <Info>
@@ -246,33 +246,6 @@
                     <Format MimeType="image/gif">*.gif</Format>
                 </FormatGroup>	 
             </SupportedFormats>
-        </Info>
-        <Actions>
-        </Actions>
-        <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-    </Server>
-    <Server Name="imgfoto.host" Authorize="2" Plugin="imgfoto" WebsiteUrl="https://imgfoto.host/" RegistrationUrl="https://imgfoto.host/signup" NeedPassword="0">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="5242880">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                </FormatGroup>	
-                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                </FormatGroup>	  
-            </SupportedFormats>
-            <StorageTimeInfo>
-                <StorageTime UserTypes="anon">365</StorageTime>
-                <StorageTime UserTypes="reg">-1</StorageTime>
-            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -507,8 +480,11 @@
             </StorageTimeInfo>
         </Info>
         <Actions>
-            <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
-            <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" 
+            <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1">
+                <Call Function="regexp" Arg1="user_hash\\s*=\\s*\&quot;([^\&quot;]+)\&quot;" AssignVars="UserHash:1;" />
+                <Call Function="regexp" Arg1="user_id\\s*=\\s*\&quot;([^\&quot;]+)\&quot;" AssignVars="UserId:1;" />
+            </Action>
+            <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=$(UserHash);userID=$(UserId);fileinput[0]=%filename%;"
             >
                 <Call Function="json" Arg1="img_direct_link" AssignVars="ImageUrl:0;"/>
                 <Call Function="json" Arg1="img_thumb_link" AssignVars="ThumbUrl:0;"/>
@@ -642,18 +618,18 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="yourfilestore.com" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">
-        <Actions>
-            <Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">
-                <RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>
-            </Action>
-            <Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="UPLOAD_IDENTIFIER=$(UploadId);xcsrf_token=$(XcsrfToken);userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" 
-                    AssignVars="FileId:0;" Referer="https://yourfilestore.com/">
-                <RegExp Pattern="(https://yourfilestore.com/delete/.+?)&quot;" AssignVars="DeleteUrl:0"/>
-            </Action>
-        </Actions>
-        <Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
-    </Server>
+<!--    <Server Name="yourfilestore.com" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">-->
+<!--        <Actions>-->
+<!--            <Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">-->
+<!--                <RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>-->
+<!--            </Action>-->
+<!--            <Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="UPLOAD_IDENTIFIER=$(UploadId);xcsrf_token=$(XcsrfToken);userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" -->
+<!--                    AssignVars="FileId:0;" Referer="https://yourfilestore.com/">-->
+<!--                <RegExp Pattern="(https://yourfilestore.com/delete/.+?)&quot;" AssignVars="DeleteUrl:0"/>-->
+<!--            </Action>-->
+<!--        </Actions>-->
+<!--        <Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>-->
+<!--    </Server>-->
     <Server Name="freeimage.host" MaxFileSize="67108864" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
         <Info>
             <SupportedFormats>
@@ -1059,7 +1035,7 @@
     <Server Name="qu.ax" FileHost="1" Plugin="qu.ax" MaxFileSize="268435456" WebsiteUrl="https://qu.ax">
         <Actions>
         </Actions>
-        <Result ImageUrlTemplate="stub" />
+        <Result DownloadUrlTemplate="stub" />
     </Server>
     <!--<Server Name="qu.ax2" Debug="0" FileHost="1" MaxFileSize="268435456" MinVersion="1.4.0">
         <Actions>
@@ -1185,33 +1161,6 @@
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgspace.online" Types="image file video" Authorize="2" MaxFileSize="100000000" WebsiteUrl="https://imgspace.online/" 
-            RegistrationUrl="https://imgspace.online/signup" PasswordLabel="API key">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="100000000" UserTypes="reg">
-                    <Format MimeType="image/avif">*.avif</Format>
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                    <Format MimeType="video/mp4">*.mp4</Format>
-                    <Format MimeType="video/webm">*.webm</Format>
-                    <Format MimeType="video/quicktime">*.mov</Format>
-                </FormatGroup>	  
-            </SupportedFormats>
-        </Info>
-        <Actions>
-            <Action Type="upload" Url="https://imgspace.online/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD)">
-                <Call Function="json" Arg1="image.image.url" AssignVars="ImageUrl:0;"/>
-                <Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
-                <Call Function="json" Arg1="image.url_short" AssignVars="ViewUrl:0;"/>
-                <Call Function="json" Arg1="image.delete_url" AssignVars="DeleteUrl:0;"/>
-            </Action>
-        </Actions>
-        <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)" />
-    </Server>
     <Server Name="gifyu.com" MaxFileSize="52428800" WebsiteUrl="https://gifyu.com/" 
             RegistrationUrl="https://gifyu.com/signup">
         <Info>
@@ -1234,14 +1183,10 @@
         </Actions>
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
     </Server>
-    <Server Name="nitroflare.net" FileHost="1" Authorize="2" WebsiteUrl="https://nitroflare.net/" RegistrationUrl="https://nitroflare.net/register" PasswordLabel="User hash">
+    <Server Name="nitroflare.net" FileHost="1" Authorize="2" Plugin="nitroflare.net" WebsiteUrl="https://nitroflare.net/" RegistrationUrl="https://nitroflare.net/register" PasswordLabel="User hash">
         <Actions>
-            <Action Type="get" Url="https://nitroflare.net/plugins/fileupload/getServer" RegExp="(.+)" AssignVars="UploadUrl:0"/>
-            <Action Type="upload" Url="$(UploadUrl)" PostParams="files=%filename%;user=$(_PASSWORD);">
-                <Call Function="json" Arg1="files[0].url" AssignVars="FileUrl:0;"/>
-            </Action>
         </Actions>
-        <Result DownloadUrlTemplate="$(FileUrl)" />
+        <Result DownloadUrlTemplate="stub" />
     </Server>
     <Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register" MaxThreads="1">
         <Actions>
@@ -1298,26 +1243,6 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>-->
-    <Server Name="ranoz.gg" FileHost="1" MaxFileSize="5357971701" Plugin="ranoz" WebsiteUrl="https://ranoz.gg">
-        <Info>
-            <SupportedFormats>
-                <FormatGroup>
-                    <Format>*</Format>
-                </FormatGroup>  
-            </SupportedFormats>
-            <ForbiddenFormats>
-                <FormatGroup>
-                    <Format MimeType="video/*">*</Format>
-                </FormatGroup>  
-            </ForbiddenFormats>
-            <StorageTimeInfo>
-                <StorageTime AfterLastDownload="1">30</StorageTime>
-            </StorageTimeInfo>
-        </Info>
-        <Actions>
-        </Actions>
-        <Result DownloadUrlTemplate="stub"/>
-    </Server>
     <Server Name="webshare.cz" MaxFileSize="214748364800" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
         <Actions>
         </Actions>

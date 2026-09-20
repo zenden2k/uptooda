@@ -58,7 +58,7 @@ function OnUrlChangedCallback(data) {
         } else {
             local codeToken = CRegExp("code=([^&]+)", "");
             if ( codeToken.match(data.url) ) {
-                code = codeToken.getMatch(1);
+                code = nm.urlDecode(codeToken.getMatch(1));
             }
         }
         br.close();

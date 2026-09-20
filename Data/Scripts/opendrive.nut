@@ -247,7 +247,7 @@ function ModifyFolder(folder) {
     return 1;
 }
 
-function _CreateFile(sessionId, folderId, fileName, fileSize) {
+function _CreateFile(sessionId, folderId, fileName, fileSize, retryOnConflict = false) {
     nm.setUrl(API_BASE_URL + "/upload/create_file.json");
     nm.addPostField("session_id", sessionId);
     nm.addPostField("folder_id", folderId);
@@ -255,6 +255,10 @@ function _CreateFile(sessionId, folderId, fileName, fileSize) {
     nm.addPostField("file_size", fileSize.tostring());
     nm.addPostField("open_if_exists", "0");
     nm.doPost("");
+
+    if (retryOnConflict && nm.responseCode() == 409) {
+        return null;
+    }
 
     if (_CheckResponse("file creation") < 1) {
         return null;
@@ -330,6 +334,7 @@ function UploadFile(FileName, options) {
 
     local task = options.getTask().getFileTask();
     local displayName = task.getDisplayName();
+    local remoteFileName = displayName;
     local folderId = _FolderId(options.getFolderID());
     local fileSize = GetFileSize(FileName);
 
@@ -338,7 +343,14 @@ function UploadFile(FileName, options) {
         return 0;
     }
 
-    local fileInfo = _CreateFile(sessionId, folderId, displayName, fileSize);
+    local fileInfo = _CreateFile(sessionId, folderId, remoteFileName, fileSize, true);
+    if (fileInfo == null && nm.responseCode() == 409) {
+        remoteFileName = GenerateRandomFilename(displayName, 8);
+        WriteLog("warning", "[opendrive.com] A file named '" + displayName
+            + "' already exists. Retrying as '" + remoteFileName + "'.");
+        fileInfo = _CreateFile(sessionId, folderId, remoteFileName, fileSize);
+    }
+
     if (fileInfo == null || !("FileId" in fileInfo)) {
         return 0;
     }
@@ -362,7 +374,7 @@ function UploadFile(FileName, options) {
         local uploaded = 0;
 
         for (local attempt = 0; attempt < 2; attempt++) {
-            if (_UploadChunk(FileName, displayName, sessionId, fileId, tempLocation, offset, currentChunkSize) == 1) {
+            if (_UploadChunk(FileName, remoteFileName, sessionId, fileId, tempLocation, offset, currentChunkSize) == 1) {
                 uploaded = 1;
                 break;
             }

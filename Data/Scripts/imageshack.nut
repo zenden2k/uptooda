@@ -79,7 +79,7 @@ function GetFolderList(list)
 
 function CreateFolder(parentAlbum,album)
 {
-    if ( !DoLogin() ) {
+    if (!DoLogin()) {
         return 0;
     }
 

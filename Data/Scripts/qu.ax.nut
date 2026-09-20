@@ -10,7 +10,7 @@ function UploadFile(FileName, options) {
         local t = ParseJSON(sJSON);
         if (t != null) {
             if ("success" in t && t.success == true) {
-                options.setDirectUrl(t.files[0].url);
+                options.setViewUrl(t.files[0].url);
                 return 1;
             } 
         }
