@@ -43,12 +43,12 @@ function Authenticate() {
     // Step 2: Perform login
     nm.setUrl(BASE_URL + "/myaccount/ASEngine/ASAjax.php");
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
-    nm.addQueryParam("_as_csrf_token", csrfToken);
-    nm.addQueryParam("action", "checkLogin");
-    nm.addQueryParam("username", username);
-    nm.addQueryParam("password", Sha512(password));
-    nm.addQueryParam("id[username]", "login-username");
-    nm.addQueryParam("id[password]", "login-password");
+    nm.addPostField("_as_csrf_token", csrfToken);
+    nm.addPostField("action", "checkLogin");
+    nm.addPostField("username", username);
+    nm.addPostField("password", Sha512(password));
+    nm.addPostField("id[username]", "login-username");
+    nm.addPostField("id[password]", "login-password");
     nm.doPost("");
     
     if (nm.responseCode() != 200) {
@@ -78,14 +78,15 @@ function UploadFile(pathToFile, options) {
     local task = options.getTask().getFileTask();
     
     // Step 1: Upload file to 8upload.com
-    nm.setUrl(BASE_URL + "/upload/sl/");
-    nm.addQueryParamFile("upload", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.setUrl(BASE_URL + "/upload/mt/");
+    nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
+    nm.addPostFieldFile("images[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.doUploadMultipartData();
 
     // Parse JSON response even if response code is not 200
     local uploadResponse = ParseJSON(nm.responseBody());
     
-    if (uploadResponse == "") {
+    if (uploadResponse == "" || uploadResponse == null) {
         _PrintError(null, "Failed to get upload path from response");
         return ResultCode.Failure;
     }
@@ -102,64 +103,40 @@ function UploadFile(pathToFile, options) {
     
     // Step 3: Parse HTML with Gumbo-query to extract links
     local doc = Document(nm.responseBody());
-    
-    // Find the direct link (Hotlink / Direct-Link)
+
     local directUrl = "";
     local viewUrl = "";
     local thumbnailUrl = "";
     local deleteUrl = "";
-    
-    // Extract direct link from input with "Hotlink / Direct-Link" label
-    /*local inputs = doc.find("input[type=text]");
+
+    local inputs = doc.find("input[type=text]");
     local inputsCount = inputs.length();
     
     for (local i = 0; i < inputsCount; i++) {
         local input = inputs.at(i);
         local value = input.attr("value");
         WriteLog("error", value);
-        if (value.find("/image/") != null) {
-            directUrl = value;
-        } else if (value.find("/display/") != null && value.find(".php") != null) {
-            viewUrl = value;
-        } else if (value.find("/thumbnail/") != null) {
-            thumbnailUrl = value;
-        } else if (value.find("/delete/") != null && value.find(".php") != null) {
-            deleteUrl = value;
-        }
-    }*/
-    
-    // Alternative method: extract from BB code and HTML code sections
-    if (directUrl == "") {
-        local reg = CRegExp("(https://8upload\\.com/image/[^\"\\]\\[\\s]+)", "mi");
-        if (reg.match(nm.responseBody())) {
-            directUrl = reg.getMatch(0);
-        }
-    }
-    
-    if (viewUrl == "") {
-        local reg = CRegExp("(https://8upload\\.com/display/[^\"\\]\\[\\s]+\\.php)", "mi");
-        if (reg.match(nm.responseBody())) {
-            viewUrl = reg.getMatch(0);
+        if (value.find("[") == null && value.find("<") == null) {
+            if (value.find("/image/") != null) {
+                directUrl = value;
+            } else if (value.find("/view/") != null) {
+                viewUrl = value;
+            } else if (value.find("/thumbnail/") != null) {
+                thumbnailUrl = value;
+            } else if (value.find("/remove/") != null) {
+                deleteUrl = value;
+            }
+        } else if (thumbnailUrl == "") {
+            local thumbReg = CRegExp("\\[IMG\\](.+?)\\[\\/IMG\\]", "mi");
+            if (thumbReg.match(value)) {
+                thumbnailUrl = thumbReg.getMatch(1);
+            }
         }
     }
-    
-    if (thumbnailUrl == "") {
-        local reg = CRegExp("(https://8upload\\.com/thumbnail/[^\"\\]\\[\\s]+)", "mi");
-        if (reg.match(nm.responseBody())) {
-            thumbnailUrl = reg.getMatch(0);
-        }
-    }
-    
+
     if (directUrl == "") {
         _PrintError(null, "Failed to extract direct URL from response");
         return ResultCode.Failure;
-    }
-
-    if (deleteUrl == "") {
-        local reg = CRegExp("(https://8upload\\.com/delete/[^\"\\]\\[\\s]+\\.php)", "mi");
-        if (reg.match(nm.responseBody())) {
-            deleteUrl = reg.getMatch(0);
-        }
     }
     
     // Set the extracted URLs

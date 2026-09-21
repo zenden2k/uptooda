@@ -256,7 +256,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
                     mi.wID = MENUITEM_SEARCHBYIMG_START + i;
                     mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                     mi.cch = itemText.GetLength();
-                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name, dpi);
+                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name, dpi, true);
 
                     if (mi.hbmpItem) {
                         mi.fMask |= MIIM_BITMAP;
@@ -294,7 +294,7 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     fl.FileName = FileName;
 
     if (virtualFileName.IsEmpty())
-        fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
+        fl.VirtualFileName = WinUtils::DoExtractFileName(FileName);
     else
         fl.VirtualFileName = virtualFileName;
 
@@ -331,7 +331,6 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showUploadButton(false);
     imageEditor.showAddToWizardButton(false);
 
-    /*ImageEditorWindow::DialogResult dr = */
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, settings->ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
 
@@ -410,20 +409,6 @@ BOOL CMainDlg::FileProp(){
         hr = desktop->ParseDisplayName(m_hWnd, 0, const_cast<LPWSTR>(FileName), 0, &newPIdL, 0);
         if (SUCCEEDED(hr)) {
             list.push_back(newPIdL);
-            /*
-            CComPtr<IShellFolder> folder;
-            if (SUCCEEDED(mycomputer->BindToObject(folderPidl, 0, IID_IShellFolder, (void**)&folder))) {
-                //ILAppend()
-                PIDLIST_RELATIVE newPIdL = NULL;
-                ULONG dwAttributes = SFGAO_FILESYSTEM | SHCIDS_ALLFIELDS | SFGAO_HASPROPSHEET;
-                ULONG eaten = 0;
-                CString onlyFileName = WinUtils::myExtractFileName(FileName);
-                hr = folder->ParseDisplayName(m_hWnd, 0, (LPWSTR)(LPCTSTR)onlyFileName, 0, &newPIdL,0);
-                if (SUCCEEDED(hr)) {
-
-
-                }
-            }*/
         }
     }
 
@@ -455,13 +440,13 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    CString EditorCmd = settings->ImageEditorPath;
-    EditorCmd.Replace(_T("%1"), FileName);
-    CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
+    CString editorCmd = settings->ImageEditorPath;
+    editorCmd.Replace(_T("%1"), FileName);
+    CString editorCmdLine = WinUtils::ExpandEnvironmentStrings(editorCmd);
 
-    CCmdLine EditorLine(EditorCmdLine);
-    CString moduleName = EditorLine.ModuleName();
-    CString params = EditorLine.OnlyParams();
+    CCmdLine editorLine(editorCmdLine);
+    CString moduleName = editorLine.ModuleName();
+    CString params = editorLine.OnlyParams();
     SHELLEXECUTEINFO Sei;
     ZeroMemory(&Sei, sizeof(Sei));
     Sei.cbSize = sizeof(Sei);
@@ -485,7 +470,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         if(IsRunning())
         {
             WaitThreadStop.SetEvent();
-            WaitForThread(9999);
+            (void)WaitForThread();
         }
         itemIndexThumbToBeUpdated_ = nCurItem;
         m_EditorProcess = Sei.hProcess;
@@ -753,7 +738,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
             if (!newPath.IsEmpty()) {
                 size_t fileCount = selectedFiles.size();
                 for (size_t i = 0; i < fileCount; i++) {
-                    if (!CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::myExtractFileName(selectedFiles[i]), false)) {
+                    if (!CopyFile(selectedFiles[i], newPath + _T("\\") + WinUtils::DoExtractFileName(selectedFiles[i]), false)) {
                         LOG(ERROR) << TR("Cannot copy file ")<< selectedFiles[i] << "\r\n" << WinUtils::GetLastErrorAsString();
                     }
                 }

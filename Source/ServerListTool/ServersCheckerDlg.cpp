@@ -33,11 +33,9 @@ LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
     DoDataExchange(FALSE);
 
     // set icons
-    icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
+    icon_.LoadIcon(MAKEINTRESOURCE(IDR_MAINFRAME), ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
     SetIcon(icon_, TRUE);
-    iconSmall_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
-        IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
+    iconSmall_ .LoadIcon(MAKEINTRESOURCE(IDR_MAINFRAME),::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
     SetIcon(iconSmall_, FALSE);
     
     listView_.Init();
@@ -50,7 +48,7 @@ LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
     SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
-    serversChecker_->setOnFinishedCallback(std::bind(&CServersCheckerDlg::processFinished, this));
+    serversChecker_->setOnFinishedCallback([this] { processFinished(); });
     return TRUE;
 }
 
@@ -78,8 +76,7 @@ LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM l
         ClientPoint = ScreenPoint;
         ::ScreenToClient(hwnd, &ClientPoint);
     }
-    LV_HITTESTINFO hti;
-    memset(&hti, 0, sizeof(hti));
+    LV_HITTESTINFO hti = {};
     hti.pt = ClientPoint;
     listView_.HitTest(&hti);
 
@@ -114,7 +111,7 @@ void CServersCheckerDlg::validateSettings() {
 
     bool checkUrlShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
     CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
-    if (checkUrlShorteners ){
+    if (checkUrlShorteners){
         if (url.IsEmpty()) {
             throw ValidationException(_T("URL should not be empty!"));
         }
@@ -282,7 +279,7 @@ LRESULT CServersCheckerDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
     return 0;
 }
 
-LRESULT CServersCheckerDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnBnClickedStopButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     serversChecker_->stop();
 

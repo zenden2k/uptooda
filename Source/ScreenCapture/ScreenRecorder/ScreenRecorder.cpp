@@ -6,14 +6,10 @@ ScreenRecorder::ScreenRecorder(std::string outFile, CRect rect):
     
 }
 
-ScreenRecorder::~ScreenRecorder() {
-}
-
 void ScreenRecorder::changeStatus(Status status) {
     status_ = status;
     onStatusChange_(status);
 }
-
 
 bool ScreenRecorder::isRunning() const {
     return isRunning_;

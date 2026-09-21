@@ -2,6 +2,8 @@
 
 #include <ComDef.h>
 
+#include <utility>
+
 #include "Core/UploadEngineList.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -9,9 +11,12 @@
 #include "Gui/Helpers/DPIHelper.h"
 
 WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir)
-    : AbstractServerIconCache(engineList, iconsDir)
+    : AbstractServerIconCache(engineList, std::move(iconsDir))
 {
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
+    engineList->onServerAdded.connect([this](CUploadEngineListBase*, const std::string& name) {
+        onServerAdded(name);
+    });
 }
 
 WinServerIconCache::~WinServerIconCache(){
@@ -24,15 +29,16 @@ WinServerIconCache::~WinServerIconCache(){
     }
 }
 
-WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name, int dpi) {
+WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name, unsigned int dpi, bool smallIcon) {
     std::lock_guard lk(cacheMutex_);
-    auto key = std::make_pair(dpi, name);
+    const int w = DPIHelper::GetSystemMetricsForDpi(smallIcon ? SM_CXSMICON : SM_CXICON, dpi);
+    const int h = DPIHelper::GetSystemMetricsForDpi(smallIcon ? SM_CYSMICON : SM_CYICON, dpi);
+
+    auto key = std::make_pair(w, name);
     const auto iconIt = serverIcons_.find(key);
     if (iconIt != serverIcons_.end()) {
         return iconIt->second;
     }
-
-    CUploadEngineData* ued = engineList_->byName(name);
 
     HICON icon = nullptr;
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
@@ -42,19 +48,16 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
         return {};
     }*/
 
-    const int w = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-    const int h = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
-
     HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
 
     if (FAILED(hr)) {
         if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
             serverIcons_[key] = {};
             return {}; 
-        } else {
+        } /*else {
             _com_error err(hr);
             LOG(WARNING) << "LoadIconWithScaleDown" << std::endl << err.ErrorMessage();
-        }
+        }*/
     }
 
     if (!icon) {
@@ -70,15 +73,15 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
     return item;
 }
 
-NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name, int dpi) {
-     return tryIconLoad(name, dpi).bm;
+NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name, unsigned int dpi, bool smallIcon) {
+    return tryIconLoad(name, dpi, smallIcon).bm;
 }
 
-NativeIcon WinServerIconCache::getIconForServer(const std::string& name, int dpi) {
-    return tryIconLoad(name, dpi).icon;
+NativeIcon WinServerIconCache::getIconForServer(const std::string& name, unsigned int dpi, bool smallIcon) {
+    return tryIconLoad(name, dpi, smallIcon).icon;
 }
 
-NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int dpi) {
+NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, unsigned int dpi) {
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
 
     if (iconFileName.IsEmpty()) {
@@ -92,11 +95,11 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int 
     if (FAILED(hr)) {
         if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
             return {};
-        } else {
+        } /*else {
             _com_error err(hr);
             LOG(WARNING) << "getBigIconForServer() LoadIconWithScaleDown" << std::endl
                          << err.ErrorMessage();
-        }
+        }*/
     }
 
     if (!icon) {
@@ -106,49 +109,74 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int 
     return icon;
 }
 
-void WinServerIconCache::loadIcons(int dpi) {
+void WinServerIconCache::loadIcons(unsigned int dpi, bool smallIcons) {
     std::unique_ptr<CImageList, ImageListDeleter> imageList(new CImageList, ImageListDeleter {});
-    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(smallIcons ? SM_CXSMICON: SM_CXICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(smallIcons ? SM_CYSMICON : SM_CYICON, dpi);
     imageList->Create(iconWidth, iconHeight, ILC_COLOR32, 3, 3);
-    std::vector<int> indexes(engineList_->count(), -1);
+    std::unordered_map<std::string, int> indexes(engineList_->count());
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
-        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi);
-        int iconIndex = imageList->AddIcon(icon);
-        indexes[i] = iconIndex;
+        const CUploadEngineData* ued = engineList_->byIndex(i);
+        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi, smallIcons);
+        [[maybe_unused]] int iconIndex = imageList->AddIcon(icon);
+        indexes[ued->Name] = i;
     }
-    std::lock_guard lk(cacheMutex_);
-    imageLists_[dpi] = { std::move(imageList), std::move(indexes) };
+
+    std::lock_guard lk(imageListsMutex_);
+    imageLists_[std::make_pair(dpi, smallIcons)] = { std::move(imageList), std::move(indexes) };
 }
 
-void WinServerIconCache::preLoadIcons(int dpi) {
+void WinServerIconCache::onServerAdded(const std::string& name) {
+    std::lock_guard lk(imageListsMutex_);
+    for (auto& [k, v] : imageLists_) {
+        const auto dpi = k.first;
+        bool smallIcons = k.second;
+        [[maybe_unused]] auto icon = getIconForServer(name, dpi, smallIcons);
+        int iconIndex = v.first->AddIcon(icon);
+        v.second[name] = iconIndex;
+    }
+}
+
+std::optional<WinServerIconCache::ImageListWithIndexes> WinServerIconCache::getCachedImageList(unsigned int dpi, bool smallIcons /*= true*/) {
+    std::lock_guard lk(cacheMutex_);
+    auto it = imageLists_.find({ dpi, smallIcons });
+    if (it != imageLists_.end()) {
+        /*const std::vector<std::string>& serverNames = it->second.second;
+        std::map<int, int> outIndexes;
+        for (int i = 0; i < serverNames.size(); i++) {
+            int serverIndex = engineList_->getUploadEngineIndex(serverNames[i]);
+            outIndexes[serverIndex] = i;
+        }*/
+        return std::make_pair(it->second.first->m_hImageList, it->second.second);
+    }
+    return {};
+}
+
+void WinServerIconCache::preLoadIcons(unsigned int dpi) {
     if (iconsPreload_) {
         throw std::logic_error("preLoadIcons() should not be called twice");
     }
     iconsPreload_ = true;
 
     future_ = std::async(std::launch::async, [this, dpi]() -> int {
-        loadIcons(dpi);
+        loadIcons(dpi, true);
+        loadIcons(dpi, false);
         return 0;
     });
 }
 
-WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(int dpi) {
-    {
-        std::lock_guard lk(cacheMutex_);
-        auto it = imageLists_.find(dpi);
-        if (it != imageLists_.end()) {
-            return std::make_pair(it->second.first->m_hImageList, it->second.second);
-        }
+WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(unsigned int dpi, bool smallIcons) {
+    auto imageList = getCachedImageList(dpi, smallIcons);
+    if (imageList) {
+        return *imageList;
     }
-    loadIcons(dpi);
-    {
-        std::lock_guard lk(cacheMutex_);
-        auto it = imageLists_.find(dpi);
-        if (it != imageLists_.end()) {
-            return std::make_pair(it->second.first->m_hImageList, it->second.second);
-        }
+  
+    loadIcons(dpi, smallIcons);
+   
+    imageList = getCachedImageList(dpi, smallIcons);
+    if (imageList) {
+        return *imageList;
     }
+    
     return {};
 }

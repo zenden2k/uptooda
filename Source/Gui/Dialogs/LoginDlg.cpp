@@ -47,11 +47,11 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     uploadEngineManager_ = uem;
 
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
-        auto* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
-        if ( plugin_ ) {
-            serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
-            serverSupportsLogout_ = plugin_->supportsLogout();
-            isAuthenticated_ = plugin_->isAuthenticated();
+        auto plugin = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
+        if (plugin) {
+            serverSupportsBeforehandAuthorization_ = plugin->supportsBeforehandAuthorization();
+            serverSupportsLogout_ = plugin->supportsLogout();
+            isAuthenticated_ = plugin->isAuthenticated();
         }
     }
     createNew_ = createNew;
@@ -113,7 +113,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
         signupLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(signupLink_);
-        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(m_UploadEngine->Name));
+        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(CUploadEngineListBase::getServerDisplayName(m_UploadEngine)));
         signupLink_.SetLabel(linkText.c_str());
         signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
         signupLink_.ShowWindow(SW_SHOW);
@@ -241,7 +241,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         using namespace std::placeholders;
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
-        authTask->addTaskFinishedCallback(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
+        authTask->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { authTaskFinishedCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
         auto* uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
         currentTask_ = authTask;
@@ -283,7 +283,8 @@ void CLoginDlg::Accept()
 
         if (!accountName_.IsEmpty()) {
             // If user has changed account's name, delete account with old name
-            Settings.ServersSettings[serverName].erase(oldAccountName);
+            uploadEngineManager_->unloadUploadEngines(serverProfile_.serverName(), serverProfile_.profileName());
+            Settings.deleteProfile(serverName, oldAccountName);
         }
     }
 
@@ -326,7 +327,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
         if (ok) {
             OnProcessFinished();
             ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
-                LocalizedMessageBox(TR("Authenticated succesfully."));
+                LocalizedMessageBox(TR("Authenticated successfully."));
                 Accept();
             });
         }
@@ -338,7 +339,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
         OnProcessFinished();
         if (ok) {
             ServiceLocator::instance()->taskRunner()->runInGuiThread([this, ok] {
-                LocalizedMessageBox(ok ? TR("Logout succesfully.") : TR("Failed to logout."));
+                LocalizedMessageBox(ok ? TR("Logout successfully.") : TR("Failed to logout."));
                 logoutButton_.ShowWindow(SW_HIDE);
                 loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);
             });

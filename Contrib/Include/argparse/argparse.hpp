@@ -1607,7 +1607,7 @@ public:
             }
           })
           .default_value(false)
-          .help("shows help message and exits")
+          .help("show help message and exit")
           .implicit_value(true)
           .nargs(0);
     }
@@ -1620,7 +1620,7 @@ public:
             }
           })
           .default_value(false)
-          .help("prints version information and exits")
+          .help("print version information and exit")
           .implicit_value(true)
           .nargs(0);
     }

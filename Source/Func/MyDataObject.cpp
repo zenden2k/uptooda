@@ -20,6 +20,8 @@
 
 #include "MyDataObject.h"
 
+#include <strsafe.h>
+
 CMyDataObject::CMyDataObject()
 {
     // Reference count must ALWAYS start at 1.
@@ -29,7 +31,7 @@ CMyDataObject::CMyDataObject()
     m_FormatEtc.cfFormat = CF_HDROP;
     m_FormatEtc.dwAspect = DVASPECT_CONTENT;
     m_FormatEtc.lindex = 0;
-    m_FormatEtc.ptd = NULL;
+    m_FormatEtc.ptd = nullptr;
     m_FormatEtc.tymed = TYMED_HGLOBAL;
 
     ZeroMemory(&m_StgMedium, sizeof(m_StgMedium));
@@ -109,24 +111,30 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
 
     // Copy the storage medium data.
     pStgMedium->tymed = m_StgMedium.tymed;
-    pStgMedium->pUnkForRelease = 0;
-    pStgMedium->hGlobal =
-        GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
-
-    DROPFILES *DP = static_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
-    ZeroMemory(DP, sizeof(DROPFILES));
-    DP->fWide = TRUE;
-    DP->pFiles = sizeof(DROPFILES);
-
-    LPTSTR Files = (LPTSTR)((PBYTE)DP+ DP->pFiles);
-    for(size_t i =0; i<m_FileItems.GetCount(); i++)
-    {
-        lstrcpy(Files, m_FileItems[i]);
-        Files += m_FileItems[i].GetLength()+1;
+    pStgMedium->pUnkForRelease = nullptr;
+    pStgMedium->hGlobal = GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR));
+    if (!pStgMedium->hGlobal) {
+        return E_OUTOFMEMORY;
     }
-    *Files=0;
+    auto *dropFiles = static_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
+    if (!dropFiles) {
+        GlobalUnlock(pStgMedium->hGlobal);
+        return E_OUTOFMEMORY;
+    }
+    ZeroMemory(dropFiles, sizeof(DROPFILES));
+    dropFiles->fWide = TRUE;
+    dropFiles->pFiles = sizeof(DROPFILES);
 
-    GlobalUnlock(DP);
+    auto files = reinterpret_cast<LPTSTR>(reinterpret_cast<PBYTE>(dropFiles) + dropFiles->pFiles);
+
+    for(size_t i = 0; i<m_FileItems.GetCount(); i++)
+    {
+        StringCchCopy(files, m_FileItems[i].GetLength() + 1, m_FileItems[i]);
+        files += m_FileItems[i].GetLength() + 1;
+    }
+    *files = '\0';
+
+    GlobalUnlock(dropFiles);
     return S_OK;
 }
 
@@ -143,7 +151,7 @@ HRESULT __stdcall CMyDataObject::QueryGetData(FORMATETC *pFormatEtc)
 HRESULT CMyDataObject::GetCanonicalFormatEtc(FORMATETC *pFormatEct, FORMATETC *pFormatEtcOut)
 {
     // MUST be set to NULL.
-    pFormatEtcOut->ptd = NULL;
+    pFormatEtcOut->ptd = nullptr;
      return E_NOTIMPL;
 }
 

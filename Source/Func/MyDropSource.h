@@ -30,7 +30,7 @@ class CMyDropSource : public IDropSource
 
 public:
     CMyDropSource();
-    virtual ~CMyDropSource();
+    virtual ~CMyDropSource() = default;
 
     // IUnknown members.
     HRESULT __stdcall QueryInterface(REFIID iid,void ** ppvObject) override;

@@ -25,9 +25,12 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <type_traits>
+#include <utility>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
+#include "Core/Settings/StringConvert.h"
 
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)
@@ -40,35 +43,57 @@ class SettingsNodeBase
         virtual ~SettingsNodeBase() = default;
 };
 
-template<class T> std::string myToString(const T& value)
-{
-        std::stringstream str;
-        str << value;
-        return str.str();
-}
+// Проверка: есть ли у типа begin()/end()
+template <typename T, typename = void>
+struct has_begin_end : std::false_type {};
 
-inline std::string myToString(const std::vector<std::string>& value)
+template <typename T>
+struct has_begin_end<T, std::void_t<decltype(std::begin(std::declval<T>()),
+                                              std::end(std::declval<T>()))>>
+    : std::true_type {};
+
+// "Настоящий контейнер" = есть begin/end И это не std::string
+template <typename T>
+struct is_container
+    : std::integral_constant<bool,
+          has_begin_end<T>::value && !std::is_same<std::decay_t<T>, std::string>::value>
+{};
+
+// Перегрузка для контейнеров
+template <typename Container,
+          typename std::enable_if<is_container<Container>::value, int>::type = 0>
+std::string myToString(const Container& value)
 {
     return IuStringUtils::Join(value, ";");
 }
 
-inline void myFromString(const std::string& text, std::vector<std::string>& value) {
+// Перегрузка для всего остального (включая std::string, int, double и т.п.)
+template <typename T,
+          typename std::enable_if<!is_container<T>::value, int>::type = 0>
+std::string myToString(const T& value)
+{
+    std::stringstream str;
+    str << value;
+    return str.str();
+}
+
+// Перегрузка для контейнеров
+template <typename Container,
+          typename std::enable_if<is_container<Container>::value, int>::type = 0>
+void myFromString(const std::string& text, Container& value)
+{
     value.clear();
     IuStringUtils::Split(text, ";", value);
 }
 
-template<class T> void myFromString(const std::string& text, T & value)
+// Перегрузка для всего остального (включая std::string, int, double и т.п.)
+template <typename T,
+          typename std::enable_if<!is_container<T>::value, int>::type = 0>
+void myFromString(const std::string& text, T& value)
 {
-   std::stringstream str(text);
-   str >> value;
+    std::stringstream str(text);
+    str >> value;
 }
-
-template<class T, class T2> void myFromString(const std::string& text, T & value)
-{
-   std::stringstream str(text);
-   str >> value;
-}
-
 
 inline void myFromString(const std::string& text, std::string & value)
 {
@@ -93,36 +118,35 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
             myFromString(text, *value_ );
         }
 
-        virtual ~SettingsNodeVariant() = default;
+        ~SettingsNodeVariant() override = default;
 };
 
 class SettingsNode
 {
     public:
-        SettingsNode();
-        virtual ~SettingsNode();
+        SettingsNode() = default;
+        virtual ~SettingsNode() = default;
         template<class T> void bind(T& var)
         {
-            delete binded_value_;
-            binded_value_ = new SettingsNodeVariant<T>(&var);
+            boundValue_ = std::make_unique<SettingsNodeVariant<T>>(&var);
         }
         SettingsNode& operator[](const std::string&);
         void saveToXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false) const;
         void loadFromXmlNode(SimpleXmlNode parentNode, const std::string& name, bool isRoot = false);
     protected:
-        SettingsNodeBase * binded_value_;
-        std::map<std::string, SettingsNode*> childs_;
+        std::unique_ptr<SettingsNodeBase> boundValue_;
+        std::map<std::string, std::unique_ptr<SettingsNode>> childs_;
         DISALLOW_COPY_AND_ASSIGN(SettingsNode);
 };
 
 class SettingsManager
 {
     public:
-        SettingsManager();
+        SettingsManager() = default;
         SettingsNode& operator[](const std::string&);
         SettingsNode& root();
-        void saveToXmlNode(SimpleXmlNode parentNode) const;
-        void loadFromXmlNode(SimpleXmlNode parentNode);
+        void saveToXmlNode(const SimpleXmlNode& parentNode) const;
+        void loadFromXmlNode(const SimpleXmlNode& parentNode);
     protected:
         SettingsNode root_;
         DISALLOW_COPY_AND_ASSIGN(SettingsManager);

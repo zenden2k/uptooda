@@ -62,7 +62,7 @@ class HtmlElementPrivate {
 
         std::string getAttribute(const std::string& name)
         {
-            if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "class")) {
+            if ( name == "class" || !IuStringUtils::StrCaseInsensitiveCompare(name, "class")) {
                 return getClassName();
             }
             CComVariant res;
@@ -86,7 +86,7 @@ class HtmlElementPrivate {
         }
         void setAttribute(const std::string& name, const std::string& value)
         {
-            if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "name")) {
+            if ( name == "class" || !IuStringUtils::StrCaseInsensitiveCompare(name, "name")) {
                 return setClassName(value);
             }
             elem_->setAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), CComVariant(IuCoreUtils::Utf8ToWstring(value).c_str()));

@@ -28,7 +28,10 @@
 #include <map>
 #include <random>
 #include <unordered_set>
+#include <unordered_map>
 #include <set>
+
+#include <boost/signals2.hpp>
 
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
@@ -109,6 +112,7 @@ struct UploadAction
     std::string PostParams;
     std::string CustomHeaders;
     std::string Type;
+    std::string Body;
    // std::string RegExp;
 
     //std::vector<ActionRegExp> Regexes;
@@ -137,6 +141,7 @@ struct FileFormatGroup {
     int64_t MaxFileSize = 0; // allowed formats
     int64_t MinFileSize = 0; // forbidden formats
     std::unordered_set<std::string> UserTypes;
+    std::set<unsigned int> UserTypeIds;
     std::set<std::string> Extensions;
     int MinUserRank = 0;
     bool acceptsUserType(std::string_view userType) const;
@@ -147,6 +152,7 @@ struct StorageTime {
     int Time = 0; // in days
     bool AfterLastDownload = false;
     std::vector<std::string> UserTypes;
+    std::set<unsigned int> UserTypeIds;
     int MinUserRank = 0;
 };
     /**
@@ -208,8 +214,9 @@ class CUploadEngineData
     public:
         enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16, TypeVideoServer = 32};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
-
+        inline static constexpr int MAX_FILE_SIZE_UNLIMITED = -1;
         std::string Name;
+        std::string DisplayName;
         std::string PluginName;
         bool SupportsFolders;
         bool UsingPlugin;
@@ -237,12 +244,14 @@ class CUploadEngineData
         int MaxThreads;
         bool UploadToTempServer;
         int TypeMask;
+        std::vector<std::string> userTypes = {std::string(UserTypes::ANONYMOUS)};
         bool hasType(ServerType type) const;
         bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, std::string_view userType) const;
         std::set<std::string> getSupportedExtensions() const;
         CUploadEngineData();
-
+        int addUserType(const std::string_view& name);
         static ServerType ServerTypeFromString(const std::string& serverType);
+        std::set<unsigned int> getUserTypesIds() const;
 };
 /**
 UploadParams class
@@ -382,9 +391,9 @@ class CUploadEngineListBase
 public:
     CUploadEngineListBase();
     virtual ~CUploadEngineListBase() = default;
-    CUploadEngineData* byIndex(size_t index);
-    CUploadEngineData* byName(const std::string& name);
-    CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
+    const CUploadEngineData* byIndex(size_t index) const;
+    const CUploadEngineData* byName(const std::string& name) const;
+    const CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type) const;
     void removeServer(const std::string& name);
     int count() const;
     int getRandomImageServer();
@@ -393,8 +402,11 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
-    static std::vector<std::string> builtInScripts();
-    std::string getServerDisplayName(const CUploadEngineData* data) const;
+
+    boost::signals2::signal<void(CUploadEngineListBase*, const std::string&)> onServerAdded;
+
+    static std::vector<std::string_view> builtInScripts();
+    static std::string getServerDisplayName(const CUploadEngineData* data);
 
     inline static constexpr std::string_view CORE_SCRIPT_FTP = "ftp";
     inline static constexpr std::string_view CORE_SCRIPT_SFTP = "sftp";
@@ -402,11 +414,14 @@ public:
     inline static constexpr std::string_view CORE_SCRIPT_DIRECTORY = "directory";
 
     inline static constexpr int ALL_SERVERS = 0xffffffff;
+    inline static std::vector<std::string_view> BUILTIN_SCRIPTS = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
 
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;
     std::mt19937 mt_;
+    std::unordered_map<std::string, size_t> serverNameToIndex_;
+
 private:
     DISALLOW_COPY_AND_ASSIGN(CUploadEngineListBase);
 };
@@ -419,20 +434,20 @@ class CAbstractUploadEngine
     public:
         typedef std::function<void(const ErrorInfo&)> ErrorMessageCallback;
 
-        CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
+        CAbstractUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback);
         virtual ~CAbstractUploadEngine();
         virtual int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
         ServerSettingsStruct * serverSettings() const;
         virtual int RetryLimit()=0;
         virtual void setNetworkClient(INetworkClient* nm);
-        void setUploadData(CUploadEngineData* data);
-        void setServerSync(ServerSync* sync);
+        void setUploadData(const CUploadEngineData* data);
+        void setServerSync(std::shared_ptr<ServerSync> sync);
         void setCurrentUploader(CUploader *uploader);
         CUploader * currentUploader() const;
         virtual void stop();
-        ServerSync* serverSync() const;
-        CUploadEngineData* getUploadData() const;
+        std::shared_ptr<ServerSync> serverSync() const;
+        const CUploadEngineData* getUploadData() const;
         // Events
         void setOnNeedStopCallback(std::function<bool()> cb);
         void setOnProgressCallback(std::function<void(InfoProgress)> cb);
@@ -443,11 +458,11 @@ class CAbstractUploadEngine
     protected:
         bool m_bShouldStop;
         INetworkClient * m_NetworkClient;
-        CUploadEngineData * m_UploadData;
+        const CUploadEngineData * m_UploadData;
         CUploader * currUploader_;
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;
-        ServerSync* serverSync_;
+        std::shared_ptr<ServerSync> serverSync_;
         ErrorMessageCallback onErrorMessage_;
 
         std::function<bool()> onNeedStop_;

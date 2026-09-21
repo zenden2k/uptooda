@@ -12,9 +12,9 @@ public:
     inline static auto H264_CODEC_ID = "h264_nvenc";
     inline static auto HEVC_CODEC_ID = "hevc_nvenc";
 
-    NvencVideoCodec(std::string name, std::string fFmpegCodecName, std::string description)
+    NvencVideoCodec(std::string name, std::string ffmpegCodecName, std::string description)
         : FFmpegVideoCodec(std::move(name), "mp4", std::move(description), true, false),
-        ffmpegCodecName_(std::move(fFmpegCodecName))
+        ffmpegCodecName_(std::move(ffmpegCodecName))
     {
     }
 

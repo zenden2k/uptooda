@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_SKIP_RPATH 1)   
-project(Uptooda)	
+project(Uptooda)
 
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL ON CACHE BOOL "Use OpenSSL library for secured connections")
@@ -125,7 +125,7 @@ if (WIN32)
 endif()
 
 if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601 -D_DISABLE_STL_ANNOTATION)
     #add_compile_options(/bigobj)
     if (IU_ENABLE_ASAN)
         add_definitions(-D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION)
@@ -141,37 +141,10 @@ if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)
 endif()
 
-
 if (IU_ENABLE_WEBVIEW2)
     string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
 endif()
 
-	
-if (IU_ENABLE_MEGANZ)
-	list(APPEND COMMON_DEPS 
-	    megaio/3.5.2@zenden2k/stable 
-	    cryptopp/8.7.0  
-	    c-ares/1.17.2
-		libuv/1.42.0
-    )
-	if (NOT IU_ENABLE_MEDIAINFO)
-		list(APPEND ADDITIONAL_OPTIONS 
-			megaio:UseMediainfo=False
-		)
-	endif()
-	#list(APPEND ADDITIONAL_OPTIONS 
-	#		megaio:UseCryptopp=False
-	#)
-	
-	#if (WIN32 AND IU_ARCH STREQUAL "armv8")
-	#	list(APPEND ADDITIONAL_OPTIONS 
-	#		megaio:UseOpenSsl=False
-	#		megaio:UseCurl=True
-	#		megaio:UseCurlSchannel=True
-	#		megaio:UseMediainfo=False
-	#	)
-	#endif()
-endif()
 
 if (IU_ENABLE_SFTP) 
 	add_definitions(-DIU_ENABLE_SFTP)					
@@ -255,7 +228,9 @@ if(IU_ENABLE_MEGANZ)
 endif()	
 find_package(gumbo-parser REQUIRED) 
 find_package(GTest REQUIRED)
-find_package(squirrel COMPONENTS sqstdlib REQUIRED) 
+find_package(squirrel COMPONENTS sqstdlib REQUIRED)
+find_package(xxHash REQUIRED)
+
 if(WIN32)
 	find_package(base-classes REQUIRED)
     find_package(libheif REQUIRED)
@@ -329,4 +304,4 @@ if(IU_BUILD_QIMAGEUPLOADER)
 	add_subdirectory(qimageuploader)	
 endif()	
 #enable_testing() 
-add_subdirectory(Tests)	
+add_subdirectory(Tests)

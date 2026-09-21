@@ -11,7 +11,7 @@ class CServerCheckerListView :
     public CWindowImpl<CServerCheckerListView, CListViewCtrl> {
 public:
     CServerCheckerListView(ServersCheckerModel* model);
-    ~CServerCheckerListView();
+
     DECLARE_WND_SUPERCLASS(_T("CServerListView"), CListViewCtrl::GetWndClassName())
 
     BEGIN_MSG_MAP(CServerCheckerListView)

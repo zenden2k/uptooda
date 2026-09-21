@@ -29,7 +29,7 @@
 
 #include "atlheaders.h"
 #include "Func/MyEngineList.h"
-#include "HotkeySettings.h"
+#include "HotkeySettingsPage.h"
 #include "ScreenCapture/ScreenCaptureWin.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/UpdateDlg.h"
@@ -72,6 +72,8 @@ class CFloatingWindow;
 class WinServerIconCache;
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
 class CNetworkDebugDlg;
+class IconBitmapUtils;
+
 #endif
 
 class CWizardDlg :
@@ -83,7 +85,7 @@ class CWizardDlg :
 {
 public:
     enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER, IDM_NETWORKDEBUGGER };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER, IDM_NETWORKDEBUGGER, IDM_VIEWHISTORY };
     enum { kNewFilesTimer = 1 };
     static constexpr WPARAM kWmMyExitParam = 5;
 
@@ -141,6 +143,8 @@ public:
         NOTIFY_HANDLER(IDC_HELPBUTTON, BCN_DROPDOWN, OnBnDropdownHelpButton)
         COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentation)
         COMMAND_ID_HANDLER(IDC_SHOWLOG, OnShowLog)
+        COMMAND_ID_HANDLER(IDC_SETTINGS, OnShowSettings)
+        COMMAND_ID_HANDLER(IDM_VIEWHISTORY, OnShowHistory)
         REFLECT_NOTIFICATIONS()
 
     END_MSG_MAP()
@@ -176,6 +180,8 @@ public:
     LRESULT OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 #endif
     LRESULT OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnShowSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
@@ -232,6 +238,7 @@ public:
     bool funcAddFolder();
     //bool funcPaste();
     bool funcSettings();
+    bool funcHistory();
 #ifdef IU_ENABLE_MEDIAINFO
     bool funcMediaInfo();
 #endif
@@ -247,8 +254,8 @@ public:
     bool executeFunc(CString funcName, bool fromCmdLine = false);
     void executeFuncLater(CString funcName);
     bool importVideoFile(const CString& fileName, int prevPage = 0);
-    bool queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
-    bool HandleDropFiledescriptors(IDataObject *pDataObj);
+    bool queryDropFileDescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
+    bool HandleDropFileDescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);
     void setIsFirstRun(bool isFirstRun);
@@ -273,7 +280,7 @@ public:
         /* [in] */ POINTL pt,
         /* [out][in] */ DWORD *pdwEffect) override;
 
-    STDMETHODIMP DragLeave(void) override;
+    STDMETHODIMP DragLeave() override;
     STDMETHODIMP Drop(
         /* [unique][in] */ IDataObject *pDataObj,
         /* [in] */ DWORD grfKeyState,
@@ -293,7 +300,7 @@ public:
     void showLogWindowForFileName(CString fileName);
     bool hasLastScreenshotRegion() const;
     void setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreenshotRegion> region, HMONITOR monitor);
-    void addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb);
+    void addLastRegionAvailabilityChangeCallback(const std::function<void(bool)>& cb);
     bool getQuickUploadMarker() const;
     void setQuickUploadMarker(bool val);
     CString getLastVideoFile() const;
@@ -301,8 +308,8 @@ public:
     bool isShowWindowSet() const;
     void beginAddFiles();
     void endAddFiles();
-    void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath);
-    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer);
+    void showNotificationAfterScreenshot(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath, bool saved, bool copied);
+    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer, ImageUploadParams defaultImageUploadParams);
     void showHelpButtonMenu(HWND control);
     bool isScreenRecorderRunning() const;
     void stopScreenRecording();
@@ -371,6 +378,8 @@ protected:
     ScreenRecordingRuntimeParams screenRecordingParams_;
     boost::weak_ptr<ScreenRecorderWindow> screenRecorderWindow_;
     std::unique_ptr<CHistoryManager> historyManager_;
+    CBitmap settingsBitmap_, historyBitmap_, helpBitmap_;
+    std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
 };
 
 

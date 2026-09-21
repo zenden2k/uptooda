@@ -42,7 +42,7 @@ CEncodedPassword::operator const wchar_t*() {
 
 #ifdef _WIN32
 CEncodedPassword& CEncodedPassword::operator=(const CString& text) {
-    data_ = IuCoreUtils::WstringToUtf8((LPCTSTR)text);
+    data_ = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(text));
     return *this;
 }
 #endif
@@ -81,7 +81,7 @@ void CEncodedPassword::EncodeString(const std::string& plainText, std::string& R
     int n = szSource.length() * 2;
     int j = 0;
 
-    uint8_t* data = (uint8_t*)&szSource[0];
+    auto* data = reinterpret_cast<uint8_t*>(&szSource[0]);
     *szDestination = 0;
     for (int i = 0; i < n; i++) {
         if (j >= br)

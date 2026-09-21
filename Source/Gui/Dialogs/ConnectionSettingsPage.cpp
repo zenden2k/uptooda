@@ -8,16 +8,6 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-// CConnectionSettingsPage
-CConnectionSettingsPage::CConnectionSettingsPage()
-{
-        
-}
-
-CConnectionSettingsPage::~CConnectionSettingsPage()
-{
-}
-
 void CConnectionSettingsPage::TranslateUI()
 {
     TRC(IDC_CONNECTIONSETTINGS, "Connection settings");
@@ -205,7 +195,7 @@ void CConnectionSettingsPage::proxyRadioChanged() {
 }
 
 void CConnectionSettingsPage::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     if (externalLink_) {
@@ -214,15 +204,6 @@ void CConnectionSettingsPage::createResources() {
     externalLink_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEXTERNALLINK), iconWidth, iconHeight);
 }
 
-void CConnectionSettingsPage::CheckBounds(int controlId, int minValue, int maxValue, int labelId) const {
-    int value = GetDlgItemInt(controlId);
-    if (value < minValue || value > maxValue) {
-        CString fieldName = labelId != -1 ? GuiTools::GetDlgItemText(m_hWnd, labelId) : _T("Unknown field");
-        CString message;
-        message.Format(TR("Error in the field '%s': value should be between %d and %d."), static_cast<LPCTSTR>(fieldName), minValue, maxValue);
-        throw ValidationException(message, GetDlgItem(controlId));
-    }
-}
 
 LRESULT CConnectionSettingsPage::OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     if (IsWindows10OrGreater() && WinUtils::ShellOpenFileOrUrl(_T("ms-settings:network-proxy"), m_hWnd)) {

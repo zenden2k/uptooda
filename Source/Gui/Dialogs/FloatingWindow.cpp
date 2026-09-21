@@ -113,6 +113,7 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     regionScreenshotBitmap_ = loadSmallIconBitmap(IDI_ICONREGION);
     addFilesBitmap_ = loadSmallIconBitmap(IDI_ICONADD);
     settingsBitmap_ = loadSmallIconBitmap(IDI_ICONSETTINGS);
+    historyBitmap_ = loadSmallIconBitmap(IDI_ICONHISTORY);
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -123,7 +124,7 @@ CFloatingWindow::~CFloatingWindow()
     m_hWnd = 0;
 }
 
-LRESULT CFloatingWindow::OnClose(void)
+LRESULT CFloatingWindow::OnClose()
 {
     return 0;
 }
@@ -144,9 +145,9 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     RegisterHotkeys();
 
-    auto trayIconGUID = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
+    trayIconGuid_ = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
     //LOG(ERROR) << WinUtils::GUIDToString(*trayIconGUID);
-    if (!InstallIcon(APP_NAME, m_hIconSmall, NULL, trayIconGUID ? &trayIconGUID.value() : nullptr)) {
+    if (!InstallIcon(APP_NAME, m_hIconSmall, NULL, trayIconGuid_ ? &trayIconGuid_.value() : nullptr)) {
         LOG(WARNING) << "Failed to create tray icon!";
     }
     NOTIFYICONDATA nid;
@@ -154,9 +155,9 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
     nid.cbSize = NOTIFYICONDATA_V2_SIZE;
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION;
-    if (trayIconGUID) {
+    if (trayIconGuid_) {
         nid.uFlags = NIF_GUID;
-        nid.guidItem = *trayIconGUID;
+        nid.guidItem = *trayIconGuid_;
     }
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
 
@@ -271,6 +272,11 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
     return 0;
 }
 
+LRESULT CFloatingWindow::OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("history"));
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     ShowWindow(SW_HIDE);
@@ -343,8 +349,8 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
     if (m_bIsUploading) {
         return 0;
     }
-    if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
 
+    if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
         auto bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (bmp) {
@@ -355,7 +361,7 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             if (bm.GetLastStatus() == Gdiplus::Ok) {
                 try {
                     if (ImageUtils::MySaveImage(&bm, _T("clipboard"), filePath, ImageUtils::sifPNG, 100)) {
-                        CString fileName = WinUtils::myExtractFileName(filePath);
+                        CString fileName = WinUtils::DoExtractFileName(filePath);
                         UploadScreenshot(filePath, fileName);
                     }
                 }
@@ -368,13 +374,12 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
         return 0;
     }
 
-
     if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
         CString url;
         WinUtils::GetClipboardText(url);
         CString outFileName;
-        if (ImageUtils::SaveImageFromCliboardDataUriFormat(url, outFileName)) {
-            CString fileName = WinUtils::myExtractFileName(outFileName);
+        if (ImageUtils::SaveImageFromClipboardDataUriFormat(url, outFileName)) {
+            CString fileName = WinUtils::DoExtractFileName(outFileName);
             UploadScreenshot(outFileName, fileName);
             return true;
         }
@@ -384,11 +389,10 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             const auto& downloadedFilesList = dlg.getDownloadedFiles();
             if (!downloadedFilesList.empty()) {
                 CString filePath = downloadedFilesList[0];
-                CString fileName = WinUtils::myExtractFileName(filePath);
+                CString fileName = WinUtils::DoExtractFileName(filePath);
                 UploadScreenshot(filePath, fileName);
             }
             return true;
-
         }
     }
 
@@ -661,6 +665,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings", TR("Settings") + CString(_T("..."))), settingsBitmap_);
+        MyInsertMenu(TrayMenu, i++, IDM_HISTORY, HotkeyToString("history", TR("History")), historyBitmap_);
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         TrayMenu.EnableMenuItem(IDM_EXIT, MF_BYCOMMAND | (canExitApp() ? MF_ENABLED : MF_DISABLED));
@@ -703,7 +708,6 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
 
     return 0;
 }
-
 
 void CFloatingWindow::CreateTrayIcon()
 {
@@ -808,7 +812,7 @@ LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    InstallIcon(APP_NAME, m_hIconSmall, 0);
+    InstallIcon(APP_NAME, m_hIconSmall, 0, trayIconGuid_ ? &trayIconGuid_.value() : nullptr);
     return 0;
 }
 
@@ -870,17 +874,16 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     m_bIsUploading = true;
     uploadManager_->addSession(currentUploadSession_);
 
-    CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
-    msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
-        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName()).c_str()));
+    const std::wstring serverName = IuCoreUtils::Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName());
+    const std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Uploading file \"%1%\" to server \"%2%\"...")) % onlyFileName.GetString() % serverName);
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {
-        ShowBaloonTip(msg, TR("Uploading screenshot"), 6000);
+        ShowBaloonTip(msg.c_str(), TR("Uploading screenshot"), 6000);
     }
 
-    setStatusText(msg);
+    setStatusText(msg.c_str());
     startIconAnimation();
 }
 
@@ -954,7 +957,6 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             bool usedDirectLink = true;
             WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
             if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
-
                 url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened : uploadResult->directUrl).c_str();
             } else if ((!Settings.UseDirectLinks || uploadResult->directUrl.empty()) && !uploadResult->downloadUrl.empty()) {
                 url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
@@ -995,9 +997,9 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         message = TR("(the link has been copied to the clipboard)");
         code = url;
     } else if (settings->TrayResult == WtlGuiSettings::trLastCodeType) {
-        GeneratorID generatorId = static_cast<GeneratorID>(settings->CodeLang);
+        auto generatorId = static_cast<GeneratorID>(settings->CodeLang);
         //CodeLang lang = clBBCode;
-        CodeType codeType = static_cast<CodeType>(settings->CodeType);
+        auto codeType = static_cast<CodeType>(settings->CodeType);
         OutputGeneratorFactory factory;
         std::vector<UploadObject> objects { *obj };
         auto generator = factory.createOutputGenerator(generatorId, codeType);
@@ -1028,13 +1030,12 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
     lastUploadedItem_ = std::move(obj);
 }
 
-void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
-    CString statusText = TR("Screenshot has been copied to clipboard.");
-    ShowBaloonTip(statusText, APP_NAME, 17000);
-    setStatusText(statusText, kStatusHideTimeout);
+void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage(CString message) {
+    ShowBaloonTip(message, APP_NAME, 17000);
+    setStatusText(message, kStatusHideTimeout);
 }
 
-bool CFloatingWindow::canExitApp() {
+bool CFloatingWindow::canExitApp() const {
     return !m_bIsUploading && wizardDlg_->canExitApp();
 }
 

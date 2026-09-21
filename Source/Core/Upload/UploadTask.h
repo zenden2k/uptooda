@@ -78,7 +78,7 @@ class UploadTask {
         UploadSession* session() const;
         bool isFinished();
         bool isFinishedItself();
-        virtual void finishTask(Status status = StatusFinished);
+        virtual void finishTask(Status status);
         virtual int retryLimit();
         //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         void addChildTask(std::shared_ptr<UploadTask> child);
@@ -98,15 +98,15 @@ class UploadTask {
             return onChildTaskAdded_.connect(std::forward<F>(f));
         }
 
-        void setOnUploadProgressCallback(std::function<void(UploadTask*)> cb);
-        void setOnStatusChangedCallback(std::function<void(UploadTask*)> cb);
-        void setOnFolderUsedCallback(std::function<void(UploadTask*)> cb);
+        void setOnUploadProgressCallback(const std::function<void(UploadTask*)>& cb);
+        void setOnStatusChangedCallback(const std::function<void(UploadTask*)>& cb);
+        void setOnFolderUsedCallback(const std::function<void(UploadTask*)>& cb);
 
         std::string serverName() const;
         ServerProfile& serverProfile();
-        void setServerProfile(ServerProfile profile);
+        void setServerProfile(const ServerProfile& profile);
         ServerProfile& urlShorteningServer();
-        void setUrlShorteningServer(ServerProfile profile);
+        void setUrlShorteningServer(const ServerProfile& profile);
         void setUserData(void* data);
         void* userData() const;
         bool uploadSuccess(bool withChilds = true);
@@ -145,13 +145,13 @@ class UploadTask {
         UploadProgress progress_;
         ServerProfile serverProfile_;
         ServerProfile urlShorteningProfile_;
-        CAbstractUploadEngine* currentUploadEngine_;
+        std::shared_ptr<CAbstractUploadEngine> currentUploadEngine_;
         void* userData_;
         void init();
         void childTaskFinished(UploadTask* child);
         void taskFinished();
         void statusChanged();
-        void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
+        void setCurrentUploadEngine(std::shared_ptr<CAbstractUploadEngine> currentUploadEngine);
         UploadSession* session_;
         std::recursive_mutex tasksMutex_;
         std::mutex finishMutex_;

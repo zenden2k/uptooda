@@ -36,7 +36,7 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
 {
     public:
         int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) final override;
-        CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
+        CAdvancedUploadEngine(std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
         ~CAdvancedUploadEngine() override;
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);

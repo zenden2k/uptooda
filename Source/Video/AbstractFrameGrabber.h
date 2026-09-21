@@ -15,7 +15,7 @@ public:
         std::string codecName;
     };
     AbstractFrameGrabber() = default;
-    virtual ~AbstractFrameGrabber();
+    virtual ~AbstractFrameGrabber() = default;
 
     /**
      * @throws FrameGrabberException
@@ -39,4 +39,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(AbstractFrameGrabber);
 };
 
-#endif // ABSTRACTVIDEOGRABBER_H
+#endif // ABSTRACTFRAMEGRABBER_H

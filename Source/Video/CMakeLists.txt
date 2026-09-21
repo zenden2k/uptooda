@@ -1,7 +1,6 @@
 set(SRC_LIST    
     VideoGrabber.cpp
-    FrameGrabberException.cpp
-    AbstractFrameGrabber.cpp
+        AbstractFrameGrabber.cpp
     AbstractVideoFrame.cpp
 )
 

@@ -16,6 +16,9 @@
 #include "Core/Utils/CoreTypes.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/SearchByImage.h"
+#include "Func/IuCommonFunctions.h"
+
+class UploadEngineManager;
 
 namespace ImageEditor {
 
@@ -34,7 +37,9 @@ public:
         ID_UPLOAD,
         ID_SHARE,
         ID_SAVE,
+        ID_SAVE_ALT,
         ID_SAVEAS,
+        ID_SAVEAS_ALT,
         ID_COPYBITMAPTOCLIBOARD,
         ID_COPYBITMAPTOCLIBOARD_ALT,
         ID_COPYBITMAPTOCLIBOARDASDATAURI,
@@ -78,7 +83,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen, drContinue
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopyToClipboard, drPrintRequested, drSearch, drRecordScreen, drContinue
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -87,21 +92,18 @@ public:
 
     CImageEditorView m_view;
 
-    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/, bool onlySelectRegion = false);
+    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider /* = 0*/, UploadEngineManager* uploadEngineManager, bool onlySelectRegion = false);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
     ~ImageEditorWindow() override;
     void setInitialDrawingTool(DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
-    void setSuggestedFileName(CString fileName);
+    void setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData);
     std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap() const;
     Gdiplus::Rect lastAppliedCrop() const;
     CRect getSelectedRect() const;
-    /**
-     * Set server name which is being displayed on upload button
-     */
-    void setServerDisplayName(const CString & serverName);
     void setAskBeforeClose(bool ask);
+    CString outFileName() const;
 
     DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto, bool forceShowParent = false);
 
@@ -118,15 +120,17 @@ public:
         //MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER( WM_ACTIVATEAPP, OnActivateApp )
         MESSAGE_HANDLER( WM_GETMINMAXINFO, OnGetMinMaxInfo )
-        MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
+        MESSAGE_HANDLER( MTBM_DROPDOWNMOUSEDOWN, OnDropDownMouseDown )
+        MESSAGE_HANDLER(MTBM_DROPDOWNCLICKED, OnDropDownClicked)
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
         MESSAGE_HANDLER(MTBM_INVERTSELECTIONCHANGE, OnInvertSelectionChange)
+        MESSAGE_HANDLER(MTBM_DRAWBORDERCHANGE, OnDrawBorderChange)
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
-        MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
+        MESSAGE_HANDLER(TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
         MESSAGE_HANDLER(WM_DPICHANGED, OnDPICHanged)
 
         COMMAND_ID_HANDLER(IDOK, OnClickedOK)
@@ -139,6 +143,7 @@ public:
         COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )
         COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )
         COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )
+        COMMAND_ID_HANDLER( ID_SAVE_ALT, OnClickedSave )
         COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD_ALT, OnClickedCopyToClipboard )
@@ -185,6 +190,7 @@ public:
         LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnActivateApp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnDPICHanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnDropDownMouseDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnMenuItemClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -222,6 +228,7 @@ public:
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -230,6 +237,7 @@ public:
         std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;
         std::unordered_map<DrawingToolHotkey, int> drawingToolsHotkeys_;
+        UploadEngineManager* uploadEngineManager_;
         DialogResult dialogResult_;
         WindowDisplayMode displayMode_;
         DrawingToolType initialDrawingTool_;
@@ -237,8 +245,7 @@ public:
         bool showUploadButton_;
         bool showAddToWizardButton_;
         bool askBeforeClose_;
-        CString suggestedFileName_;
-        CString serverDisplayName_;
+        std::string serverDisplayName_;
         int prevPenSize_;
         int prevRoundingRadius_;
         float prevBlurRadius_;
@@ -260,6 +267,7 @@ public:
         CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
         CRect selectedRect_;
         bool onlySelectRegion_ = false;
+        IuCommonFunctions::ScreenshotData screenshotData_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);
@@ -282,15 +290,15 @@ public:
         void onFontChanged(LOGFONT font);
         bool createTooltip();
         void updatePixelLabels();
-        bool OnSaveAs();
+        bool onSaveAs(bool closeFlag);
         void saveSettings();
         bool copyBitmapToClipboard(ClipboardFormat format = ClipboardFormat::None, bool closeFlag = true);
         BOOL PreTranslateMessage(MSG* pMsg) override;
-        bool OnClickedSave();
+        bool onSave(bool closeFlag);
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
-        void showApplyButtons();
+        void updateApplyButtons();
 
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible
@@ -300,8 +308,12 @@ public:
         void showMoreActionsDropdownMenu(Toolbar::Item* item);
         void createIcons();
 
-        bool checkCloseWindowAfterAction();
-        bool canCloseAfterAction();
+        bool checkCloseWindowAfterAction() const;
+        bool canCloseAfterAction() const;
+
+        std::string getUploadButtonText() const;
+        bool wasOpenedAfterScreenshot() const;
+        CString makeFileName() const;
 };
 
 class ConfigurationProvider {
@@ -373,6 +385,9 @@ public:
         return closeWindowAfterActionInFullScreen_;
     }
 
+	bool getDrawBorder() const { return drawBorder_; }
+    void setDrawBorder(bool val) { drawBorder_ = val; }
+
 protected:
     Gdiplus::Color foregroundColor_, backgroundColor_,
         stepForegroundColor_, stepBackgroundColor_;
@@ -386,6 +401,7 @@ protected:
     ServerProfile searchEngine_;
     bool fillTextBackground_;
     bool invertSelection_;
+    bool drawBorder_ = true;
 };
 
 }

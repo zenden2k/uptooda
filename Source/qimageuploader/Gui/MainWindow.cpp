@@ -25,7 +25,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Scripting/ScriptsManager.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/QtGuiSettings.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "ResultsWindow.h"
@@ -50,9 +50,9 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadErrorHandler = serviceLocator->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
+    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(), uploadErrorHandler,
                                        networkClientFactory, settings, 3);
-    std::string dataDirectory = AppParams::instance()->dataDirectory();
+    std::string dataDirectory = AppRuntimeInfo::instance()->dataDirectory();
     std::string iconsDir = dataDirectory + "Favicons/";
     serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);
     serviceLocator->setServerIconCache(serverIconCache_.get());
@@ -83,7 +83,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->treeView->addAction(copyDirectLinkAction_);
     ui->treeView->addAction(copyFilePathAction_);
 
-    const ServerProfile imageProfile = settings->imageServer.getByIndex(0);
+    const ServerProfile& imageProfile = settings->imageServer.getByIndex(0);
 
     imageServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
     imageServerWidget_->setTitle(tr("Server for images:"));
@@ -94,7 +94,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     fileServerWidget_->setServersMask(ServerSelectorWidget::smFileServers);
     fileServerWidget_->updateServerList();
 
-    const ServerProfile fileServerProfile = settings->fileServer.getByIndex(0);
+    const ServerProfile& fileServerProfile = settings->fileServer.getByIndex(0);
     fileServerWidget_->setServerProfile(fileServerProfile);
     ui->verticalLayout->insertWidget(2, fileServerWidget_);
 
@@ -199,7 +199,7 @@ void MainWindow::on_actionScreenshot_triggered() {
     }
 
     QPixmap* screen = eng.capturedBitmap(); //QPixmap::grabWindow(QApplication::desktop()->winId());
-    QTemporaryFile f(U2Q(AppParams::instance()->tempDirectory()) + "/screenshot_XXXXXX.png");
+    QTemporaryFile f(U2Q(AppRuntimeInfo::instance()->tempDirectory()) + "/screenshot_XXXXXX.png");
     f.setAutoRemove(false);
     QString uniqueFileName;
     if (f.open()) {

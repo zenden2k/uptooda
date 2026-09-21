@@ -26,11 +26,11 @@ limitations under the License.
 LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
-    int iItemIndex = lpdis->itemID;
+    int iItemIndex = static_cast<int>(lpdis->itemID);
     CDCHandle dc(lpdis->hDC);
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
-    TCHAR buf[256]=_T("");
-    GetText(iItemIndex, buf);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    CString itemText;
+    GetText(iItemIndex, itemText);
     dc.SetBkMode(TRANSPARENT);
     if(lpdis->itemState & ODS_SELECTED )
     {
@@ -107,7 +107,7 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     }
 
     COLORREF oldColor = dc.SetTextColor(GetSysColor((lpdis->itemState & ODS_SELECTED)? COLOR_HIGHLIGHTTEXT: COLOR_WINDOWTEXT));
-    dc.DrawText(buf, lstrlen(buf), &lpdis->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+    dc.DrawText(itemText, itemText.GetLength(), &lpdis->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
     dc.SetTextColor(oldColor);
     return 0;
 }
@@ -133,7 +133,7 @@ LRESULT CTabListBox::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 void CTabListBox::init() {
     CClientDC dc(m_hWnd);
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     CString buf;
     int res = GetText(0, buf);
     if (res <= 0) {

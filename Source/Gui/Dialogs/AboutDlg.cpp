@@ -32,7 +32,7 @@
 #ifdef IU_ENABLE_MEGANZ
 #include <mega/version.h>
 #endif
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
 #endif
@@ -53,7 +53,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
-    auto* ver = AppParams::instance()->GetAppVersion();
+    auto* ver = AppRuntimeInfo::instance()->GetAppVersion();
     auto* translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
@@ -65,7 +65,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
     m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_ReportBugLink.SetLabel(TR("Found a bug? Send a bug report to the author."));
-    m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
+    m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/uptooda/issues"));
 
     iconsByIcons8Link.SubclassWindow(GetDlgItem(IDC_ICONSBYLABEL));
     iconsByIcons8Link.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
@@ -74,7 +74,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_CommitHashLink.SubclassWindow(GetDlgItem(IDC_COMMITHASH));
     m_CommitHashLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_CommitHashLink.SetLabel(CString(ver->CommitHashShort.c_str()));
-    m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/image-uploader/commit/" + ver->CommitHash).c_str()));
+    m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/uptooda/commit/" + ver->CommitHash).c_str()));
 
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
@@ -163,8 +163,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     CString targetPlatform = BOOST_PLATFORM;
     targetPlatform += _T(" ");
-#if defined(_M_ARM64) || defined(_M_ARM)
-    targetPlatform += "ARM";
+#if defined(_M_ARM64)
+    targetPlatform += "ARM64";
 #endif
     targetPlatform += _T(" \u200E(");
     targetPlatform += WinUtils::IntToStr(sizeof(void*) * CHAR_BIT);
@@ -246,7 +246,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
 
     CString buildInfo;
-    buildInfo.Format(_T("\u200Ebuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
+    buildInfo.Format(_T("\u200Ebuild %lu (%zu bit)"), ver->Build, sizeof(void*) * 8);
 
 /*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");

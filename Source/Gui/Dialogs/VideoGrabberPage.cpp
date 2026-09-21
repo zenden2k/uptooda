@@ -41,7 +41,7 @@
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Components/MyFileDialog.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Func/ImageGenerator.h"
 #include "Func/MyUtils.h"
 
@@ -94,7 +94,7 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
     // Sort video engines alphabetically
     std::sort(videoEngines_.begin(), videoEngines_.end(), [](auto& l, auto& r) {
-        int res = IuStringUtils::stricmp(l.c_str(), r.c_str());
+        int res = IuStringUtils::StrCaseInsensitiveCompare(l, r);
         return res < 0;
     });
 
@@ -227,12 +227,12 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                     CString lastError = WinUtils::GetLastErrorAsString();
                     logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
                     ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage, L"", videoFile);
-                    snapshotsFolder = AppParams::instance()->tempDirectoryW();
+                    snapshotsFolder = AppRuntimeInfo::instance()->tempDirectoryW();
                 }
             }
         }
         if (snapshotsFolder.IsEmpty()) {
-            snapshotsFolder = AppParams::instance()->tempDirectoryW();
+            snapshotsFolder = AppRuntimeInfo::instance()->tempDirectoryW();
         }
     }
 

@@ -1,9 +1,5 @@
 #include "MonitorEnumerator.h"
 
-MonitorEnumerator::MonitorEnumerator() {
-
-}
-
 BOOL MonitorEnumerator::enumDisplayMonitors(HDC hdc, LPCRECT lprcClip) {
     return EnumDisplayMonitors(hdc, lprcClip, monitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
@@ -26,8 +22,7 @@ BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
     if (lprcMonitor) {
         info.rect = *lprcMonitor;
     }
-    MONITORINFOEX mi;
-    memset(&mi, 0, sizeof(mi));
+    MONITORINFOEX mi = {};
     mi.cbSize = sizeof(mi);
     GetMonitorInfo(hMonitor, &mi);
     info.deviceName = mi.szDevice;
@@ -36,10 +31,10 @@ BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonit
     return TRUE;
 }
 
-std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::begin() {
-    return monitors_.begin();
-    
+std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::begin() const {
+    return monitors_.cbegin();
 }
-std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::end() {
-    return monitors_.end();
+
+std::vector<MonitorEnumerator::MonitorInfo>::const_iterator MonitorEnumerator::end() const {
+    return monitors_.cend();
 }

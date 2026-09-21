@@ -59,24 +59,23 @@ GeneratorID XmlTemplateGenerator::id() const
 
 std::string XmlTemplateGenerator::replaceVars(const std::string& text, const std::unordered_map<std::string, std::string>& vars)
 {
-    std::string Result = text;
+    std::string result = text;
 
-    pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
-    std::string str = text;
-    size_t pos = 0;
-    while (pos <= str.length()) {
-        if (reg.search(str, pos)) {
+    pcrepp::Pcre reg(R"(\$\(([A-z0-9_]*?)\))", "imc");
+    int pos = 0;
+
+    while (pos <= text.length()) {
+        if (reg.search(text, pos)) {
             pos = reg.get_match_end() + 1;
             std::string vv = reg[1];
-            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", vars.at(vv));
+            result = IuStringUtils::Replace(result, "$(" + vv + ")", vars.at(vv));
         }
         else {
             break;
         }
     }
-    Result = IuStringUtils::Replace(Result, "\\n", "\r\n");
 
-    return Result;
+    return IuStringUtils::Replace(result, "\\n", "\r\n");
 }
 
 void XmlTemplateGenerator::setTemplateIndex(size_t index) {

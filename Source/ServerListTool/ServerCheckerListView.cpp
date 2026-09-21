@@ -9,14 +9,11 @@ namespace ServersListTool {
 
 CServerCheckerListView::CServerCheckerListView(ServersCheckerModel* model) : model_(model){
     using namespace std::placeholders;
-    model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
-}
-
-CServerCheckerListView::~CServerCheckerListView() {
+    model_->setOnRowChangedCallback([this](auto index) { onRowChanged(index); });
 }
 
 void CServerCheckerListView::Init() {
-    SetItemCount(model_->getCount());
+    SetItemCount(static_cast<int>(model_->getCount()));
 
     AddColumn(_T("N"), 0);
     AddColumn(_T("Server"), 1);
@@ -41,7 +38,7 @@ void CServerCheckerListView::Init() {
 
 LRESULT CServerCheckerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
-    LV_ITEM* pItem = &(pDispInfo)->item;
+    LV_ITEM* pItem = &pDispInfo->item;
 
     if (pItem->mask & LVIF_TEXT)  {
         std::string str = model_->getItemText(pItem->iItem, pItem->iSubItem);
@@ -78,6 +75,6 @@ LRESULT CServerCheckerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh,
 }
 
 void CServerCheckerListView::onRowChanged(size_t index) {
-    PostMessage(LVM_REDRAWITEMS, index, index);
+    PostMessage(LVM_REDRAWITEMS, index, static_cast<LPARAM>(index));
 }
 }

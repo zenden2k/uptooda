@@ -9,7 +9,7 @@ GdiPlusInitializer::GdiPlusInitializer()
 	Gdiplus::GdiplusStartupInput input;
 	//Gdiplus::GdiplusStartupOutput output;
 	if(Gdiplus::Ok != Gdiplus::GdiplusStartup(&token_, &input, nullptr))
-		throw std::runtime_error("Unable to inizialize GDI+");
+		throw std::runtime_error("Unable to initialize GDI+");
 }
 
 GdiPlusInitializer::~GdiPlusInitializer()

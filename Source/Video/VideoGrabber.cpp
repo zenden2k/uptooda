@@ -94,7 +94,7 @@ public:
             if ( canceled_) {
                 break;
             }
-            int64_t curTime = static_cast<int64_t>(( i + 0.5 ) * static_cast<double>(step));
+            auto curTime = static_cast<int64_t>(( i + 0.5 ) * static_cast<double>(step));
             AbstractVideoFrame* frame = nullptr;
             try {
                 grabber->seek(curTime);
@@ -148,9 +148,7 @@ VideoGrabber::VideoGrabber(bool async, bool logErrors)
     frameCount_ = 5;
 }
 
-VideoGrabber::~VideoGrabber(){
-
-}
+VideoGrabber::~VideoGrabber()= default;
 
 void VideoGrabber::grab(const std::string& fileName) {
      if ( !IuCoreUtils::FileExists(fileName) ) {

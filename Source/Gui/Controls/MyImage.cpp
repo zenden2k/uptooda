@@ -253,9 +253,6 @@ bool CMyImage::drawFrame() {
 
     GUID pageGuid = FrameDimensionTime;
 
-    long hmWidth = animatedImage_->GetWidth();
-    long hmHeight = animatedImage_->GetHeight();
-
     Graphics graphics(backBufferDc_);
     Color backgroundColor(255, 210, 210, 210);
     Rect rc(clientRect.left, clientRect.top, clientRect.Width()-1, clientRect.Height()-1);
@@ -271,7 +268,7 @@ bool CMyImage::drawFrame() {
         framePosition_ = 0;
     }
 
-    long lPause = ((long*)propertyItem_->value)[framePosition_] * 10;
+    long lPause = static_cast<long*>(propertyItem_->value)[framePosition_] * 10;
     if (lPause < 50) {
         lPause = 100;
     }

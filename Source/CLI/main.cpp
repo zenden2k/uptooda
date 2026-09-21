@@ -23,6 +23,7 @@
 #include <iostream>
 #include <condition_variable>
 #include <csignal>
+#include <string_view>
 
 #include <boost/format.hpp>
 #include <curl/curl.h>
@@ -41,7 +42,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/CliSettings.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
@@ -109,8 +110,27 @@ std::shared_ptr<UploadSession> session;
 
 std::mutex finishSignalMutex;
 std::condition_variable finishSignal;
-bool finished = false;
+volatile bool finished = false;
 int funcResult = 0;
+
+std::string GetLogDirectory(int argc, char* argv[]) {
+    constexpr std::string_view LOG_DIR_OPTION = "--log_dir";
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view argument(argv[i]);
+        if (argument == LOG_DIR_OPTION && i + 1 < argc) {
+            return argv[i + 1];
+        }
+
+        if (argument.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0 && argument.size() > LOG_DIR_OPTION.size()
+            && argument[LOG_DIR_OPTION.size()] == '=') {
+            return std::string(argument.substr(LOG_DIR_OPTION.size() + 1));
+        }
+    }
+
+    return {};
+}
+
 struct TaskUserData {
     int index;
 };
@@ -148,19 +168,32 @@ void DoUpdates(bool force = false);
 
 std::chrono::steady_clock::time_point lastProgressTime;
 
-void PrintServerList()
-{
-    for (const auto& ued : *list) {
-        if (!ued->hasType(CUploadEngineData::TypeImageServer) && !ued->hasType(CUploadEngineData::TypeFileServer)) {
-		   continue;
+void PrintServerList() {
+    const std::pair<CUploadEngineData::ServerType, std::string> serverTypes[] = {
+        {CUploadEngineData::TypeImageServer, "Image"},
+        {CUploadEngineData::TypeFileServer, "File"},
+        {CUploadEngineData::TypeVideoServer, "Video"},
+    };
+
+    for (const auto& [serverType, typeString] : serverTypes) {
+        std::cout << termcolor::green << typeString << " servers:" << termcolor::reset << std::endl;
+        for (const auto& ued : *list) {
+            if (!ued->hasType(serverType)) {
+                continue;
+            }
+            std::cout << ued->Name;
+            if (!ued->DisplayName.empty() && ued->DisplayName != ued->Name) {
+                std::cout << " [" << ued->DisplayName << "]";
+            }
+            std::cout << std::endl;
         }
-        std::cout << ued->Name << std::endl;
-   }
+        std::cout << std::endl;
+    }
 }
 
-CUploadEngineData* getServerByName(const std::string& name)
+const CUploadEngineData* getServerByName(const std::string& name)
 {
-    CUploadEngineData* uploadEngineData = list->byName(serverName);
+    const CUploadEngineData* uploadEngineData = list->byName(serverName);
     if (!uploadEngineData) {
         for (int i = 0; i < list->count(); i++) {
             if ((IuStringUtils::ToLower(list->byIndex(i)->Name).find(IuStringUtils::ToLower((name)))) != std::string::npos)
@@ -187,13 +220,15 @@ void OnUploadSessionFinished(UploadSession* session) {
         uploadedList.push_back(uo);
     }
     OutputGenerator::OutputGeneratorFactory factory;
-    OutputGenerator::GeneratorID gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
+    auto gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
     auto generator = factory.createOutputGenerator(gid, codeType);
     generator->setPreferDirectLinks(true);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
 
     std::cerr<<std::endl<<"Result:"<<std::endl;
-    std::cout<< generator->generate(uploadedList);
+
+    ConsoleUtils::instance()->printUnicode(stdout, generator->generate(uploadedList));
+
     std::cerr<<std::endl;
 
     {
@@ -267,28 +302,27 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     auto* userData = static_cast<TaskUserData*>(task->userData());
-    bool finished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
+    bool taskFinished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
 
     if (termcolor::_internal::is_atty(std::cerr)) {
         ConsoleUtils::instance()->clearLine(stderr);
         fprintf(stderr, "\r#%d ", userData->index);
     } else {
         fprintf(stderr, "\n#%d ", userData->index);
-        if (finished) {
+        if (taskFinished) {
             PrintProgress(task);
             fprintf(stderr, "\n#%d ", userData->index);
         }
     }
 
     std::string statusText = progress->statusText;
-    if (finished) {
+    if (taskFinished) {
         if (task->status() == UploadTask::StatusFinished) {
             std::cerr << termcolor::green;
         } else {
             std::cerr << termcolor::red;
         }
         std::cerr << statusText << termcolor::reset << " ";
-
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
@@ -311,11 +345,12 @@ void OnQueueFinished(CFileQueueUploader*) {
 int func() {
 #ifdef _WIN32
     GdiPlusInitializer gdiPlusInitializer;
+    AbstractImage::autoRegisterFactory<void>();
     std::string dFolder = dataFolder;
     if (!dFolder.empty() && dFolder.back() == '\\') {
         dFolder.pop_back();
     }
-    char* cacheDir = strdup(dFolder.c_str());
+    char* cacheDir = _strdup(dFolder.c_str());
     if (cacheDir) {
         const char* dirs[2]
             = { cacheDir, nullptr };
@@ -327,7 +362,7 @@ int func() {
         xdg_mime_set_dirs(nullptr);
         xdg_mime_shutdown();
     });
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
@@ -342,37 +377,34 @@ int func() {
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
     std::unique_ptr<UploadEngineManager> uploadEngineManager;
     uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
-    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
-    std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
-
+    auto uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, &Settings, 1);
 
     if (useSystemProxy) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
-    } else if ( !proxy.empty()) {
+    } else if (!proxy.empty()) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
         Settings.ConnectionSettings.ServerAddress= proxy;
         Settings.ConnectionSettings.ProxyPort = proxyPort;
 
-        if( !proxyUser.empty()) {
+        if(!proxyUser.empty()) {
             Settings.ConnectionSettings.NeedsAuth = true;
             Settings.ConnectionSettings.ProxyUser = proxyUser;
             Settings.ConnectionSettings.ProxyPassword.fromPlainText(proxyPassword);
         }
     }
 
-    CUploadEngineData* uploadEngineData = nullptr;
-    if(!serverName.empty()) {
+    const CUploadEngineData* uploadEngineData = nullptr;
+    if (!serverName.empty()) {
         uploadEngineData = getServerByName(serverName);
-        if(!uploadEngineData) {
-            std::cerr<<"No such server '"<<serverName<<"'!"<<std::endl;
+        if (!uploadEngineData) {
+            std::cerr << "No such server '" << serverName << "'!" << std::endl;
             return 0;
         }
     } else {
         std::cerr << "Server not set " << std::endl;
         return -1;
-        //int index = list.getRandomImageServer();
-        //uploadEngineData = list.byIndex(index);
     }
 
     if (uploadEngineData->NeedAuthorization == CUploadEngineData::naObligatory && login.empty())
@@ -439,9 +471,7 @@ int func() {
         return funcResult;
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
-    //ConsoleUtils::instance()->InitScreen();
-    //ConsoleUtils::instance()->Clear();
-    //PrintWelcomeMessage();
+
     uploadManager->setOnQueueFinishedCallback(OnQueueFinished);
     uploadManager->addSession(session);
 
@@ -453,32 +483,31 @@ int func() {
 	return funcResult;
 }
 
-
 void PrintServerParamList()
 {
     if (serverName.empty()) {
         throw std::invalid_argument("Server name is empty");
     }
-    CUploadEngineData* ued = getServerByName(serverName);
+    const CUploadEngineData* ued = getServerByName(serverName);
     if (!ued) {
         throw std::invalid_argument("No such server");
     }
 
     ServerProfile profile(ued->Name);
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
-    std::unique_ptr<UploadEngineManager> uploadEngineManager;
-    uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
-    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    auto uploadEngineManager = std::make_unique<UploadEngineManager>(
+        list.get(), uploadErrorHandler, networkClientFactory);
+    std::string scriptsDirectory = AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     ParameterList parameterList;
-    auto* m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager->getUploadEngine(profile));
-    if (m_pluginLoader) {
+    auto pluginLoader = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager->getUploadEngine(profile));
+    if (pluginLoader) {
         std::cout << "Parameters of server '" << ued->Name << "':" << std::endl;
-        m_pluginLoader->getServerParamList(parameterList);
+        pluginLoader->getServerParamList(parameterList);
         int i = 0;
         for (auto& parameter : parameterList) {
             std::cout << ++i << ") " << parameter->getTitle() << std::endl
@@ -498,7 +527,7 @@ void PrintServerParamList()
 #ifdef _WIN32
 class Updater: public CUpdateStatusCallback {
 public:
-    Updater(const CString& tempDirectory) :m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
+    explicit Updater(const CString& tempDirectory): m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
         m_UpdateManager.setUpdateStatusCallback(this);
     }
 
@@ -512,31 +541,29 @@ public:
         Settings.LastUpdateTime = static_cast<int>(time(0));
         if (m_UpdateManager.AreUpdatesAvailable())
         {
-            for (size_t i = 0; i < m_UpdateManager.m_updateList.size(); i++)
+            for (const auto & i : m_UpdateManager.m_updateList)
             {
-                std::cerr<<"Beginning to update: "<< IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[i].displayName())<<std::endl;
+                std::wcerr << "Beginning to update: "<< i.displayName() << std::endl;
             }
 
             m_UpdateManager.DoUpdates();
             if (m_UpdateManager.successPackageUpdatesCount())
             {
-                std::cerr<<"Succesfully updated!";
+                std::cerr << "Successfully updated!";
             }
         }
         else
         {
-            std::cerr<<"All is up-to-date"<<std::endl;
+            std::cerr << "All is up-to-date" << std::endl;
         }
-
     }
+
     void updateStatus(int packageIndex, const CString& status) override {
-        //std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
-        if ( m_UpdateManager.m_updateList.size() > packageIndex+1) {
-            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
+        if (m_UpdateManager.m_updateList.size() > packageIndex+1) {
+            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8(m_UpdateManager.m_updateList[packageIndex].displayName().GetString()).c_str(), IuCoreUtils::WstringToUtf8(status.GetString()).c_str());
             fprintf(stderr, "\r");
             fflush(stderr);
         }
-        //std::cout<< "\r"<<IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()) <<" : "<< IuCoreUtils::WstringToUtf8((LPCTSTR)status);
     }
 protected:
     CUpdateManager m_UpdateManager;
@@ -571,9 +598,14 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
+    std::string logDirectory = GetLogDirectory(argc, argv);
+    if (!logDirectory.empty()) {
+        FLAGS_log_dir = logDirectory;
+        FLAGS_logtostderr = false;
+    }
     google::InitGoogleLogging(argv[0]);
     ConsoleUtils::instance();
-    AppParams::AppVersionInfo appVersion;
+    AppRuntimeInfo::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = std::stoi(IU_BUILD_NUMBER);
@@ -581,17 +613,17 @@ int main(int argc, char *argv[]){
     appVersion.CommitHash = IU_COMMIT_HASH;
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
+    AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     argparse::ArgumentParser program("uptooda-cli", appVersion.FullVersion);
-    program.add_argument("-s", "--server")
-        .help("Choose server by name")
-        .required()
-        .metavar("NAME")
-        .store_into(serverName);
+
+    program.add_argument("--log_dir")
+        .help("write log files to DIRECTORY instead of stderr")
+        .metavar("DIRECTORY")
+        .store_into(logDirectory);
 
     program.add_argument("-l", "--list")
-        .help("Prints server list (hosting services) and exits")
+        .help("print server list (hosting services) and exit")
         .action([=](const auto& s) {
             PrintServerList();
             std::exit(0);
@@ -600,8 +632,14 @@ int main(int argc, char *argv[]){
         .implicit_value(true)
         .nargs(0);
 
+    program.add_argument("-s", "--server")
+        .help("choose server by name")
+        .required()
+        .metavar("NAME")
+        .store_into(serverName);
+
     program.add_argument("-cl", "--code_lang")
-        .help("Code language (bbcode|html|json|plain)")
+        .help("code language (bbcode|html|json|plain)")
         .action([&](const std::string& cl) {
             const std::unordered_map<std::string, OutputGenerator::CodeLang> types = {
                 { "plain", OutputGenerator::clPlain },
@@ -620,7 +658,7 @@ int main(int argc, char *argv[]){
         .nargs(1);
 
     program.add_argument("-ct", "--code_type")
-        .help("Code type (TableOfThumbnails|ClickableThumbnails|Images|Links)")
+        .help("code type (TableOfThumbnails|ClickableThumbnails|Images|Links)")
         .action([&](const std::string& ct) {
             const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
                 { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
@@ -639,26 +677,26 @@ int main(int argc, char *argv[]){
      .nargs(1);
 
     program.add_argument("-u", "--user")
-        .help("User name (login)")
+        .help("user name (login)")
         .metavar("USERNAME")
         .store_into(login);
 
     program.add_argument("-p", "--password")
-        .help("Password")
+        .help("password")
         .metavar("PASSWORD")
         .store_into(password);
 
     program.add_argument("-fl", "--folder_id")
-        .help("The ID of remote folder/album (supported by some servers)")
+        .help("the ID of remote folder/album (supported by some servers)")
         .metavar("ID")
         .store_into(folderId);
 
     program.add_argument("-r", "--retries")
-        .help("Maximum number of attempts (per file)")
+        .help("maximum number of attempts (per file)")
         .store_into(maxRetries);
 
     program.add_argument("-a", "--retries_per_action")
-        .help("Maximum number of attempts (per action)")
+        .help("maximum number of attempts (per action)")
         .store_into(maxRetriesPerAction);
 
     program.add_argument("-tw", "--thumb_width")
@@ -670,13 +708,13 @@ int main(int argc, char *argv[]){
         .store_into(thumbHeight);
 
     program.add_argument("-sp", "--server_param")
-        .help("Set parameter of remote server (NAME:VALUE)")
+        .help("set parameter of remote server (NAME:VALUE)")
         .metavar("NAME:VALUE")
         .append();
        // .nargs(argparse::nargs_pattern::at_least_one);
 
     program.add_argument("-pl", "--param_list")
-        .help("Print server parameter list and exits")
+        .help("print server parameter list and exit")
         .action([=](const auto& s) {
             PrintServerParamList();
             std::exit(0);
@@ -686,7 +724,7 @@ int main(int argc, char *argv[]){
         .nargs(0);
 
     program.add_argument("-pr", "--proxy")
-        .help("Proxy address (with port)")
+        .help("proxy address:port")
         .action([&](const std::string& pr) {
             const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
                 { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
@@ -705,18 +743,18 @@ int main(int argc, char *argv[]){
         });
 
     program.add_argument("-pu", "--proxy_user")
-         .help("Proxy username (login)")
+         .help("proxy username (login)")
          .metavar("USERNAME")
          .store_into(login);
 
     program.add_argument("-pp", "--proxy_password")
-         .help("Proxy password")
+         .help("proxy password")
          .metavar("PASSWORD")
          .store_into(password);
 
 
     program.add_argument("-pt", "--proxy_type")
-         .help("Proxy type (http|https|socks4|socks4a|socks5|socks5dns)")
+         .help("proxy type (http|https|socks4|socks4a|socks5|socks5dns)")
          .choices("http", "socks4", "socks4a", "socks5", "socks5dns", "https")
          .action([&](const std::string& type) {
             std::map<std::string, int> types;
@@ -739,12 +777,12 @@ int main(int argc, char *argv[]){
 
 #ifdef _WIN32
     program.add_argument("-ps", "--proxy_system")
-         .help("Use system proxy settings (this option is supported only on Windows)")
+         .help("use system proxy settings (this option is supported only on Windows)")
          .flag()
          .store_into(useSystemProxy);
 
     program.add_argument("-up", "--update")
-        .help("Update servers.xml. The 'Data' directory must be writable, otherwise update will fail.")
+        .help("update servers.xml (the 'Data' directory must be writable, otherwise update will fail)")
         .action([=](const auto& s) {
             DoUpdates(true);
             std::exit(0);
@@ -763,19 +801,17 @@ int main(int argc, char *argv[]){
        .nargs(0);*/
 
     program.add_argument("files")
-         .help("Files to upload on remote server")
+         .help("files to upload on remote server")
          .remaining();
 
     list = std::make_unique<CUploadEngineList>();
-    std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
+    auto defaultLogger = std::make_shared<ConsoleLogger>();
 
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setSettings(&Settings);
     serviceLocator->setLogger(defaultLogger);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
-
-    AbstractImage::autoRegisterFactory<void>();
 
     int res  = 0;
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
@@ -805,28 +841,29 @@ int main(int argc, char *argv[]){
 #ifdef _WIN32
     COMInitializer comInitializer(COM_MULTI_THREADED);
 #endif
-    AppParams* params = AppParams::instance();
-    params->setDataDirectory(dataFolder);
-    params->setSettingsDirectory(settingsFolder);
-    params->setIsGui(false);
+    AppRuntimeInfo* appParams = AppRuntimeInfo::instance();
+    appParams->setDataDirectory(dataFolder);
+    appParams->setSettingsDirectory(settingsFolder);
+    appParams->setIsGui(false);
     dotenv::init(dotenv::Preserve, (dataFolder + ".env").c_str());
 #ifdef _WIN32
+
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
     TCHAR TempPath[1024];
     if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
         lstrcpy(TempPath, ShortPath);
     }
-    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
+    appParams->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
 #else
-    params->setTempDirectory("/var/tmp/");
+    appParams->setTempDirectory("/var/tmp/");
 #endif
-    //PrintWelcomeMessage();
-    if(! list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
+
+    if (!list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list!"<<std::endl;
     }
 
-    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
+    if (IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");
@@ -883,14 +920,11 @@ int main(int argc, char *argv[]){
 
     res = func();
 
-    if ( !Settings.SaveSettings() ) {
+    if (!Settings.SaveSettings()) {
         std::cerr<<"Cannot save settings!"<<std::endl;
     }
 
     CScriptUploadEngine::DestroyScriptEngine();
-#ifdef _WIN32
-    //SetConsoleOutputCP(oldcp);
-#endif
 
     return res;
 }

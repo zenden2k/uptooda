@@ -23,18 +23,18 @@ limitations under the License.
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <utility>
 
 #include "Core/Utils/SimpleXml.h"
 #include "UploadEngineList.h"
 #include "Core/Utils/StringUtils.h"
 
-ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings):
+ServerListManager::ServerListManager(std::string serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings):
     serversSettings_(serversSettings),
-    serversDirectory_(serversDirectory),
+    serversDirectory_(std::move(serversDirectory)),
     uploadEngineList_(uel)
 {
 }
-
 
 std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl,
     const std::string& privateKeyFile, int securedConnection, const std::string& activeConnectionPort)
@@ -122,8 +122,11 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
     ss.authData.DoAuth = !login.empty();
 
 
-    if (!temporary && !uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
-        throw std::runtime_error("Unable to load file " + outFile);
+    if (!temporary) {
+        if (!uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
+            throw std::runtime_error("Unable to load file " + outFile);
+        }
+        uploadEngineList_->onServerAdded(uploadEngineList_, newName);
     }
     return newName;
 }
@@ -173,5 +176,8 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     if (!uploadEngineList_->loadFromFile(outFile,serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }
+
+    uploadEngineList_->onServerAdded(uploadEngineList_, name);
+
     return name;
 }

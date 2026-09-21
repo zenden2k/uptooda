@@ -4,7 +4,7 @@
 
 ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     penSize_ = settings->ImageEditorSettings.PenSize;
     foregroundColor_ = settings->ImageEditorSettings.ForegroundColor;
     backgroundColor_ = settings->ImageEditorSettings.BackgroundColor;
@@ -19,11 +19,12 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     arrowMode_ = settings->ImageEditorSettings.ArrowType;
     invertSelection_ = settings->ImageEditorSettings.InvertSelection;
     closeWindowAfterActionInFullScreen_ = settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen;
+    drawBorder_ = settings->ImageEditorSettings.DrawBorder;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->ImageEditorSettings.PenSize = penSize_;
     settings->ImageEditorSettings.ForegroundColor = foregroundColor_;
     settings->ImageEditorSettings.BackgroundColor = backgroundColor_;
@@ -38,5 +39,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.ArrowType = arrowMode_;
     settings->ImageEditorSettings.InvertSelection = invertSelection_;
     settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen = closeWindowAfterActionInFullScreen_;
+    settings->ImageEditorSettings.DrawBorder = drawBorder_;
 }
 

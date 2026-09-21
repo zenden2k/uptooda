@@ -29,15 +29,7 @@ char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList() {
-}
-
-CMyEngineList::~CMyEngineList()
-{
-
-}
-
-CUploadEngineData* CMyEngineList::byName(const CString& name)
+const CUploadEngineData* CMyEngineList::byName(const CString& name) const
 {
     return CUploadEngineListBase::byName(WCstringToUtf8(name));
 }

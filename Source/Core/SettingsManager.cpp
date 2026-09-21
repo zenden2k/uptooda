@@ -20,15 +20,6 @@
 
 #include "SettingsManager.h"
 
-SettingsNode::SettingsNode()
-{
-    binded_value_ = nullptr;
-}
-
-SettingsManager::SettingsManager()
-{
-}
-
 SettingsNode& SettingsManager::operator[](const std::string& name)
 {
     return root_[name];
@@ -38,22 +29,22 @@ SettingsNode& SettingsNode::operator[](const std::string& name)
 {
     auto it = childs_.find(name);
     if (it == childs_.end()) {
-        childs_[name] = new SettingsNode();
+        childs_[name] = std::make_unique<SettingsNode>();
     }
     return *childs_[name];
 }
 
 void SettingsNode::saveToXmlNode(SimpleXmlNode parentNode, const std::string &name, bool isRoot) const {
-    int namelen = name.length();
-    if (namelen > 0 && name[0] == '@') {
-        parentNode.SetAttribute(name.substr(1, namelen - 1), binded_value_->getValue());
+    size_t namelen = name.length();
+    if (namelen && name[0] == '@') {
+        parentNode.SetAttribute(name.substr(1, namelen - 1), boundValue_->getValue());
     } else {
         SimpleXmlNode child = parentNode;
 
         if (!isRoot) {
             child = parentNode.GetChild(name);
-            if (binded_value_)
-                child.SetText(binded_value_->getValue());
+            if (boundValue_)
+                child.SetText(boundValue_->getValue());
         }
 
         for (const auto &item: childs_) {
@@ -63,32 +54,23 @@ void SettingsNode::saveToXmlNode(SimpleXmlNode parentNode, const std::string &na
 }
 
 void SettingsNode::loadFromXmlNode(SimpleXmlNode parentNode, const std::string &name, bool isRoot) {
-    int namelen = name.length();
-    if (namelen > 0 && name[0] == '@') {
+    size_t namelen = name.length();
+    if (namelen && name[0] == '@') {
         std::string attribValue;
         if (parentNode.GetAttribute(name.substr(1, namelen - 1), attribValue))
-            binded_value_->setValue(attribValue);
+            boundValue_->setValue(attribValue);
     } else {
         SimpleXmlNode child = parentNode;
         if (!isRoot) {
             child = parentNode.GetChild(name, false);
         }
         if (!child.IsNull()) {
-            if (binded_value_)
-                binded_value_->setValue(child.Text());
+            if (boundValue_)
+                boundValue_->setValue(child.Text());
             for (const auto &item: childs_) {
                 item.second->loadFromXmlNode(child, item.first);
             }
         }
-    }
-}
-
-SettingsNode::~SettingsNode()
-{
-    delete binded_value_;
-    for(std::map<std::string, SettingsNode*>::const_iterator it=childs_.begin(); it!=childs_.end(); ++it)
-    {
-        delete it->second;
     }
 }
 
@@ -97,12 +79,12 @@ SettingsNode& SettingsManager::root()
     return root_;
 }
 
-void SettingsManager::saveToXmlNode(SimpleXmlNode parentNode) const
+void SettingsManager::saveToXmlNode(const SimpleXmlNode& parentNode) const
 {
     root_.saveToXmlNode(parentNode, "Settings", true);
 }
 
-void SettingsManager::loadFromXmlNode(SimpleXmlNode parentNode)
+void SettingsManager::loadFromXmlNode(const SimpleXmlNode& parentNode)
 {
     root_.loadFromXmlNode(parentNode, "Settings", true);
 }

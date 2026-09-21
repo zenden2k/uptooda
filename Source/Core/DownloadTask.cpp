@@ -100,7 +100,6 @@ void DownloadTask::run() {
 
 void DownloadTask::cancel() {
     isCanceled_ = true;
-    
 }
 
 bool DownloadTask::isCanceled() {

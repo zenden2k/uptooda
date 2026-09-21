@@ -1,25 +1,46 @@
 const BASE_HOST = "https://www.directupload.eu";
 
 function Authenticate() {
+    nm.doGet(BASE_HOST + "/mitglieder/");
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[directupload.eu] Failed to load the login page.");
+        return ResultCode.Failure;
+    }
+    local doc = Document(nm.responseBody());
+    local inputElement = doc.find("input[name=\"csrf_token\"]");
+    if (!inputElement.length()) {
+        WriteLog("error", "[directupload.eu] Failed to obtain CSRF token.");
+        return ResultCode.Failure;
+    }
+    local csrfToken = inputElement.attribute("value");
+
     local login = ServerParams.getParam("Login");
     local pass = ServerParams.getParam("Password");
     if (login == "" || pass == "") {
-        return 0;
+        return ResultCode.Failure;
     }
     nm.doGet(BASE_HOST + "/");
 
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/index.php?mode=user");
-    nm.addQueryParam("benutzername", login);
-    nm.addQueryParam("passwort", pass);
-    nm.addQueryParam("everlasting", "");
-    nm.addQueryParam("anmelden", "Einloggen"); 
+    nm.addPostField("benutzername", login);
+    nm.addPostField("csrf_token", csrfToken);
+    nm.addPostField("passwort", pass);
+    nm.addPostField("everlasting", "");
+    nm.addPostField("anmelden", "Einloggen");
     nm.doPost("");
 
     if (nm.responseCode() == 200 || nm.responseCode() == 302) {
-        return 1;
+        doc = Document(nm.responseBody());
+        if (doc.find("div.message.error").length()) {
+            WriteLog("error", "[directupload.eu] Failed to authenticate. Invalid login or password.");
+            return ResultCode.Failure;
+        }
+        return ResultCode.Success;
+    } else {
+        WriteLog("error", "[directupload.eu] Failed to authenticate. Response code: " + nm.responseCode());
     }
-    return 0;
+    return ResultCode.Failure;
 }
 
 function _AnonymousUpload(fileName, options) {
@@ -27,9 +48,9 @@ function _AnonymousUpload(fileName, options) {
     local fname = ExtractFileName(fileName);
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/api/upload_http_resize.php");
-    nm.addQueryParam("file", "data:" + mimeType + ";base64," + Base64Encode(GetFileContents(fileName)));
-    nm.addQueryParam("filename", fname);
-    nm.addQueryParam("showtext", "0");
+    nm.addPostField("file", "data:" + mimeType + ";base64," + Base64Encode(GetFileContents(fileName)));
+    nm.addPostField("filename", fname);
+    nm.addPostField("showtext", "0");
     nm.setUploadAction();
     nm.doUploadMultipartData();
 
@@ -40,11 +61,11 @@ function _AnonymousUpload(fileName, options) {
     local imgId = nm.responseBody();
 
     nm.setUrl(BASE_HOST + "/upload_a2/");
-    nm.addQueryParam("img_id[]", imgId);
-    nm.addQueryParam("file_name[]", fname);
-    nm.addQueryParam("img_resize", "0");
-    nm.addQueryParam("autodel", "0");
-    nm.addQueryParam("showtext", "0");  
+    nm.addPostField("img_id[]", imgId);
+    nm.addPostField("file_name[]", fname);
+    nm.addPostField("img_resize", "0");
+    nm.addPostField("autodel", "0");
+    nm.addPostField("showtext", "0");
     
     nm.doPost("");
     if (nm.responseCode() == 200) {
@@ -95,15 +116,15 @@ function UploadFile(fileName, options) {
     nm.setUrl(BASE_HOST + "/api/upload_http_usrmulti.php");
 
     /*if (albumId == "") {
-        nm.addQueryParam("new_gallery_name", "New album");
+        nm.addPostField("new_gallery_name", "New album");
     }*/
 
-    nm.addQueryParam("file", "data:" + mimeType +";base64," + Base64Encode(GetFileContents(fileName)));
-    nm.addQueryParam("filename", task.getDisplayName());
-    nm.addQueryParam("showtext", thumbAddText? "1" : "0");
-    nm.addQueryParam("gal_id", albumId);
-    nm.addQueryParam("gal_nm", album.getTitle());
-    nm.addQueryParam("st_g", "0");
+    nm.addPostField("file", "data:" + mimeType +";base64," + Base64Encode(GetFileContents(fileName)));
+    nm.addPostField("filename", task.getDisplayName());
+    nm.addPostField("showtext", thumbAddText? "1" : "0");
+    nm.addPostField("gal_id", albumId);
+    nm.addPostField("gal_nm", album.getTitle());
+    nm.addPostField("st_g", "0");
     nm.setUploadAction();
     nm.doUploadMultipartData();
 
@@ -115,12 +136,12 @@ function UploadFile(fileName, options) {
     local imgId = nm.responseBody();
 
     nm.setUrl(BASE_HOST + "/index.php?mode=user&act=m_upload2");
-    nm.addQueryParam("img_id[]", imgId);
-    nm.addQueryParam("file_name[]", task.getDisplayName());
-    nm.addQueryParam("img_resize", "0");
-    nm.addQueryParam("showtext", thumbAddText? "1" : "0");  
-    nm.addQueryParam("gal_id", albumId);
-    nm.addQueryParam("new_gallery_name", album.getTitle());
+    nm.addPostField("img_id[]", imgId);
+    nm.addPostField("file_name[]", task.getDisplayName());
+    nm.addPostField("img_resize", "0");
+    nm.addPostField("showtext", thumbAddText? "1" : "0");
+    nm.addPostField("gal_id", albumId);
+    nm.addPostField("new_gallery_name", album.getTitle());
     nm.doPost("");
 
     if (nm.responseCode() != 200) {
@@ -161,7 +182,7 @@ function GetFolderList(list) {
         albumDivs.each(function(index, elem) {
             local folder = CFolderItem();
             local openLink = elem.find("a[title='Album bearbeiten']");
-            folder.setTitle(openLink.text());
+            folder.setTitle(strip(openLink.text()));
             folder.setItemCount(0);
             local openUrl = openLink.attribute("href");
             local reg = CRegExp("id=(\\d+)", "mi");
@@ -180,8 +201,8 @@ function GetFolderList(list) {
 function CreateFolder(parentAlbum, album) {
     nm.setReferer(BASE_HOST + "/");
     nm.setUrl(BASE_HOST + "/index.php?mode=user&act=gal");
-    nm.addQueryParam("new_gal_name", album.getTitle());
-    nm.addQueryParam("new_gal", "Neues+Album+anlegen");
+    nm.addPostField("new_gal_name", album.getTitle());
+    nm.addPostField("new_gal", "Neues+Album+anlegen");
     nm.doPost("");
 
     if (nm.responseCode() != 200) {

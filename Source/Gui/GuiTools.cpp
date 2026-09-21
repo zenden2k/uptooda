@@ -75,7 +75,7 @@ void SetCheck(HWND dlg, int id, bool check) {
 }
 
 HFONT MakeLabelBold(HWND Label) {
-    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+    auto Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
     if (!Font) return nullptr;
 
@@ -93,7 +93,7 @@ HFONT MakeLabelBold(HWND Label) {
 }
 
 HFONT MakeLabelItalic(HWND Label) {
-    HFONT Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
+    auto Font = reinterpret_cast<HFONT>(SendMessage(Label, WM_GETFONT, 0, 0));
 
     if (!Font) return nullptr;
 
@@ -129,7 +129,6 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     MenuItem.hbmpItem = bm;
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
     MenuItem.cch = lstrlen(szTitle);
-
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
@@ -426,11 +425,9 @@ void EnableDialogItem(HWND dlg, int itemId, bool enable) {
 
 IconInfo GetIconInfo(HICON hIcon)
 {
-    IconInfo myinfo;
-    ZeroMemory(&myinfo, sizeof(myinfo));
+    IconInfo myinfo{};
 
-    ICONINFO info;
-    ZeroMemory(&info, sizeof(info));
+    ICONINFO info{};
 
     BOOL bRes = FALSE;
 
@@ -557,7 +554,7 @@ void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text) {
 
 CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 {
-    CHARFORMAT cf;
+    CHARFORMAT cf{};
     cf.cbSize = sizeof(CHARFORMAT);
     cf.dwMask =  CFM_FACE | CFM_SIZE | CFM_CHARSET
         | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET;
@@ -598,7 +595,7 @@ CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 
 LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
 {
-    LOGFONT lf;
+    LOGFONT lf{};
     lf.lfCharSet = cf.bCharSet;
     lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
     lf.lfEscapement = 0;
@@ -626,7 +623,7 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     return lf;
 }
 
-HICON LoadSmallIcon(int resourceId, int dpi) {
+HICON LoadSmallIcon(int resourceId, UINT dpi) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
@@ -635,7 +632,7 @@ HICON LoadSmallIcon(int resourceId, int dpi) {
     return result;
 }
 
-HICON LoadBigIcon(int resourceId, int dpi) {
+HICON LoadBigIcon(int resourceId, UINT dpi) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpi);
 
@@ -644,7 +641,7 @@ HICON LoadBigIcon(int resourceId, int dpi) {
     return result;
 }
 
-void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx) {
+void RemoveWindowStyleEx(HWND hWnd, LONG styleEx) {
     LONG oldStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
     ::SetWindowLong(hWnd, GWL_EXSTYLE, oldStyle & ~styleEx);
 }
@@ -730,7 +727,6 @@ bool IsColorBright(COLORREF color) {
 
     return brightness > 128;
 }
-
 
 COLORREF AdjustColorBrightness(COLORREF color, int delta) {
     auto clamp = [](int val) -> BYTE {
@@ -850,7 +846,7 @@ std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int iconWid
     return bmp;
 }
 
-HICON CreateDropDownArrowIcon(HWND wnd, int dpi, ArrowOrientation orientation) {
+HICON CreateDropDownArrowIcon(HWND wnd, UINT dpi, ArrowOrientation orientation) {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     auto bmp = CreateDropDownArrowBitmap(wnd, iconWidth, iconHeight, orientation);
@@ -901,15 +897,10 @@ HICON GetMenuArrowIcon() {
 }
 
 HICON GetWindowIcon(HWND hwnd) {
-    HICON hIcon {};
-    //hIcon  = (HICON)SendMessage(hwnd, WM_GETICON, ICON_BIG, 0);
+    auto hIcon  = reinterpret_cast<HICON>(SendMessage(hwnd, WM_GETICON, ICON_SMALL, 0));
 
     if (!hIcon) {
-        hIcon = (HICON)SendMessage(hwnd, WM_GETICON, ICON_SMALL, 0);
-    }
-
-    if (!hIcon) {
-        hIcon = (HICON)GetClassLongPtr(hwnd, GCLP_HICON);
+        hIcon = reinterpret_cast<HICON>(GetClassLongPtr(hwnd, GCLP_HICON));
     }
 
     return hIcon;

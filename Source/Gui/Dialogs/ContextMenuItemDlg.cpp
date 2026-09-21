@@ -120,7 +120,9 @@ void CContextMenuItemDlg::generateTitle()
 {
     if ( !titleEdited_ ) {
         ServerProfile sp = imageServerSelector_->serverProfile();
-        std::wstring serverName = IuCoreUtils::Utf8ToWstring(sp.serverName());
+        auto engineList = ServiceLocator::instance()->engineList();
+        const CUploadEngineData* ued = engineList->byName(sp.serverName());
+        std::wstring serverName = IuCoreUtils::Utf8ToWstring(CUploadEngineListBase::getServerDisplayName(ued));
         std::wstring title = str(boost::wformat(TR("Upload to %s")) % serverName);
 
         std::wstring additional;

@@ -20,7 +20,6 @@
 
 #include "Utils.h"
 
-#include <cstdint>
 #include <cmath>
 #include <cassert>
 #include <memory>
@@ -41,7 +40,7 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/ServiceLocator.h"
 #include "Func/Library.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "ImageLoader.h"
 #include "Core/Utils/IOException.h"
 #include "3rdpart/FastGaussianBlurTemplate.h"
@@ -55,14 +54,14 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     UINT num = 0;           // number of image encoders
     UINT size = 0;          // size of the image encoder array in bytes
 
-    ImageCodecInfo* pImageCodecInfo = NULL;
+    ImageCodecInfo* pImageCodecInfo = nullptr;
 
     GetImageEncodersSize(&num, &size);
     if (size == 0)
         return -1;  // Failure
 
     pImageCodecInfo = static_cast<ImageCodecInfo*>(malloc(size));
-    if (pImageCodecInfo == NULL)
+    if (pImageCodecInfo == nullptr)
         return -1;  // Failure
 
     GetImageEncoders(num, size, pImageCodecInfo);
@@ -107,7 +106,7 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 
     double anInchX = 1440.0 / GetDeviceCaps(hdc1, LOGPIXELSX);
     double anInchY = 1440.0 / GetDeviceCaps(hdc1, LOGPIXELSY);
-            ReleaseDC(hwnd,hdc1);
+    ReleaseDC(hwnd,hdc1);
 
     //double anInch = 1440.0  /  GetDeviceCaps(hdc1, LOGPIXELSX);
 
@@ -141,19 +140,19 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
 void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush*br){
     using namespace Gdiplus;
     GraphicsPath gp;
-//    d = min(min(d, r.Width),r.Height);
+
     gp.AddArc(r.X, r.Y, d, d, 180, 90);
     gp.AddArc(max(r.X + r.Width - d,r.X), r.Y, d, d, 270, 90);
     gp.AddArc(max(r.X, r.X + r.Width - d), max(r.Y, r.Y + r.Height - d), d, d, 0, 90);
     gp.AddArc(r.X, max(r.Y, r.Y + r.Height - d), d, d, 90, 90);
-    //gp.AddLine(r.X, max(r.Y, r.Y + r.Height - d), r.X, min(r.Y + d/2, r.GetBottom()));
 
     gp.CloseFigure();
     if ( br ) {
         gr->FillPath(br, &gp);
     }
-    gr->DrawPath(p, &gp);
-
+    if (p) {
+        gr->DrawPath(p, &gp);
+    }
 }
 
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
@@ -163,7 +162,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     BITMAP bmp;
     GetObject(ii.hbmColor, sizeof(bmp), &bmp);
 
-    Gdiplus::Bitmap temp(ii.hbmColor, NULL);
+    Gdiplus::Bitmap temp(ii.hbmColor, nullptr);
     Gdiplus::BitmapData lockedBitmapData;
     memset(&lockedBitmapData, 0, sizeof(lockedBitmapData));
     Gdiplus::Rect rc(0, 0, temp.GetWidth(), temp.GetHeight());
@@ -174,7 +173,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
         return nullptr;
     }
 
-    std::unique_ptr<Gdiplus::Bitmap> image = std::make_unique<Gdiplus::Bitmap>(
+    auto image = std::make_unique<Gdiplus::Bitmap>(
         lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
         PixelFormat32bppARGB, static_cast<BYTE *>(lockedBitmapData.Scan0));
 
@@ -190,7 +189,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
 
     if (bm->LockBits(& rc, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & dataSource) == Ok)
     {
-        uint8_t * source = static_cast<uint8_t *>(dataSource.Scan0);
+        auto * source = static_cast<uint8_t *>(dataSource.Scan0);
         assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) { stride = dataSource.Stride;
@@ -200,11 +199,11 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
 
         size_t myStride = 4 * (w /*& ~3*/);
         size_t bufSize = myStride * h;
-        uint8_t* buf = new uint8_t[bufSize];
+        auto* buf = new uint8_t[bufSize];
 
         uint8_t *bufCur = buf;
         uint8_t *sourceCur = source;
-        uint8_t * temp = new uint8_t[bufSize];
+        auto * temp = new uint8_t[bufSize];
         uint8_t* tempCur = temp;
         for (int i = 0; i < h; i++) {
             memcpy(bufCur, sourceCur, myStride);
@@ -251,7 +250,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
     if (bm->LockBits(&rc, ImageLockModeRead | ImageLockModeWrite, PixelFormat32bppARGB, &dataSource) == Ok)
     {
-        uint8_t * source = static_cast<uint8_t *>(dataSource.Scan0);
+        auto * source = static_cast<uint8_t *>(dataSource.Scan0);
         assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) {
@@ -284,7 +283,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
                 }
                 for (int i = x; i < maxX; i++) {
                     for (int j = y; j < maxY; j++) {
-                        uint32_t* data = (uint32_t*)(source + j * stride + i*4);
+                        auto data = reinterpret_cast<uint32_t*>(source + j * stride + i * 4);
                         *data = pixel;
                     }
                 }
@@ -292,12 +291,11 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
         }
         bm->UnlockBits(&dataSource);
     }
-
 }
 
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isMultiFrame) {
     using namespace Gdiplus;
-    auto img = LoadImageFromFileExtended(fileName);
+    std::unique_ptr<GdiPlusImage> img = LoadImageFromFileExtended(fileName);
     if (!img) {
         return nullptr;
     }
@@ -317,8 +315,8 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
     if (src->LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
     {
         if ( dst->LockBits(& rc, ImageLockModeWrite, PixelFormat32bppARGB, & dstData) == Ok ) {
-            uint8_t * srcBits = static_cast<uint8_t *>(srcData.Scan0);
-            uint8_t * dstBits = static_cast<uint8_t *>(dstData.Scan0);
+            auto * srcBits = static_cast<uint8_t *>(srcData.Scan0);
+            auto * dstBits = static_cast<uint8_t *>(dstData.Scan0);
             unsigned int stride;
             if (srcData.Stride > 0) {
                 stride = srcData.Stride;
@@ -336,7 +334,7 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
 
 Gdiplus::Color StringToColor(const std::string& str) {
     if ( str.empty() ) {
-        return Gdiplus::Color();
+        return {};
     }
     try {
         BYTE r = 0, g = 0, b = 0, a = 255;
@@ -345,7 +343,7 @@ Gdiplus::Color StringToColor(const std::string& str) {
             g = static_cast<BYTE>(std::stoul(str.substr(3, 2), nullptr, 16));
             b = static_cast<BYTE>(std::stoul(str.substr(5, 2), nullptr, 16));
 
-            return Gdiplus::Color(r, g, b);
+            return {r, g, b};
         } else if ( str.substr(0,4) == "rgba" && str.length() >= 14 ) {
             std::vector<std::string> tokens;
             IuStringUtils::Split(str.substr(5, str.length()-6 ),",", tokens,4);
@@ -354,28 +352,28 @@ Gdiplus::Color StringToColor(const std::string& str) {
                 errno = 0;
                 a = static_cast<BYTE>(round(std::strtod(tokens[3].c_str(), &e) * 255));
                 if (errno != 0 || (e && *e != '\0')) {
-                    return Gdiplus::Color();
+                    return {};
                 }
                 r = static_cast<BYTE>(std::stoul(tokens[0]));
                 g = static_cast<BYTE>(std::stoul(tokens[1]));
                 b = static_cast<BYTE>(std::stoul(tokens[2]));
-                return Gdiplus::Color(a, r, g, b);
+                return {a, r, g, b};
             }
         } else if ( str.substr(0,3) == "rgb" && str.length() >= 10 ) {
             std::vector<std::string> tokens;
             IuStringUtils::Split(str.substr(4, str.length()-5 ), ",", tokens,3);
             if ( tokens.size() == 3 ) {
-                return Gdiplus::Color( static_cast<BYTE>(std::stoul(tokens[0])), static_cast<BYTE>(std::stoul(tokens[1])),
-                    static_cast<BYTE>(std::stoul(tokens[2])));
+                return { static_cast<BYTE>(std::stoul(tokens[0])), static_cast<BYTE>(std::stoul(tokens[1])),
+                    static_cast<BYTE>(std::stoul(tokens[2]))};
             }
         }
     } catch (const std::invalid_argument&) {
     } catch (const std::out_of_range&) {
     }
-    return Gdiplus::Color();
+    return {};
 }
 
-
+#pragma pack(push, 1)
 struct BGRA_COLOR
 {
     BYTE b;
@@ -383,33 +381,31 @@ struct BGRA_COLOR
     BYTE r;
     BYTE a;
 };
+#pragma pack(pop)
 
 // hack for stupid GDIplus
-void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color )
-{
+void RemoveAlphaFromBitmap(Gdiplus::Bitmap& source, Gdiplus::Color color) {
     using namespace Gdiplus;
-    Rect r( 0, 0, source.GetWidth(),source.GetHeight() );
-    BitmapData  bdSrc;
-    source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
+    Rect r(0, 0, source.GetWidth(), source.GetHeight());
+    BitmapData bdSrc;
+    if (source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
+        auto bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
 
-    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+        //bpSrc += (int)sourceChannel;
 
-    //bpSrc += (int)sourceChannel;
+        for (int i = r.Height * r.Width; i > 0; i--) {
+            auto* c = reinterpret_cast<BGRA_COLOR*>(bpSrc);
 
-    for ( int i = r.Height * r.Width; i > 0; i-- )
-    {
-        BGRA_COLOR * c = reinterpret_cast<BGRA_COLOR *>(bpSrc);
-
-        if(c->a!=255)
-        {
-            //c = 255;
-            DWORD * d= reinterpret_cast<DWORD*>(bpSrc);
-            *d= color.ToCOLORREF();
-            c ->a= 255;
+            if (c->a != 255) {
+                //c = 255;
+                auto d = reinterpret_cast<DWORD*>(bpSrc);
+                *d = color.ToCOLORREF();
+                c->a = 255;
+            }
+            bpSrc += 4;
         }
-        bpSrc += 4;
+        source.UnlockBits(&bdSrc);
     }
-    source.UnlockBits( &bdSrc );
 }
 
 void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
@@ -424,8 +420,7 @@ void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
 }
 
 void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font, const Color& ColorText, const Color& ColorStroke,
-    int HorPos, int VertPos,
-    int width)
+    int HorPos, int VertPos, int width)
 {
     RectF OriginalTextRect, NewTextRect;
     FontFamily ff;
@@ -448,9 +443,9 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
     gr_temp.SetPageUnit(UnitPixel);
     GraphicsPath path;
     gr_temp.SetSmoothingMode(SmoothingModeHighQuality);
-    path.AddString(Text, -1, &ff, static_cast<int>(NewFont.GetStyle()), NewFont.GetSize(), Point(0, 0), &format);
+    path.AddString(Text, -1, &ff, NewFont.GetStyle(), NewFont.GetSize(), Point(0, 0), &format);
 
-    Pen pen(ColorStroke, static_cast<float>(k));
+    Pen pen(ColorStroke, k);
     pen.SetAlignment(PenAlignmentCenter);
 
     float x, y;
@@ -479,39 +474,30 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
 }
 
 // hack for stupid GDIplus
-void ChangeAlphaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel)
-{
+void ChangeAlphaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel) {
     Rect r(0, 0, source.GetWidth(), source.GetHeight());
-    BitmapData bdSrc;
-    BitmapData bdDst;
-    source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
-    dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
+    BitmapData bdSrc, bdDst;
 
-    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
-    BYTE* bpDst = reinterpret_cast<BYTE*>(bdDst.Scan0);
-    bpSrc += static_cast<int>(sourceChannel);
-    bpDst += static_cast<int>(destChannel);
+    if (source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
+        if (dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst) == Ok) {
+            auto bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+            auto bpDst = static_cast<BYTE*>(bdDst.Scan0);
+            bpSrc += sourceChannel;
+            bpDst += destChannel;
 
-    for (int i = r.Height * r.Width; i > 0; i--)
-    {
-        // if(*bpSrc != 255)
-        {
-            *bpDst = static_cast<BYTE>((float(255 - *bpSrc) / 255) *  *bpDst);
+            for (int i = r.Height * r.Width; i > 0; i--) {
+                // if(*bpSrc != 255)
+                {
+                    *bpDst = static_cast<BYTE>((static_cast<float>(255 - *bpSrc) / 255) * *bpDst);
+                }
+
+                bpSrc += 4;
+                bpDst += 4;
+            }
+            dest.UnlockBits(&bdDst);
         }
-
-        /*if(*bpDst == 0)
-        {
-        bpDst -=(int)destChannel;
-        *bpDst = 0;
-        *(bpDst+1) = 0;
-        *(bpDst+2) = 0;
-        bpDst +=(int)destChannel;
-        }*/
-        bpSrc += 4;
-        bpDst += 4;
+        source.UnlockBits(&bdSrc);
     }
-    source.UnlockBits(&bdSrc);
-    dest.UnlockBits(&bdDst);
 }
 
 Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Font& font) {
@@ -534,7 +520,7 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
         Format = GetFormatByFileName(szFilename);
     }
 
-    TCHAR* szImgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
+    const TCHAR* szImgTypes[] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
 
     CString szNameBuffer, buffer2;
 
@@ -550,14 +536,14 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
     if (userFolder.Right(1) != _T('\\')) {
         userFolder += _T('\\');
     }
-    buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
+    buffer2.Format(_T("%s%s.%s"), (Folder ? userFolder : AppRuntimeInfo::instance()->tempDirectoryW()).GetString(), szNameBuffer.GetString(),
                     szImgTypes[Format]);
     if (!img) {
         szBuffer = buffer2;
         return true;
     }
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
-    WinUtils::CreateFilePath(resultFilename);
+
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
 
     szBuffer = resultFilename;
@@ -608,6 +594,18 @@ std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
 }
 
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType) {
+    const CString folder = WinUtils::GetFilePath(fileName);
+
+    if (!folder.IsEmpty()) {
+        if (!WinUtils::FileExists(folder)) {
+            if (!WinUtils::CreateFolder(folder)) {
+                throw IOException("Could not create the folder '" + W2U(folder) + "'", W2U(fileName));
+            }
+        }  else if (!WinUtils::IsDirectory(folder)) {
+            throw IOException("This is not a folder: '" + W2U(folder) + "'", W2U(fileName));
+        }
+    }
+
     std::unique_ptr<Bitmap> quantizedImage;
 
     if (Format == sifDetectByExtension) {
@@ -615,7 +613,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
     }
 
     Gdiplus::Status result;
-    TCHAR szMimeTypes[5][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif"), _T("image/webp"), _T("image/webp") };
+    const TCHAR* szMimeTypes[] = { _T("image/jpeg"), _T("image/png"), _T("image/gif"), _T("image/webp"), _T("image/webp") };
     CLSID clsidEncoder;
     EncoderParameters eps;
     eps.Count = 1;
@@ -636,8 +634,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
     } else if (Format == sifGIF) { // GIF
-        ColorQuantizer quantizer;
-        quantizedImage = quantizer.getQuantized(img, (Quality < 50) ? 16 : 256);
+        quantizedImage = ColorQuantizer::getQuantized(img, (Quality < 50) ? 16 : 256);
         if (quantizedImage) {
             img = quantizedImage.get();
         }
@@ -653,7 +650,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
             result = stream ? img->Save(stream, &clsidEncoder, &eps) : img->Save(fileName, &clsidEncoder);
         }
     } else {
-        throw std::runtime_error("Could not find suitable converter");
+        throw std::runtime_error("Could not find a suitable converter");
     }
 
     if (result != Ok) {
@@ -668,7 +665,6 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
 
     return true;
 }
-
 
 SaveImageFormat GetFormatByFileName(CString filename) {
     CString ext = WinUtils::GetFileExt(filename);
@@ -691,29 +687,24 @@ CRect CenterRect(CRect r1, const CRect& intoR2)
     return r1;
 }
 
-
 short GetImageOrientation(Image* img) {
     UINT totalBufferSize = 0, numProperties;
     short orient = 0;
     img->GetPropertySize(&totalBufferSize, &numProperties);
 
     if (totalBufferSize) {
-        PropertyItem* all_items = (PropertyItem*)malloc(totalBufferSize);
-        if (!all_items) {
+        auto allItems = make_unique_malloc<PropertyItem>(totalBufferSize);
+        if (!allItems) {
             return orient;
         }
-        img->GetAllPropertyItems(totalBufferSize, numProperties, all_items);
+        img->GetAllPropertyItems(totalBufferSize, numProperties, allItems.get());
 
         for (UINT j = 0; j < numProperties; ++j) {
-            if (all_items[j].id == 0x0112) {
-
-                memcpy(&orient, all_items[j].value, sizeof(orient));
-
-
+            if (allItems.get()[j].id == 0x0112) {
+                memcpy(&orient, allItems.get()[j].value, sizeof(orient));
                 break; // only orientation
             }
         }
-        free(all_items);
     }
     return orient;
 }
@@ -758,11 +749,11 @@ PropertyItemPtr GetPropertyItemFromImage(Gdiplus::Image* bm, PROPID propId) {
     };
     UINT itemSize = bm->GetPropertyItemSize(propId);
     if (!itemSize) {
-        return PropertyItemPtr(nullptr, deleter);
+        return {nullptr, deleter};
     }
     PropertyItemPtr item(reinterpret_cast<PropertyItem*>(new uint8_t[itemSize]), deleter);
     if (bm->GetPropertyItem(propId, itemSize, item.get()) != Ok) {
-        return PropertyItemPtr(nullptr, deleter);
+        return {nullptr, deleter};
     }
     return item;
 }
@@ -779,7 +770,6 @@ UINT VoidToInt(void* data, unsigned int size) {
             return *static_cast<BYTE*>(data);
     }
 }
-
 
 CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
     CComPtr<IStream> res;
@@ -1083,19 +1073,19 @@ Rect destRect ((int)(Bounds.GetLeft()+x), (int)(Bounds.GetTop()+y), (int)(newwid
 gr.DrawImage(&temp, destRect,(int)realTextBounds.X, (int)realTextBounds.Y,(int)(realTextBounds.Width),(int)(realTextBounds.Height), UnitPixel);
 }*/
 
-bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType, bool html, std::function<size_t(void*, size_t)> readCallback) {
+bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, const std::string& mimeType, bool html, const std::function<size_t(void*, size_t)>& readCallback) {
     ULONGLONG offset = 0;
-    size_t leftBytes = static_cast<size_t>(dataSize);
+    size_t leftBytes = dataSize;
     const ULONG buf_size = 1024 * 32;
     char buffer[buf_size];
 
-    const char* footer = "\" alt=\"\" />";
-    int footerLen = strlen(footer);
+    const char* footer = R"(" alt="" />)";
+    size_t footerLen = strlen(footer);
     const char* head = "<img src=\"";
-    int headLen = strlen(head);
+    size_t headLen = strlen(head);
 
     HGLOBAL hglbCopy;
-    int cch = static_cast<int>(dataSize * 4 / 3 + 40);
+    size_t cch = dataSize * 4 / 3 + 40;
     if (html) {
         cch += footerLen + headLen;
     }
@@ -1107,19 +1097,26 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
     EmptyClipboard();
     size_t bytesToAlloc = (cch + 1) * sizeof(char);
     hglbCopy = GlobalAlloc(GMEM_MOVEABLE, bytesToAlloc);
-    if (hglbCopy == NULL) {
+    if (hglbCopy == nullptr) {
         LOG(ERROR) << "Failed to alloc global memory (" << bytesToAlloc << " bytes).";
         CloseClipboard();
         return FALSE;
     }
 
-    base64_state state;
+    base64_state state{};
     base64_stream_encode_init(&state, 0);
     char* encodedData = static_cast<char*>(GlobalLock(hglbCopy));
+
+    if (encodedData == nullptr)
+    {
+        GlobalFree(encodedData);
+        CloseClipboard();
+        return false;
+    }
+
     char* encodedDataCur = encodedData;
 
     if (html) {
-
         strncpy(encodedDataCur, head, headLen);
         encodedDataCur += headLen;
     }
@@ -1159,13 +1156,27 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
         unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
         size_t clipboardHtmlSize = clipboardHtml.size();
         HGLOBAL hglbHtml = GlobalAlloc(GMEM_MOVEABLE, clipboardHtmlSize + 1);
-        char* htmlData = static_cast<char*>(GlobalLock(hglbHtml));
 
-        strncpy(htmlData, clipboardHtml.c_str(), clipboardHtmlSize);
+        char* htmlData = static_cast<char*>(GlobalLock(hglbHtml));
+        if (htmlData == nullptr) {
+            GlobalFree(hglbHtml);
+            CloseClipboard();
+            return false;
+        }
+
+        errno_t err = strncpy_s(htmlData, clipboardHtmlSize + 1, clipboardHtml.c_str(), clipboardHtmlSize);
+        if (err != 0) {
+            GlobalUnlock(hglbHtml);
+            GlobalFree(hglbHtml);
+            CloseClipboard();
+            return false;
+        }
+
         htmlData[clipboardHtmlSize] = 0;
         GlobalUnlock(hglbHtml);
         SetClipboardData(htmlClipboardFormatId, hglbHtml);
     }
+
     CloseClipboard();
     return true;
 }
@@ -1225,15 +1236,17 @@ ImageInfo GetImageInfo(const wchar_t* fileName) {
     if (!img) {
         return res;
     }
+
     auto* bm = img->getBitmap();
     if (bm) {
         res.width = bm->GetWidth();
         res.height = bm->GetHeight();
     }
+
     return res;
 }
 
-bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName) {
+bool SaveImageFromClipboardDataUriFormat(const CString& clipboardText, CString& fileName) {
     if (clipboardText.Left(5) != _T("data:")) {
         return false;
     }
@@ -1273,7 +1286,7 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
         if (!outLen) {
             return false;
         }
-        CString tempDirectory = AppParams::instance()->tempDirectoryW();
+        CString tempDirectory = AppRuntimeInfo::instance()->tempDirectoryW();
         CString extension = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(W2U(contentType)));
         if (extension.IsEmpty()) {
             extension = _T("dat");
@@ -1297,36 +1310,31 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
 
 // Allocates storage for entire file 'file_name' and returns contents and size
 std::pair<std::unique_ptr<uint8_t[]>, size_t> ExUtilReadFile(const wchar_t* file_name) {
-
     std::unique_ptr<uint8_t[]> file_data;
 
     if (file_name == nullptr) {
-        return {};
+        throw std::invalid_argument("file_name cannot be null");
     }
 
-    FILE* in = _wfopen(file_name, L"rb");
-    if (in == nullptr) {
+    std::ifstream in(file_name, std::ios::binary | std::ios::ate);
+    if (!in) {
         throw IOException("Cannot open input file", IuCoreUtils::WstringToUtf8(file_name));
     }
-    fseek(in, 0, SEEK_END);
-    size_t file_size = ftell(in);
-    fseek(in, 0, SEEK_SET);
+
+    std::streamoff file_size_off = in.tellg();
+    if (file_size_off < 0) {
+        throw IOException("Cannot determine file size", IuCoreUtils::WstringToUtf8(file_name));
+    }
+    auto file_size = static_cast<size_t>(file_size_off);
+    in.seekg(0, std::ios::beg);
+
     try {
         file_data = std::make_unique<uint8_t[]>(file_size);
+    } catch (std::exception&) {
+        throw IOException("Unable to allocate memory for reading file");
     }
-    catch (std::exception &) {
-        LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
-        fclose(in);
-        return {};
-    }
-    if (file_data == nullptr) {
-        fclose(in);
-        return {};
-    }
-    int ok = (fread(file_data.get(), 1, file_size, in) == file_size);
-    fclose(in);
 
-    if (!ok) {
+    if (!in.read(reinterpret_cast<char*>(file_data.get()), static_cast<std::streamsize>(file_size))) {
         throw IOException(str(boost::format("Could not read %d bytes of data from file") % file_size), IuCoreUtils::WstringToUtf8(file_name));
     }
 

@@ -370,8 +370,6 @@ HRESULT CHyperLinkControlAccessible::ValidateChildId(VARIANT& varChildId) {
                     hr = E_INVALIDARG;
                 }
             }
-
-
         }
     }
     return hr;

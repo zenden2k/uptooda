@@ -21,7 +21,7 @@ public:
     explicit FrameGrabberDlg(QString fileName, QWidget *parent = 0);
     ~FrameGrabberDlg();
     
-    void frameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
+    void frameGrabbed(const std::string&, int64_t, const std::shared_ptr<AbstractImage>&);
     void getGrabbedFrames(QStringList& fileNames) const;
 private slots:
     void on_grabButton_clicked();

@@ -40,7 +40,7 @@ protected:
     void onTaskStatusChanged(UploadTask* task);
     void onTaskFinished(UploadTask* task, bool ok);
     void onSessionFinished(UploadSession* session);
-    void onFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
+    void onFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
     void checkShortUrl(UploadTask* task);
     void markServer(size_t id);
     void processFinished();

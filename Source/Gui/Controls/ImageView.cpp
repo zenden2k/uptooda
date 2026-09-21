@@ -194,7 +194,7 @@ void CImageViewWindow::MyCenterWindow(HWND hWndCenter, int width, int height) {
         yTop = rcArea.top;
 
     // map screen coordinates to child coordinates
-    ::SetWindowPos(m_hWnd, NULL, xLeft, yTop, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+    SetWindowPos(NULL, xLeft, yTop, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)

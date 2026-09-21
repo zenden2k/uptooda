@@ -15,7 +15,7 @@ struct BadFileFormat {
 
 class FileTypeCheckTask: public BackgroundTask {
 public:
-    explicit FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer);
+    explicit FileTypeCheckTask(IFileList* fileList, ServerProfileGroup sessionImageServer, ServerProfileGroup sessionFileServer, ImageUploadParams defaultImageUploadParams);
 	
 	BackgroundTaskResult doJob() override;
 
@@ -30,4 +30,5 @@ public:
         ServerProfileGroup sessionFileServer_;
         std::string message_;
         std::vector<BadFileFormat> errors_;
+        ImageUploadParams defaultImageUploadParams_;
 };

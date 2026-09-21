@@ -26,21 +26,8 @@ function _RegexSimple(data, regStr, start) {
         return resultStr;
 }
 
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function _IdFromPath(path) {
-    return _RegReplace(path, "disk:", "") + "/";
+    return StrReplace(path, "disk:", "") + "/";
 }
 /*function _UrlEncodePath(str) {
     local res = "";
@@ -153,7 +140,7 @@ function GetFolderList(list) {
                 }
                 local folder = CFolderItem();
                 local path = item.path;
-                path = _RegReplace(path, "disk:", "") + "/";
+                path = StrReplace(path, "disk:", "") + "/";
                 folder.setId(path);
                 folder.setTitle(item.name);
                 folder.setSummary("");
@@ -391,19 +378,19 @@ function Authenticate() {
         local confirmCode = InputDialog(tr("yandexdisk.confirmation.text", "You need to need to sign in to your Yandex.Disk account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
         if ( confirmCode != "" ) {
             nm.setUrl("https://oauth.yandex.ru/token");
-            nm.addQueryParam("grant_type", "authorization_code");
-            nm.addQueryParam("code", confirmCode);
-            //nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
-            //nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
-            nm.addQueryParam("client_id", clientId);
-            nm.addQueryParam("client_secret", clientSecret);
+            nm.addPostField("grant_type", "authorization_code");
+            nm.addPostField("code", confirmCode);
+            //nm.addPostField("client_id", "28d8d9c854554812ad8b60c150375462");
+            //nm.addPostField("client_secret", "7d6fee42d583498ea7740bcf8b753197");
+            nm.addPostField("client_id", clientId);
+            nm.addPostField("client_secret", clientSecret);
             local deviceId = GetDeviceId();
             if (deviceId != "") {
-                nm.addQueryParam("device_id", deviceId);
+                nm.addPostField("device_id", deviceId);
             }
             local deviceName = GetDeviceName();
             if (deviceName != "") {
-                nm.addQueryParam("device_name", deviceName);
+                nm.addPostField("device_name", deviceName);
             }
             nm.doPost("");
 
@@ -451,9 +438,9 @@ function DoLogout() {
     }
     local url = "https://oauth.yandex.ru/revoke_token";
     nm.setUrl(url);
-    nm.addQueryParam("access_token", token);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("client_secret", clientSecret);
+    nm.addPostField("access_token", token);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("client_secret", clientSecret);
 
     nm.doPost("");
 
@@ -567,7 +554,7 @@ function UploadFile(FileName, options) {
             nm.addQueryHeader("Transfer-Encoding", "");
             nm.addQueryHeader("Authorization",_GetAuthorizationString());
             nm.setMethod("PUT");
-            nm.doGet("");
+            nm.doUpload("", "");
 
             if ( nm.responseCode() == 200 ) {
                 local viewUrl = "";
@@ -653,10 +640,6 @@ function GetFolderAccessTypeList() {
 function GetServerParamList() {
     return {
         useWebdav = "Use WebDav",
-        token = "Token",
-        enableOAuth ="enableOAuth",
-        tokenType = "tokenType",
-        PrevLogin = "PrevLogin",
-        OAuthLogin = "OAuthLogin"
+        enableOAuth ="enableOAuth"
     };
 }

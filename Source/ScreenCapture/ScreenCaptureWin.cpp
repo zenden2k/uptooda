@@ -37,7 +37,7 @@ namespace ScreenCapture {
 
 using namespace Gdiplus;
 
-void ProcessEvents(void)
+void ProcessEvents()
 {
     MSG msg;
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -56,8 +56,6 @@ void ActivateWindowRepeat(HWND handle, int count)
         ProcessEvents();
     }
 }
-
-
 
 HRGN CloneRegion(HRGN source)
 {
@@ -87,7 +85,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
     return TRUE;
 }
 
-void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
+void AveragePolyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
 enum ChannelARGB {
     Blue = 0,
@@ -97,37 +95,36 @@ enum ChannelARGB {
 };
 
 // hack for stupid GDIplus
-void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, ChannelARGB sourceChannel,
-                                                  ChannelARGB destChannel )
-{
-    Rect r( 0, 0, source.GetWidth(), source.GetHeight() );
-    BitmapData bdSrc;
-    BitmapData bdDst;
-    source.LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
-    dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
-    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
-    BYTE* bpDst = static_cast<BYTE*>(bdDst.Scan0);
-    bpSrc += sourceChannel;
-    bpDst += destChannel;
-    for ( int i = r.Height * r.Width; i > 0; i-- )
-    {
-        *bpDst = *bpSrc;
-        if (*bpDst == 0)
-        {
-            bpDst -= destChannel;
-            *bpDst = 0;
-            *(bpDst + 1) = 0;
-            *(bpDst + 2) = 0;
+void TransferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, ChannelARGB sourceChannel,
+                                                  ChannelARGB destChannel) {
+    Rect r(0, 0, static_cast<int>(source.GetWidth()), static_cast<int>(source.GetHeight()));
+    BitmapData bdSrc{};
+    BitmapData bdDst{};
+    if (source.LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
+        if (dest.LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdDst) == Ok) {
+            auto bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+            auto bpDst = static_cast<BYTE*>(bdDst.Scan0);
+            bpSrc += sourceChannel;
             bpDst += destChannel;
+            for (int i = r.Height * r.Width; i > 0; i--) {
+                *bpDst = *bpSrc;
+                if (*bpDst == 0) {
+                    bpDst -= destChannel;
+                    *bpDst = 0;
+                    *(bpDst + 1) = 0;
+                    *(bpDst + 2) = 0;
+                    bpDst += destChannel;
+                }
+                bpSrc += 4;
+                bpDst += 4;
+            }
+            dest.UnlockBits(&bdDst);
         }
-        bpSrc += 4;
-        bpDst += 4;
+        source.UnlockBits(&bdSrc);
     }
-    source.UnlockBits( &bdSrc );
-    dest.UnlockBits( &bdDst );
 }
 
-void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n)
+void AveragePolyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n)
 {
     if (path.size() > 2)
     {
@@ -169,14 +166,6 @@ void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsig
             }
         }
     }
-}
-
-CRectRegion::CRectRegion()
-{
-}
-
-CRectRegion::~CRectRegion()
-{
 }
 
 CRectRegion::CRectRegion(int x, int y, int width, int height)
@@ -315,8 +304,7 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
     return result;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage)
-{
+std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage) {
     assert(whiteBGImage);
     assert(blackBGImage);
 
@@ -324,25 +312,40 @@ std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* b
     int height = whiteBGImage->GetHeight();
     std::unique_ptr<Bitmap> resultImage = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
     Gdiplus::Rect rect(0, 0, blackBGImage->GetWidth(), blackBGImage->GetHeight());
+
     // Access the image data directly for faster image processing
     BitmapData blackImageData;
-    blackBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &blackImageData);
     BitmapData whiteImageData;
-    whiteBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &whiteImageData);
     BitmapData resultImageData;
-    resultImage->LockBits(&rect, ImageLockModeWrite, PixelFormat32bppARGB, &resultImageData);
+
+    Gdiplus::Status status = blackBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &blackImageData);
+    if (status != Gdiplus::Ok) {
+        return nullptr;
+    }
+
+    status = whiteBGImage->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &whiteImageData);
+    if (status != Gdiplus::Ok) {
+        blackBGImage->UnlockBits(&blackImageData);
+        return nullptr;
+    }
+
+    status = resultImage->LockBits(&rect, ImageLockModeWrite, PixelFormat32bppARGB, &resultImageData);
+    if (status != Gdiplus::Ok) {
+        blackBGImage->UnlockBits(&blackImageData);
+        whiteBGImage->UnlockBits(&whiteImageData);
+        return nullptr;
+    }
+
     void* pBlackImage = blackImageData.Scan0;
     void* pWhiteImage = whiteImageData.Scan0;
     void* pResultImage = resultImageData.Scan0;
-    unsigned char* blackBGImageRGB = ( unsigned char*)pBlackImage /*new unsigned char[bytes]*/;
-    unsigned char* whiteBGImageRGB = ( unsigned char*)pWhiteImage /*new unsigned char[bytes]*/;
-    unsigned char* resultImageRGB = ( unsigned char*)pResultImage /* new unsigned char[bytes]*/;
+    auto* blackBGImageRGB = static_cast<unsigned char*>(pBlackImage);
+    auto* whiteBGImageRGB = static_cast<unsigned char*>(pWhiteImage);
+    auto* resultImageRGB = static_cast<unsigned char*>(pResultImage);
     size_t offset = 0;
     int b0, g0, r0, b1, g1, r1, alphaR, alphaG, alphaB, resultR, resultG, resultB;
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
             // ARGB is in fact BGRA (little endian)
             b0 = blackBGImageRGB[offset + 0];
             g0 = blackBGImageRGB[offset + 1];
@@ -353,14 +356,12 @@ std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* b
             alphaR = r0 - r1 + 255;
             alphaG = g0 - g1 + 255;
             alphaB = b0 - b1 + 255;
-            if (alphaG != 0)
-            {
+            if (alphaG != 0) {
                 resultR = r0 * 255 / alphaG;
                 resultG = g0 * 255 / alphaG;
                 resultB = b0 * 255 / alphaG;
             }
-            else
-            {
+            else {
                 // Could be any color since it is fully transparent.
                 resultR = 255;
                 resultG = 255;
@@ -375,7 +376,6 @@ std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* b
     }
     blackBGImage->UnlockBits(&blackImageData);
     whiteBGImage->UnlockBits(&whiteImageData);
-    // whiteBGImage2->UnlockBits(&whiteImageData2);
     resultImage->UnlockBits(&resultImageData);
     return resultImage;
 }
@@ -419,7 +419,7 @@ HWND CreateDummyWindow(const RECT& rc)
 {
     HWND hWnd;
     WNDCLASSEX WndClsEx;
-    TCHAR* clsName = _T("DummyWindow");
+    LPCTSTR clsName = _T("DummyWindow");
     // Create the application window
     WndClsEx.cbSize        = sizeof(WNDCLASSEX);
     WndClsEx.style         = CS_HREDRAW | CS_VREDRAW;
@@ -476,15 +476,15 @@ BOOL BringWindowToForeground(HWND hWnd)
 
 enum Corner { TopLeft, TopRight, BottomLeft, BottomRight };
 
-// Removes a pixel from the clipping region of the given graphics object, if
-// the bitmap is red at the coordinates of the pixel, or if it is null.
-// </summary>
-// <param name="bmp">The bitmap with the form corners masked in red</param>
-
+/**
+ * Removes a pixel from the clipping region of the given graphics object, if
+ * the bitmap is red at the coordinates of the pixel, or if it is null.
+ * @param bmp The bitmap with the form corners masked in red
+*/
 void RemoveCornerPixel(Bitmap* bmp, Graphics* g, int y, int x)
 {
     bool remove;
-    if (bmp != 0)
+    if (bmp != nullptr)
     {
         Color color;
         bmp->GetPixel(x, y, &color);
@@ -502,10 +502,11 @@ void RemoveCornerPixel(Bitmap* bmp, Graphics* g, int y, int x)
     }
 }
 
-// / <summary>
-// / Removes a corner from the clipping region of the given graphics object.
-// / </summary>
-// / <param name="bmp">The bitmap with the form corners masked in red</param>
+
+/**
+ * Removes a corner from the clipping region of the given graphics object.
+ * @param bmp The bitmap with the form corners masked in red
+*/
 void RemoveCorner(Bitmap* bmp, Graphics* g, int minx, int miny, int maxx, Corner corner)
 {
     int s1[5] = { 5, 3, 2, 1, 1 };
@@ -544,10 +545,10 @@ void RemoveCorner(Bitmap* bmp, Graphics* g, int minx, int miny, int maxx, Corner
 
 bool RemoveCorners(Bitmap* windowImage, Bitmap* redBGImage, Bitmap** outResult)
 {
-    const int cornerSize = 5;
+    constexpr int cornerSize = 5;
     if (windowImage->GetWidth() > cornerSize * 2 && windowImage->GetHeight() > cornerSize * 2)
     {
-        Bitmap* result = new Bitmap(windowImage->GetWidth(),  windowImage->GetHeight(), PixelFormat32bppARGB);
+        auto* result = new Bitmap(windowImage->GetWidth(),  windowImage->GetHeight(), PixelFormat32bppARGB);
         Graphics g(result);
         g.Clear(Color::Transparent);
         // Remove the transparent pixels in the four corners
@@ -577,8 +578,8 @@ void DrawShadow(Graphics& g, Bitmap* shadowBitmap, int x, int y, int width, int 
 
 bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
 {
-    int width = input->GetWidth();
-    int height = input->GetHeight();
+    const int width = static_cast<int>(input->GetWidth());
+    const int height = static_cast<int>(input->GetHeight());
     Color c;
     input->GetPixel(0, 0, &c);
     bool topLeftRound = c.GetAlpha() < 20;
@@ -613,7 +614,7 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     }
     else
     {
-        Bitmap* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
+        auto* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
         Graphics g(bmpResult);
         g.Clear(Gdiplus::Color::Transparent);
         g.DrawImage(topLeftShadow.get(), 0, 0);
@@ -784,10 +785,10 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
     if (!m_ScreenRegion.IsNull())
         m_ScreenRegion.DeleteObject();
     m_ScreenRegion.CreateRectRgnIndirect(&captureRect);
-    for (size_t i = 0; i < m_hWnds.size(); i++)
+    for (auto & m_hWnd : m_hWnds)
     {
-        CRgn newRegion = ScreenshotHelper::getWindowVisibleRegion(m_hWnds[i].wnd);
-        m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR : RGN_DIFF);
+        CRgn newRegion = ScreenshotHelper::getWindowVisibleRegion(m_hWnd.wnd);
+        m_ScreenRegion.CombineRgn(newRegion, m_hWnd.Include ? RGN_OR : RGN_DIFF);
     }
     bool move = false;
     bool parentIsInList = false;
@@ -809,7 +810,7 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
         if (topWindow)
         {
             TCHAR Buffer[MAX_PATH];
-            GetClassName(topWindow, Buffer, sizeof(Buffer) / sizeof(TCHAR));
+            GetClassName(topWindow, Buffer, std::size(Buffer));
             if (lstrcmpi(Buffer, _T("Shell_TrayWnd")))
             {
                 move = true;
@@ -822,7 +823,7 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
     GuiTools::GetScreenBounds(scr);
     m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
     std::shared_ptr<Bitmap> resultBm;
-    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVistaOrLater() &&
+    if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  IsWindowsVistaOrGreater() &&
         IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
         && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
     {
@@ -836,10 +837,6 @@ std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
             ::SetWindowPos(topWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     return resultBm;
-}
-
-CWindowHandlesRegion::~CWindowHandlesRegion()
-{
 }
 
 std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::const_iterator CWindowHandlesRegion::cbegin() const {
@@ -856,7 +853,7 @@ std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::size
 
 void CWindowHandlesRegion::AddWindow(HWND wnd, bool Include)
 {
-    CWindowHandlesRegionItem newItem;
+    CWindowHandlesRegionItem newItem{};
     newItem.wnd = wnd;
     newItem.Include = Include;
     RemoveWindow(wnd);
@@ -975,11 +972,6 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
     return !!m_capturedBitmap;
 }
 
-//bool CScreenCaptureEngine::capturedBitmapReleased_ = false;
-CFreeFormRegion::CFreeFormRegion()
-{
-}
-
 void CFreeFormRegion::AddPoint(POINT point)
 {
     m_curvePoints.push_back(point);
@@ -990,19 +982,26 @@ void CFreeFormRegion::Clear()
     m_curvePoints.clear();
 }
 
-bool CFreeFormRegion::IsEmpty()
-{
-    if (m_curvePoints.empty()) return true;
+bool CFreeFormRegion::IsEmpty() {
+    if (m_curvePoints.empty()) {
+        return true;
+    }
+
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
-    average_polyline(m_curvePoints, curveAvgPoints, 29);
-    for (size_t i = 0; i < curveAvgPoints.size(); i++)
-    {
-        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
+    AveragePolyline(m_curvePoints, curveAvgPoints, 29);
+    points.reserve(curveAvgPoints.size());
+
+    for (const auto& [x, y] : curveAvgPoints) {
+        points.emplace_back(x, y);
     }
-    if (points.empty()) return true;
-    grPath.AddCurve(&points[0], points.size());
+
+    if (points.empty()) {
+        return true;
+    }
+
+    grPath.AddCurve(&points[0], static_cast<INT>(points.size()));
     Rect grPathRect;
     grPath.GetBounds(&grPathRect);
     int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
@@ -1010,17 +1009,18 @@ bool CFreeFormRegion::IsEmpty()
     return !(bmWidth * bmHeight);
 }
 
-std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src)
-{
+std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src) {
     GraphicsPath grPath;
     std::vector<Point> points;
     std::vector<POINT> curveAvgPoints;
-    average_polyline(m_curvePoints, curveAvgPoints, 29);
-    for (size_t i = 0; i < curveAvgPoints.size(); i++)
-    {
-        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
+    AveragePolyline(m_curvePoints, curveAvgPoints, 29);
+    points.reserve(curveAvgPoints.size());
+
+    for (const auto& [x, y] : curveAvgPoints) {
+        points.emplace_back(x, y);
     }
-    grPath.AddCurve(&points[0], points.size());
+
+    grPath.AddCurve(&points[0], static_cast<INT>(points.size()));
     Rect grPathRect;
     grPath.GetBounds(&grPathRect);
     int bmWidth = grPathRect.GetRight() - grPathRect.GetLeft();
@@ -1038,27 +1038,19 @@ std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src)
     SolidBrush gdipBrush(Color(255, 0, 0, 0));
     Bitmap alphaBm(bmWidth, bmHeight, PixelFormat32bppARGB);
     Graphics alphaGr(&alphaBm);
-    alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
     alphaGr.SetSmoothingMode(SmoothingModeAntiAlias);
     alphaGr.FillPath(&gdipBrush, &grPath);
-    std::shared_ptr<Bitmap> finalbm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
-    Graphics gr(finalbm.get());
-    gr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
+    auto finalBitmap = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
+    Graphics gr(finalBitmap.get());
+    gr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
     gr.DrawImage(&b, 0, 0);
     SolidBrush gdipBrush2(Color(100, 123, 0, 0));
-    Pen pn(Color(255, 40, 255), 1.0f) ;
-    Pen pn2(Color(40, 0, 255), 1.0f) ;
-    transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalbm, Alpha, Alpha);
-    return finalbm;
-}
-
-CFreeFormRegion::~CFreeFormRegion()
-{
-}
-
-CActiveWindowRegion::CActiveWindowRegion()
-{
+    Pen pn(Color(255, 40, 255), 1.0f);
+    Pen pn2(Color(40, 0, 255), 1.0f);
+    TransferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalBitmap, Alpha, Alpha);
+    return finalBitmap;
 }
 
 std::shared_ptr<Gdiplus::Bitmap> CActiveWindowRegion::GetImage(HDC src)

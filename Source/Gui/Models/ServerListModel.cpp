@@ -1,8 +1,13 @@
 #include "ServerListModel.h"
 
+#include <boost/container/container_fwd.hpp>
+#include <utility>
+
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Utils/StringUtils.h"
+#include "Gui/Interfaces/IFavoriteServers.h"
 
 namespace {
 
@@ -21,58 +26,82 @@ size_t StringSearch(const std::string& str1, const std::string& str2) {
 
 }
 
-ServerListModel::ServerListModel(CMyEngineList* engineList) : engineList_(engineList) {
+ServerListModel::ServerListModel(CMyEngineList* engineList, IFavoriteServers* favoriteServers) : engineList_(engineList), favoriteServers_(favoriteServers) {
     updateEngineList();
 }
 
-ServerListModel::~ServerListModel() {
-}
 
 void ServerListModel::updateEngineList() {
-    filteredItemsIndexes_.clear();
+    filteredItemsIndexes_.reset();
     items_.clear();
 
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
 
-        ServerData sd;
-        sd.ued = ued;
-        sd.uedIndex = i;
-        sd.engineList = engineList_;
+        auto sd = std::make_shared<ServerData>();
+        sd->ued = ued;
+        sd->uedIndex = i;
+        sd->engineList = engineList_;
 
-        items_.push_back(std::move(sd));
+        items_.push_back(sd);
+    }
+
+    std::sort(items_.begin(), items_.end(), [this](const auto& a, const auto& b) {
+        bool isFavoriteA = favoriteServers_->isServerFavorite(a->ued->Name);
+        bool isFavoriteB = favoriteServers_->isServerFavorite(b->ued->Name);
+
+        if (isFavoriteA != isFavoriteB) {
+            return isFavoriteA; // favorite servers go first
+        }
+
+        return IuStringUtils::StrCaseInsensitiveCompare(a->ued->Name, b->ued->Name) < 0;
+    });
+
+    if (iconsChangedCallback_) {
+        iconsChangedCallback_();
     }
 }
 
 std::string ServerListModel::getItemText(int row, int column) const {
-    const ServerData& serverData = getDataByIndex(row);
-    if (column == 0) {
-        return serverData.getServerDisplayName();
+    auto serverData = getDataByIndex(row);
+    if (column == tcServerName) {
+        return serverData->getServerDisplayName();
     }
-    if (column == 1) {
-        return serverData.getMaxFileSizeString();
+    if (column == tcMaxFileSize) {
+        return serverData->getMaxFileSizeString();
     }
-    if (column == 2) {
-        return serverData.getStorageTimeString();
+    if (column == tcStorageTime) {
+        return serverData->getStorageTimeString();
     }
-    if (column == 3) {
-        return serverData.ued->NeedAuthorization == 2 ? _("yes") : _("no");
-    } else if (column == 4) {
-        return serverData.getFormats();
+    if (column == tcAccount) {
+        return serverData->getAccountStr();
+    }
+    if (column == tcFileFormats) {
+        return serverData->getFormats();
     } 
     return {};
 }
 
 uint32_t ServerListModel::getItemColor(int row) const {
-    const ServerData& serverData = getDataByIndex(row);
-    return serverData.color;
+    auto serverData = getDataByIndex(row);
+    std::string name = serverData->ued->Name;
+
+    if (favoriteServers_->isServerBlacklisted(name)) {
+        return RGB(193, 18, 31); // Red
+    }
+
+    if (favoriteServers_->isServerFavorite(name)) {
+        return RGB(56,176, 0); // Green
+    }
+
+    return GetSysColor(COLOR_WINDOWTEXT);
 }
 
 size_t ServerListModel::getCount() const {
-    if (filter_.empty()) {
+    if (filter_.empty() || !filteredItemsIndexes_.has_value()) {
         return items_.size();
     }
-    return filteredItemsIndexes_.size();
+    return filteredItemsIndexes_->size();
 }
 
 void ServerListModel::notifyRowChanged(size_t row) {
@@ -81,19 +110,43 @@ void ServerListModel::notifyRowChanged(size_t row) {
     }
 }
 
-const ServerData& ServerListModel::getDataByIndex(size_t row) const {
-    if (!filter_.empty()) {
-        row = filteredItemsIndexes_[row];
+std::shared_ptr<ServerData> ServerListModel::getDataByIndex(size_t row) const {
+    if (!filter_.empty() && filteredItemsIndexes_.has_value() ) {
+        row = filteredItemsIndexes_.value()[row];
     }
     return items_[row];
 }
 
-void ServerListModel::setOnRowChangedCallback(std::function<void(size_t)> callback) {
+std::optional<size_t> ServerListModel::getIndexByServerName(const std::string& serverName) const {
+    std::optional<size_t> index;
+    for (size_t i = 0; i < items_.size(); i++) {
+        if (items_[i]->ued->Name == serverName) {
+            index = i;
+            break;
+        }
+    }
+    if (!index.has_value() || filter_.empty() || !filteredItemsIndexes_.has_value()) {
+        return index;
+    }
+
+    auto it = std::find(filteredItemsIndexes_->begin(), filteredItemsIndexes_->end(), index);
+
+    if (it == filteredItemsIndexes_->end()) {
+        return std::nullopt;
+    }
+    return std::distance(filteredItemsIndexes_->begin(), it);
+}
+
+void ServerListModel::setRowChangedCallback(std::function<void(size_t)> callback) {
     rowChangedCallback_ = std::move(callback);
 }
 
-void ServerListModel::setOnItemCountChangedCallback(std::function<void(size_t)> callback) {
+void ServerListModel::setItemCountChangedCallback(std::function<void(size_t)> callback) {
     itemCountChangedCallback_ = std::move(callback);
+}
+
+void ServerListModel::setIconsChangedCallback(std::function<void()> callback) {
+    iconsChangedCallback_ = std::move(callback);
 }
 
 void ServerListModel::resetData() {
@@ -105,14 +158,15 @@ void ServerListModel::resetData() {
 
 void ServerListModel::applyFilter(const ServerFilter& filter) {
     filter_ = filter;
-    filteredItemsIndexes_.clear();
+    filteredItemsIndexes_ = std::vector<size_t>();
     size_t i = 0;
     for (const auto& item : items_) {
-        if (item.acceptFilter(filter_)) {
-            filteredItemsIndexes_.push_back(i);
+        if (item->acceptFilter(filter_, favoriteServers_)) {
+            filteredItemsIndexes_->push_back(i);
         }
         i++;
     }
+
     notifyCountChanged(getCount());
 }
 
@@ -125,13 +179,25 @@ void ServerListModel::notifyCountChanged(size_t row) {
 std::string ServerData::getFormats() const {
     if (!formats.has_value()) {
         std::string result;
-        std::map<int, std::set<std::string>> extensions;
+        std::vector<std::set<std::string>> extensions;
+        extensions.resize(ued->userTypes.size());
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
-            extensions[formatGroup.MinUserRank].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());   
+            if (!formatGroup.Extensions.empty()) {
+                const auto& userTypeIds = formatGroup.UserTypeIds.empty() ? ued->getUserTypesIds() : formatGroup.UserTypeIds;
+                for (auto userTypeId : userTypeIds) {
+                    if (userTypeId < extensions.size()) {
+                        extensions[userTypeId].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());
+                    }
+                }
+            }
         }
 
-        for (const auto& [k, v] : extensions) {
+        while (!extensions.empty() && extensions.back().empty()) {
+            extensions.pop_back();
+        }
+
+        for (const auto& v : extensions) {
             if (!result.empty()) {
                 result += "/ ";
             }
@@ -154,28 +220,49 @@ int64_t ServerData::getMaxFileSize() const {
 std::string ServerData::getMaxFileSizeString() const {
     if (!maxFileSizeString.has_value()) {
         std::string result;
-        std::map<int, int64_t> fileSizes;
+        std::vector<std::optional<int64_t>> fileSizes;
+        fileSizes.resize(ued->userTypes.size());
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
-            if (formatGroup.MaxFileSize > fileSizes[formatGroup.MinUserRank]) {
-                fileSizes[formatGroup.MinUserRank] = formatGroup.MaxFileSize;
+            if (formatGroup.MaxFileSize == 0) {
+                continue;
             }
+            const auto& userTypeIds = formatGroup.UserTypeIds.empty() ? ued->getUserTypesIds() : formatGroup.UserTypeIds;
+            for (auto userTypeId : userTypeIds) {
+                if (userTypeId >= fileSizes.size()) {
+                    continue;
+                }
+
+                if (!fileSizes[userTypeId].has_value() || formatGroup.MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED || formatGroup.MaxFileSize > *fileSizes[userTypeId]) {
+                    fileSizes[userTypeId] = formatGroup.MaxFileSize;
+                }
+            }    
         }
 
-        for (const auto [k, fileSize] : fileSizes) {
+        while (!fileSizes.empty() && !fileSizes.back().has_value()) {
+            fileSizes.pop_back();
+        }
+
+        int valueCount = 0;
+
+        for (auto fileSize : fileSizes) {
             if (!result.empty()) {
                 result += "/ ";
             }
-            if (fileSize) {
-                result += IuCoreUtils::FileSizeToString(fileSize);
+            if (fileSize.has_value()) {
+                result += fileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(*fileSize);
+                valueCount++;
+            } else {
+                result += "-";
             }
             result += " ";
         }
 
-        if (result.empty() && ued->MaxFileSize > 0) {
-            result += IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+        if (result.empty() && ued->MaxFileSize != 0) {
+            result += ued->MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+            valueCount++;
         }
-        maxFileSizeString = result;
+        maxFileSizeString = valueCount ? result : "";
     }
     return *maxFileSizeString;
 }
@@ -195,53 +282,96 @@ std::string ServerData::getStorageTimeString() const {
 }
 
 
+std::string ServerData::getAccountStr() const {
+    switch (ued->NeedAuthorization) {
+        case CUploadEngineData::naNotAvailable:
+            return "-";
+        case CUploadEngineData::naAvailable:
+            return "+";
+        case CUploadEngineData::naObligatory:
+            return _c("serverlist.account", "required");
+    }
+    return {};
+}
+
 int ServerData::getStorageTime() const {
     cacheStorageTime();
     return *storageTime;
 }
 
-bool ServerData::acceptFilter(const ServerFilter& filter) const {
+bool ServerData::acceptFilter(const ServerFilter& filter, IFavoriteServers* favoriteServers) const {
     if (!filter.query.empty()) {
         if (StringSearch(getServerDisplayName(), filter.query) == std::string::npos) {
             return false;
         }
     }
 
-    return (ued->TypeMask & filter.typeMask) != 0;
+    if ((ued->TypeMask & filter.typeMask.value()) == 0) {
+        return false;
+    }
+
+    if (filter.hideBlacklisted && favoriteServers->isServerBlacklisted(ued->Name)) {
+        return false;
+    }
+
+    if (filter.showFavoritesOnly && !favoriteServers->isServerFavorite(ued->Name)) {
+        return false;
+    }
+
+    return true;
 }
 
 void ServerData::cacheStorageTime() const {
     if (!storageTimeStr.has_value()) {
         std::string daysStr;
-        std::string result;
-        if (ued->StorageTimeInfo.size() == 1) {
-            const auto& item = ued->StorageTimeInfo[0];
-            storageTime = item.Time;
-            result = item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : str(IuStringUtils::FormatNoExcept(_n("%d day", "%d days", item.Time)) % item.Time);
-            if (item.AfterLastDownload) {
-                result += u8"\u2913";
-            }
-        } else if (!ued->StorageTimeInfo.empty()) {
-            for (const auto& item : ued->StorageTimeInfo) {
-                if (!daysStr.empty()) {
-                    daysStr += "/ ";
+
+        std::vector<std::optional<StorageTime>> storageTimes;
+        storageTimes.resize(ued->userTypes.size());
+
+        for (const auto& item : ued->StorageTimeInfo) {
+            const auto& userTypeIds = item.UserTypeIds.empty() ? ued->getUserTypesIds() : item.UserTypeIds;
+            for (auto userTypeId : userTypeIds) {
+                if (userTypeId < storageTimes.size()) {
+                    storageTimes[userTypeId] = item;
                 }
-                if (item.Time) {
-                    daysStr += item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item.Time);
-                    if (item.AfterLastDownload) {
+            }
+        }
+
+        while (!storageTimes.empty() && !storageTimes.back().has_value()) {
+            storageTimes.pop_back();
+        }
+
+        int i = 0;
+        int valueCount = 0;
+        for (const auto& item : storageTimes) {
+            if (!daysStr.empty()) {
+                daysStr += "/ ";
+            }
+            if (item.has_value()) {
+                if (item->Time) {
+                    if (!storageTime.has_value() && (i == 0 || i == 1)) {
+                        storageTime = item->Time;
+                    }
+                    daysStr += item->Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item->Time);
+                    if (item->AfterLastDownload) {
                         daysStr += u8"\u2913";
                     }
+                    valueCount++;
                 } else {
                     daysStr += "?";
                 }
-
-                daysStr += " ";
+            } else {
+                daysStr += "-";
             }
-            storageTime = ued->StorageTimeInfo[0].Time;
-            result = daysStr.empty() ? "" : str(IuStringUtils::FormatNoExcept(_("%1%days")) % daysStr);
-        } else {
+
+            daysStr += " ";
+            i++;
+        }
+
+        if (!storageTime.has_value()) {
             storageTime = 0;
         }
-        storageTimeStr = result;
+       
+        storageTimeStr = valueCount ? daysStr : "";
     }
 }

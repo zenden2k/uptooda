@@ -30,9 +30,6 @@
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ImageView.h"
 
-
-// CThumbsView
-
 struct ThumbsViewItem
 {
     CString FileName;
@@ -109,7 +106,6 @@ public:
     CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem) override;
     CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem) override;
     void getThumbnail(int itemIndex);
-    void clearImageList();
     void beginAdd();
     void endAdd();
 protected:

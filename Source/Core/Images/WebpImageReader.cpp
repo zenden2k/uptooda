@@ -37,7 +37,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, siz
         return nullptr;
     }
 
-    Gdiplus::Bitmap* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
+    auto* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
     std::unique_ptr<GdiPlusImage> img = std::make_unique<GdiPlusImage>(bm);
     //std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(pic.width, pic.height, PixelFormat32bppARGB);
     BitmapData dstData;
@@ -83,7 +83,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
         return nullptr;
     }
    
-    if (FAILED(stream->Read(pBuffer.get(), ULONG(sSize), &bytesRead))) {
+    if (FAILED(stream->Read(pBuffer.get(), static_cast<ULONG>(sSize), &bytesRead))) {
         lastError_ = L"Failed to read from IStream";
         return nullptr;
     }

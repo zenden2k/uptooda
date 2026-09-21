@@ -29,7 +29,7 @@ HtmlElement HtmlDocumentPrivate::rootElement() {
         doc3_->getElementsByTagName(tagBstr, &collection);
         long count  = 0;
         if ( !SUCCEEDED(collection->get_length(&count)) || !count) {
-            return HtmlElement();
+            return {};
         }
 
         IDispatchPtr  disp = 0;
@@ -41,12 +41,12 @@ HtmlElement HtmlDocumentPrivate::rootElement() {
 }
 
 HtmlElement HtmlDocumentPrivate::getElementById(const std::string& id) {
-    CComPtr<IHTMLElement> elem = 0;
+    CComPtr<IHTMLElement> elem;
     CComBSTR idBstr = IuCoreUtils::Utf8ToWstring(id).c_str();
     if ( SUCCEEDED( doc3_->getElementById(idBstr, &elem))  && elem  ) {
         return new HtmlElementPrivate(elem, this);
     }
-    return HtmlElement();
+    return {};
 }
 
 Sqrat::Array HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
@@ -55,7 +55,7 @@ Sqrat::Array HtmlDocumentPrivate::getElementsByTagName(const std::string& tag) {
     doc3_->getElementsByTagName(tagBstr, &collection);
     long count  = 0;
     if ( !SUCCEEDED(collection->get_length(&count))) {
-        return Sqrat::Array();
+        return {};
     }
     Sqrat::Array res(GetCurrentThreadVM(), count);
     for ( int i = 0; i < count; i ++ ) {
@@ -72,7 +72,7 @@ Sqrat::Array HtmlDocumentPrivate::getElementsByName(const std::string& name) {
     doc3_->getElementsByName(tagBstr, &collection);
     long count  = 0;
     if ( !SUCCEEDED(collection->get_length(&count))) {
-        return Sqrat::Array();
+        return {};
     }
     Sqrat::Array res(GetCurrentThreadVM(), count);
     for ( int i = 0; i < count; i ++ ) {

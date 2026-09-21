@@ -9,7 +9,6 @@
 class CNewStyleFileSaveDialog: public IMyFileDialog {
 public:
     CNewStyleFileSaveDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters);
-    ~CNewStyleFileSaveDialog();
     INT_PTR DoModal(HWND hWndParent) override;
 
     CString getFolderPath() override;

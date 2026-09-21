@@ -212,6 +212,9 @@
 #define IDI_ICONSTARTRECORD             353
 #define IDB_PNGAPPNAME                  355
 #define IDB_APPNAME                     355
+#define IDI_ICON17                      357
+#define IDB_ICONSEARCHSMALL             358
+#define IDI_ICONSETTINGSBLUE            359
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -812,6 +815,7 @@
 #define IDC_EDIT3                       1331
 #define IDC_PRIVATEKEYEDIT              1331
 #define IDC_UPLOADSPEEDLIMITEDIT        1331
+#define IDC_FILENAMETEMPLATEEDIT        1331
 #define IDC_UPLOADSPEEDLIMITLABEL       1332
 #define IDC_UPLOADSPEEDLIMITKBPSLABEL   1333
 #define IDC_CONNECTIONSTATUSLABEL       1334
@@ -870,6 +874,10 @@
 #define IDC_VIDEOSOURCECOMBO2           1376
 #define IDC_AUDIOSOURCECOMBO            1376
 #define IDC_ADAPTERLABEL                1376
+#define IDC_SEARCHSTATIC                1377
+#define IDC_FILENAMETEMPLATELABEL       1378
+#define IDC_FILENAMEMACROSBUTTON        1379
+#define IDC_SCREENSHOTMACROSBUTTON      1380
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -892,6 +900,7 @@
 #define ID_0_32787                      32787
 #define ID_0_32789                      32789
 #define IC_DELETEALL                    32791
+#define IDC_VIDEOGRABBERMACROSBUTTON    32791
 #define ID_0_OPENINOLDER                32793
 #define ID_0_OPENFINOLDER               32794
 #define IDM_OPENFINOLDER                32795
@@ -915,9 +924,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        357
+#define _APS_NEXT_RESOURCE_VALUE        361
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1377
+#define _APS_NEXT_CONTROL_VALUE         1382
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

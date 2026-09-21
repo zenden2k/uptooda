@@ -20,7 +20,7 @@ struct ServerThreadsInfo {
     //int maxThreads;
     int runningThreads;
     int waitingFileCount;
-    CUploadEngineData* ued;
+    const CUploadEngineData* ued;
     //bool fatalError;
     ServerThreadsInfo()
     {

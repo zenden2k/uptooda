@@ -22,6 +22,7 @@
 
 #include <chrono>
 #include <cassert>
+#include <memory>
 #include <thread>
 
 #include <megaapi.h>
@@ -36,7 +37,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
 #endif
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT APP_NAME_A
@@ -55,7 +56,7 @@ public:
     bool getBitmapData(char *bitmapData, size_t size) override;
     void freeBitmap() override;
 
-    virtual ~MyGfxProcessor() override;
+    ~MyGfxProcessor() override;
 protected:
     std::unique_ptr<Gdiplus::Bitmap> bitmap_;
     HGLOBAL hGlobal_;
@@ -186,8 +187,8 @@ public:
 private:
     CMegaNzUploadEngine* engine_;
 };
-CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
-    CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback))
+CMegaNzUploadEngine::CMegaNzUploadEngine(std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
+    CAdvancedUploadEngine(std::move(serverSync), settings, std::move(errorCallback))
 {
     setServerSettings(settings);
     loginFinished_ = false;
@@ -206,14 +207,14 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
 #ifdef _WIN32
     proc_ = std::make_unique<MyGfxProcessor>();
     gfxProvider_.reset(MegaGfxProvider::createExternalInstance(proc_.get()));
-    megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppParams::instance()->tempDirectory().c_str(), USER_AGENT);
+    megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppRuntimeInfo::instance()->tempDirectory().c_str(), USER_AGENT);
 #else
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
-    listener_.reset(new MyListener(this));
+    listener_ = std::make_unique<MyListener>(this);
     megaApi_->addListener(listener_.get());
-    proxy_.reset(new MegaProxy());
+    proxy_ = std::make_unique<MegaProxy>();
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {

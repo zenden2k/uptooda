@@ -1,1 +1,67 @@
-{}
+{
+    "dropbox": {
+        "please_allow": "브라우저에서 허용 버튼을 클릭한 다음 확인을 클릭하여 이미지 업로더가 드롭박스 계정에 연결되도록 허용해 주세요."
+    },
+    "yandexdisk": {
+        "confirmation": {
+            "text": "방금 오픈한 웹 브라우저에서 Yandex.Disk 계정에\n로그인한 다음 아래 텍스트 필드에 확인 코드를 \n복사해야 합니다.\n\n확인 코드를 입력해 주세요:\n"
+        },
+        "privacy": {
+            "public": "공개",
+            "private": "비공개"
+        }
+    },
+    "googledrive": {
+        "oauth": {
+            "success": "승인이 완료되었습니다! 이제 이 페이지를 닫아도 됩니다.",
+            "failed": "확인 코드를 받지 못했습니다",
+            "title": "승인(권한 부여)"
+        }
+    },
+    "vk": {
+        "privacy": {
+            "all_users": "모든 사용자",
+            "friends_only": "친구 전용",
+            "friends_and_friends_of_friends": "친구 및 친구의 친구",
+            "just_me": "오직 나만"
+        },
+        "browser": {
+            "title": "vk.com에 대한 권한 부여"
+        },
+        "errors": {
+            "no_albums": "프로필에 앨범이 하나도 없습니다."
+        },
+        "default_album_desc": "Image Uploader 애플리케이션을 사용하여 업로드된 이미지"
+    },
+    "flickr": {
+        "confirmation": {
+            "text": "브라우저에서 허용 버튼을 클릭한 다음 확인을 클릭하여 Image Uploader가 Flickr 계정에 연결되도록 허용해 주세요."
+        },
+        "verification": "확인 코드를 입력하세요:"
+    },
+    "imgbb": {
+        "expiration": "만료(익명으로)",
+        "expiration_authorized": "만료 시간(분) (계정 포함)",
+        "never": "만료 없음"
+    },
+    "ftp": {
+        "server": "서버 IP 또는 호스트 이름 [:포트]",
+        "download_path": "다운로드 경로 (http)",
+        "secure_connection": "보안 연결 (SSL/TLS)",
+        "active_connection_port": "활성 연결 포트",
+        "remote_dir": "원격 디렉터리",
+        "secure_connection_no": "No",
+        "secure_connection_explicit": "명시적",
+        "secure_connection_implicit": "암묵적"
+    },
+    "chevereto": {
+        "expiration": "만료",
+        "never": "만료 없음",
+        "api_key_not_set": "API 키가 설정되지 않았습니다! 인증 대화 상자에서 키를 지정해야 합니다."
+    },
+    "imgur": {
+        "confirmation": {
+            "text": "방금 열린 웹 브라우저에서 Imgur 계정에 로그인한 다음 아래 텍스트 필드에 확인 코드를 복사해야 합니다. 확인 코드를 입력하세요:"
+        }
+    }
+}

@@ -8,7 +8,7 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
     auto builtInScripts = CUploadEngineListBase::builtInScripts();
 
     for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
+        const CUploadEngineData* ued = engineList_->byIndex(i);
         
         if (std::find(builtInScripts.begin(), builtInScripts.end(), ued->PluginName) != builtInScripts.end()) {
             continue;
@@ -30,9 +30,6 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
             items_.push_back(std::move(sd2));
         }  
     }
-}
-
-ServersCheckerModel::~ServersCheckerModel() {
 }
 
 std::string ServersCheckerModel::getItemText(int row, int column) const {
@@ -70,9 +67,9 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
         return thumbUrlCellText;
     } else if (column == 5) {
         std::string viewUrlCellText = serverData.viewurl();
-        std::string viewurlInfo = serverData.viewurlInfo();
-        if (!viewurlInfo.empty()) {
-            viewUrlCellText = viewurlInfo + " [" + viewUrlCellText + "]";
+        std::string viewUrlInfo = serverData.viewUrlInfo();
+        if (!viewUrlInfo.empty()) {
+            viewUrlCellText = viewUrlInfo + " [" + viewUrlCellText + "]";
         }
         return viewUrlCellText;
     } else if (column == 6) {
@@ -81,9 +78,8 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
     return {};
 }
 
-uint32_t ServersCheckerModel::getItemColor(int row) const {
-    const ServerData& serverData = *items_[row];
-    return serverData.color;
+uint32_t ServersCheckerModel::getItemColor(size_t row) const {
+    return items_[row]->color;
 }
 
 size_t ServersCheckerModel::getCount() const {
@@ -96,7 +92,7 @@ void ServersCheckerModel::notifyRowChanged(size_t row) {
     }
 }
 
-ServerData* ServersCheckerModel::getDataByIndex(size_t row) {
+ServerData* ServersCheckerModel::getDataByIndex(size_t row) const {
     if (row >= items_.size()) {
         return nullptr;
     }
@@ -112,4 +108,5 @@ void ServersCheckerModel::resetData() {
         it->clearInfo();
     }
 }
+
 }

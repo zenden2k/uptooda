@@ -64,7 +64,7 @@ IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
             }
         }
 
-        hr = pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag, (void**)&pPropBag);
+        hr = pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag, reinterpret_cast<void**>(&pPropBag));
         if (SUCCEEDED(hr)) {
             CComVariant varName;
             
@@ -84,7 +84,7 @@ IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
         id = IuStringUtils::Replace(id, ":", "_");
 
         if (!id.empty()) {
-            result.push_back({ "[directshow]" + id, name.empty() ? id : name });
+            result.emplace_back( "[directshow]" + id, name.empty() ? id : name );
         }
 
         pMoniker.Release(); 
@@ -187,10 +187,10 @@ IdNameArray FFMpegOptionsManager::getVideoCodecs() {
         if (!codec) {
             continue;
         }
-        result.push_back(std::make_pair(codecId, codec->name()));
+        result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     });
 
     return result;
@@ -204,10 +204,10 @@ IdNameArray FFMpegOptionsManager::getAudioCodecs() {
         if (!codec) {
             continue;
         }
-        result.push_back(std::make_pair(codecId, codec->name()));
+        result.emplace_back(codecId, codec->name());
     }
     std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     });
 
     return result;
@@ -217,7 +217,7 @@ IdNameArray FFMpegOptionsManager::getVideoSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     for (const auto& [sourceId, v] : videoSourceFactories_) {
@@ -225,7 +225,7 @@ IdNameArray FFMpegOptionsManager::getVideoSources() {
         if (!source || source->hidden()) {
             continue;
         }
-        result.push_back(std::make_pair(sourceId, source->name()));
+        result.emplace_back(sourceId, source->name());
     }
     std::sort(result.begin(), result.end(), compareFunc);
 
@@ -242,7 +242,7 @@ IdNameArray FFMpegOptionsManager::getAudioSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     for (const auto& [sourceId, v] : audioSourceFactories_) {
@@ -250,7 +250,7 @@ IdNameArray FFMpegOptionsManager::getAudioSources() {
         if (!source || source->hidden()) {
             continue;
         }
-        result.push_back(std::make_pair(sourceId, source->name()));
+        result.emplace_back(sourceId, source->name());
     }
     std::sort(result.begin(), result.end(), compareFunc);
 

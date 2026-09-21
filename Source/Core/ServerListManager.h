@@ -13,7 +13,7 @@ class ServerListManager
 public:
     enum class ServerType { stFTP = 0, stSFTP = 1, stWebDAV = 2 };
 
-    ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
+    ServerListManager(std::string serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
     ~ServerListManager()=default;
 
     /**

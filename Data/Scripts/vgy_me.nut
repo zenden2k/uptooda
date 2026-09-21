@@ -5,8 +5,8 @@ function UploadFile(FileName, options) {
         return -1;
     }	
     nm.setUrl("https://vgy.me/upload");
-    nm.addQueryParamFile("file", FileName, ExtractFileName(FileName), "");
-    nm.addQueryParam("userkey", apiKey);
+    nm.addPostFieldFile("file", FileName, ExtractFileName(FileName), "");
+    nm.addPostField("userkey", apiKey);
     nm.doUploadMultipartData();
     
     if (nm.responseCode() == 200) {

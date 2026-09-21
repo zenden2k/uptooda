@@ -21,15 +21,16 @@
 
 #include "FileQueueUploader.h"
 
+#include <utility>
+
 #include "Core/Upload/UploadTask.h"
 #include "FileQueueUploaderPrivate.h"
-/* public CFileQueueUploader class */
 
 CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager,
     ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
     std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int maxThreads)
 {
-    _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, settings, maxThreads);
+    _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager, std::move(uploadErrorHandler), std::move(networkClientFactory), settings, maxThreads);
 }
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)
@@ -37,13 +38,11 @@ void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession
     _impl->AddSession(std::move(uploadSession));
 }
 
-
 bool CFileQueueUploader::start()
 {
     _impl->start();
     return true;
 }
-
 
 void CFileQueueUploader::stop()
 {

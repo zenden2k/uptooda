@@ -7,5 +7,5 @@
 
 class ColorQuantizer {
 public:
-    std::unique_ptr<Gdiplus::Bitmap> getQuantized(Gdiplus::Bitmap* pSource, Gdiplus::Color backgroundColor, UINT nMaxColors = 256);
+    static std::unique_ptr<Gdiplus::Bitmap> getQuantized(Gdiplus::Bitmap* pSource, Gdiplus::Color backgroundColor, UINT nMaxColors = 256);
 };

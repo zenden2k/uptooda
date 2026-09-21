@@ -17,8 +17,8 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
     public:
         typedef CScrollWindowImpl<CImageEditorView> TBase;
         DECLARE_WND_CLASS_EX(L"CImageEditorView", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
+        enum { ID_AUTOSCROLL_TIMER = 100, AUTOSCROLL_INTERVAL_MS = 15  };
         CImageEditorView();
-        ~CImageEditorView();
         BOOL PreTranslateMessage(MSG* pMsg);
 
         BEGIN_MSG_MAP(CImageEditorView)
@@ -34,6 +34,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
             MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
             MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
             MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
+            MESSAGE_HANDLER(WM_TIMER, OnTimer)
             //MESSAGE_HANDLER( WM_SIZE, OnSize )
             REFLECT_NOTIFICATIONS()
             CHAIN_MSG_MAP(TBase);
@@ -48,6 +49,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
     protected:
         
         LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -61,7 +63,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-        POINT oldPoint;
+        POINT oldPoint{};
         void canvasSizeChanged() override;
     private:
         Canvas *canvas_;
@@ -71,7 +73,15 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         HCURSOR getCachedCursor(CursorType cursorType);
         bool mouseDown_;
         float dpiScaleX_, dpiScaleY_;
+        int  scrollDx_ = 0, scrollDy_ = 0;
+        POINT lastCursorScreen_ = {0, 0};
+        DWORD lastCursorTick_ = 0;
+        double velLeadX_ = 0.0, velLeadY_ = 0.0;
         HICON createBrushCursor(int size);
+        static int speedFromDistance(int dist, int maxDist = 150, int maxSpeed = 40);
+        static double positionalSpeed(int distOutside);
+        void computeAutoScrollDelta(int cx, int cy, const RECT& rc, int& dx, int& dy) const;
+        bool isAutoScrollActive_ = false;
 };
 
 }

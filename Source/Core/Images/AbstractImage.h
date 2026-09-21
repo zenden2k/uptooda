@@ -10,7 +10,7 @@
 #ifdef IU_QT
     class QtImage;
 #elif defined(_WIN32)
-    class GdiplusImage;
+    class GdiPlusImage;
 #endif
 
 class AbstractImage
@@ -45,12 +45,14 @@ public:
     static const std::string& factoryName();
     static AbstractImage* createImage();
     void setSrcFormat(const std::string& str);
+
 protected:
     static std::function<AbstractImage*()> factory_;
     static std::string factoryName_;
     int width_;
     int height_;
     std::string srcFormat_;
+
     DISALLOW_COPY_AND_ASSIGN(AbstractImage);
 };
 

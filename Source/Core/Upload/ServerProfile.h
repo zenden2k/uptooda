@@ -10,14 +10,14 @@ class ServerSettingsStruct;
 class SettingsNode;
 
 struct ImageUploadParams {
-    ImageUploadParams() {
+    ImageUploadParams(bool useDefaultThumbSettings = true) {
         UseServerThumbs = false;
         CreateThumbs = false;
         ProcessImages = false;
-        UseDefaultThumbSettings = true;
+        UseDefaultThumbSettings = useDefaultThumbSettings;
         ThumbAddImageSize = true;
         ImageProfileName = "Default";
-        Thumb.Size = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
+        Thumb.Width = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
         Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
         Thumb.AddImageSize = true;
         Thumb.Format = ThumbCreatingParams::tfPNG;
@@ -26,9 +26,8 @@ struct ImageUploadParams {
         Thumb.Quality = 85;
         Thumb.Text = "%width%x%height% (%size%)";
     }
-#ifdef _WIN32
+
     void bind(SettingsNode& n);
-#endif
     bool UseServerThumbs;
     bool CreateThumbs;
     bool ProcessImages;
@@ -37,7 +36,7 @@ struct ImageUploadParams {
     std::string ImageProfileName;
 
     bool UseDefaultThumbSettings;
-    ThumbCreatingParams getThumb();
+    ThumbCreatingParams getThumb() const;
     ThumbCreatingParams& getThumbRef();
     void setThumb(const ThumbCreatingParams& tcp);
 protected:
@@ -46,10 +45,10 @@ protected:
 class ServerProfile {
 
 public:
-    explicit ServerProfile(bool useDefaultSettings = true);
+    explicit ServerProfile();
     explicit ServerProfile(const std::string& serverName);
 
-    CUploadEngineData* uploadEngineData() const;
+    const CUploadEngineData* uploadEngineData() const;
 
     void setProfileName(const std::string& newProfileName);
     std::string profileName() const;
@@ -70,10 +69,10 @@ public:
     bool shortenLinks() const;
     void setShortenLinks(bool shorten);
 
-    void setParentIds(const std::vector<std::string> parentIds);
+    void setParentIds(const std::vector<std::string>& parentIds);
     const std::vector<std::string>& parentIds() const;
     bool isNull() const;
-    bool UseDefaultSettings;
+
     void clearFolderInfo();
     ServerProfile deepCopy();
     void bind(SettingsNode& n);
@@ -82,7 +81,11 @@ public:
     ImageUploadParams& getImageUploadParamsRef();
 
     void setImageUploadParams(ImageUploadParams iup);
+    bool useDefaultSettings() const;
+    void setUseDefaultSettings(bool useDefaultSettings);
+
     friend struct ImageUploadParams;
+
 
 protected:
     std::string serverName_;
@@ -90,6 +93,9 @@ protected:
     ImageUploadParams imageUploadParams;
     CFolderItem folder_;
     bool shortenLinks_;
+    bool useDefaultSettings_;
+
+protected:
     friend class CommonGuiSettings;
 };
 

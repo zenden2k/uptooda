@@ -25,9 +25,6 @@ struct HistoryTreeItem
     HistoryTreeItem() :hi(nullptr), thumbnail(nullptr), ThumbnailRequested(false){
         
     }
-
-    ~HistoryTreeItem() {
-    }
 };
 
 class CHistoryTreeControlCallback {
@@ -44,7 +41,7 @@ class CHistoryTreeControl :
 {
     public:
         CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory);
-        ~CHistoryTreeControl();
+        ~CHistoryTreeControl() override;
         //DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListBox/**/CListViewCtrl*/::GetWndClassName())
 
         BEGIN_MSG_MAP(CHistoryTreeControl)
@@ -71,7 +68,6 @@ class CHistoryTreeControl :
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
         LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
-        LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;

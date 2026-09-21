@@ -31,7 +31,7 @@ class SimpleXmlNode;
 
 class CUploadEngineList : public CUploadEngineListBase {
     public:
-        CUploadEngineList();
+        CUploadEngineList() = default;
         bool loadFromFile(const std::string& filename, ServerSettingsMap&);
         void setNumOfRetries(int Engine, int Action);
         bool addServer(const CUploadEngineData& data);
@@ -40,9 +40,9 @@ class CUploadEngineList : public CUploadEngineListBase {
         int m_ActionNumOfRetries = 0;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
-        bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);
         void loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out);
         void loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<StorageTime>& out);
+        void sort();
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

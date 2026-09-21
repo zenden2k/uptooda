@@ -35,7 +35,6 @@ class CClearHistoryDlg :
 {
     public:
         CClearHistoryDlg();
-        ~CClearHistoryDlg();
         enum { IDD = IDD_CLEARHISTORYDLG };
 
         BEGIN_MSG_MAP(CClearHistoryDlg)
@@ -58,4 +57,4 @@ class CClearHistoryDlg :
         HistoryClearPeriod value_;
 };
 
-#endif // ClearHistoryDlg_H
+#endif // GUI_DIALOGS_CLEARHISTORYDIALOG_H

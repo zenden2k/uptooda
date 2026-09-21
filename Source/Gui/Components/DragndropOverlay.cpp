@@ -99,7 +99,6 @@ LRESULT CDragndropOverlay::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 0;
 }
 
-
 void CDragndropOverlay::addItem(ItemId id, float heightPerc, CString text) {
     items_.emplace_back(id, heightPerc, text);
     calculateItemRectangles();

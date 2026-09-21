@@ -25,7 +25,6 @@
 #include "resource.h"       // main symbols
 #include "atlctrlx.h"
 #include "Gui/WizardCommon.h"
-#include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/Common.h"
 
@@ -87,7 +86,7 @@ class CUploadSettings :
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_KEEPASIS, BN_CLICKED, OnBnClickedKeepasis)
-        COMMAND_HANDLER(IDC_CREATETHUMBNAILS, BN_CLICKED, OnBnClickedCreatethumbnails)
+        COMMAND_HANDLER(IDC_CREATETHUMBNAILS, BN_CLICKED, OnBnClickedCreateThumbnails)
         COMMAND_HANDLER(IDC_USESERVERTHUMBNAILS, BN_CLICKED, OnBnClickedUseServerThumbnails)
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON, BN_CLICKED, OnBnClickedLogin)
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON+1, BN_CLICKED, OnBnClickedLogin)
@@ -146,7 +145,7 @@ class CUploadSettings :
     LRESULT OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedCreateThumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedLogin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnImageServerSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -175,7 +174,7 @@ class CUploadSettings :
     CToolBarCtrl FileServerSelectBar;
     bool OnNext() override;
     bool OnShow() override;
-    virtual bool OnHide() override;
+    bool OnHide() override;
     void UpdateAllPlaceSelectors();
     void UpdatePlaceSelector(bool ImageServer);
     void UpdateToolbarIcons();
@@ -200,8 +199,7 @@ protected:
     ServerProfileGroup sessionImageServer_, sessionFileServer_;
     ServerProfile& getSessionImageServerItem();
     ServerProfile& getSessionFileServerItem();
-    void updateMoreImageServersLink();
-    void updateMoreFileServersLink();
+    void updateMoreServersLink(bool isImageServer);
     bool menuOpenedIsImageServer_;
     std::vector<CString> menuOpenedUserNames_;
     void selectServer(ServerProfile& sp, int serverIndex);

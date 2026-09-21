@@ -33,9 +33,9 @@ bool PointsEqual(const POINT& a, const POINT& b) {
     return a.x == b.x && a.y == b.y;
 }
 
-CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
+CropOverlay* MoveAndResizeTool::cropOverlay_ = nullptr;
 
-MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
+MoveAndResizeTool::MoveAndResizeTool(Canvas* canvas, ElementType type) : AbstractDrawingTool( canvas ) {
     currentElement_       = nullptr;
     elementType_          = type;
 //    draggedBoundary_. = btNone;
@@ -53,7 +53,6 @@ MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : Abstr
     elementJustCreated_ = false;
     startPoint_.x = -1;
     startPoint_.y = -1;
-
 }
 
 void MoveAndResizeTool::beginDraw( int x, int y ) {
@@ -131,7 +130,6 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 }
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
-
     if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= BoundaryType::btNone ) {
         POINT* elementBasePoint = 0;
         if ( draggedBoundary_.gpt == MovableElement::GripPointType::gptStartPoint ) {
@@ -221,7 +219,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
         startPoint_.x = x;
         startPoint_.y = y;
 
-        if (currentElement_->move(deltaX, deltaY) ) {
+        if (currentElement_->move(deltaX, deltaY, true) ) {
             RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
             RECT updateRect;
             UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
@@ -295,7 +293,6 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     endPoint_.y   = -1;
 
     if ( draggedBoundary_.bt!= BoundaryType::btNone ) {
-
         draggedBoundary_.bt = BoundaryType::btNone;
         return;
     }
@@ -344,14 +341,14 @@ void MoveAndResizeTool::createElement() {
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
         case ElementType::etFilledRoundedRectangle:
-            currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getDrawBorder());
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
         case ElementType::etEllipse:
             currentElement_ = new Ellipse(canvas_);
             break;
         case ElementType::etFilledEllipse:
-            currentElement_ = new FilledEllipse(canvas_);
+            currentElement_ = new FilledEllipse(canvas_, canvas_->getDrawBorder());
             break;
         case ElementType::etPixelateRectangle:
             currentElement_ = new PixelateRectangle(canvas_, /*float(canvas_->getPixelateBlockSize())*/canvas_->getBlurRadius(), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getInvertSelection());
@@ -360,7 +357,7 @@ void MoveAndResizeTool::createElement() {
             currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, false, canvas_->getInvertSelection());
             break;
         case ElementType::etFilledRectangle:
-            currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getDrawBorder());
             break;
         case ElementType::etStepNumber:
             currentElement_ = new StepNumber(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getNextNumber(), canvas_->getStepFontSize());
@@ -401,7 +398,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
     return {};
 }
 
-MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
+MovableElement::Grip MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
     for (size_t i = 0; i < element->grips_.size(); i++) {
         if ( abs (x - element->grips_[i].pt.x) <= element->gripWidth_ + 2 &&  abs (y - element->grips_[i].pt.y) <= element->gripHeight_ + 2 ) {
@@ -449,7 +446,6 @@ void MoveAndResizeTool::mouseDoubleClick(int x, int y)
         if ( dtool ) {
             dtool->beginDraw(x,y);
         }
-
     }
 }
 

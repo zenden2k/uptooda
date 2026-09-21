@@ -73,8 +73,8 @@ public:
 
     virtual ~TreeItem() {
         if (m_callback) m_callback->OnTreeItemDelete(this);
-        for (size_t i = 0; i < m_subItems.size(); i++) {
-            delete m_subItems[i];
+        for (auto & m_subItem : m_subItems) {
+            delete m_subItem;
         }
     }
 
@@ -465,6 +465,10 @@ BEGIN_MSG_MAP(CCustomTreeControlImpl)
     }
 
     TreeItem* GetItem(int index) {
+        auto itemData = TBase::GetItemData(index);
+        if (itemData == LB_ERR) {
+            return nullptr;
+        }
         return reinterpret_cast<TreeItem*>(TBase::GetItemData(index));
     }
 

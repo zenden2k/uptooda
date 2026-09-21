@@ -30,20 +30,13 @@
 #include "Core/AbstractServerIconCache.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-CQuickSetupDlg::CQuickSetupDlg() {
-}
-
-CQuickSetupDlg::~CQuickSetupDlg() {
-}
-
-
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     translateUI();
-    SetWindowText( APP_NAME );
+    SetWindowText(APP_NAME);
     CString titleText;
-    titleText.Format(TR("%s - Quick Setup"), APP_NAME );
+    titleText.Format(TR("%s - Quick Setup"), APP_NAME);
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
@@ -93,18 +86,18 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     line[ARRAY_SIZE(line) - 1] = 0;
     for (int j = 0; j < 2; j++) {
         for (int i = 0; i < myEngineList->count(); i++) {
-            CUploadEngineData * ue = myEngineList->byIndex(i);
+            const CUploadEngineData * ue = myEngineList->byIndex(i);
             if ((!ue->hasType(CUploadEngineData::TypeImageServer) && j == 0)|| (!ue->hasType(CUploadEngineData::TypeFileServer) && j == 1)) {
                 continue;
             }
-            HICON hImageIcon = ServiceLocator::instance()->serverIconCache()->getIconForServer(ue->Name, dpi);
+            HICON hImageIcon = ServiceLocator::instance()->serverIconCache()->getIconForServer(ue->Name, dpi, true);
             int nImageIndex = -1;
             if (hImageIcon) {
                 nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA(serverName, ue->Name.c_str());
-            int itemIndex = serverComboBox_.AddItem(Utf8ToWCstring(ue->Name), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
+            int itemIndex = serverComboBox_.AddItem(Utf8ToWCstring(myEngineList->getServerDisplayName(ue)), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
             if (ue->Name == selectedServerName) {
                 selectedIndex = itemIndex;
             }
@@ -145,7 +138,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
-        CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
+        const CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
         Settings.imageServer.getByIndex(0).setServerName(uploadEngineData->Name) ;
         bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
         if ( needAuth ) {
@@ -163,7 +156,6 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         }
         Settings.quickScreenshotServer = Settings.imageServer;
         Settings.contextMenuServer = Settings.imageServer;
-        //Settings.fileServer.setServerName("zippyshare.com");
     } else {
 
     }
@@ -245,14 +237,14 @@ void  CQuickSetupDlg::serverChanged() {
             return;
         }
         std::string serverNameA = serverName;
-        CUploadEngineData* uploadEngineData = myEngineList->byName(serverNameA);
+        const CUploadEngineData* uploadEngineData = myEngineList->byName(serverNameA);
         if ( !uploadEngineData ) {
             return ;
         }
         bool authorizationAvailable = uploadEngineData->NeedAuthorization != 0;
         showAuthorizationControls( authorizationAvailable );
         bool forceAuthorization = uploadEngineData->NeedAuthorization == 2;
-        CString doAuthCheckboxText = forceAuthorization ? TR("Authorize") : CString(TR("I have an account on this server") ); //+ (forceAuthorization? _T("") : TR(" (optional)"));
+        CString doAuthCheckboxText = forceAuthorization ? TR("Authorize") : TR("I have an account on this server"); //+ (forceAuthorization? _T("") : TR(" (optional)"));
         SetDlgItemText( IDC_DOAUTHCHECKBOX, doAuthCheckboxText );
         ::EnableWindow( GetDlgItem( IDC_DOAUTHCHECKBOX), !forceAuthorization);
         SendDlgItemMessage( IDC_DOAUTHCHECKBOX, BM_SETCHECK, forceAuthorization? BST_CHECKED : BST_UNCHECKED );

@@ -21,15 +21,12 @@ limitations under the License.
 #include "SearchByImageUrlTask.h"
 
 #include <cassert>
+#include <utility>
 
 #include "Core/Utils/CoreUtils.h"
 
-SearchByImageUrlTask::SearchByImageUrlTask(const std::string& url,  UploadTask* parentTask)
-    : UploadTask(parentTask), url_(url) {
-}
-
-SearchByImageUrlTask::~SearchByImageUrlTask() {
-
+SearchByImageUrlTask::SearchByImageUrlTask(std::string  url,  UploadTask* parentTask)
+    : UploadTask(parentTask), url_(std::move(url)) {
 }
 
 UploadTask::Type SearchByImageUrlTask::type() const {

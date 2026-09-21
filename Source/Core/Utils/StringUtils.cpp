@@ -25,6 +25,8 @@
 #include <algorithm>
 #include <random>
 
+#include "CoreUtils.h"
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -53,17 +55,14 @@ std::string Trim(const std::string& str)
 
 std::string_view TrimSV(std::string_view str)
 {
-    std::string_view res;
-    // Trim Both leading and trailing spaces
-    size_t startpos = str.find_first_not_of(" \t\r\n"); // Find the first character position after excluding leading blank spaces
-    size_t endpos = str.find_last_not_of(" \t\r\n"); // Find the first character position from reverse af
+    const std::string_view whitespace = " \t\r\n";
 
-    // if all spaces or empty return an empty string
-    if ((std::string::npos == startpos) || (std::string::npos == endpos))
-    {
-        return res;
-    }
-    return str.substr( startpos, endpos - startpos + 1 );
+    size_t startPos = str.find_first_not_of(whitespace);
+    if (startPos == std::string_view::npos)
+        return {};
+
+    size_t endPos = str.find_last_not_of(whitespace);
+    return str.substr(startPos, endPos - startPos + 1);
 }
 
 void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount)
@@ -120,45 +119,117 @@ std::vector<std::string_view> SplitSV(std::string_view strv, std::string_view de
 
 std::string Replace(const std::string& text, const std::string& s, const std::string& d)
 {
-    std::string result = text;
-    for (size_t index = 0; index = result.find(s, index), index != std::string::npos; )
-    {
-        result.replace(index, s.length(), d);
-        index += d.length();
+    if (s.empty()) {
+        return text;
     }
+
+    std::string result;
+    size_t prev = 0;
+    size_t pos = text.find(s);
+
+    while (pos != std::string::npos) {
+        result.append(text, prev, pos - prev);
+        result += d;
+        prev = pos + s.size();
+        pos = text.find(s, prev);
+    }
+
+    result.append(text, prev, std::string::npos - prev);
     return result;
 }
 
-// As far as C++ standart doesn't have a case insensitive string comparison function, I wrote my own
-int stricmp(const char* s1, const char* s2)
-{
+int StrCaseInsensitiveCompare(const std::string& s1, const std::string& s2) {
+    std::wstring w1 = IuCoreUtils::Utf8ToWstring(s1);
+    std::wstring w2 = IuCoreUtils::Utf8ToWstring(s2);
 #ifdef _WIN32
-    return lstrcmpiA(s1, s2);
+    return lstrcmpiW(w1.c_str(), w2.c_str());
 #else
-    return strcasecmp(s1, s2);
-    /*for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2)
-        ;
-    return *s1 - *s2;*/
+    const std::locale loc("");
+    const auto& facet = std::use_facet<std::ctype<wchar_t>>(loc);
+
+    auto toLower = [&facet](wchar_t c) {
+        return facet.tolower(c);
+    };
+
+    std::transform(w1.begin(), w1.end(), w1.begin(), toLower);
+    std::transform(w2.begin(), w2.end(), w2.begin(), toLower);
+
+    if (w1 < w2) return -1;
+    if (w1 > w2) return 1;
+    return 0;
 #endif
 }
 
-std::string ToLower(const std::string& str)
-{
-    std::string s1 = str;
-    for (size_t i = 0; i < s1.length(); i++)
-        s1[i] = static_cast<char>(::tolower(s1[i]));
-    // std::string s1;
-    // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
-    return s1;
+std::string ToLower(const std::string& str) {
+#ifdef _WIN32
+    if (str.empty())
+        return str;
+
+    // Determine the required buffer size for wide characters
+    int wideSize = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    if (wideSize == 0)
+        return str; // Conversion error
+
+    // Convert UTF-8 to UTF-16
+    std::wstring wideStr(wideSize - 1, 0); // -1 to remove null-terminator
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wideStr[0], wideSize);
+
+    // Convert to lower case
+    CharLowerBuffW(&wideStr[0], static_cast<DWORD>(wideStr.length()));
+
+    // Determine the size for UTF-8
+    int utf8Size = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (utf8Size == 0)
+        return str; // Conversion error
+
+    // Convert back to UTF-8
+    std::string result(utf8Size - 1, 0); // -1 to remove null-terminator
+    WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &result[0], utf8Size, nullptr, nullptr);
+
+    return result;
+#else
+    // Linux fallback - ASCII only
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+    return result;
+#endif
 }
 
 std::string ToUpper(const std::string& str) {
-    std::string s1 = str;
-    for (size_t i = 0; i < s1.length(); i++)
-        s1[i] = static_cast<char>(::toupper(s1[i]));
-    // std::string s1;
-    // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
-    return s1;
+#ifdef _WIN32
+    if (str.empty())
+        return str;
+
+    // Determine the required buffer size for wide characters
+    int wideSize = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    if (wideSize == 0)
+        return str; // Conversion error
+
+    // Convert UTF-8 to UTF-16
+    std::wstring wideStr(wideSize - 1, 0); // -1 to remove null-terminator
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wideStr[0], wideSize);
+
+    // Convert to upper case
+    CharUpperBuffW(&wideStr[0], static_cast<DWORD>(wideStr.length()));
+
+    // Determine the size for UTF-8
+    int utf8Size = WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (utf8Size == 0)
+        return str; // Conversion error
+
+    // Convert back to UTF-8
+    std::string result(utf8Size - 1, 0); // -1 to remove null-terminator
+    WideCharToMultiByte(CP_UTF8, 0, wideStr.c_str(), -1, &result[0], utf8Size, nullptr, nullptr);
+
+    return result;
+#else
+    // Linux fallback - ASCII only
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(),
+        [](unsigned char c) { return std::toupper(c); });
+    return result;
+#endif
 }
 
 std::string Tail(std::string const& source, size_t length) {
@@ -388,11 +459,11 @@ int PatternMatch(std::string_view pat, std::string_view str, int opts) {
 
 std::string RandomString(std::size_t length)
 {
-    const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static constexpr char CHARACTERS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static constexpr std::size_t CHARACTERS_COUNT = sizeof(CHARACTERS) - 1; // без учёта '\0'
 
-    std::random_device random_device;
-    std::mt19937 generator(random_device());
-    std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+    thread_local std::mt19937 generator(std::random_device{}());
+    std::uniform_int_distribution<std::size_t> distribution(0, CHARACTERS_COUNT - 1);
 
     std::string random_string;
     random_string.reserve(length);

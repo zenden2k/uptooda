@@ -62,7 +62,7 @@ function _UploadToAccount(fileName, options) {
     local task = options.getTask().getFileTask();
     local apiKey = ServerParams.getParam("Password");
     nm.setUrl(API_URL + "/api/v1/get_upload_info");
-    nm.addQueryParam("api_key", apiKey);
+    nm.addPostField("api_key", apiKey);
     nm.doPost("");
 
     if (nm.responseCode() == 200) {
@@ -85,18 +85,18 @@ function _UploadToAccount(fileName, options) {
             local fileUploadUrl = t.message.file_upload_url; 
             local uploadId = t.message.upload_id;
             nm.setUrl(fileUploadUrl);
-            nm.addQueryParam("api_key", apiKey);
-            nm.addQueryParam("upload_id", uploadId);
-            nm.addQueryParamFile("Filedata", fileName, ExtractFileName(fileName), GetFileMimeType(ExtractFileName(fileName))); 
+            nm.addPostField("api_key", apiKey);
+            nm.addPostField("upload_id", uploadId);
+            nm.addPostFieldFile("Filedata", fileName, ExtractFileName(fileName), GetFileMimeType(ExtractFileName(fileName)));
             nm.doUploadMultipartData();
 
             if (nm.responseCode() == 200) {
                 local t3 = ParseJSON(nm.responseBody());
                 if (t3.status) {
                     nm.setUrl(API_URL + "/api/v1/finish_upload");
-                    nm.addQueryParam("api_key", apiKey);
-                    nm.addQueryParam("upload_id", uploadId);
-                    nm.addQueryParam("mirrors", _JoinArray(mirrors, ","));
+                    nm.addPostField("api_key", apiKey);
+                    nm.addPostField("upload_id", uploadId);
+                    nm.addPostField("mirrors", _JoinArray(mirrors, ","));
                     nm.doPost("");
                     
                     if (nm.responseCode() == 200) {
@@ -149,10 +149,10 @@ function UploadFile(FileName, options) {
     nm.setUrl("https://www.mirrored.to/uploadify/uploadify.php");
     nm.addQueryHeader("X-Requested-With", "");
     nm.addQueryHeader("User-Agent", "Shockwave Flash");
-    nm.addQueryParam("Filename", fn);
-    nm.addQueryParam("folder", "/uploads");
-    nm.addQueryParamFile("Filedata", FileName, fn, "");
-    nm.addQueryParam("Upload", "Submit Query");
+    nm.addPostField("Filename", fn);
+    nm.addPostField("folder", "/uploads");
+    nm.addPostFieldFile("Filedata", FileName, fn, "");
+    nm.addPostField("Upload", "Submit Query");
     nm.doUploadMultipartData();
     
     if (nm.responseCode() == 200){

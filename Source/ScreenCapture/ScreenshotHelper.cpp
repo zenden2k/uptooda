@@ -17,7 +17,6 @@ BOOL getActualWindowRect(HWND hWnd, RECT* res, bool maximizedFix) {
                     *res = maximizedWindowFix(hWnd, *res);*/
                 return TRUE;
             }
-
         }
     }
 
@@ -41,7 +40,6 @@ RECT maximizedWindowFix(HWND handle, RECT windowRect) {
     }
     return res;
 }
-
 
 bool isWindowMaximized(HWND handle) {
     WINDOWPLACEMENT wp;

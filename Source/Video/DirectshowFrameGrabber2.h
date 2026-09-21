@@ -9,7 +9,7 @@ class DirectshowFrameGrabber2 : public AbstractFrameGrabber
 {
 public:
     DirectshowFrameGrabber2();
-    ~DirectshowFrameGrabber2();
+    ~DirectshowFrameGrabber2() override;
     bool open(const std::string& fileName) override;
     bool seek(int64_t time) override;
     AbstractVideoFrame* grabCurrentFrame() override;

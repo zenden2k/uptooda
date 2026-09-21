@@ -18,14 +18,19 @@
 
 */
 
+
 #include "CryptoUtils.h"
 
-#include "CoreUtils.h"
+#include <array>
 #include <cstdio>
+#include <stdexcept>
 #include <string>
+
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <openssl/hmac.h>
+
+#include "CoreUtils.h"
 
 namespace IuCoreUtils {
 
@@ -158,17 +163,17 @@ std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filen
 
     if (f) {
         if (!prefix.empty()) {
-            SHA1_Update(&context, (unsigned char*)prefix.data(), prefix.length());
+            SHA1_Update(&context, prefix.data(), prefix.length());
         }
         unsigned char buf[4096];
         while ( !feof(f) ) {
             size_t bytesRead = fread(buf, 1, sizeof(buf), f);
 
-            SHA1_Update(&context, (unsigned char*)buf, bytesRead);
+            SHA1_Update(&context, buf, bytesRead);
         }
         unsigned char buff[HashSize] = "";
         if (!postfix.empty()) {
-            SHA1_Update(&context, (unsigned char*)postfix.data(), postfix.length());
+            SHA1_Update(&context, postfix.data(), postfix.length());
         }
         SHA1_Final(buff, &context);
 
@@ -188,22 +193,25 @@ std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
 }
 
 std::string CryptoUtils::CalcSHA256Hash(const void* data, size_t size) {
-    const int HashSize = 32;
-    std::string result;
+    std::array<unsigned char, SHA256_DIGEST_LENGTH> hash{};
     SHA256_CTX context;
 
-    SHA256_Init(&context);
-    SHA256_Update(&context, data, size);
-
-    unsigned char buff[HashSize] = "";
-
-    SHA256_Final(buff, &context);
-
-    for (int i = 0; i < HashSize; i++) {
-        char temp[5];
-        sprintf(temp, "%02x", buff[i]);
-        result += temp;
+    if (SHA256_Init(&context) != 1 ||
+        SHA256_Update(&context, data, size) != 1 ||
+        SHA256_Final(hash.data(), &context) != 1) {
+        throw std::runtime_error("SHA256 hashing failed");
     }
+
+    static constexpr char HEX_DIGITS[] = "0123456789abcdef";
+
+    std::string result;
+    result.resize(hash.size() * 2);
+
+    for (size_t i = 0; i < hash.size(); ++i) {
+        result[i * 2] = HEX_DIGITS[hash[i] >> 4];
+        result[i * 2 + 1] = HEX_DIGITS[hash[i] & 0x0F];
+    }
+
     return result;
 }
 

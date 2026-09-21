@@ -27,7 +27,6 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-// CLogoSettings
 CLogoSettings::CLogoSettings()
 {
     ZeroMemory(&lf, sizeof(lf));
@@ -59,11 +58,6 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_PRESERVE_EXIF, "Preserve metadata (for ex. EXIF)");
     TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
     SetWindowText(TR("Additional params"));
-}
-
-CLogoSettings::~CLogoSettings()
-{
-
 }
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -104,7 +98,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
     createProfileToolbar();
-    CString profileName = U2W(settings->imageServer.getByIndex(0).getImageUploadParams().ImageProfileName);
+    CString profileName = U2W(settings->DefaultImageUploadParams.ImageProfileName);
 
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         profileName = _T("Default");
@@ -139,7 +133,6 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
     };
 
     auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
-    //CString initialFileName = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGOEDIT);
 
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
@@ -160,7 +153,6 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CLogoSettings::OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // Font selection dialog
     CFontDialog dlg(&lf);
     if(dlg.DoModal(m_hWnd) == IDOK)
        ProfileChanged();
@@ -169,7 +161,6 @@ LRESULT CLogoSettings::OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // Font selection dialog
     CFontDialog dlg(&ThumbFont);
     dlg.DoModal(m_hWnd);
 
@@ -282,7 +273,7 @@ void CLogoSettings::UpdateProfileList() {
     profileCombobox_.ResetContent();
 
     bool found = false;
-    for (auto it: convert_profiles_) {
+    for (const auto& it: convert_profiles_) {
         profileCombobox_.AddString(it.first);
         if (it.first == CurrentProfileName) {
             found = true;
@@ -348,6 +339,7 @@ LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 void CLogoSettings::ProfileChanged()
 {
     if(!m_CatchChanges) return;
+
     if(!m_ProfileChanged)
     {
         CurrentProfileOriginalName = CurrentProfileName;

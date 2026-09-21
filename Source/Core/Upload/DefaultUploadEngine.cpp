@@ -20,6 +20,7 @@
 
 #include "DefaultUploadEngine.h"
 
+#include <unordered_set>
 #include <boost/format.hpp>
 #include <json/json.h>
 
@@ -34,7 +35,12 @@
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/i18n/Translator.h"
 
-CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
+namespace {
+    const std::unordered_set<std::string_view> ALLOWED_ACTION_TYPES = { "get", "post", "put", "patch", "delete", "head", "options", "openurl", "login", "upload" };
+}
+
+CDefaultUploadEngine::CDefaultUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback)
+    : CAbstractUploadEngine(std::move(serverSync), std::move(errorCallback)), mt_(randomDevice_())
 {
     m_CurrentActionIndex = -1;
     fatalError_ = false;
@@ -64,13 +70,13 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
         } else if (task->type() == UploadTask::TypeSearchByImageUrl) {
             res = doSearchImageByUrl(std::dynamic_pointer_cast<SearchByImageUrlTask>(task), params);
         } else {
-            UploadError(true, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
+            UploadError(true, "Upload task of type '" + task->toString() + "' is not supported", nullptr, false);
         }
     } catch (const INetworkClient::AbortedException& ex) {
-        UploadError(false, _("Operation was cancelled by user."), 0, false);
+        UploadError(false, _("Operation was cancelled by user."), nullptr, false);
         res = 0;
     } catch(std::exception& ex) {
-        UploadError(false, ex.what(), 0, false);
+        UploadError(false, ex.what(), nullptr, false);
         res = 0;
     }
     if (!res && fatalError_)
@@ -84,12 +90,12 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
     const std::string fileName = task->getFileName();
     const std::string displayName = task->getDisplayName();
     if ( fileName.empty() ) {
-        UploadError( true, "Filename should not be empty!", 0 );
+        UploadError( true, "Filename should not be empty!", nullptr );
         return false;
     }
 
     if ( !m_UploadData ) {
-        UploadError( true, "m_UploadData should not be NULL!", 0 );
+        UploadError( true, "m_UploadData should not be NULL!", nullptr );
         return false;
     }
     m_FileName = fileName;
@@ -129,7 +135,7 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
     params.DirectUrl = m_ImageUrl;
     params.ViewUrl   = m_DownloadUrl;
     if ( m_ImageUrl.empty() ) {
-        UploadError( ErrorInfo::mtError, "Empty result", 0, false );
+        UploadError( ErrorInfo::mtError, "Empty result", nullptr, false );
         return false;
     }
     return true;
@@ -170,14 +176,14 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
 
 bool CDefaultUploadEngine::executeActions() {
     m_NetworkClient->setTreatErrorsAsWarnings(true);
-    for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
+    for (const auto & action : m_UploadData->Actions) {
         int NumOfTries = 0;
         bool ActionRes = false;
         do {
             if ( needStop() ) {
                 return false;
             }
-            ActionRes = DoAction( m_UploadData->Actions[i] );
+            ActionRes = DoAction( action );
             NumOfTries ++;
             if (needStop())
                 return false;
@@ -191,21 +197,21 @@ bool CDefaultUploadEngine::executeActions() {
                     ErrorStr += m_ErrorReason;
                 }
 
-                if (NumOfTries == m_UploadData->Actions[i].RetryLimit) {
+                if (NumOfTries == action.RetryLimit) {
                     errorType = etActionRetriesLimitReached;
                 }
                 else {
                     errorType = etActionRepeating;
                     ErrorStr += "retrying last action... ";
                     ErrorStr += "(" + std::to_string(NumOfTries + 1)
-                        + " of " + std::to_string(m_UploadData->Actions[i].RetryLimit) + ")";
+                        + " of " + std::to_string(action.RetryLimit) + ")";
                 }
-                UploadError( false, ErrorStr, 0, false );
+                UploadError( false, ErrorStr, nullptr, false );
             }
         }
-        while (NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
+        while (NumOfTries < action.RetryLimit && !ActionRes);
         if ( !ActionRes ) {
-            if (m_UploadData->Actions[i].Type == "login")
+            if (action.Type == "login")
             {
                 fatalError_ = true;
             }
@@ -219,7 +225,7 @@ void CDefaultUploadEngine::logNetworkError(bool error, const std::string& msg) {
     UploadError(error, msg, nullptr);
 }
 
-bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
+bool CDefaultUploadEngine::DoUploadAction(const UploadAction& Action, bool bUpload)
 {
     try {
 
@@ -230,12 +236,20 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         if ( bUpload ) {
             if (Action.Type == "put") {
                 m_NetworkClient->setMethod( "PUT" );
-                m_NetworkClient->doUpload( m_FileName, "" );
+                m_NetworkClient->doUpload(Action.Body.empty() ? m_FileName : "", Action.Body);
             } else {
                 bool res = m_NetworkClient->doUploadMultipartData();
             }
         } else {
-            m_NetworkClient->doPost("");
+            std::string method;
+            if (Action.Type == "login") {
+                method = "POST";
+            } else {
+                method = IuStringUtils::ToUpper(Action.Type);
+            }
+
+            m_NetworkClient->setMethod(method);
+            m_NetworkClient->doPost(ReplaceVars(Action.Body));
         }
 
         return ReadServerResponse(Action);
@@ -247,7 +261,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
     }
 }
 
-bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
+bool CDefaultUploadEngine::DoGetAction(const UploadAction& Action)
 {
     bool Result = false;
 
@@ -268,7 +282,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
 
 bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
 {
-    pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
+    pcrepp::Pcre reg(pattern, "imc"); // Case-insensitive match
     if (reg.search(text)) {
         if ( reg.matches() > 0 ) {
             res = reg.get_match(1);
@@ -279,20 +293,19 @@ bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const st
     return false;
 }
 
-bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& Body)
+bool CDefaultUploadEngine::ParseAnswer(const UploadAction& Action, const std::string& Body)
 {
     std::string DebugVars;
     if (!Action.FunctionCalls.empty() && m_UploadData->Debug) {
         DebugMessage(Body, true);
     }
 
-    auto assignVars = [&](ActionFunc& actionRegExp, auto callback) {
+    auto assignVars = [&](const ActionFunc& actionRegExp, auto callback) {
         if (actionRegExp.Variables.empty()) {
             DebugVars += "Variables list is empty!\r\n";
         }
 
-        for (size_t i = 0; i < actionRegExp.Variables.size(); i++) {
-            ActionVariable& v = actionRegExp.Variables[i];
+        for (const auto & v : actionRegExp.Variables) {
             std::string temp;
             temp = callback(v.nIndex);
             if (!v.Name.empty()) {
@@ -309,7 +322,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
 
         }
     };
-    for (auto& actionRegExp : Action.FunctionCalls)
+    for (const auto& actionRegExp : Action.FunctionCalls)
     {
         if (!actionRegExp.getArg(1).empty()) {
             std::string codePage;
@@ -403,7 +416,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
     return true;
 }
 
-bool CDefaultUploadEngine::DoAction(UploadAction& Action)
+bool CDefaultUploadEngine::DoAction(const UploadAction& Action)
 {
     bool Result = true;
 
@@ -448,17 +461,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     }
     AddCustomHeaders(Current);
 
-    if (Action.Type == "upload")
+    if (Action.Type == "upload" || Action.Type == "put") {
         Result = DoUploadAction(Current, true);
-    else
-    if (Action.Type == "put")
-        Result = DoUploadAction(Current, true);
-    else
-    if (Action.Type == "post")
+    } else if (Action.Type == "post") {
         Result = DoUploadAction(Current, false);
-    else
-    if (Action.Type == "login")
-    {
+    } else if (Action.Type == "login") {
         if (m_UploadData->NeedAuthorization && li.DoAuth) {
             serverSync_->beginAuth();
             if (!serverSync_->isAuthPerformed()) {
@@ -467,7 +474,6 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
                 {
                     serverSync_->setAuthPerformed(Result);
                 }
-
             }
             serverSync_->endAuth();
         }
@@ -477,7 +483,13 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         Result = DoGetAction(Current);
     else if (Action.Type == "openurl") {
         Result = DesktopUtils::ShellOpenUrl(Current.Url);
+    } else if (ALLOWED_ACTION_TYPES.find(Action.Type) != ALLOWED_ACTION_TYPES.end()) {
+        Result = DoUploadAction(Current, false);
+    } else {
+        UploadError(true, "Unknown action type: " + Action.Type, &Action);
+        Result = false;
     }
+
     if (Action.OnlyOnce)
     {
         if (Result)
@@ -490,7 +502,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         return Result;
 }
 
-bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
+bool CDefaultUploadEngine::ReadServerResponse(const UploadAction& Action)
 {
     bool Result = false;
     bool Exit = false;
@@ -547,15 +559,17 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
     return Result;
 }
 
-void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
+void CDefaultUploadEngine::AddQueryPostParams(const UploadAction& Action)
 {
     std::string Txt = Action.PostParams;
-    std::string _Post = "Post Request to URL: " + Action.Url + "\r\n";
 
-    //pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
+    std::ostringstream message;
+    if (m_UploadData->Debug) {
+        message << "Post Request to URL: " << Action.Url << "\r\n";
+    }
 
     pcrepp::Pcre reg2("\\\\;(*SKIP)(*FAIL)|;", "imcs");
-    std::string str = Txt;
+    const std::string& str = Txt;
     auto strings = reg2.split(str);
     pcrepp::Pcre reg3("\\\\=(*SKIP)(*FAIL)|=", "imcs");
 
@@ -564,40 +578,45 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
         if (tokens.size() < 2) {
             continue;
         }
-        std::string VarName = tokens[0];
-        std::string VarValue = tokens[1];
+        const std::string& varName = tokens[0];
+        const std::string& varValue = tokens[1];
 
-        if (!VarName.length())
+        if (varName.empty())
             continue;
 
-        std::string NewValue = VarValue;
-        NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+        std::string NewValue = varValue;
+        NewValue = IuStringUtils::Replace(NewValue, "\\;", ";");
 
-        std::string NewName = VarName;
+        std::string NewName = varName;
 
         NewName = ReplaceVars(NewName);
 
         if (NewValue == "%filename%") {
-            _Post += NewName + " = ** FILE CONTENTS ** \r\n";
+            if (m_UploadData->Debug) {
+                message << NewName << " = ** FILE CONTENTS ** \r\n";
+            }
             m_NetworkClient->addPostFieldFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
                 IuCoreUtils::GetFileMimeType(m_FileName));
         } else {
             NewValue = ReplaceVars(NewValue);
-            _Post += NewName + " = " + NewValue + "\r\n";
+            if (m_UploadData->Debug) {
+                message << NewName << " = " << NewValue << "\r\n";
+            }
             m_NetworkClient->addPostField(NewName, NewValue);
         }
     }
 
-    if (m_UploadData->Debug)
-        DebugMessage(_Post);
+    if (m_UploadData->Debug) {
+        DebugMessage(message.str());
+    }
 }
 
-void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
+void CDefaultUploadEngine::AddCustomHeaders(const UploadAction& Action)
 {
     m_NetworkClient->setReferer(Action.Referer.empty() ? Action.Url : ReplaceVars(Action.Referer));
 
     std::string Txt = Action.CustomHeaders;
-    int len = Txt.length();
+    size_t len = Txt.length();
     if (len)
     {
         if (Txt[len - 1] != ';')
@@ -609,7 +628,7 @@ void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
 
         std::string str = Txt;
 
-        size_t pos = 0;
+        int pos = 0;
         while (pos < str.length())
         {
 
@@ -619,11 +638,11 @@ void CDefaultUploadEngine::AddCustomHeaders(UploadAction& Action)
                 std::string VarValue = reg[2];
                 pos = reg.get_match_end() + 1;
 
-                if (!VarName.length())
+                if (VarName.empty())
                     continue;
 
                 std::string NewValue = VarValue;
-                NewValue = IuCoreUtils::StrReplace(NewValue, "\\;", ";");
+                NewValue = IuStringUtils::Replace(NewValue, "\\;", ";");
 
                 std::string NewName = VarName;
 
@@ -646,19 +665,19 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
     }
     std::string Result =  Text;
 
-    pcrepp::Pcre reg("\\$\\(([A-z0-9_|]*?)\\)", "imc");
-    std::string str = (Text);
-    size_t pos = 0;
-    while (pos <= str.length())
+    pcrepp::Pcre reg(R"(\$\(([A-z0-9_|]*?)\))", "imc");
+
+    int pos = 0;
+    while (pos <= Text.length())
     {
-        if ( reg.search(str, pos))
+        if ( reg.search(Text, pos))
         {
             pos = reg.get_match_end() + 1;
             std::string vv = reg[1];
             std::string varName = vv;
             std::vector<std::string> tokens;
             IuStringUtils::Split(vv, "|", tokens, -1);
-            if ( tokens.size() ) {
+            if ( !tokens.empty() ) {
                 varName = tokens[0];
             }
             std::string value;
@@ -672,16 +691,18 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
                 }
             }
             for ( size_t i = 1; i < tokens.size(); i++ ) {
-                std::string modifier = tokens[i];
+                const std::string& modifier = tokens[i];
                 if ( modifier == "urlencode" ) {
                     value = m_NetworkClient->urlEncode(value);
                 } else if (modifier == "htmldecode")
                 {
                     value = IuTextUtils::DecodeHtmlEntities(value);
+                } else if (modifier == "jsonescape") {
+                    value = Json::valueToQuotedString(value.c_str());
                 }
             }
 
-            Result = IuCoreUtils::StrReplace(Result, std::string("$(") + vv + std::string(")"), value);
+            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", value);
         }
         else
             break;
@@ -708,7 +729,7 @@ int CDefaultUploadEngine::RetryLimit()
     return m_UploadData->RetryLimit;
 }
 
-void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction,
+void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, const UploadAction* m_CurrentAction,
                                        bool writeToBuffer )
 {
     m_LastError.ServerName = m_UploadData->Name;

@@ -28,10 +28,8 @@ public:
     std::shared_ptr<NetworkDebugger> networkDebugger_;
 };
 
-
-ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
+ServiceLocator::ServiceLocator() : d_ptr(std::make_unique<ServiceLocatorPrivate>()){
 }
-
 
 std::shared_ptr<ILogger> ServiceLocator::logger() {
     return  d_ptr->logger_;
@@ -81,8 +79,6 @@ void ServiceLocator::setUploadErrorHandler(std::shared_ptr<IUploadErrorHandler> 
     d_ptr->uploadErrorHandler_ = errorHandler;
 }
 
-
-
 IDialogProvider* ServiceLocator::dialogProvider() {
     return d_ptr->dialogProvider_;
 }
@@ -102,7 +98,6 @@ void ServiceLocator::setTaskRunner(ITaskRunner* dispatcher) {
 void ServiceLocator::setProgramWindow(IProgramWindow* window) {
     d_ptr->programWindow_ = window;
 }
-
 
 UploadManager* ServiceLocator::uploadManager() const {
     return d_ptr->uploadManager_;
@@ -169,12 +164,10 @@ TaskDispatcher* ServiceLocator::taskDispatcher() const {
     return d_ptr->taskDispatcher_;
 }
 
-
 void ServiceLocator::setServerIconCache(AbstractServerIconCache* cache)
 {
     d_ptr->serverIconCache_ = cache;
 }
-
 
 AbstractServerIconCache* ServiceLocator::serverIconCache() const
 {

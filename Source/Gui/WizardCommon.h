@@ -51,7 +51,7 @@ class CWizardPage
 {
     public:
         CWizardDlg* WizardDlg;
-        virtual ~CWizardPage();
+        virtual ~CWizardPage() = default;
         CBitmap HeadBitmap;
         virtual bool OnShow();
         virtual bool OnHide();

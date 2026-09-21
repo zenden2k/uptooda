@@ -41,7 +41,6 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
     DECLARE_WND_CLASS(_T("ScreenRecorderWindow"))
 
     ScreenRecorderWindow();
-    ~ScreenRecorderWindow() override;
 
     enum
     {
@@ -64,7 +63,7 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
         COMMAND_ID_HANDLER(IDCANCEL, onCancel)
         COMMAND_ID_HANDLER(ID_STOP, onStop)
         COMMAND_ID_HANDLER(ID_PAUSE, onPause)
-        MSG_WM_HOTKEY(OnHotKey)
+        MSG_WM_HOTKEY(onHotKey)
         //REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -100,16 +99,16 @@ private:
     LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnHotKey(int HotKeyID, UINT flags, UINT vk);
+    LRESULT onHotKey(int HotKeyID, UINT flags, UINT vk);
 
     DialogResult dialogResult_;
     void endDialog(DialogResult dr);
-    void createToolbar();
     void updateTimeLabel();
     void registerHotkeys();
-    void unRegisterHotkeys();
+    void unregisterHotkeys();
     void updateWindowSize();
     void createTrayIcon();
+    std::string prepareFileName(int width, int height);
 
     CIcon icon_, iconSmall_;
     CRect captureRect_;
@@ -123,12 +122,13 @@ private:
     bool cancelRequested_ = false;
     bool stopRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;
-    GUID trayIconGuid_;
+    GUID trayIconGuid_{};
     bool hasStarted_ = false;
     ScreenRecordingRuntimeParams screenRecordingParams_;
     std::unique_ptr<CHotkeyList> hotkeys_;
     CRect frameRect_;
     bool fullScreen_ = false;
+    static int fileNameCounter_;
 }; 
 
 #endif

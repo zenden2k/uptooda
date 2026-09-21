@@ -19,7 +19,7 @@ class UrlShorteningTask: public UploadTask {
         std::string getUrl() const;
         virtual void finishTask(Status status = StatusFinished) override;
         void setParentUrlType(ParentUrlType type);
-        ParentUrlType parentUrlType();
+        ParentUrlType parentUrlType() const;
         std::string toString() override;
         std::string title() const override;
 protected:

@@ -1,6 +1,6 @@
 #include "WebViewWindow.h"
 
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CoreUtils.h"

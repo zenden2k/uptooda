@@ -30,9 +30,10 @@
 #include "ImageEditor/Helpers/FontEnumerator.h"
 #include "Gui/Helpers/DPIHelper.h"
 
-TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr)
+TextParamsWindow::TextParamsWindow() :
+    fontSizeComboboxCustomEdit_(this),
+    windowDc_(nullptr)
 {
-    memset(&font_, 0, sizeof(font_));
 }
 
 TextParamsWindow::~TextParamsWindow()
@@ -96,12 +97,9 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     fontSizeComboBox_.Attach(GetDlgItem(IDC_FONTSIZECOMBO));
 
     fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
-    CClientDC dc(m_hWnd);
-    //windowDc_ = GetDC();
-    auto enumerator = std::make_shared<FontEnumerator>(dc, fonts_, std::bind(&TextParamsWindow::OnFontEnumerationFinished, this));
-    enumerator->run();
-
-    //fontEnumerationThread_ = std::thread(&FontEnumerator::run, enumerator);
+	windowDc_ = GetDC();
+    auto enumerator = std::make_shared<FontEnumerator>(windowDc_, fonts_, [this] { OnFontEnumerationFinished(); });
+    fontEnumerationThread_ = std::thread(&FontEnumerator::run, enumerator);
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
         _T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
     );
@@ -184,7 +182,7 @@ void TextParamsWindow::createToolbar() {
     GetDlgItem(IDC_TOOLBARPLACEHOLDER).GetWindowRect(&toolbarRect);
     ScreenToClient(&toolbarRect);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -215,8 +213,7 @@ void TextParamsWindow::createToolbar() {
         textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
         textToolbar_.SetButtonStructSize();
     } else {
-        TBBUTTONINFO bi;
-        memset(&bi, 0, sizeof(bi));
+        TBBUTTONINFO bi = {};
         bi.cbSize = sizeof(bi);
         bi.dwMask = TBIF_STATE;
 
@@ -247,11 +244,6 @@ void TextParamsWindow::NotifyParent(DWORD changeMask)
 CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow)
 {
     textParamsWindow_ = textParamsWindow;
-}
-
-CustomEdit::~CustomEdit()
-{
-
 }
 
 LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

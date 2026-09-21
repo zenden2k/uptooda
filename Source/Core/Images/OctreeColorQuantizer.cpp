@@ -338,10 +338,10 @@ unique_c_ptr<Gdiplus::ColorPalette> OctreeColorQuantizer::generatePalette() {
 void OctreeColorQuantizer::reduceTree() {
     // Scanning all levels towards root. Leaves are skipped (hence -2) because they are not reducible.
     for (int level = levelCount_ - 2; level >= 0; level--) {
-        if (levels_[level].size() == 0)
+        if (levels_[level].empty())
             continue;
 
-        // Sorting nodes of the current level (least significant ones first)
+        // Sorting nodes of the current level (the least significant ones first)
         // while merging them into their parents until we go under MaxColors
         auto& nodes = levels_[level];
         std::sort(nodes.begin(), nodes.end(), [](auto* a, auto* b) { return a->deepPixelCount() < b->deepPixelCount(); });

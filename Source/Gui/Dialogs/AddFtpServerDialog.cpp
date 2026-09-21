@@ -25,7 +25,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
 
-    SetWindowText(TR("Add FTP/SFTP server"));
+    SetWindowText(TR("Add server"));
     TRC(IDC_CONNECTIONNAMELABEL, "Connection  name:");
     TRC(IDC_SERVERSTATIC, "Server [:port]:");
     TRC(IDC_AUTHENTICATIONLABEL, "Authenticaton:");
@@ -47,7 +47,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     serverTypeComboBox_.AddString(TR("SFTP"));
     serverTypeComboBox_.AddString(TR("WebDAV"));
 
-    securedConectionCombobox_ = GetDlgItem(IDC_SECUREDCONNECTIONCOMBOBOX);
+    secureConnectionCombobox_ = GetDlgItem(IDC_SECUREDCONNECTIONCOMBOBOX);
 
     activeConnectionCheckBox_ = GetDlgItem(IDC_ACTIVECONNECTIONCHECKBOX);
     activeConnectionCheckBox_.SetCheck(BST_UNCHECKED);
@@ -275,13 +275,13 @@ void CAddFtpServerDialog::addServer(bool test) {
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
     serverType_ = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
 
-    int securedConnection = securedConectionCombobox_.GetCurSel();
+    int securedConnection = secureConnectionCombobox_.GetCurSel();
     bool activeConnection = activeConnectionCheckBox_.GetCheck() == BST_CHECKED;
     std::string privateKeyFile;
     if (serverType_ == ServerListManager::ServerType::stSFTP) {
         privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
 
-        if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
+        if (!privateKeyFile.empty() && !IuCoreUtils::FileExists(privateKeyFile)) {
             LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
             return;
         }
@@ -344,15 +344,15 @@ void CAddFtpServerDialog::enableControls(bool enable) {
 }
 
 void CAddFtpServerDialog::updateSecuredConnectionCombobox() {
-    ServerListManager::ServerType serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+    auto serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
 
-    securedConectionCombobox_.ResetContent();
-    securedConectionCombobox_.AddString(TR("No"));
+    secureConnectionCombobox_.ResetContent();
+    secureConnectionCombobox_.AddString(TR("No"));
     if (serverType == ServerListManager::ServerType::stFTP) {
-        securedConectionCombobox_.AddString(TR("Explicit"));
-        securedConectionCombobox_.AddString(TR("Implicit"));
+        secureConnectionCombobox_.AddString(TR("Explicit"));
+        secureConnectionCombobox_.AddString(TR("Implicit"));
     } else {
-        securedConectionCombobox_.AddString(TR("Yes"));
+        secureConnectionCombobox_.AddString(TR("Yes"));
     }
 }
 

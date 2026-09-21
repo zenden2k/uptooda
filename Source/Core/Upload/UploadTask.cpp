@@ -27,7 +27,6 @@ void UploadTask::init()
     role_ = DefaultRole;
     shorteningStarted_ = false;
     stopSignal_ = false;
-    currentUploadEngine_ = nullptr;
     tempFileDeleter_ = nullptr;
     uploadSuccess_ = false;
     index_ = 0;
@@ -88,7 +87,7 @@ void UploadTask::statusChanged()
     }
 }
 
-void UploadTask::setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine)
+void UploadTask::setCurrentUploadEngine(std::shared_ptr<CAbstractUploadEngine> currentUploadEngine)
 {
     currentUploadEngine_ = currentUploadEngine;
 }
@@ -231,15 +230,15 @@ UploadProgress* UploadTask::progress()
     return &progress_;
 }
 
-void UploadTask::setOnUploadProgressCallback(std::function<void(UploadTask*)> cb) {
+void UploadTask::setOnUploadProgressCallback(const std::function<void(UploadTask*)>& cb) {
     onUploadProgress_ = cb;
 }
 
-void UploadTask::setOnStatusChangedCallback(std::function<void(UploadTask*)> cb) {
+void UploadTask::setOnStatusChangedCallback(const std::function<void(UploadTask*)>& cb) {
     onStatusChanged_ = cb;
 }
 
-void UploadTask::setOnFolderUsedCallback(std::function<void(UploadTask*)> cb) {
+void UploadTask::setOnFolderUsedCallback(const std::function<void(UploadTask*)>& cb) {
     onFolderUsed_ = cb;
 }
 
@@ -253,7 +252,7 @@ ServerProfile& UploadTask::serverProfile()
     return serverProfile_;
 }
 
-void UploadTask::setServerProfile(ServerProfile profile)
+void UploadTask::setServerProfile(const ServerProfile& profile)
 {
     serverProfile_ = profile;
 }
@@ -263,7 +262,7 @@ ServerProfile& UploadTask::urlShorteningServer()
     return urlShorteningProfile_;
 }
 
-void UploadTask::setUrlShorteningServer(ServerProfile profile)
+void UploadTask::setUrlShorteningServer(const ServerProfile& profile)
 {
     urlShorteningProfile_ = profile;
 }
@@ -281,20 +280,20 @@ void* UploadTask::userData() const
 bool UploadTask::uploadSuccess(bool withChilds)
 {
     std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    int count = childTasks_.size();
+    size_t count = childTasks_.size();
     if (!count || !withChilds )
     {
         return uploadSuccess_;
     }
    
-    for (int i = 0; i <count; i++)
+    for (size_t i = 0; i <count; i++)
     {
         if (!childTasks_[i]->isFinished() || !childTasks_[i]->uploadSuccess())
         {
             return false;
         }
     }
-    return  uploadSuccess_;
+    return uploadSuccess_;
 }
 
 void UploadTask::setUploadSuccess(bool success)
@@ -316,7 +315,6 @@ bool UploadTask::shorteningStarted() const
 {
     return shorteningStarted_;
 }
-
 
 void UploadTask::setShorteningStarted(bool started)
 {

@@ -51,7 +51,6 @@ DXGIOptionsManager::DXGIOptionsManager() {
 }
 
 std::optional<DXGIOptionsManager::VideoCodecInfo> DXGIOptionsManager::getVideoCodecInfo(const std::string& codecId) {
-
     VideoCodecInfo info;
     info.CodecId = codecId;
     return info;
@@ -108,11 +107,11 @@ IdNameArray DXGIOptionsManager::getAudioSources() {
     IdNameArray result;
     
     for (const auto& [id, source]: audioSources_) {
-        result.push_back({ id, source.Name });
+        result.emplace_back( id, source.Name );
     }
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
-        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+        return IuStringUtils::StrCaseInsensitiveCompare(a.second, b.second) < 0;
     };
 
     std::sort(result.begin(), result.end(), compareFunc);

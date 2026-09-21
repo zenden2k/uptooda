@@ -37,10 +37,6 @@ CMultiServerSelectorControl::CMultiServerSelectorControl(UploadEngineManager* up
     profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); });
 }
 
-CMultiServerSelectorControl::~CMultiServerSelectorControl() {
-
-}
-
 void CMultiServerSelectorControl::TranslateUI() {
     TRC(IDC_CHOOSESERVERS, "Choose...");
 }
@@ -51,11 +47,6 @@ LRESULT CMultiServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
     updateInfoLabel();
     return FALSE;
-}
-
-LRESULT CMultiServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    return 0;
 }
 
 void CMultiServerSelectorControl::setTitle(CString title) {
@@ -105,7 +96,7 @@ void CMultiServerSelectorControl::updateInfoLabel() {
     if (serverProfileGroup_.getCount() == 0) {
         text = _("Server not chosen");
     } else if (serverProfileGroup_.getCount() == 1) {
-        text = str(IuStringUtils::FormatNoExcept(_("Selected server: %s")) % engineList->getServerDisplayName(serverProfileGroup_.getByIndex(0).uploadEngineData()));
+        text = str(IuStringUtils::FormatNoExcept(_("Selected server: %s")) % CMyEngineList::getServerDisplayName(serverProfileGroup_.getByIndex(0).uploadEngineData()));
     }
     else {
         text = str(IuStringUtils::FormatNoExcept(_n("%d server selected", "%d servers selected", serverProfileGroup_.getCount())) % serverProfileGroup_.getCount());

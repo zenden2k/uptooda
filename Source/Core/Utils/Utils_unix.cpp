@@ -80,6 +80,11 @@ std::string ConvertToUtf8(const std::string &text, const std::string& codePage) 
     return text;
 }
 
+std::string WstringToSystemLocale(const std::wstring &str) {
+    // FIXME
+    return WstringToUtf8(str);
+}
+
 bool MoveFileOrFolder(const std::string& from, const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
 }

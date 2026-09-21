@@ -14,7 +14,7 @@ std::unique_ptr<Bitmap> ColorQuantizer::getQuantized(Bitmap* sourceBitmap, Gdipl
     BitmapData dataSource;
 
     if (sourceBitmap->LockBits(&rc, ImageLockModeRead, PixelFormat32bppARGB, &dataSource) == Ok) {
-        BYTE* pScan0Source = (BYTE*)dataSource.Scan0;
+        BYTE* pScan0Source = static_cast<BYTE*>(dataSource.Scan0);
         UINT strideSource;
 
         if (dataSource.Stride > 0) {
@@ -55,7 +55,7 @@ std::unique_ptr<Bitmap> ColorQuantizer::getQuantized(Bitmap* sourceBitmap, Gdipl
         if (destBitmap->LockBits(&rc, ImageLockModeWrite, PixelFormat8bppIndexed, &dataDest) == Ok) {
             BYTE* pRowSource = pScan0Source;
 
-            BYTE* pRowDest = (BYTE*)dataDest.Scan0;
+            BYTE* pRowDest = static_cast<BYTE*>(dataDest.Scan0);
             UINT strideDest;
 
             if (dataDest.Stride > 0) {
@@ -75,7 +75,7 @@ std::unique_ptr<Bitmap> ColorQuantizer::getQuantized(Bitmap* sourceBitmap, Gdipl
                     BYTE r = *pPixelSource++;
                     BYTE a = *pPixelSource++;
 
-                    BYTE index = (BYTE)mypal.getNearestColorIndex(Gdiplus::Color(a, r, g, b));
+                    BYTE index = static_cast<BYTE>(mypal.getNearestColorIndex(Gdiplus::Color(a, r, g, b)));
 
                     *pPixelDest++ = index;
                 }

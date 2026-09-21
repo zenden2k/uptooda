@@ -36,7 +36,6 @@ CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEng
 {
     focusOnLoginControl_ = focusOnLoginEdit;
     uploadEngineManager_ = uploadEngineManager;
-    m_pluginLoader = nullptr;
 }
 
 CServerParamsDlg::~CServerParamsDlg()
@@ -45,6 +44,10 @@ CServerParamsDlg::~CServerParamsDlg()
 
 LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    if (!m_ue) {
+        EndDialog(IDABORT);
+        return 0;
+    }
     CenterWindow(GetParent());
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
@@ -99,7 +102,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     parameterListAdapter_ = std::make_unique<ParameterListAdapter>(&m_paramNameList, &m_wndParamList);
 
-    m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    m_pluginLoader = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile_));
     if (m_pluginLoader) {
         m_pluginLoader->getServerParamList(m_paramNameList);
 
@@ -160,7 +163,7 @@ void CServerParamsDlg::doAuthChanged() {
 }
 
 void CServerParamsDlg::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 

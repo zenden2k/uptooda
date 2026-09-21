@@ -27,10 +27,9 @@ limitations under the License.
 class TempImageUploadTask : public FileUploadTask {
     public:
         TempImageUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = nullptr);
-        ~TempImageUploadTask() override;
         std::string getMimeType() const override;
         int64_t getDataLength() const override;
-        void finishTask(Status status = StatusFinished) override;
+        void finishTask(Status status) override;
         std::string toString() override;
         std::string title() const override;
         const ServerProfile& searchServerProfile() const;

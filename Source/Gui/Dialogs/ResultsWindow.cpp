@@ -205,11 +205,11 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
 {
     HINSTANCE hInst =  GetModuleHandle(0);
     HRSRC res = FindResource( hInst, MAKEINTRESOURCE(IDD_RESULTSWINDOW),RT_DIALOG);
-    DLGTEMPLATE* dit=(DLGTEMPLATE*)LockResource( LoadResource(hInst, res));
+    auto* dit = static_cast<DLGTEMPLATE*>(LockResource(LoadResource(hInst, res)));
 
     size_t sizeDlg = ::SizeofResource(hInst, res);
     hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
-    auto *pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));
+    auto *pMyDlgTemplate = static_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if(m_childWindow)
@@ -227,7 +227,7 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
     if (ServiceLocator::instance()->translator()->isRTL()) {
         pMyDlgTemplate->exStyle |= WS_EX_RTLREADING | WS_EX_LAYOUTRTL;
     }
-    return (DLGTEMPLATE*)pMyDlgTemplate;
+    return reinterpret_cast<DLGTEMPLATE*>(pMyDlgTemplate);
 }
 
 void CResultsWindow::FinishUpload()

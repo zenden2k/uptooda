@@ -12,6 +12,7 @@
 
 class ParameterFactory {
 public:
+    virtual ~ParameterFactory() = default;
     virtual std::unique_ptr<AbstractParameter> create(const std::string& name, Sqrat::Table& table) const = 0;
 };
 

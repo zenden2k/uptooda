@@ -9,10 +9,10 @@ function Authenticate() {
 
     nm.setReferer(BASE_URL + "/login.html");
     nm.setUrl(BASE_URL + "/");
-    nm.addQueryParam("op", "login");
-    nm.addQueryParam("redirect", BASE_URL + "/");
-    nm.addQueryParam("login", login);
-    nm.addQueryParam("password", pass);
+    nm.addPostField("op", "login");
+    nm.addPostField("redirect", BASE_URL + "/");
+    nm.addPostField("login", login);
+    nm.addPostField("password", pass);
 
     nm.doPost("");
 
@@ -48,15 +48,15 @@ function UploadFile(FileName, options) {
         nm.doGet(tmpUrl + "/status.html?" + uid + "=" + nm.urlEncode(justFileName) + "=" + BASE_URL + "/");
 
         nm.addQueryHeader("upload_type", "file");
-        nm.addQueryParam("sess_id", sessId);
-        nm.addQueryParam("srv_tmp_url", tmpUrl);
-        nm.addQueryParamFile("file_0", FileName, justFileName, GetFileMimeType(FileName));
-        nm.addQueryParam("file_0_descr", "");
-        nm.addQueryParam("file_0_public", "1");
-        nm.addQueryParam("link_rcpt", "");
-        nm.addQueryParam("link_pass", "");
-        nm.addQueryParam("to_folder", "")
-        nm.addQueryParam("submit_btn", " Yüklemeye Başla ")
+        nm.addPostField("sess_id", sessId);
+        nm.addPostField("srv_tmp_url", tmpUrl);
+        nm.addPostFieldFile("file_0", FileName, justFileName, GetFileMimeType(FileName));
+        nm.addPostField("file_0_descr", "");
+        nm.addPostField("file_0_public", "1");
+        nm.addPostField("link_rcpt", "");
+        nm.addPostField("link_pass", "");
+        nm.addPostField("to_folder", "")
+        nm.addPostField("submit_btn", " Yüklemeye Başla ")
         nm.setUrl(uploadUrl);
         nm.doUploadMultipartData();
 
@@ -66,7 +66,7 @@ function UploadFile(FileName, options) {
             local action = form.attr("action");
             nm.setUrl(action);
             form.find("textarea").each(function(index, elem) {
-                nm.addQueryParam(elem.attr("name"), strip(elem.text()));
+                nm.addPostField(elem.attr("name"), strip(elem.text()));
             });
             nm.doPost("");
             

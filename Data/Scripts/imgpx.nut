@@ -34,10 +34,10 @@ function UploadFile(pathToFile, options) {
     
     // Prepare upload request
     nm.setUrl(BASE_URL + "/en/uploads");
-    nm.addQueryParamFile("fileToUpload[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
-    nm.addQueryParam("upload_token", uploadToken);
-    nm.addQueryParam("photoSize", "original"); // Use original size as requested
-    nm.addQueryParam("submit", "Upload"); // Submit button value
+    nm.addPostFieldFile("fileToUpload[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostField("upload_token", uploadToken);
+    nm.addPostField("photoSize", "original"); // Use original size as requested
+    nm.addPostField("submit", "Upload"); // Submit button value
     nm.doUploadMultipartData();
     
     if (nm.responseCode() != 200) {
@@ -50,14 +50,14 @@ function UploadFile(pathToFile, options) {
     local doc = Document(responseBody);
     
     // Extract direct link to image
-    local directUrlInput = doc.find("p:contains('Direct link to the image:') input");
+    local directUrlInput = doc.find("div.link-container:contains('Direct link') input");
     local directUrl = "";
     if (directUrlInput.length() > 0) {
         directUrl = directUrlInput.attr("value");
     }
     
     // Extract short link (view URL)
-    local viewUrlInput = doc.find("p:contains('Short link:') input");
+    local viewUrlInput = doc.find("div.link-container:contains('Short link:') input");
     local viewUrl = "";
     if (viewUrlInput.length() > 0) {
         viewUrl = viewUrlInput.attr("value");
@@ -65,7 +65,7 @@ function UploadFile(pathToFile, options) {
     
     // Extract thumbnail URL from BB code
     local thumbnailUrl = "";
-    local thumbnailInput = doc.find("p:contains('BB code for image with preview (320x240):') input");
+    local thumbnailInput = doc.find("div.link-container:contains('BB code for image with preview (320x240):') input");
     if (thumbnailInput.length() > 0) {
         local bbCode = thumbnailInput.attr("value");
         local reg = CRegExp("\\[img\\](.+?)\\[/img\\]", "mi");
@@ -75,7 +75,13 @@ function UploadFile(pathToFile, options) {
     }
     
     if (directUrl == "") {
-        WriteLog("error", "[imgpx.com] Upload failed. Cannot obtain the direct URL!");
+        local error = doc.find(".error-container p").text();
+        if (error != "") {
+            WriteLog("error", "[imgpx.com] " + error);
+        } else {
+            WriteLog("error", "[imgpx.com] Upload failed. Cannot obtain the direct URL!");
+        }
+
         return ResultCode.Failure;
     }
     
@@ -98,9 +104,9 @@ function Authenticate() {
     }
     
     nm.setUrl(BASE_URL + "/en/login");
-    nm.addQueryParam("username", username);
-    nm.addQueryParam("password", password);
-    nm.addQueryParam("submit", "Log In"); // Submit button value
+    nm.addPostField("username", username);
+    nm.addPostField("password", password);
+    nm.addPostField("submit", "Log In"); // Submit button value
     nm.doPost("");
     
     if (nm.responseCode() != 200) {

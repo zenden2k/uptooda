@@ -17,6 +17,7 @@ Data/EBWebView
 Source/.idea
 Source/versioninfo.h
 Source/ShellExt/Generated
+Source/ShellExt/x64
 Utils/Localize/.idea
 Utils/Web/.idea
 Sandbox/
@@ -24,8 +25,6 @@ ipch/
 *.obj
 *.aps
 Lang/*.new
-Dist/debian/imgupload
-Dist/serverchecker
 /Dist/versioninfo*.h
 /Build*/
 .vs/
@@ -35,6 +34,7 @@ Dist/serverchecker
 /Dist/Releases/
 /Dist/Build_Release_Temp/
 /Dist/Libs/
+/Dist/PDB/
 /Dist/curl-ca-bundle.crt
 /Dist/certdata.txt
 CMakeLists.txt.user
@@ -43,3 +43,7 @@ CMakeLists.txt.user
 /*.lnk
 /notes.txt
 .env
+Source/ShellExt/dlldata.c
+Source/ShellExt/*_i.c
+Source/ShellExt/*_p.c
+Source/ShellExt/ExplorerIntegration.h

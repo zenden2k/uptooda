@@ -31,12 +31,12 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
+    auto sync = std::make_shared<ServerSync>();
     std::string scriptFileName = TestHelpers::resolvePath("Scripts/upload_test_1.nut");
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
+    CScriptUploadEngine engine(scriptFileName, sync, &serverSettings,
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
     ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
@@ -91,12 +91,12 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
+    auto sync = std::make_shared<ServerSync>();
     std::string scriptFileName = TestHelpers::resolvePath("Scripts/upload_test_1.nut");
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
+    CScriptUploadEngine engine(scriptFileName, sync, &serverSettings,
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
     ASSERT_TRUE(engine.isLoaded());
     engine.setServerSettings(&serverSettings);
@@ -154,12 +154,12 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
+    auto sync = std::make_shared<ServerSync>();
     std::string scriptFileName = TestHelpers::resolvePath("Scripts/upload_test_1.nut");
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, 
+    CScriptUploadEngine engine(scriptFileName, sync,
         &serverSettings, std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
     ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
@@ -206,7 +206,7 @@ TEST_F(ScriptUploadEngineTest, authenticateTest)
     using ::testing::_;
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
-    ServerSync sync;
+    auto sync = std::make_shared<ServerSync>();
     std::string scriptFileName = TestHelpers::resolvePath("Scripts/upload_test_2.nut");
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
@@ -214,7 +214,7 @@ TEST_F(ScriptUploadEngineTest, authenticateTest)
     serverSettings.authData.DoAuth = true;
     serverSettings.authData.Login = "testuser";
     serverSettings.authData.Password = "testpassword";
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings,
+    CScriptUploadEngine engine(scriptFileName, sync, &serverSettings,
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
 
     ASSERT_TRUE(engine.isLoaded());

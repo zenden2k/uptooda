@@ -1,9 +1,5 @@
 #include "WinToastHandler.h"
 
-WinToastHandler::WinToastHandler() {
-    
-}
-
 void WinToastHandler::toastActivated() const {
     
 }

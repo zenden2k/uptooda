@@ -38,8 +38,8 @@ class CHistoryReader_impl
     public:
         SimpleXml m_xml;
         std::vector<std::unique_ptr<CHistorySession>> m_sessions;
-        std::map<std::string, int> keyToIndex_;
-        CHistoryManager* mgr_;
+        std::map<std::string, size_t> keyToIndex_;
+        CHistoryManager* mgr_{};
 };
 
 const char CHistoryManager::globalMutexName[] = "IuHistoryFileSessionMutex";
@@ -56,7 +56,6 @@ CHistoryManager::~CHistoryManager()
     if (db_) {
         sqlite3_close(db_);
     }
-    sqlite3_shutdown();
 }
 
 bool CHistoryManager::openDatabase() {
@@ -91,7 +90,7 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     if (session->dbEntryCreated()) {
         return true;
     }
-    IuCoreUtils::ZGlobalMutex mutex(CHistoryManager::globalMutexName);
+    IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
     if (session->dbEntryCreated()) {
         return true;
     }
@@ -190,14 +189,31 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
 std::shared_ptr<CHistorySession> CHistoryManager::newSession()
 {
     time_t t = time(nullptr);
-    tm * timeinfo = localtime ( &t );
-    std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + std::to_string(1900+timeinfo->tm_year)+"_" + std::to_string(timeinfo->tm_mon+1) + ".xml";
-    std::uniform_int_distribution<int> dist1(256 * 256);
-    std::uniform_int_distribution<int> dist2(256);
-	std::string str = std::to_string(dist1(mt_)) + std::to_string(int(t));
-    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + std::to_string(dist2(mt_))).substr(0, 16);
+
+    // Используем потокобезопасную версию localtime
+    tm timeinfo;
+#ifdef _WIN32
+    localtime_s(&timeinfo, &t);
+#else
+    localtime_r(&t, &timeinfo);
+#endif
+
+    std::string fileName = m_historyFilePath + m_historyFileNamePrefix + "_"
+        + std::to_string(1900 + timeinfo.tm_year) + "_"
+        + std::to_string(timeinfo.tm_mon + 1) + ".xml";
+    std::lock_guard<std::mutex> lock(sessionMutex_);
+
+    std::uniform_int_distribution<int> dist1(0, 256 * 256 - 1);
+    std::uniform_int_distribution<int> dist2(0, 256 - 1);
+
+    std::string str = std::to_string(dist1(mt_)) + std::to_string(static_cast<int>(t));
+    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(
+        str + std::to_string(dist2(mt_)))
+                         .substr(0, 16);
+
     auto res = std::make_shared<CHistorySession>(fileName, id);
     res->setTimeStamp(t);
+
     return res;
 }
 
@@ -237,7 +253,7 @@ bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     std::string sql = str(boost::format("DELETE from uploads WHERE TRUE %1% ; DELETE from upload_sessions WHERE TRUE  %1%") % condition);
     char *err = nullptr;
     if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &err) != SQLITE_OK) {
-        LOG(ERROR) << "SQL error occured while clearing history: " << std::endl << err;
+        LOG(ERROR) << "SQL error occurred while clearing history: " << std::endl << err;
         sqlite3_free(err);
     }
 
@@ -247,12 +263,12 @@ bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
 bool CHistoryManager::convertHistory() {
     IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
     std::string historyFolder = m_historyFilePath;
-    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
     std::uniform_int_distribution<int> dist(1000000);
-    pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
+    pcrepp::Pcre regexp(R"(^history_(\d+)_(\d+)\.xml$)");
     try {
+        boost::filesystem::directory_iterator endItr;
 
-        for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
+        for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != endItr; ++i) {
             // Skip if not a file
             if (!boost::filesystem::is_regular_file(i->status())) {
                 continue;
@@ -274,7 +290,6 @@ bool CHistoryManager::convertHistory() {
                 LOG(ERROR) << "Failed to convert history file " << fileName;
                 continue;
             }
-
 
             for (auto& session : reader) {
                 for (auto& item : *session) {
@@ -301,7 +316,7 @@ CHistoryReader::CHistoryReader(CHistoryManager* mgr)
     d_ptr->mgr_ = mgr;
 }
 
-int CHistoryReader::getSessionCount() const
+size_t CHistoryReader::getSessionCount() const
 {
     return d_ptr->m_sessions.size();
 }
@@ -329,11 +344,11 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
     std::vector<SimpleXmlNode> allSessions;
     root.GetChilds("Session", allSessions);
 
-    for(size_t i = 0; i<allSessions.size(); i++)
+    for(auto & allSession : allSessions)
     {
         std::string fName = filename;
         auto session = std::make_unique<CHistorySession>(fName, "0");
-        loadSessionFromXml(session.get(), allSessions[i]);
+        loadSessionFromXml(session.get(), allSession);
         d_ptr->m_sessions.push_back(std::move(session));
     }
     return true;
@@ -417,7 +432,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
     }
 
     pthis->d_ptr->m_sessions.push_back(std::move(session));
-    int index = pthis->d_ptr->m_sessions.size() - 1;
+    size_t index = pthis->d_ptr->m_sessions.size() - 1;
     pthis->d_ptr->keyToIndex_[sessionId] = index;
     return 0;
 }
@@ -434,7 +449,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
         }
     }
 
-    auto it = pthis->d_ptr->keyToIndex_.find(sessionId);
+    const auto it = pthis->d_ptr->keyToIndex_.find(sessionId);
     if (it == pthis->d_ptr->keyToIndex_.end()) {
         return 0; // No session with such id
     }
@@ -484,9 +499,6 @@ std::vector<std::unique_ptr<CHistorySession>>::iterator CHistoryReader::begin() 
 }
 std::vector<std::unique_ptr<CHistorySession>>::iterator CHistoryReader::end() {
     return d_ptr->m_sessions.end();
-}
-
-CHistoryReader::~CHistoryReader() {
 }
 
 void CHistoryReader::loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode) {

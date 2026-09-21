@@ -268,6 +268,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
             invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
             invertSelectionCheckbox_.SetFont(systemFont_);
 
+            RECT drawBorderCheckboxRect { 0, 0, static_cast<LONG>(170 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+            drawBorderCheckbox_.Create(m_hWnd, drawBorderCheckboxRect, TR("Draw border"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_DRAWBORDERCHECKBOX);
+            drawBorderCheckbox_.SetFont(systemFont_);
+
             RECT arrowTypeComboRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
             arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
@@ -279,11 +284,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
             itemIndex = arrowTypeCombobox_.AddString(_T(""));
             setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
-            RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
-            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
+            RECT applyButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply crop"), WS_CHILD | BS_PUSHBUTTON | BS_DEFPUSHBUTTON, 0, ID_APPLYBUTTON);
             applyButton_.SetFont(systemFont_);
 
-            RECT cancelButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT cancelButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
             cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
             cancelOperationButton_.SetFont(systemFont_);
         }
@@ -336,9 +341,22 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     SolidBrush br1(transparentColor_);
     gr.FillRectangle(&br1, rect);
         Pen p(Color(1,87,124));
-    LinearGradientBrush br (RectF(float(0), float(-0.5 ), float(buttonsRect_.right),
-            /*rect.top+*/ float(buttonsRect_.bottom) ), Color(252,252,252), Color(
-            200,200,200), orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal);
+
+    auto brushRectWidth = static_cast<float>(buttonsRect_.right);
+    auto brushRectHeight = static_cast<float>(buttonsRect_.bottom);
+
+    if (orientation_ == orHorizontal) {
+        brushRectHeight = brushRectHeight / 2.0f;
+    } else {
+        brushRectWidth = brushRectWidth / 2.0f;
+    }
+    LinearGradientBrush br(
+        RectF(float(0), float(-0.5 ), brushRectWidth, brushRectHeight),
+        Color(231,231,231),Color(248,248,248),
+        orientation_ == orHorizontal ? LinearGradientModeVertical : LinearGradientModeHorizontal
+    );
+    //br.SetWrapMode(orientation_ == orHorizontal ? WrapModeTileFlipX : WrapModeTileFlipY);
+    br.SetWrapMode(WrapModeTileFlipX);
 
     rect = Rect(subpanelLeftOffset_, static_cast<INT>(buttonsRect_.bottom - 2 * dpiScaleY_), static_cast<INT>(kSubpanelWidth*dpiScaleX_), clientRect.bottom);
     rect.Height -= rect.Y;
@@ -489,7 +507,7 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
             if (item.state == isDropDown && (item.type == Toolbar::itComboButton || item.type == Toolbar::itTinyCombo)) {
                 // Showing a popup menu in the parent class
-                ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                ::SendMessage(parent, MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item, (LPARAM)m_hWnd);
                 // Restoring button state
                 item.state = isNormal;
                 InvalidateRect(&item.rect, false);
@@ -510,7 +528,7 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
     if (wParam == kTinyComboDropdownTimer && selectedItemIndex_ != -1) {
         Item& item = buttons_[selectedItemIndex_];
         if (item.type == Toolbar::itTinyCombo) {
-            ::PostMessage(GetParent(), MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+            ::PostMessage(GetParent(), MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item,(LPARAM)m_hWnd);
         }
     }
     KillTimer(kTinyComboDropdownTimer);
@@ -538,19 +556,22 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
                 item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
             } else {
                 HWND parent = GetParent();
-                bool shouldSendCommand = true;
+                
+                bool isDropDownArea = false;
 
                 if (item.type == Toolbar::itComboButton) {
-                    shouldSendCommand = !isPointInComboButtonDropdownArea(xPos, yPos, item);
+                    isDropDownArea = isPointInComboButtonDropdownArea(xPos, yPos, item);
                 } else if (item.type == Toolbar::itTinyCombo) {
-                    shouldSendCommand = !isPointInTinyComboButtonDropdownArea(xPos, yPos, item);
+                    isDropDownArea = isPointInTinyComboButtonDropdownArea(xPos, yPos, item);
                 }
-
-                if (shouldSendCommand) {
+                
+                if (isDropDownArea) {
+                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                } else {
                     ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(item.command, BN_CLICKED), (LPARAM)m_hWnd);
                     selectedItemIndex_ = -1;
-                    OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
-                }
+                    OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);      
+                }               
             }
         } else {
             selectedItemIndex_ = -1;
@@ -575,7 +596,7 @@ LRESULT Toolbar::OnRButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
         item.state = isDropDown;
         InvalidateRect(&item.rect, false);
         HWND parent = GetParent();
-        ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+        ::SendMessage(parent, MTBM_DROPDOWNMOUSEDOWN, (WPARAM)&item, (LPARAM)m_hWnd);
 
         item.state = isNormal;
         selectedItemIndex_ = -1;
@@ -698,8 +719,6 @@ int Toolbar::AutoSize() {
         }
     }
 
-
-
     if ( orientation_ == orHorizontal && createSubPanel_) {
         SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE|SWP_NOZORDER);
         penSizeSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE|SWP_NOZORDER);
@@ -784,11 +803,12 @@ int Toolbar::AutoSize() {
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         invertSelectionCheckbox_.SetWindowPos(0, blurRadiusLabelRect.right + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        drawBorderCheckbox_.SetWindowPos(0, pixelLabelRect_.right + static_cast<int>(15 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
-        applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(10 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(8 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(175 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -914,40 +934,26 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
     SolidBrush brush(item.enabled ? Color(0, 0, 0) : Color(120, 120, 120));
 
-    if ( item.state == isHover ||  item.state == isDown ||  item.state == isDropDown || item.isChecked) {
-            Pen p(Color(198,196,197));
-            Color gradientColor1 = item.isChecked ?  Color(170,170,170) : Color(232,232,232);
-            Color gradientColor2 = item.isChecked ? Color(130,130,130) : Color(170,170,170);
-            LinearGradientBrush br (RectF(float(x), float(y ), float( x+size.cx),
-                /*rect.top+*/ float(y+size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
+    if (item.state == isHover || item.state == isDown || item.state == isDropDown || item.isChecked) {
+        Pen p(Color(198, 196, 197));
+        Color gradientColor1 = item.isChecked ? Color(210, 210, 210) : Color(230, 230, 230);
+        Color gradientColor2 = item.isChecked ? Color(190, 190, 190) : Color(225, 225, 225);
+        LinearGradientBrush br(RectF(float(x)+1, float(y), float(x + size.cx),
+                                     float(y + size.cy)+2), gradientColor1, gradientColor2,
+                               LinearGradientModeVertical);
+        br.SetWrapMode(WrapModeTileFlipX);
 
-            CRoundRect roundRect;
-            roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
+        CRoundRect roundRect;
+        roundRect.FillRoundRect(gr, &br, Rect(x, y, size.cx, size.cy), Color(195, 195, 195), 4);
 
-            if ( item.type == itComboButton ) {
-                gr->DrawLine(&p, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
-            }
+        if (item.type == itComboButton) {
+            gr->DrawLine(&p, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2 * dpiScaleX_, bounds.Y + 1,
+                         bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2 * dpiScaleX_,
+                         bounds.Y + bounds.Height - 1);
+        }
+    }
 
-    } /*else if ( item.state == isChecked ) {
-        Pen p(Color(198,196,197));
-        Color gradientColor1 = Color(200,200,200);
-        Color gradientColor2 = Color(140,140,140);
-        LinearGradientBrush br (RectF(float(0), float(0.5 ), float( size.cx),
-            /*rect.top+* float(size.cy ) ), gradientColor1, gradientColor2, LinearGradientModeVertical);
-        //    gr->FillRectangle( &brush, Rect(x, y, size.cx, size.cy));
-        //br.TranslateTransform(x,y);
-        //br.SetWrapMode(WrapModeTile);
-        /*CRoundRect roundRect;
-        roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
-        //roundRect.DrawRoundRect(gr,Rect(x, y, size.cx, size.cy),Color(198,196,197),7, 1);
-        //DrawRoundedRectangle(gr,Rect(x, y, size.cx, size.cy),8,&p, 0);
-        /*if ( item.type == itComboButton ) {
-            gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3 ,  bounds.Y+1 , bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3, bounds.Y + bounds.Height -1 );
-        }*/
-
-//    }
-
-    REAL iconX = itemHorPadding_ + bounds.X + (item.state == isDown ? 1 : 0);
+    REAL iconX = itemHorPadding_ + bounds.X + (item.state == isDown ? 1.0f : 0.f);
 
     if ( item.type == itComboButton ) {
         gr->DrawImage(dropDownIcon_.get(), bounds.GetRight() - kDropdownIconSize * dpiScaleX_ + (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height - kDropdownIconSize * dpiScaleY_) / 2 + (item.state == isDropDown ? 1 : 0) /* kDropdownIconSize * dpiScaleX_, kDropdownIconSize * dpiScaleY_*/);
@@ -1233,6 +1239,10 @@ void Toolbar::showInvertSelectionCheckbox(bool show) {
     invertSelectionCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
+void Toolbar::showDrawBorderCheckbox(bool show) {
+    drawBorderCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
 void Toolbar::showArrowTypeCombo(bool show) {
     arrowTypeCombobox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
@@ -1248,6 +1258,11 @@ LRESULT Toolbar::OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*w
 }
 
 
+LRESULT Toolbar::OnDrawBorderCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_DRAWBORDERCHANGE, 0, 0);
+    return 0;
+}
+
 LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ::SendMessage(GetParent(), MTBM_ARROWTYPECHANGE, 0, 0);
     return 0;
@@ -1262,7 +1277,6 @@ LRESULT Toolbar::OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID
     ::SendMessage(GetParent(), MTBM_CANCEL, 0, 0);
     return 0;
 }
-
 
 bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
@@ -1295,6 +1309,14 @@ void Toolbar::setFillBackgroundCheckbox(bool fill) {
 
 void Toolbar::setInvertSelectionCheckbox(bool invert) {
     invertSelectionCheckbox_.SetCheck(invert ? BST_CHECKED : BST_UNCHECKED);
+}
+
+bool Toolbar::isDrawBorderChecked() const {
+    return drawBorderCheckbox_.GetCheck() == BST_CHECKED;
+}
+
+void Toolbar::setDrawBorderCheckbox(bool enable) {
+    drawBorderCheckbox_.SetCheck(enable ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void Toolbar::setShowButtonText(bool show) {

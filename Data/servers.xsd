@@ -3,11 +3,16 @@
            elementFormDefault="qualified">
     <xs:simpleType name="ActionType">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="post" />
             <xs:enumeration value="get" />
-            <xs:enumeration value="upload" />
+            <xs:enumeration value="post" />
+            <xs:enumeration value="put" />
+            <xs:enumeration value="patch" />
+            <xs:enumeration value="delete" />
+            <xs:enumeration value="head" />
+            <xs:enumeration value="options" />
             <xs:enumeration value="login" />
-            <xs:enumeration value="openurl" />     
+            <xs:enumeration value="upload" />
+            <xs:enumeration value="openurl" />
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="Bool">
@@ -163,6 +168,7 @@
                                         <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
                                             <xs:complexType mixed="true">
                                                 <xs:choice maxOccurs="unbounded">
+                                                    <xs:element name="Body" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
                                                     <xs:element name="RegExp" minOccurs="0">
                                                         <xs:complexType>
                                                             <xs:simpleContent>
@@ -226,7 +232,8 @@
                             </xs:element>
                         </xs:all>
                         <xs:attribute type="xs:string" name="Name" use="required"/>
-                        <xs:attribute type="xs:positiveInteger" name="MaxFileSize" use="optional"/>
+                        <xs:attribute type="xs:string" name="DisplayName" use="optional"/>
+                        <xs:attribute type="xs:integer" name="MaxFileSize" use="optional"/>
                         <xs:attribute type="Bool" name="Debug" use="optional"/>
                         <xs:attribute type="AuthorizeType" name="Authorize" use="optional"/>
                         <xs:attribute type="xs:string" name="Plugin" use="optional"/>

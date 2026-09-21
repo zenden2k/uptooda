@@ -22,6 +22,9 @@
 
 #include <cmath>
 #include <array>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
 
 #include <libbase64.h>
 #include <openssl/evp.h>
@@ -30,10 +33,20 @@
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
 #include <openssl/md5.h>
+#define XXH_INLINE_ALL
+#include <filesystem>
+#include <xxhash.h>
 
+#include "IOException.h"
 #include "Core/Upload/CommonTypes.h"
 
 namespace IuCoreUtils::CryptoUtils {
+
+std::string ToHex(uint64_t value) {
+    std::stringstream ss;
+    ss << std::hex << std::setw(16) << std::setfill('0') << value;
+    return ss.str();
+}
 
 std::string Base64Encode(const std::string& data)
 {
@@ -53,6 +66,7 @@ std::string Base64EncodeRaw(const char* bytes, unsigned int len) {
     res.resize(outlen);
     return res;
 }
+
 std::string Base64Decode(const std::string& data)
 {
     std::string res;
@@ -310,7 +324,34 @@ std::string Md5Crypt(const char* pw, const char* salt) {
     // Clear sensitive data
     final.fill(0);
 
-    return std::string(passwd.data());
+    return { passwd.data() };
+}
+
+std::string CalcXXH64Hash(const void* data, size_t size) {
+    uint64_t hash = XXH64(data, size, 0);
+    return ToHex(hash);
+}
+
+std::string CalcXXH64HashFromString(const std::string& data) {
+    return CalcXXH64Hash(data.data(), data.size());
+}
+
+std::string CalcXXH64HashFromFile(const std::string& path, int64_t offset, size_t chunkSize) {
+    std::ifstream file(std::filesystem::u8path(path), std::ios::binary);
+    if (!file) {
+        throw IOException("Could not open file '" + path + "' for reading");
+    }
+
+    XXH64_state_t* state = XXH64_createState();
+    XXH64_reset(state, 0);
+    char buf[65536];
+    while (file.read(buf, sizeof(buf)) || file.gcount() > 0) {
+        XXH64_update(state, buf, file.gcount());
+    }
+
+    uint64_t result = XXH64_digest(state);
+    XXH64_freeState(state);
+    return ToHex(result);
 }
 
 }

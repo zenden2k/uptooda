@@ -1,19 +1,6 @@
 ﻿CLIENT_ID <-  GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_ID");
 CLIENT_SECRET <- GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_SECRET");
 
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
 function _GetAuthorizationString() {
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
@@ -22,7 +9,7 @@ function _GetAuthorizationString() {
 
 function Authenticate() {
     local login = ServerParams.getParam("Login");
-    local scope = "https://www.googleapis.com/auth/photoslibrary https://www.googleapis.com/auth/photoslibrary.sharing";
+    local scope = "https://www.googleapis.com/auth/photoslibrary.appendonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata https://www.googleapis.com/auth/photoslibrary.edit.appcreateddata";
     //local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
     if(login == "" ) {
@@ -52,10 +39,10 @@ function Authenticate() {
         if ( time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-            nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", CLIENT_ID); 
-            nm.addQueryParam("client_secret", CLIENT_SECRET); 
-            nm.addQueryParam("grant_type", "refresh_token"); 
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", CLIENT_ID);
+            nm.addPostField("client_secret", CLIENT_SECRET);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             if ( _CheckResponse() ) {
                 local parsedData = ParseJSON(nm.responseBody());
@@ -114,11 +101,11 @@ function Authenticate() {
     }
     
     nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-    nm.addQueryParam("code", confirmCode); 
-    nm.addQueryParam("client_id", CLIENT_ID); 
-    nm.addQueryParam("client_secret", CLIENT_SECRET); 
-    nm.addQueryParam("redirect_uri", redirectUrl); 
-    nm.addQueryParam("grant_type", "authorization_code"); 
+    nm.addPostField("code", confirmCode);
+    nm.addPostField("client_id", CLIENT_ID);
+    nm.addPostField("client_secret", CLIENT_SECRET);
+    nm.addPostField("redirect_uri", redirectUrl);
+    nm.addPostField("grant_type", "authorization_code");
     nm.doPost("");
     if ( !_CheckResponse() ) {
         return 0;
@@ -168,10 +155,10 @@ function RefreshToken() {
         if (time() + 10 > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-            nm.addQueryParam("refresh_token", refreshToken);
-            nm.addQueryParam("client_id", CLIENT_ID);
-            nm.addQueryParam("client_secret", CLIENT_SECRET);
-            nm.addQueryParam("grant_type", "refresh_token");
+            nm.addPostField("refresh_token", refreshToken);
+            nm.addPostField("client_id", CLIENT_ID);
+            nm.addPostField("client_secret", CLIENT_SECRET);
+            nm.addPostField("grant_type", "refresh_token");
             nm.doPost("");
             if (_CheckResponse()) {
                 local data =  nm.responseBody();
@@ -330,7 +317,7 @@ function UploadFile(FileName, options) {
 
         local ServerFileName = options.getServerFileName();
         if(ServerFileName=="") ServerFileName = ExtractFileName(FileName);
-        local encodedFname = /*nm.urlEncode*/_RegReplace(ServerFileName, " ", "_");
+        local encodedFname = /*nm.urlEncode*/StrReplace(ServerFileName, " ", "_");
         nm.addQueryHeader("X-Goog-Upload-File-Name", encodedFname);
         nm.addQueryHeader("X-Goog-Upload-Protocol", "raw");
         nm.addQueryHeader("Expect","");
@@ -365,41 +352,10 @@ function UploadFile(FileName, options) {
         nm.doPost(ToJSON(requestData));
         if (nm.responseCode() == 200) {
             local t = ParseJSON(nm.responseBody());
-            if( "newMediaItemResults" in t && t.newMediaItemResults.len() > 0) {
+            if("newMediaItemResults" in t && t.newMediaItemResults.len() > 0) {
                 local item = t.newMediaItemResults[0];
                 if (albumStr != "") {
-                    local shareUrl = Sync.getValue("shareUrl");
-                    if (shareUrl=="") {
-                        nm.addQueryHeader("Authorization", _GetAuthorizationString());
-                        nm.doGet("https://photoslibrary.googleapis.com/v1/albums/" + albumStr);
-                        if (nm.responseCode() == 200) {
-                            local album = ParseJSON(nm.responseBody());
-                            if ("shareInfo" in album) {
-                                shareUrl = album.shareInfo.shareableUrl;
-                            }
-                        }
-                        
-                        if (shareUrl == "") {
-                            nm.setUrl("https://photoslibrary.googleapis.com/v1/albums/" + albumStr + ":share");
-                            nm.addQueryHeader("Content-Type", "application/json");
-                            local postData = {
-                                sharedAlbumOptions = { 
-                                }
-                            };
-                            nm.addQueryHeader("Authorization", _GetAuthorizationString());
-                            nm.doPost(ToJSON(postData));
-                            if (nm.responseCode() == 200) {
-                                local parsedData = ParseJSON(nm.responseBody());
-                                //options.setDirectUrl(directUrl);
-                                //options.setThumbUrl(thumbUrl);
-                                shareUrl = parsedData.shareInfo.shareableUrl;
-                            }
-                        }
-                        if ( shareUrl != "" ) {
-                            Sync.setValue("shareUrl", shareUrl);
-                        }
-                    }
-                    options.setViewUrl(shareUrl);
+                    options.setViewUrl("https://photos.google.com/");
                 }
                 return 1;
             }  

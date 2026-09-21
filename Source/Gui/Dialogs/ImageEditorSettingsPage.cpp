@@ -23,18 +23,12 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 
-CImageEditorSettingsPage::CImageEditorSettingsPage() {
-}
-
-CImageEditorSettingsPage::~CImageEditorSettingsPage() {
-}
-
 LRESULT CImageEditorSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Allow Alt+Tab in fullscreen editor");
-    TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
-    TRC(IDC_CLOSEIMAGEEDITORONCOPY, "Close window after copying or searching when taking screenshot");
+    TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow opening existing images in fullscreen mode");
+    TRC(IDC_CLOSEIMAGEEDITORONCOPY, "Close window after actions when taking screenshot");
 
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, settings->ImageEditorSettings.AllowAltTab);
     GuiTools::SetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK, settings->ImageEditorSettings.AllowEditingInFullscreen);

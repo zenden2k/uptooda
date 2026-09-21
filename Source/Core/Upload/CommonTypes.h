@@ -53,7 +53,7 @@ struct ErrorInfo
     };
     std::string error;
     std::string Url;
-    CUploadEngineData* uploadEngineData = nullptr;
+    const CUploadEngineData* uploadEngineData = nullptr;
     std::string ServerName;
     std::string FileName;
     std::string TopLevelFileName;

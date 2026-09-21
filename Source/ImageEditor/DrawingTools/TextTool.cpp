@@ -25,20 +25,19 @@
 
 namespace ImageEditor {
 
-TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, ElementType::etText ) {
-
+TextTool::TextTool(Canvas* canvas) : MoveAndResizeTool(canvas, ElementType::etText) {
 }
 
-void TextTool::beginDraw( int x, int y ) {
+void TextTool::beginDraw(int x, int y) {
     allowCreatingElements_ = true;
-    TextElement *textEl = dynamic_cast<TextElement*>(currentElement_);
+    auto* textEl = dynamic_cast<TextElement*>(currentElement_);
     if (textEl && textEl->getInputBox()->isVisible()) {
         allowCreatingElements_ = false;
     }
-    MoveAndResizeTool::beginDraw( x, y );
+    MoveAndResizeTool::beginDraw(x, y);
     allowCreatingElements_ = true;
-    if ( currentElement_ ) {
-        TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
+    if (currentElement_) {
+        auto* textElement = dynamic_cast<TextElement*>(currentElement_);
 
         if (textElement) {
             auto input = textElement->getInputBox();
@@ -51,33 +50,33 @@ void TextTool::beginDraw( int x, int y ) {
     }
 }
 
-void TextTool::continueDraw( int x, int y, DWORD flags ) {
-    MoveAndResizeTool::continueDraw( x, y ,flags);
+void TextTool::continueDraw(int x, int y, DWORD flags) {
+    MoveAndResizeTool::continueDraw(x, y, flags);
 }
 
-void TextTool::endDraw( int x, int y ) {
+void TextTool::endDraw(int x, int y) {
     if (!currentElement_) {
         return;
     }
 
     int width = currentElement_->getWidth();
     int height = currentElement_->getHeight();
-    if (  elementJustCreated_ && width < 150 ) {
+    if (elementJustCreated_ && width < 150) {
         width = 150;
     }
 
-    if ( height < 30 ) {
+    if (height < 30) {
         height = 30;
     }
     currentElement_->resize(width, height);
     int elX = currentElement_->getX();
     int elY = currentElement_->getY();
-    RECT inputRect = {elX+3, elY+3, elX + currentElement_->getWidth()-6, elY + currentElement_->getHeight()-6 };
+    RECT inputRect = {elX + 3, elY + 3, elX + currentElement_->getWidth() - 6, elY + currentElement_->getHeight() - 6};
 
-    TextElement * textElement = dynamic_cast<TextElement*>(currentElement_);
-    std::shared_ptr<InputBox> inputBox = textElement ? textElement->getInputBox(): nullptr;
-    if ( !inputBox ) {
-        inputBox = canvas_->getInputBox( inputRect );
+    auto* textElement = dynamic_cast<TextElement*>(currentElement_);
+    std::shared_ptr<InputBox> inputBox = textElement ? textElement->getInputBox() : nullptr;
+    if (!inputBox) {
+        inputBox = canvas_->getInputBox(inputRect);
         textElement->setInputBox(inputBox);
         canvas_->onTextEditStarted(textElement);
     }
@@ -92,21 +91,19 @@ void TextTool::endDraw( int x, int y ) {
     //canvas_->addMovableElement(currentElement_);
     //MoveAndResizeTool::endDraw( x, y);
     canvas_->updateView();
-
 }
 
-void TextTool::render( Painter* gr ) {
-
+void TextTool::render(Painter* gr) {
 }
 
-ImageEditor::CursorType TextTool::getCursor(int x, int y)
-{
-    CursorType ct = MoveAndResizeTool::getCursor(x,y);
-    TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
+ImageEditor::CursorType TextTool::getCursor(int x, int y) {
+    CursorType ct = MoveAndResizeTool::getCursor(x, y);
+    auto* textElement = dynamic_cast<TextElement*>(currentElement_);
     auto inputBox = textElement ? textElement->getInputBox() : nullptr;
-    if ( (ct == CursorType::ctDefault || ( ct == CursorType::ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) &&
-        ( !inputBox || !inputBox->isVisible() )) {
-            ct = CursorType::ctEdit;
+    if ((ct == CursorType::ctDefault || (ct == CursorType::ctMove && canvas_->getElementAtPosition(x, y) !=
+            currentElement_)) &&
+        (!inputBox || !inputBox->isVisible())) {
+        ct = CursorType::ctEdit;
     }
     return ct;
 }

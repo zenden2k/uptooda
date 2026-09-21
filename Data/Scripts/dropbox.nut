@@ -1,14 +1,14 @@
 appKey <- GetEnvDecode("IU_DROPBOX_APP_KEY");
 appSecret <- GetEnvDecode("IU_DROPBOX_APP_SECRET");
-accessType <- "app_folder";
 
-redirectUri <- "https://oauth.vk.com/blank.html";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+const REDIRECT_URI = "https://svistunov.dev/blank.html";
+const REDIRECT_URI_ESCAPED = "https:\\/\\/svistunov\\.dev\\/blank\\.html";
 
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
 authCode <- "";
+redirectUrl <- "";
     
 function _SignRequest(url, token) {
     nm.addQueryHeader("Authorization", "Bearer " + token);
@@ -17,7 +17,7 @@ function _SignRequest(url, token) {
 }
 
 function OnUrlChangedCallback(data) {
-    local reg = CRegExp("^" + redirectUrlEscaped, "");
+    local reg = CRegExp("^" + REDIRECT_URI_ESCAPED, "");
     if ( reg.match(data.url) ) {
         local br = data.browser;
         local regError = CRegExp("error=([^&]+)", "");
@@ -43,10 +43,10 @@ function RefreshToken() {
 
     if (time() > expiresIn && refreshToken != "") {
         nm.setUrl("https://api.dropboxapi.com/oauth2/token");
-        nm.addQueryParam("grant_type", "refresh_token");
-        nm.addQueryParam("client_id", appKey);
-        nm.addQueryParam("client_secret", appSecret);
-        nm.addQueryParam("refresh_token", refreshToken);
+        nm.addPostField("grant_type", "refresh_token");
+        nm.addPostField("client_id", appKey);
+        nm.addPostField("client_secret", appSecret);
+        nm.addPostField("refresh_token", refreshToken);
         nm.doPost("");
 
         if (nm.responseCode() == 200) {
@@ -66,11 +66,11 @@ function _ObtainAccessToken()  {
     if (authCode != ""){
         local url = "https://api.dropboxapi.com/oauth2/token";
         nm.setUrl(url);
-        nm.addQueryParam("code", authCode);
-        nm.addQueryParam("grant_type", "authorization_code");
-        nm.addQueryParam("redirect_uri", redirectUri);
-        nm.addQueryParam("client_id", appKey);
-        nm.addQueryParam("client_secret", appSecret);
+        nm.addPostField("code", authCode);
+        nm.addPostField("grant_type", "authorization_code");
+        nm.addPostField("redirect_uri", redirectUrl);
+        nm.addPostField("client_id", appKey);
+        nm.addPostField("client_secret", appSecret);
         nm.doPost("");
 
         if (nm.responseCode() == 200) {
@@ -97,19 +97,68 @@ function Authenticate() {
         return 1;
     }
     
-    local browser = CWebBrowser();
-    browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
-    browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
+    local server = WebServer();
+    local port = 0;
+
+    local htmlHead =  @"<html>
+                            <head>
+                                <meta http-equiv='content-type' content='text/html; charset=utf-8' />
+                                <title>%s</title>
+                            </head>
+                            <body>";
+
+    htmlHead = format(htmlHead, tr("oauth.title", "Authorization"));   
     
-    local url = "https://www.dropbox.com/oauth2/authorize?" + 
+    local htmlFooter = "</body></html>";
+
+    server.resource("^/$", "GET", function(d) {
+        local responseBody = "";
+        if ("code" in d.queryParams){
+            authCode = d.queryParams.code;
+            responseBody = htmlHead + "<h1>" + tr("oauth.title", "Authorization") + "</h1><p>" + tr("oauth.success", "Success! Now you can close this page.")+"</p>" + htmlFooter;
+        } else {
+            responseBody = htmlHead + "<h1>" + tr("oauth.title", "Authorization") + "</h1><p>" + tr("oauth.success", "Failed to obtain confirmation code") + "</p>" +  htmlFooter;
+        }
+
+        return {
+            responseBody = responseBody,
+            stopDelay = 500
+        };
+    }, null);
+
+    local ports = [49707, 39517, 22690, 27966, 51502];
+
+    foreach (localPort in ports) {
+        port = server.bind(localPort);
+        if (port != 0) {
+            break;
+        }
+    }
+
+    if (port != 0) {
+        redirectUrl = "http://127.0.0.1:" + port;
+        local url = "https://www.dropbox.com/oauth2/authorize?" + 
             "client_id=" + appKey  + 
             "&response_type=code" +
             "&token_access_type=offline" + 
-            "&redirect_uri=" + nm.urlEncode(redirectUri);
+            "&redirect_uri=" + nm.urlEncode(redirectUrl);
+        ShellOpenUrl(url);
+        server.start();
+    } else {
+        local browser = CWebBrowser();
+        browser.setTitle(tr("dropbox.browser.title", "Dropbox authorization"));
+        browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
+        redirectUrl = REDIRECT_URI;
+        local url = "https://www.dropbox.com/oauth2/authorize?" + 
+                "client_id=" + appKey  + 
+                "&response_type=code" +
+                "&token_access_type=offline" + 
+                "&redirect_uri=" + nm.urlEncode(redirectUrl);
 
-    browser.navigateToUrl(url);
-    browser.showModal();
-    
+        browser.navigateToUrl(url);
+        browser.showModal();
+    }
+        
     return _ObtainAccessToken();
 }
 
@@ -153,9 +202,9 @@ function UploadFile(FileName, options) {
     local displayName = task.getDisplayName();
     local token = ServerParams.getParam("token");
     local url = null;
-    local userPath = ServerParams.getParam("UploadPath");
-    if ( userPath!="" && userPath[userPath.len()-1] != "/") {
-        userPath+= "/";
+    local folderId = options.getFolderID();
+    if (folderId == "/") {
+        folderId = ""; 
     }
     const CHUNK_SIZE = 52428800;
     local fileSize = 0;
@@ -169,8 +218,8 @@ function UploadFile(FileName, options) {
         WriteLog("error", "[dropbox.nut] fileSize < 0 ");
         return 0;
     }
-    local path = "/"+ userPath;
-    local remotePath =path + displayName;
+    local path = folderId == "" ? "/" : folderId;
+    local remotePath = path + (path == "/" ? "" : "/") + displayName;
     local fileId="";
     
     if ( fileSize > 150000000 ) {
@@ -193,7 +242,7 @@ function UploadFile(FileName, options) {
                     local arg ={
                         close=false
                     };
-                    local json = _RegReplace(ToJSON(arg),"\n","");
+                    local json = StrReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 } else{
                     url = "https://content.dropboxapi.com/2/files/upload_session/append_v2" ;
@@ -205,7 +254,7 @@ function UploadFile(FileName, options) {
                         },
                         close=false
                     };
-                    local json = _RegReplace(ToJSON(arg),"\n","");
+                    local json = StrReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 }
                 local currentChunkSize = min(CHUNK_SIZE, fileSize - offset).tointeger();
@@ -251,7 +300,7 @@ function UploadFile(FileName, options) {
                 mute=false
             }
         };
-        local json = _RegReplace(ToJSON(arg),"\n","");
+        local json = StrReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.addQueryHeader("Content-Type", "application/octet-stream");
         _SignRequest(url, token);
@@ -273,7 +322,7 @@ function UploadFile(FileName, options) {
             mute=false
         };
         nm.addQueryHeader("Content-Type", "application/octet-stream");
-        local json = _RegReplace(ToJSON(arg),"\n","");
+        local json = StrReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.setUrl(url);
         nm.doUpload(FileName, "");
@@ -295,7 +344,7 @@ function UploadFile(FileName, options) {
                 requested_visibility="public"
             }
     };
-    local json = _RegReplace(ToJSON(arg),"\n","");
+    local json = StrReplace(ToJSON(arg),"\n","");
     nm.addQueryHeader("Content-Type","application/json")
     nm.setUrl(url);
     nm.enableResponseCodeChecking(false);
@@ -312,7 +361,7 @@ function UploadFile(FileName, options) {
                     path=remotePath,
                     direct_only=true
             };
-            local json = _RegReplace(ToJSON(arg),"\n","");
+            local json = StrReplace(ToJSON(arg),"\n","");
             nm.addQueryHeader("Content-Type","application/json")
             nm.setUrl(url);
             nm.doUpload("",json);
@@ -344,22 +393,170 @@ function UploadFile(FileName, options) {
     return 0;
 }
 
-function _RegReplace(str, pattern, replace_with) {
-    local resultStr = str;	
-    local res;
-    local start = 0;
-
-    while( (res = resultStr.find(pattern,start)) != null ) {	
-
-        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
+function GetFolderList(list) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return -2; // Not authenticated
     }
-    return resultStr;
+
+    local parentId = list.parentFolder().getId();
+    
+    // Create root folder entry
+    if (parentId == "") {
+        local rootFolder = CFolderItem();
+        rootFolder.setId("/");
+        rootFolder.setTitle("/ (root)");
+        rootFolder.setSummary("");
+        list.AddFolderItem(rootFolder);
+        return 1;
+    }
+
+    // List contents of the current folder
+    local url = "https://api.dropboxapi.com/2/files/list_folder";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = parentId == "/" ? "" : parentId,
+        recursive = false,
+        include_media_info = false,
+        include_deleted = false,
+        include_has_explicit_shared_members = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to list folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+            return -2; // Authentication error
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    
+    // Process entries - only add folders to the list
+    if ("entries" in response) {
+        foreach (entry in response.entries) {
+            if (entry[".tag"] == "folder") {
+                local folder = CFolderItem();
+                folder.setId(entry.path_lower);
+                folder.setTitle(entry.name);
+                folder.setSummary("");
+                folder.setParentId(parentId);
+                list.AddFolderItem(folder);
+            }
+        }
+    }
+    
+    return 1;
 }
 
-function GetServerParamList() {
-    return {
-        token = "token"
-        UploadPath = "Upload Path"
+function CreateFolder(parentAlbum, album) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local parentId = parentAlbum.getId();
+    
+    local folderName = album.getTitle();
+    if (folderName == "") {
+        return 0;
+    }
+    
+    // Construct the full path for the new folder
+    local path = (parentId == "" || parentId == "/") ? "/" + folderName : parentId + "/" + folderName;
+
+    local url = "https://api.dropboxapi.com/2/files/create_folder_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        path = path,
+        autorename = false
     };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200 && nm.responseCode() != 201) {
+        WriteLog("error", "[dropbox.nut] Failed to create folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 409) {
+            WriteLog("error", "[dropbox.nut] Folder already exists");
+        } else if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        album.setId(response.metadata.path_lower);
+        album.setParentId(parentId);
+    }
+    
+    return 1;
+}
+
+function ModifyFolder(folder) {
+    local token = ServerParams.getParam("token");
+    if (token == "") {
+        return 0;
+    }
+
+    local oldPath = folder.getId();
+    if (oldPath == "" || oldPath == "/") {
+        WriteLog("error", "[dropbox.nut] Cannot rename root folder");
+        return 0;
+    }
+    
+    local parentId = folder.getParentId();
+    if (parentId == "") {
+        parentId = "/"; // Default to root
+    }
+    
+    local newName = folder.getTitle();
+    if (newName == "") {
+        return 0;
+    }
+    
+    // Construct the new path for the folder
+    local newPath = parentId == "/" ? "/" + newName : parentId + "/" + newName;
+    
+    local url = "https://api.dropboxapi.com/2/files/move_v2";
+    nm.setUrl(url);
+    _SignRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+
+    // Prepare request body
+    local requestBody = {
+        from_path = oldPath,
+        to_path = newPath,
+        allow_shared_folder = false,
+        autorename = false,
+        allow_ownership_transfer = false
+    };
+    
+    nm.doPost(ToJSON(requestBody));
+
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[dropbox.nut] Failed to rename folder, response code: " + nm.responseCode());
+        if (nm.responseCode() == 401) {
+            ServerParams.setParam("token", ""); // Invalidate token
+        }
+        return 0;
+    }
+
+    local response = ParseJSON(nm.responseBody());
+    if ("metadata" in response) {
+        folder.setId(response.metadata.path_lower);
+    }
+    
+    return 1;
 }

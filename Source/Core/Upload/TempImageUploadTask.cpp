@@ -28,10 +28,6 @@ TempImageUploadTask::TempImageUploadTask(const std::string& fileName, const std:
     : FileUploadTask(fileName, displayName, parentTask) {
 }
 
-TempImageUploadTask::~TempImageUploadTask() {
-
-}
-
 std::string TempImageUploadTask::getMimeType() const {
     return IuCoreUtils::GetFileMimeType(fileName_);
 }

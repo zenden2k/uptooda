@@ -62,7 +62,7 @@ protected:
     CUploadEngineList* uploadEngineList_;
     CString createdServerName_;
     CString createdServerLogin_;
-    CComboBox serverTypeComboBox_, securedConectionCombobox_;
+    CComboBox serverTypeComboBox_, secureConnectionCombobox_;
     CButton activeConnectionCheckBox_;
     ServerListManager::ServerType serverType_;
     std::shared_ptr<TestConnectionTask> currentTask_;

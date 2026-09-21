@@ -84,16 +84,16 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     std::vector<CString> keyNames;
     CString keyPath = "Software\\Uptooda\\ContextMenuItems";
     Reg.GetChildKeysNames(keyPath,keyNames);
-    for (size_t i =0; i < keyNames.size(); i++) {
-        if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
+    for (const auto & keyName : keyNames) {
+        if ( Reg.SetKey(keyPath + _T("\\") + keyName, false) ) {
             CString title = Reg.ReadString("Name");
             CString displayTitle = title;
-            ListItemData* lid = new ListItemData();
-            if (settings->ServerProfiles.find(keyNames[i])== settings->ServerProfiles.end()) {
+            auto* lid = new ListItemData();
+            if (settings->ServerProfiles.find(keyName)== settings->ServerProfiles.end()) {
                 displayTitle = _T("[invalid] ") + displayTitle;
                 lid->invalid = true;
             } else {
-                lid->serverProfile = settings->ServerProfiles[keyNames[i]];
+                lid->serverProfile = settings->ServerProfiles[keyName];
             }
             lid->name  = title;
             int newIndex = menuItemsListBox_.AddString(displayTitle);
@@ -147,7 +147,7 @@ bool CIntegrationSettings::apply()
             std::mt19937 mt{ std::random_device{}() };
             std::uniform_int_distribution<int> dist(0, 999999);
                 for( int i = 0; i< menuItemCount; i++ ){
-                    ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
+                    auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
                     if ( lid->invalid ) {
                         continue;
                     }
@@ -163,15 +163,15 @@ bool CIntegrationSettings::apply()
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
                     auto iconCache = ServiceLocator::instance()->serverIconCache();
-                    if ( Reg2.SetKey("Software\\Uptooda\\ContextMenuItems\\" + itemId, true) ) {
+                    if ( Reg2.SetKey(R"(Software\Uptooda\ContextMenuItems\)" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
                         Reg2.WriteString("ProfileName", Utf8ToWCstring(lid->serverProfile.profileName()));
                         Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
                         Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
                         Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-                        CString icon = U2W(iconCache->getIconNameForServer(lid->serverProfile.serverName()));
-                        CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
+                        CString icon = U2W(iconCache->getIconNameForServer(lid->serverProfile.serverName(), false));
+                        const CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
                             Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );
                         }
@@ -196,7 +196,7 @@ LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode
 void CIntegrationSettings::ShellIntegrationChanged()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    bool shellIntegrationAvailable = WinUtils::FileExists(settings->getShellExtensionFileName())!=0;
+    bool shellIntegrationAvailable = WinUtils::FileExists(WtlGuiSettings::getShellExtensionFileName())!=0;
     bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
     GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
     HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
@@ -205,7 +205,7 @@ void CIntegrationSettings::ShellIntegrationChanged()
 }
 
 void CIntegrationSettings::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
@@ -253,7 +253,7 @@ LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wI
 LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int currentIndex = menuItemsListBox_.GetCurSel();
-    if ( currentIndex != -1 ) {
+    if (currentIndex != -1) {
         auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(currentIndex));
         menuItemsListBox_.DeleteString(currentIndex);
         delete lid;
@@ -310,8 +310,7 @@ LRESULT CIntegrationSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,
 {
     int itemCount = menuItemsListBox_.GetCount();
     for( int i =0; i < itemCount; i++ ){
-        auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
-        delete lid;
+        delete reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
     }
     menuItemsListBox_.ResetContent();
     return 0;

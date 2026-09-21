@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <mutex>
 #include <random>
 
 #include "Core/HistoryManager.h"
@@ -60,6 +61,7 @@ class CHistoryManager: public IHistoryManager
         sqlite3* db_;
         std::random_device rd_;
         std::mt19937 mt_;
+        std::mutex sessionMutex_;
         bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
         friend class CHistoryReader;
 };
@@ -67,16 +69,15 @@ class CHistoryManager: public IHistoryManager
 class CHistoryReader : public IHistoryReader {
     public:
         explicit CHistoryReader(CHistoryManager* mgr);
-        virtual ~CHistoryReader();
         // filename must be utf-8 encoded
-        bool loadFromFile(const std::string& filename);
-        bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url);
-        int getSessionCount() const;
+        bool loadFromFile(const std::string& filename) override;
+        bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) override;
+        size_t getSessionCount() const override;
         void loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode);
 
         // The pointer returned by this function is only valid
         //  during lifetime of CHistoryReader object
-        CHistorySession* getSession(size_t index) const;
+        CHistorySession* getSession(size_t index) const override;
 
         std::vector<std::unique_ptr<CHistorySession>>::iterator begin();
         std::vector<std::unique_ptr<CHistorySession>>::iterator end();

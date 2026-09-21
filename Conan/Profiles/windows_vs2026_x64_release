@@ -1,0 +1,12 @@
+[settings]
+os=Windows
+arch=x86_64
+compiler=msvc
+compiler.version=195
+compiler.cppstd=17
+compiler.runtime=static
+build_type=Release
+
+[conf]
+tools.cmake:cmake_program="c:/Program Files/CMake/bin/cmake.exe"
+tools.build:skip_test=True

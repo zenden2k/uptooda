@@ -27,21 +27,21 @@ public:
         virtual void onItemAdded(size_t rowIndex, const LogEntry&) = 0;
     };
 
-    DefaultLogger();
     void addListener(Listener* listener);
     void removeListener(const Listener* listener);
     size_t entryCount() const;
     void clear();
     void getEntry(size_t itemIndex, LogEntry* out);
     std::mutex& getEntryMutex();
-    void write(LogMsgType MsgType, const std::string& Sender, const std::string&  Msg, const std::string&  Info, const std::string&  FileName) override;
-    void write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t*  Info, const wchar_t*  FileName) override;
+    void write(LogMsgType MsgType, const std::string& Sender, const std::string&  Msg, const std::string&  Info, const std::string&  FileName, bool fromSink) override;
+    void write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t*  Info, const wchar_t*  FileName, bool fromSink) override;
     [[nodiscard]] std::vector<LogEntry>::const_iterator begin() const;
     [[nodiscard]] std::vector<LogEntry>::const_iterator end() const;
 private:
     std::vector<LogEntry> entries_;
     std::vector<Listener*> listeners_;
     std::mutex entriesMutex_;
+    static thread_local bool insideWriteFunction_;
 };
 
 #endif

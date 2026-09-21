@@ -25,10 +25,10 @@ function UploadFile(pathToFile, options) {
     nm.setUrl(BASE_URL + "/api/upload");
     
     // Add API key as POST parameter
-    nm.addQueryParam("key", apiKey);
+    nm.addPostField("key", apiKey);
     
     // Add the file as multipart/form-data
-    nm.addQueryParamFile("media", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostFieldFile("media", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     
     // Perform multipart upload
     nm.doUploadMultipartData();

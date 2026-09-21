@@ -63,7 +63,11 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     auto serviceLocator = ServiceLocator::instance();
     BasicSettings* settings = serviceLocator->basicSettings();
     iconCache_ = dynamic_cast<WinServerIconCache*>(serviceLocator->serverIconCache());
-    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); } );
+    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) {
+        profileListChanged(std::forward<decltype(settings)>(settings),
+            std::forward<decltype(servers)>(servers)
+        );
+    } );
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -186,7 +190,7 @@ void CServerSelectorControl::addAccount()
 }
 
 void CServerSelectorControl::serverChanged() {
-    CUploadEngineData * uploadEngineData = nullptr;
+    const CUploadEngineData * uploadEngineData = nullptr;
     std::string serverName = serverProfile_.serverName();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (!serverName.empty()) {
@@ -213,8 +217,6 @@ void CServerSelectorControl::serverChanged() {
                 serverProfile_.clearFolderInfo();
             }
         }
-            
-
     } else {
         serverProfile_ = ServerProfile();
     }
@@ -225,7 +227,6 @@ void CServerSelectorControl::serverChanged() {
 }
 
 void CServerSelectorControl::updateInfoLabel() {
-
     std::string serverName = serverProfile_.serverName();
     currentUserName_.Empty();
 
@@ -242,7 +243,7 @@ void CServerSelectorControl::updateInfoLabel() {
     //GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams);
 //    GuiTools::ShowDialogItem(m_hWnd, IDC_EDIT, showServerParams);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    CUploadEngineData* uploadEngineData = myEngineList->byName(Utf8ToWCstring(serverName));
+    const CUploadEngineData* uploadEngineData = myEngineList->byName(Utf8ToWCstring(serverName));
     if ( ! uploadEngineData ) {
         return;
     }
@@ -283,17 +284,13 @@ void CServerSelectorControl::updateInfoLabel() {
 
     RECT rect;
     int settingsBtnPlaceHolderId = ( showFolder || showAccount ) ? IDC_SETTINGSBUTTONPLACEHOLDER : IDC_SETTINGSBUTTONPLACEHOLDER2;
-    ::GetWindowRect(GetDlgItem(settingsBtnPlaceHolderId), &rect);
+    GetDlgItem(settingsBtnPlaceHolderId).GetWindowRect(&rect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&rect), 2);
     settingsButtonToolbar_.SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, 0);
     settingsButtonToolbar_.ShowWindow(showServerParams ? SW_SHOW : SW_HIDE);
 
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showFolder );
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showFolder );
-    /*RECT accountLabelRect = */GuiTools::AutoSizeStaticControl(GetDlgItem(IDC_ACCOUNTINFO));
-    //int folderIconX = accountLabelRect.right + GuiTools::dlgX(10);
-    //::SetWindowPos(GetDlgItem(IDC_FOLDERICON), 0, folderIconX, accountLabelRect.top, 0, 0, SWP_NOSIZE );
-    //::SetWindowPos(GetDlgItem(IDC_FOLDERLABEL), 0, folderIconX + 16 + GuiTools::dlgX(3), accountLabelRect.top, 0, 0, SWP_NOSIZE );
 }
 
 void CServerSelectorControl::setShowDefaultServerItem(bool show) {
@@ -323,18 +320,18 @@ void CServerSelectorControl::notifyServerListChanged()
 }
 
 void CServerSelectorControl::updateServerButton() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconCache = ServiceLocator::instance()->serverIconCache();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
-    HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi) : nullptr;
+    const CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
+    HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi, true) : nullptr;
     serverButton_.SetWindowText(ued ? U2WC(myEngineList->getServerDisplayName(ued)) : TR("Choose server"));
     serverButton_.SetIcon(serverIcon);
 }
 
 bool CServerSelectorControl::isAccountChosen() const
 {
-    CUploadEngineData* ued = serverProfile_.uploadEngineData();
+    const CUploadEngineData* ued = serverProfile_.uploadEngineData();
     return !serverProfile_.profileName().empty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
 }
 
@@ -349,7 +346,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
-    CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
+    const CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
 
     if (!uploadEngine) {
         return 0;
@@ -512,7 +509,7 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     CIcon ico;
@@ -541,7 +538,7 @@ void CServerSelectorControl::createSettingsButton() {
 }
 
 void CServerSelectorControl::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
@@ -610,7 +607,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     return 0;
 }
 
-int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
+int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect, bool topMost) {
     // Code from \Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
     isChildWindow_ = false;
     if (Create(parent) == NULL) {
@@ -683,8 +680,8 @@ int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
         }
     }
 
-    SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
-    ShowWindow(SW_SHOWNOACTIVATE);
+    SetWindowPos(topMost ? HWND_TOPMOST : 0, x, y, 0, 0, SWP_NOACTIVATE | (topMost ? 0 : SWP_NOZORDER) | SWP_NOSIZE);
+    ShowWindow(topMost ? SW_SHOWNORMAL : SW_SHOWNOACTIVATE);
 
     //BOOL bMenuDestroyed(FALSE);
     HWND hwndOwner = GetWindow(GW_OWNER);
@@ -901,7 +898,6 @@ LRESULT CServerSelectorControl::OnBnClickedServerButton(WORD wNotifyCode, WORD w
 }
 
 LRESULT CServerSelectorControl::OnBnDropdownServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    //serverButton_.PostMessage(BM_CLICK);
     showServerButtonPopup();
     return 0;
 }
@@ -919,7 +915,7 @@ void CServerSelectorControl::showServerButtonPopup() {
     if (serverListPopup.showPopup(m_hWnd, buttonRect) == IDOK) {
         int newServerIndex = serverListPopup.serverIndex();
         if (newServerIndex != -1) {
-            CUploadEngineData * ued = myEngineList->byIndex(newServerIndex);
+            const CUploadEngineData * ued = myEngineList->byIndex(newServerIndex);
             if (ued) {
                 serverProfile_.setServerName(ued->Name);
             }

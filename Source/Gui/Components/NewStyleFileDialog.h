@@ -9,8 +9,8 @@
 
 class CNewStyleFileDialog: public IMyFileDialog {
 public:
-    CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect = false, bool openDialog=true);
-    ~CNewStyleFileDialog();
+    CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect = false);
+
     INT_PTR DoModal(HWND hWndParent) override;
 
     CString getFolderPath() override;

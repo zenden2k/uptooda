@@ -38,12 +38,8 @@
 CThumbSettingsPage::CThumbSettingsPage()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    params_ = settings->imageServer.getByIndex(0).getImageUploadParams().getThumb();
+    params_ = settings->DefaultImageUploadParams.getThumb();
     m_CatchFormChanges = false;
-}
-
-CThumbSettingsPage::~CThumbSettingsPage()
-{
 }
 
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -66,6 +62,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     //img.Create(m_hWnd, rc);
     img.loadImage(0);
     thumbsCombo_ = GetDlgItem(IDC_THUMBSCOMBO);
+    tooltipControl_.Create(m_hWnd);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
@@ -80,8 +77,11 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
         thumbsCombo_.AddString(WinUtils::GetOnlyFileName(fileName));
     }
 
+    thumbTextMacrosButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
+    CString tooltipText = TR("Macros list");
+    CToolInfo tip(TTF_SUBCLASS, thumbTextMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    tooltipControl_.AddTool(tip);
 
-    thumbTextMacrosesButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
     thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
 
     createResources();
@@ -114,7 +114,7 @@ LRESULT CThumbSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 bool CThumbSettingsPage::apply()
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
@@ -138,11 +138,10 @@ bool CThumbSettingsPage::apply()
 
     params_.Size = 0;
     params_.BackgroundColor = ThumbBackground.GetColor();
-    ImageUploadParams iup = settings->imageServer.getByIndex(0).getImageUploadParamsRef();
-    iup.setThumb(params_);
-    settings->imageServer.getByIndex(0).setImageUploadParams(iup);
+    settings->DefaultImageUploadParams.setThumb(params_);
 
-    for (const auto& it: thumb_cache_) {
+
+    for (const auto& it: thumbCache_) {
         it.second->saveToFile();
     }
     return TRUE;
@@ -175,8 +174,8 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     fileName = getSelectedThumbnailFileName();
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail *thumb = nullptr;
-    const auto it = thumb_cache_.find(fileName);
-    if (it != thumb_cache_.end()) {
+    const auto it = thumbCache_.find(fileName);
+    if (it != thumbCache_.end()) {
         thumb = it->second.get();
     }
 
@@ -193,7 +192,7 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     if(dlg.DoModal(m_hWnd) == IDOK)
     {
         if (autoPtrThumb) {
-            thumb_cache_[fileName] = std::move(autoPtrThumb);
+            thumbCache_[fileName] = std::move(autoPtrThumb);
         }
 
         showSelectedThumbnailPreview();
@@ -238,9 +237,9 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = nullptr;
-    const auto it = thumb_cache_.find(fileName);
+    const auto it = thumbCache_.find(fileName);
 
-    if (it != thumb_cache_.end()) {
+    if (it != thumbCache_.end()) {
         thumb = it->second.get();
     }
     if(!thumb)
@@ -280,10 +279,6 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 }
 
 std::unique_ptr<Gdiplus::Bitmap> CThumbSettingsPage::createSampleImage(int width, int height) {
-    /*CClientDC dc(m_hWnd);
-    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);*/
-
     using namespace Gdiplus;
     auto bm = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
     Graphics gr(bm.get());
@@ -336,8 +331,8 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     }
     Thumbnail* thumb = nullptr;
     std::unique_ptr<Thumbnail> thumbPtr;
-    if (thumb_cache_.count(fileName)) {
-        thumb = thumb_cache_[fileName].get();
+    if (thumbCache_.count(fileName)) {
+        thumb = thumbCache_[fileName].get();
     } else {
         thumbPtr = std::make_unique<Thumbnail>();
         thumb = thumbPtr.get();
@@ -362,7 +357,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         LOG(ERROR) << "Unable to save thumbnail template to file '" << destination << "'";
         return false;
     }
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, U2WC(newName));
     thumbsCombo_.SelectString(-1, U2W(newName));
     GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
     showSelectedThumbnailPreview();
@@ -370,15 +365,15 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
 }
 
 void CThumbSettingsPage::createResources() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
-    if (iconDropdown_) {
-        iconDropdown_.DestroyIcon();
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
     }
-    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
-    thumbTextMacrosesButton_.SetIcon(iconDropdown_);
+    iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+    thumbTextMacrosButton_.SetIcon(iconInfo_);
 }
 
 LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -392,7 +387,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
 {
     bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     ::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
-    thumbTextMacrosesButton_.EnableWindow(bChecked);
+    thumbTextMacrosButton_.EnableWindow(bChecked);
     params_.AddImageSize = bChecked;
     params_.AddImageSize = bChecked;
 
@@ -455,6 +450,7 @@ LRESULT CThumbSettingsPage::OnThumbMacrosButtonClicked(WORD wNotifyCode, WORD wI
         { _T("%height%"), TR("image height") },
         { _T("%size%"), TR("file size") },
     };
+
     RECT rc {};
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin { rc.left, rc.bottom };

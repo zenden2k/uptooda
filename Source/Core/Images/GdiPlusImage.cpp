@@ -104,7 +104,7 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 {
     try {
         if (dt == AbstractImage::dfRGB888) {
-            size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
+            auto lineSizeInBytes = reinterpret_cast<size_t>(parameter);
             size_t newLineSize = width * 3;
             newLineSize = ((newLineSize + 3) & ~3);
             size_t newDataSize = /*dataSize*2/**2*/ /*+100000**/ newLineSize * height;
@@ -118,7 +118,7 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
         } else if (dt == AbstractImage::dfBitmapRgb) {
             return loadFromRgb(width, height, data + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER), dataSize);
         } else if (dt == AbstractImage::dfRGB32bpp) {
-            size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
+            auto lineSizeInBytes = reinterpret_cast<size_t>(parameter);
             data_ = std::make_unique<uint8_t[]>(dataSize);
             memcpy(data_.get(), data, dataSize);
             bm_ = new Gdiplus::Bitmap(width, height, lineSizeInBytes, PixelFormat32bppRGB, data_.get());

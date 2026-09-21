@@ -9,7 +9,7 @@
 #include "Core/Upload/ServerProfile.h"
 #include "Core/ServiceLocator.h"
 #include "Core/CommonDefs.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/LoginDialog.h"
 #include "Core/AbstractServerIconCache.h"
@@ -88,7 +88,7 @@ void ServerSelectorWidget::updateServerList() {
     QString line;
     line.fill('-', 40);
 
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     QString dataDir = U2Q(params->dataDirectory());
 
     for (int mask = 1; mask <= 4; mask *= 2) {
@@ -100,7 +100,7 @@ void ServerSelectorWidget::updateServerList() {
             serverListComboBox->insertSeparator(addedItems);
         }
         for (int i = 0; i < myEngineList->count(); i++) {
-            CUploadEngineData* ue = myEngineList->byIndex(i);
+            const CUploadEngineData* ue = myEngineList->byIndex(i);
 
             if (serversMask != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(
                 CUploadEngineData::TypeImageServer)) {
@@ -272,7 +272,7 @@ void ServerSelectorWidget::fillServerIcons() {
         QString s = serverListComboBox->itemData(i).toString();
         std::string serverName = s.toStdString();
 
-        QIcon ico = serverIconCache->getIconForServer(serverName, 96);
+        QIcon ico = serverIconCache->getIconForServer(serverName, 96, true);
         serverListComboBox->setItemIcon(i, ico);
     }
 }

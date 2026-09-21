@@ -10,9 +10,9 @@ function Authenticate() {
         return 0;
     }
     
-    nm.addQueryParam("login",login);
-    nm.addQueryParam("password", password);
-    nm.addQueryParam("autologin", "on");
+    nm.addPostField("login",login);
+    nm.addPostField("password", password);
+    nm.addPostField("autologin", "on");
     nm.setUrl(BASE_HOST + "/login.html");
     nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
     nm.doPost("");
@@ -56,21 +56,21 @@ function UploadFile(fileName, options) {
     }
 
     nm.setUrl(BASE_HOST + "/");
-    nm.addQueryParam("MAX_FILE_SIZE", maxFileSize);
-    nm.addQueryParamFile(fileFieldName, fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
+    nm.addPostField("MAX_FILE_SIZE", maxFileSize);
+    nm.addPostFieldFile(fileFieldName, fileName, ExtractFileName(fileName), GetFileMimeType(fileName));
     if (captchaAnswer != "") {
-        nm.addQueryParam("captchatext", captchaAnswer);
+        nm.addPostField("captchatext", captchaAnswer);
     }
     
-    nm.addQueryParam("makepreview", "on");
-    nm.addQueryParam("previewsize", "300");
-    nm.addQueryParam("textonpreview", "on");
-    nm.addQueryParam("textonpreview_opt", "1");
-    nm.addQueryParam("textonpreview_inp", "");
-    nm.addQueryParam("radiobox", "1");
-    nm.addQueryParam("usertext", "");
-    nm.addQueryParam("resize", "500");
-    nm.addQueryParam("rotate", "0");
+    nm.addPostField("makepreview", "on");
+    nm.addPostField("previewsize", "300");
+    nm.addPostField("textonpreview", "on");
+    nm.addPostField("textonpreview_opt", "1");
+    nm.addPostField("textonpreview_inp", "");
+    nm.addPostField("radiobox", "1");
+    nm.addPostField("usertext", "");
+    nm.addPostField("resize", "500");
+    nm.addPostField("rotate", "0");
     
     nm.doUploadMultipartData();
     

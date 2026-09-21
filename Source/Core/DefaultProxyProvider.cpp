@@ -51,13 +51,13 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
         if (myProxyConfig_.fAutoDetect) {
             autoProxy = true;
         }
-        if (myProxyConfig_.lpszAutoConfigUrl != NULL) {
+        if (myProxyConfig_.lpszAutoConfigUrl != nullptr) {
             autoProxy = TRUE;
             autoProxyOptions.lpszAutoConfigUrl = myProxyConfig_.lpszAutoConfigUrl;
         }
 
         if (autoProxy) {
-            if (autoProxyOptions.lpszAutoConfigUrl != NULL) {
+            if (autoProxyOptions.lpszAutoConfigUrl != nullptr) {
                 autoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
             } else {
                 autoProxyOptions.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
@@ -109,7 +109,7 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
             }
         } else {
             // If autoproxy detection failed, we fallback to explicitly set proxies
-            if (myProxyConfig_.lpszProxy != NULL) {
+            if (myProxyConfig_.lpszProxy != nullptr) {
                 std::string proxyList = W2U(myProxyConfig_.lpszProxy);
                 std::string proxy = extractProxyForUrlFromList(proxyList, url);
                 if (!proxy.empty()) {
@@ -139,11 +139,10 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
         GlobalFree(proxyInfo.lpszProxyBypass);
     }
     return result;
-
 }
 
 bool DefaultProxyProvider::openWinHttpSession() {
-    hInternet_ = WinHttpOpen(APP_NAME, WinUtils::IsWindows8orLater() ? WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+    hInternet_ = WinHttpOpen(APP_NAME, IsWindows8OrGreater() ? WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
         WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hInternet_) {
         LOG(ERROR) << "Call to WinHttpOpen failed" << std::endl;
@@ -213,6 +212,6 @@ bool DefaultProxyProvider::obtainProxyConfig() {
     return true;
 }
 
-CString DefaultProxyProvider::proxyForUrlErrorToString(DWORD errorCode) const {
+CString DefaultProxyProvider::proxyForUrlErrorToString(DWORD errorCode) {
     return WinUtils::ErrorCodeToString(errorCode, GetModuleHandle(_T("winhttp.dll")));
 }

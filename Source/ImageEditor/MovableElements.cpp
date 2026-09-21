@@ -19,6 +19,7 @@
 #include "MovableElements.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "3rdpart/GdiplusH.h"
 #include "Region.h"
@@ -168,15 +169,10 @@ TextElement::TextElement(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int
     startPoint_.y = startY;
     endPoint_.x   = endX;
     endPoint_.y   = endY;
-    inputBox_ = inputBox;
+    inputBox_ = std::move(inputBox);
     isEditing_ = false;
     firstEdit_ = true;
     fillBackground_ = filled;
-    memset(&font_, 0, sizeof(font_));
-}
-
-TextElement::~TextElement()
-{
 }
 
 void TextElement::render(Painter* gr) {
@@ -198,7 +194,6 @@ void TextElement::render(Painter* gr) {
     }
 }
 
-
 void TextElement::getAffectedSegments( AffectedSegments* segments ) {
     int x = getX();
     int y = getY();
@@ -206,7 +201,6 @@ void TextElement::getAffectedSegments( AffectedSegments* segments ) {
     int height = getHeight();
     segments->markRect( x, y, width, height ); // top
 }
-
 
 void TextElement::resize(int width, int height)
 {
@@ -220,7 +214,7 @@ void TextElement::resize(int width, int height)
 
 void TextElement::setInputBox(std::shared_ptr<InputBox> inputBox)
 {
-    inputBox_ = inputBox;
+    inputBox_ = std::move(inputBox);
     setTextColor();
     using namespace std::placeholders;
     inputBox_->onTextChanged.connect(std::bind(&TextElement::onTextChanged, this, _1));
@@ -450,7 +444,7 @@ bool Crop::move(int offsetX, int offsetY, bool checkBounds) {
     if (offsetX == 0 && offsetY == 0) {
         return false;
     }
-    return MovableElement::move(offsetX, offsetY);
+    return MovableElement::move(offsetX, offsetY, true);
  }
 
 void Crop::resize(int width, int height) {
@@ -498,7 +492,7 @@ void CropOverlay::render(Painter* gr)
     Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
     RectF cropRect;
     bool isCropElementMoving = false;
-    for (auto& crop : crops) {
+    for (const auto& crop : crops) {
         rgn = rgn.subtracted(Region(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight()));
 
         isCropElementMoving = crop->isMoving();
@@ -553,13 +547,15 @@ void CropOverlay::render(Painter* gr)
 
 // Rectangle
 //
-Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled):MovableElement(canvas) {
+Rectangle::Rectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled, bool drawBorder)
+    : MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x   = endX;
     endPoint_.y   = endY;
     drawDashedRectangle_   = false;
     filled_ = filled;
+    drawBorder_ = drawBorder;
     isBackgroundColorUsed_ = filled;
 }
 
@@ -579,7 +575,9 @@ void Rectangle::render(Painter* gr) {
         SolidBrush br(backgroundColor_);
         gr->FillRectangle(&br, x, y, width, height);
     }
-    gr->DrawRectangle( &pen, x, y, width, height );
+    if (drawBorder_) {
+        gr->DrawRectangle(&pen, x, y, width, height);
+    }
     gr->SetSmoothingMode(prevSmoothingMode);
 }
 
@@ -730,8 +728,8 @@ void Selection::createGrips()
     throw std::logic_error("The method or operation is not implemented.");
 }
 
-FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY):Rectangle(canvas, startX, startY, endX, endY, true)
-{
+FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool drawBorder)
+    : Rectangle(canvas, startX, startY, endX, endY, true, drawBorder) {
 }
 
 ElementType FilledRectangle::getType() const
@@ -815,7 +813,6 @@ void BlurringRectangle::render(Painter* gr)
             ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, blurRadius_, excludeRect);
 #endif
         }
-
     }
 }
 
@@ -836,8 +833,8 @@ ElementType PixelateRectangle::getType() const
 }
 
 
-RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */)
-                : Rectangle(canvas, startX, startY, endX,endY, filled)
+RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled /*= false */, bool drawBorder)
+                : Rectangle(canvas, startX, startY, endX,endY, filled, drawBorder)
 {
     isBackgroundColorUsed_ = filled;
 }
@@ -855,7 +852,7 @@ void RoundedRectangle::render(Painter* gr)
     Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
 
     gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle, setting the clip
-    ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
+    ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , drawBorder_ ? &pen: nullptr, filled_ ? &br : 0);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
@@ -864,7 +861,8 @@ ImageEditor::ElementType RoundedRectangle::getType() const
     return ElementType::etRoundedRectangle;
 }
 
-FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
+FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY, bool drawBorder)
+    : RoundedRectangle(canvas, startX, startY, endX,endY, true, drawBorder)
 {
 
 }
@@ -874,9 +872,10 @@ ImageEditor::ElementType FilledRoundedRectangle::getType() const
     return ElementType::etFilledRoundedRectangle;
 }
 
-Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
-{
+Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */, bool drawBorder)
+    : MovableElement(canvas) {
     filled_ = filled;
+    setDrawBorder(drawBorder);
     isBackgroundColorUsed_ = filled;
 }
 
@@ -895,11 +894,13 @@ void Ellipse::render(Painter* gr)
     if ( filled_ ) {
         gr->FillEllipse(&br, x,y,width,height);
     }
-    gr->DrawEllipse(&pen, x,y,width,height);
+    if (getDrawBorder()) {
+        gr->DrawEllipse(&pen, x, y, width, height);
+    }
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
-bool Ellipse::containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
+bool Ellipse::containsPoint(Gdiplus::Rect ellipse, const Gdiplus::Point& location) {
     using namespace Gdiplus;
     Point center(
         ellipse.GetLeft() + (ellipse.Width / 2),
@@ -971,7 +972,7 @@ bool Ellipse::isItemAtPos(int x, int y)
     }
 }
 
-FilledEllipse::FilledEllipse(Canvas* canvas) : Ellipse(canvas, true)
+FilledEllipse::FilledEllipse(Canvas* canvas, bool drawBorder) : Ellipse(canvas, true, drawBorder)
 {
 
 }

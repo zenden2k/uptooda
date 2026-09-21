@@ -1,18 +1,4 @@
-function _Replace(str, pattern, replace_with) {
-    local resultStr = str;
-    local res;
-    local start = 0;
-
-    res = resultStr.find(pattern, start);
-    while ((res = resultStr.find(pattern, start)) != null) {
-
-        resultStr = resultStr.slice(0, res) + replace_with + resultStr.slice(res + pattern.len());
-        start = res + replace_with.len();
-    }
-    return resultStr;
-}
-
-function  UploadFile(FileName, options) {
+function UploadFile(FileName, options) {
     local task = options.getTask().getFileTask();
     local newFilename = task.getDisplayName();
     local directory = ServerParams.getParam("directory") + "/";
@@ -41,14 +27,14 @@ function  UploadFile(FileName, options) {
     }
     local encodedFileName = newFilename;
     if (downloadUrl.find("://") != null) {
-        encodedFileName = _Replace(nm.urlEncode(newFilename), "%2E", ".");
+        encodedFileName = StrReplace(nm.urlEncode(newFilename), "%2E", ".");
     }
 
     options.setDirectUrl(downloadUrl + encodedFileName);
 
     if (downloadUrl.find("\\\\") == 0) {
         downloadUrl = downloadUrl.slice(2);
-        local convertedUrl = "file://" + _Replace(downloadUrl, "\\", "/") + _Replace(nm.urlEncode(newFilename), "%2E", ".");
+        local convertedUrl = "file://" + StrReplace(downloadUrl, "\\", "/") + StrReplace(nm.urlEncode(newFilename), "%2E", ".");
         if (convertUncPath == 1) {
             options.setDirectUrl(convertedUrl);
         } else {

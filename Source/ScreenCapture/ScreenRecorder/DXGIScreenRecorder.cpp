@@ -44,7 +44,7 @@ DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect
     if (wnd) {
         ScreenshotHelper::getActualWindowRect(wnd, &captureRect_);
 
-        captureRect_.right = captureRect_.left + ((captureRect_.Width() + 1) & ~1); // Rounding an integer up to the earest even number
+        captureRect_.right = captureRect_.left + ((captureRect_.Width() + 1) & ~1); // Rounding an integer up to the nearest even number
         captureRect_.bottom = captureRect_.top + ((captureRect_.Height() + 1) & ~1); 
     }
 
@@ -68,7 +68,7 @@ DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect
         if (audioSourceInfo) {
             std::vector<int> vec(audioSourceInfo->NumChannels);
             std::iota(vec.begin(), vec.end(), 0);
-            dp_->AudioFrom.push_back({ IuCoreUtils::Utf8ToWstring(audioSource), std::move(vec) });
+            dp_->AudioFrom.emplace_back( IuCoreUtils::Utf8ToWstring(audioSource), std::move(vec) );
             dp_->HasAudio = true;
         }
     }

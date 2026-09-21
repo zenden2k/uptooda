@@ -300,8 +300,8 @@ NetworkClient::NetworkClient()
 
     curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
-    curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
-    curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
+    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
+    //curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 
     //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
 
@@ -395,6 +395,15 @@ bool NetworkClient::doUploadMultipartData()
         return false;
     }
 
+    struct MultipartChunkUploadData {
+        FILE* file = nullptr;
+        int64_t startOffset = 0;
+        int64_t dataSize = 0;
+        int64_t bytesRead = 0;
+    };
+
+    bool chunkUploadFileAdded = false;
+
     for (const auto& param : m_QueryParams) {
         curl_mimepart* part = curl_mime_addpart(mime);
         curl_mime_name(part, param.name.c_str());
@@ -404,8 +413,136 @@ bool NetworkClient::doUploadMultipartData()
             curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 
             std::string ansiFileName = UTF8_FILENAME(param.value);
+            if (chunkOffset_ != -1 && !chunkUploadFileAdded) {
+                FILE* file = IuCoreUtils::FopenUtf8(param.value.c_str(), "rb");
+                if (!file) {
+                    const std::error_code ec(errno, std::system_category());
+                    curl_mime_free(mime);
+                    internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                        "Could not open file '%1%' for reading: %2% (code %3)"
+                        ) % param.value % ec.message() % ec.value()
+                    );
 
-            curl_mime_filedata(part, ansiFileName.c_str());
+                    return false;
+                }
+
+                if (IuCoreUtils::Fseek64(file, 0, SEEK_END) != 0) {
+                    const std::error_code ec(errno, std::system_category());
+                    fclose(file);
+                    curl_mime_free(mime);
+                    internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                        "Could not seek file '%1%' to the end: %2% (code %3)"
+                        ) % param.value % ec.message() % ec.value()
+                    );
+                    return false;
+                }
+
+                int64_t fileSize = IuCoreUtils::Ftell64(file);
+                if (fileSize < 0 || chunkOffset_ < 0 || chunkOffset_ > fileSize) {
+                    if (fileSize < 0) {
+                        const std::error_code ec(errno, std::system_category());
+                        internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                            "Cannot get size of file '%1%': %2% (code %3)"
+                            ) % param.value % ec.message() % ec.value()
+                        );
+                    }
+                    fclose(file);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                int64_t dataSize = fileSize - chunkOffset_;
+                if (chunkSize_ > 0) {
+                    dataSize = std::min<int64_t>(chunkSize_, dataSize);
+                }
+
+                if (IuCoreUtils::Fseek64(file, chunkOffset_, SEEK_SET) != 0) {
+                    fclose(file);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                auto* chunkUploadData = new MultipartChunkUploadData;
+                chunkUploadData->file = file;
+                chunkUploadData->startOffset = chunkOffset_;
+                chunkUploadData->dataSize = dataSize;
+
+                auto readCallback = [](char* buffer, size_t size, size_t nmemb, void* arg) -> size_t {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (!data || !data->file || data->bytesRead >= data->dataSize) {
+                        return 0;
+                    }
+
+                    size_t bytesRequested = size * nmemb;
+                    size_t bytesToRead = static_cast<size_t>(std::min<int64_t>(
+                        static_cast<int64_t>(bytesRequested),
+                        data->dataSize - data->bytesRead
+                    ));
+                    size_t bytesRead = fread(buffer, 1, bytesToRead, data->file);
+                    data->bytesRead += bytesRead;
+                    return bytesRead;
+                };
+
+                auto seekCallback = [](void* arg, curl_off_t offset, int origin) -> int {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (!data || !data->file) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    int64_t newOffset = 0;
+                    if (origin == SEEK_SET) {
+                        newOffset = offset;
+                    } else if (origin == SEEK_CUR) {
+                        newOffset = data->bytesRead + offset;
+                    } else if (origin == SEEK_END) {
+                        newOffset = data->dataSize + offset;
+                    } else {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    if (newOffset < 0 || newOffset > data->dataSize) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    if (IuCoreUtils::Fseek64(data->file, data->startOffset + newOffset, SEEK_SET) != 0) {
+                        return CURL_SEEKFUNC_CANTSEEK;
+                    }
+
+                    data->bytesRead = newOffset;
+                    return CURL_SEEKFUNC_OK;
+                };
+
+                auto freeCallback = [](void* arg) {
+                    auto* data = static_cast<MultipartChunkUploadData*>(arg);
+                    if (data) {
+                        if (data->file) {
+                            fclose(data->file);
+                        }
+                        delete data;
+                    }
+                };
+
+                CURLcode dataCallbackResult = curl_mime_data_cb(
+                    part,
+                    static_cast<curl_off_t>(dataSize),
+                    readCallback,
+                    seekCallback,
+                    freeCallback,
+                    chunkUploadData
+                );
+
+                if (dataCallbackResult != CURLE_OK) {
+                    freeCallback(chunkUploadData);
+                    curl_mime_free(mime);
+                    return false;
+                }
+
+                m_CurrentFileSize = fileSize;
+                m_currentUploadDataSize = dataSize;
+                chunkUploadFileAdded = true;
+            } else {
+                curl_mime_filedata(part, ansiFileName.c_str());
+            }
             curl_mime_filename(part, param.displayName.c_str());
 
             if (!param.contentType.empty()) {
@@ -426,6 +563,7 @@ bool NetworkClient::doUploadMultipartData()
 
 bool NetworkClient::private_on_finish_request()
 {
+
     private_check_response();
     cleanupAfter();
     private_parse_headers();
@@ -492,8 +630,8 @@ bool NetworkClient::doPost(const std::string& data)
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, static_cast<long>(postData.length()));
     }
     else {
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, (const char*)data.data());
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, (long)data.length());
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, static_cast<const char*>(data.data()));
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, static_cast<long>(data.length()));
     }
 
     m_currentActionType = ActionType::atPost;
@@ -502,7 +640,7 @@ bool NetworkClient::doPost(const std::string& data)
 }
 
 std::string NetworkClient::urlEncode(const std::string& str) {
-    char* encoded = curl_easy_escape(curl_handle, str.c_str(), str.length());
+    char* encoded = curl_easy_escape(curl_handle, str.c_str(), static_cast<int>(str.length()));
     if (!encoded) {
         return {};
     }
@@ -512,7 +650,7 @@ std::string NetworkClient::urlEncode(const std::string& str) {
 }
 
 std::string NetworkClient::urlDecode(const std::string& str) {
-    char* decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
+    char* decoded = curl_easy_unescape(curl_handle, str.c_str(), static_cast<int>(str.length()), nullptr);
     if (!decoded) {
         return {};
     }
@@ -570,7 +708,7 @@ void NetworkClient::private_check_response()
         return;
     }
     int code = responseCode();
-    if ( (curl_result != CURLE_OK || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
+    if ( (curl_result != CURLE_OK || (code>= 400 && code<=499) || !internalErrorString_.empty()) && errorString() != "Callback aborted" ) {
         std::string errorDescr;
 
         if (!errorLogIdString_.empty()) {
@@ -588,6 +726,9 @@ void NetworkClient::private_check_response()
         std::string fullErrorString = errorString();
         if (!fullErrorString.empty()) {
             errorDescr += fullErrorString  + "\r\n";
+        }
+        if (!internalErrorString_.empty()) {
+            errorDescr += internalErrorString_ + "\r\n";
         }
         errorDescr += internalBuffer;
         if (logger_) {
@@ -626,11 +767,10 @@ void NetworkClient::private_parse_headers()
 std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
     std::string lowerName = IuStringUtils::ToLower(name);
-    std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
 
-    for(it = m_ResponseHeaders.begin(); it!=end; ++it) {
-        if (IuStringUtils::ToLower(it->name) == lowerName) {
-            return it->value;
+    for(const auto& header: m_ResponseHeaders) {
+        if (IuStringUtils::ToLower(header.name) == lowerName) {
+            return header.value;
         }
     }
     return {};
@@ -638,7 +778,7 @@ std::string NetworkClient::responseHeaderByName(const std::string& name)
 
 int NetworkClient::responseHeaderCount()
 {
-    return m_ResponseHeaders.size();
+    return static_cast<int>(m_ResponseHeaders.size());
 }
 
 std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)
@@ -697,6 +837,7 @@ void NetworkClient::cleanupAfter()
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, stdin);
 
     m_uploadData.clear();
+    internalErrorString_.clear();
     m_uploadingFile = nullptr;
     chunkOffset_ = -1;
     chunkSize_ = -1;
@@ -779,20 +920,37 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     if(!fileName.empty())
     {
         m_uploadingFile = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb"); /* open file to upload */
+        if (!m_uploadingFile) {
+            const std::error_code ec(errno, std::system_category());
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Could not open file '%1%' for reading: %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
+            return false;
+        }
         if (fseek(m_uploadingFile, 0, SEEK_END) == 0) {
             m_CurrentFileSize = IuCoreUtils::Ftell64(m_uploadingFile);
             IuCoreUtils::Fseek64(m_uploadingFile, 0, SEEK_SET);
         }
         else {
+            const std::error_code ec(errno, std::system_category());
             fclose(m_uploadingFile);
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Could not seek file '%1%' to the end: %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
             m_uploadingFile = nullptr;
-            //currentFileSize_ = NetworkClientInternal::GetBigFileSize(fileName);
             return false;
         }
 
         m_currentUploadDataSize = m_CurrentFileSize;
         if(m_CurrentFileSize < 0) {
+            const std::error_code ec(errno, std::system_category());
             fclose(m_uploadingFile);
+            internalErrorString_ = str(IuStringUtils::FormatNoExcept(
+                "Cannot get size of file '%1%': %2% (code %3)"
+                ) % fileName % ec.message() % ec.value()
+            );
             return false;
         }
 
@@ -843,6 +1001,8 @@ bool NetworkClient::private_apply_method()
 {
     curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,NULL);
     curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
+    curl_easy_setopt(curl_handle, CURLOPT_POST, 0L);
+
     if(m_method == "POST")
         curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     else     if(m_method == "GET")
@@ -859,7 +1019,6 @@ bool NetworkClient::private_apply_method()
         return false;
     }
     return true;
-
 }
 
 void NetworkClient::setReferer(const std::string &str)
@@ -989,7 +1148,7 @@ void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
     curl_easy_setopt(curl_handle, CURLOPT_MAX_RECV_SPEED_LARGE, static_cast<curl_off_t>(speed));
 }
 
-NetworkClient::ActionType NetworkClient::currrentActionType() const {
+NetworkClient::ActionType NetworkClient::currentActionType() const {
     return m_currentActionType;
 }
 

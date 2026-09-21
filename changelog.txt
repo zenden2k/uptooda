@@ -1,6 +1,95 @@
-﻿# Image Uploader changelog 
+﻿# Uptooda (formerly Image Uploader) changelog 
 #
-# https://svistunov.dev/imageuploader
+# https://svistunov.dev/uptooda
+
+v1.4.7 build 5524 (2026-01-02)
+
+New features and improvements
+
+- Added server Favorites and Blacklist functionality: favorite servers are displayed at the top of the list, with an option to show favorites only.
+- Added an icon view mode to the server selection window.
+- Added OpenDrive cloud storage support.
+- Added the 0.mk URL shortener.
+- Added custom filename format support for screen recordings.
+- Screenshot paths can now include folders.
+- Added macro insertion buttons to screenshot and video grabber settings.
+- Added file logging through command-line options.
+- The CLI server list now displays hosting groups.
+- CLI JSON output now includes edit links and server messages.
+- Added quick save with Ctrl+S in the Image Editor when a default screenshot path is configured.
+- Added adaptive auto-scrolling when dragging objects beyond the Image Editor viewport.
+- Added a border option for filled shapes.
+- Updated the Image Editor toolbar appearance.
+- Moved Settings and History to the Help menu.
+- The built-in Print Screen key capture in Windows 10/11 is now automatically disabled.
+- Updated Bulgarian, Korean, and Ukrainian translations.
+
+Fixes
+- Fixed copying images to the clipboard after taking a screenshot.
+- Fixed screen recording and screenshot filename generation.
+- Fixed several crashes in the History Manager and logging system.
+- Fixed command-line argument parsing.
+- Fixed Google Photos authorization.
+- Fixed VK authorization and token refresh.
+- Fixed uploads to multiple services, including 2i.cz, abcvg.org, 8upload, fileditch.com, ImageBan, and others.
+- Fixed the u.to URL shortener.
+- Improved handling of unavailable and discontinued hosting services.
+- Various stability and usability improvements.
+
+v1.4.6.5402 (2026-01-02)
+
+Improvements:
+
+* Switched from embedded browser to default system browser for Dropbox authorization
+* Added folder support to Dropbox script
+* Added account and album support for upload.ee
+* Enhanced Server List Popup with OK button, search icon, and help button icon
+* Added help button icon to Screen Recording Settings Page
+* Disabled uninstallation before install to prevent conflicts
+* Performance optimizations
+* Bulgarian translation by @jekovcar
+
+Bug Fixes:
+
+* Fixed thumbnail width setting not being applied correctly
+* Resolved Unicode output problems in CLI mode
+* Fixed default thumbnail bug in the file list
+* Fixed upload functionality for directupload.eu accounts 
+* Prevented crash after login changes
+* Fixed Yandex.Disk upload not working in CLI
+* Fixed upload on prntscr.com
+* Corrected issues with postimages.org and getapic.me image hosting services
+* Fixed crash when selecting server folder
+* Fixed installed app version to prevent WinGet issues
+
+Maintenance:
+
+* Removed dead hosting services
+* Changed domain from vk.com to vk.ru
+
+1.4.5.5392 (2025-08-24)
+[+] Added imgchest.com, gofile.io hosting services
+[~] Fixed bug with image conversion settings and selected thumbnail template not being saved
+[~] Upload wizard settings page: changed additional servers link text, added count of
+additional selected servers to server selection button
+[~] Fixed program crash in server settings dialog
+[~] Updated Ukrainian and Korean translations (thanks to Maxim Gorpinich and Jaehyung Lee)
+
+1.4.4.5388 (2025-08-11)
+[~] Changed program name to Uptooda
+[+] New server selection window with hosting comparison table
+[+] Added image editor settings page
+[+] Added "Close window after copying or searching when taking screenshot" option
+[+] PNG clipboard format support, providing full alpha channel support
+[~] Fixed program focus loss after closing image editor when creating screenshots
+[+] Added support for forbidden formats for servers
+[~] Fixed file format and size validation before upload
+[~] Screen recording: fixed rectangle size for gdigrab
+[+] Enabled IDN support on Windows ARM64
+[~] Improved support for monitors with different DPI
+[~] Reverted curl version to prevent program crashes
+[+] Added savefiles.com hosting
+[~] Fixed uploads to 8upload.com and cloud.mail.ru hostings
 
 1.4.3.5352 (2025-07-02)
 [+] Added screen recording functionality with two methods - DirectX (Desktop Duplication API) and FFmpeg.

@@ -29,7 +29,7 @@ namespace MediaInfoHelper {
 
 bool FindMediaInfoDllPath();
 bool IsMediaInfoAvailable();
-bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool enableLocalization = true);
+bool GetMediaFileInfo(LPCWSTR fileName, CString &buffer, CString& fullInfo, bool enableLocalization = true);
 CString GetLibraryVersion();
 CString GetLibraryPath();
 

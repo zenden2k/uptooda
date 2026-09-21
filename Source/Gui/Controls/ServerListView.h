@@ -2,6 +2,8 @@
 #define IU_SERVERLISTTOOL_SERVERLISTVIEW_H
 
 #pragma once
+#include <unordered_map>
+
 #include "atlheaders.h"
 
 class ServerListModel;
@@ -11,17 +13,15 @@ class CServerListView :
     public CWindowImpl<CServerListView, CListViewCtrl> {
 public:
     using TParent = CWindowImpl<CServerListView, CListViewCtrl>;
-    enum TableColumn { tcServerName, tcMaxFileSize, tcStorageTime, tcAccount, tcFileFormats };
 
     CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache);
-    ~CServerListView();
     DECLARE_WND_SUPERCLASS(_T("CServerListView"), CListViewCtrl::GetWndClassName())
 
     BEGIN_MSG_MAP(CServerListView)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ODFINDITEM, OnOdFindItem)
         MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
-        //REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
+        REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
@@ -30,6 +30,7 @@ public:
     BOOL SubclassWindow(HWND hWnd);
 
     void Init();
+    int SetView(DWORD dwView);
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -45,11 +46,12 @@ protected:
     void setColumnWidths();
     void createResources();
     CImageList serverIconImageList_;
-    std::vector<int> serverIconImageListIndexes_;
+    std::unordered_map<std::string,int> serverIconImageListIndexes_;
     WinServerIconCache* serverIconCache_;
     int FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags);
     int FindItemByPartialString(LPCWSTR searchText, int startIndex);
     int FindItemByParam(LPARAM searchParam, int startIndex);
+    static UINT columns[1];
 };
 
 

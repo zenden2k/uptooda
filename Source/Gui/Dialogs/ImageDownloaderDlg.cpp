@@ -30,7 +30,7 @@
 #include "Func/WebUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
 #include "Core/3rdpart/UriParser.h"
@@ -39,15 +39,16 @@
 
 namespace {
 
-bool ExtractLinks(CString text, std::vector<CString>& result) {
+bool ExtractLinks(const std::string& text, std::vector<std::string>& result, bool breakOnFirst = false) {
     pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
-    std::string str = WCstringToUtf8(text);
     size_t pos = 0;
-    while (pos <= str.length()) {
-        if (reg.search(str, pos)) {
+    while (pos <= text.length()) {
+        if (reg.search(text, pos)) {
             pos = reg.get_match_end() + 1;
-            CString temp = Utf8ToWstring(reg[1]).c_str();
-            result.push_back(temp);
+            result.emplace_back(reg[1]);
+            if (breakOnFirst) {
+                break;
+            }
         } else
             break;
     }
@@ -65,7 +66,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg* wizardDlg, const CString& i
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;
     m_nSuccessfullDownloads = 0;
-    isVistaOrLater_ = WinUtils::IsVistaOrLater();
+    isVistaOrLater_ = IsWindowsVistaOrGreater();
     isRunning_ = false;
     ACCEL accels[] = {
         { FVIRTKEY|FCONTROL , VK_RETURN, IDOK },
@@ -157,7 +158,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
         ais.RealFileName = Utf8ToWstring(it.fileName).c_str();
         ais.VirtualFileName =  Utf8ToWstring(it.displayName).c_str();
         if (ais.VirtualFileName.IsEmpty()) {
-            ais.VirtualFileName = WinUtils::myExtractFileName(ais.RealFileName);
+            ais.VirtualFileName = WinUtils::DoExtractFileName(ais.RealFileName);
         }
         bool add = true;
         std::string u8FileName = W2U(ais.RealFileName);
@@ -258,7 +259,7 @@ bool CImageDownloaderDlg::BeginDownloading()
         using namespace std::placeholders;
 
         auto networkClientFactory = ServiceLocator::instance()->networkClientFactory();
-        downloadTask_ = std::make_shared<DownloadTask>(networkClientFactory, AppParams::instance()->tempDirectory(), downloadItems);
+        downloadTask_ = std::make_shared<DownloadTask>(networkClientFactory, AppRuntimeInfo::instance()->tempDirectory(), downloadItems);
         downloadTask_->onFileFinished.connect(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3));
         downloadTask_->onTaskFinished.connect(std::bind(&CImageDownloaderDlg::OnQueueFinished, this));
         isRunning_ = true;
@@ -274,45 +275,46 @@ bool CImageDownloaderDlg::LinksAvailableInText(CString text)
     if (WebUtils::IsValidUrl(text)) {
         return true;
     }
-    std::vector<CString> links;
-    ExtractLinks(text,links);
+    std::vector<std::string> links;
+    ExtractLinks(W2U(text),links, true);
     return !links.empty();
 }
 
 size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
 {
-    CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
+    std::string text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
 
     buffer.Trim();
+    std::string bufferU8 = W2U(buffer);
     if (buffer.Find(_T("\n")) == -1) {
         // Text contains just one link
-        uriparser::Uri uri(IuCoreUtils::WstringToUtf8(buffer.GetString()));
+        uriparser::Uri uri(bufferU8);
         if (uri.isValid() && !uri.scheme().empty()) {
             std::string ext = IuCoreUtils::ExtractFileExt(uri.path());
-            if (ext.empty() || IuCommonFunctions::IsImage(U2W(uri.path()))) {
-                if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
+            if (ext.empty() || IuCommonFunctions::IsImage(uri.path())) {
+                if (!text.empty() && text.back() != '\n') {
                     text += "\r\n";
                 }
-                text += buffer + _T("\r\n");
-                SetDlgItemText(IDC_FILEINFOEDIT, text);
+                text += bufferU8 + "\r\n";
+                SetDlgItemText(IDC_FILEINFOEDIT, U2WC(text));
                 return 1;
             }
         }
     }
-    std::vector<CString> links;
-    ExtractLinks(buffer,links);
+    std::vector<std::string> links;
+    ExtractLinks(bufferU8, links);
 
     for(size_t i=0; i<links.size(); i++)
     {
-        CString fileName = WinUtils::myExtractFileName(links[i]);
-        if( ((!OnlyImages && CString(WinUtils::GetFileExt(fileName)).IsEmpty()) || IuCommonFunctions::IsImage(fileName)) &&  text.Find(links[i]) == -1 ) {
-            if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
+        std::string fileName = IuCoreUtils::ExtractFileName(links[i]);
+        if (((!OnlyImages && IuCoreUtils::ExtractFileExt(fileName).empty()) || IuCommonFunctions::IsImage(fileName)) && text.find(links[i]) == std::string::npos ) {
+            if (!text.empty() && text.back() != '\n') {
                 text += "\r\n";
             }
-            text+=links[i]+_T("\r\n");
+            text += links[i] + "\r\n";
         }
     }
-    SetDlgItemText(IDC_FILEINFOEDIT, text);
+    SetDlgItemText(IDC_FILEINFOEDIT, U2WC(text));
     return links.size();
 }
 

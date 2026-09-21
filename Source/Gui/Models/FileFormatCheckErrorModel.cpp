@@ -20,9 +20,6 @@ FileFormatCheckErrorModel::FileFormatCheckErrorModel(IFileList* fileList, const 
     }
 }
 
-FileFormatCheckErrorModel::~FileFormatCheckErrorModel() {
-}
-
 std::string FileFormatCheckErrorModel::getItemText(int row, int column) const {
     if (row < 0 || row >= items_.size()) {
         return {};
@@ -65,13 +62,13 @@ size_t FileFormatCheckErrorModel::getCount() const {
     return items_.size();
 }
 
-void FileFormatCheckErrorModel::notifyRowChanged(size_t row) {
+void FileFormatCheckErrorModel::notifyRowChanged(size_t row) const {
     if (row < items_.size() && rowChangedCallback_) {
         rowChangedCallback_(row);
     }
 }
 
-FileFormatModelData* FileFormatCheckErrorModel::getDataByIndex(size_t row) {
+FileFormatModelData* FileFormatCheckErrorModel::getDataByIndex(size_t row) const {
     if (row >= items_.size()) {
         return nullptr;
     }

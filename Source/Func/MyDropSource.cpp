@@ -25,10 +25,6 @@ CMyDropSource::CMyDropSource()
     m_lRefCount = 1;
 }
 
-CMyDropSource::~CMyDropSource()
-{
-}
-
 HRESULT __stdcall CMyDropSource::QueryInterface(REFIID iid,void **ppvObject)
 {
     // Check to see what interface has been requested.

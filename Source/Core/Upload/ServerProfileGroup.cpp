@@ -1,25 +1,14 @@
 #include "ServerProfileGroup.h"
 
 ServerProfileGroup::ServerProfileGroup() {
-    canFirstUseDefaultSettings_ = true;
 }
 
 ServerProfileGroup::ServerProfileGroup(const ServerProfile& profile) {
-    canFirstUseDefaultSettings_ = true;
     addItem(profile);
 }
 
-
-ServerProfileGroup::ServerProfileGroup(bool canFirstUseDefaultSettings) {
-    canFirstUseDefaultSettings_ = canFirstUseDefaultSettings;
-}
-
 void ServerProfileGroup::addItem(const ServerProfile& profile) {
-    ServerProfile p = profile;
-    if (items_.empty() && !canFirstUseDefaultSettings_) {
-        p.UseDefaultSettings = false;
-    }
-    items_.push_back(p);
+    items_.push_back(profile);
 }
 
 std::vector<ServerProfile>& ServerProfileGroup::getItems() {
@@ -36,7 +25,7 @@ bool ServerProfileGroup::isEmpty() const {
 
 ServerProfile& ServerProfileGroup::getByIndex(size_t index) {
     if (items_.empty()) {
-        addItem(ServerProfile(canFirstUseDefaultSettings_));
+        addItem(ServerProfile {});
     }
     return items_.at(index);
 }

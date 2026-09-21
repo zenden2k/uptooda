@@ -55,10 +55,6 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsW
     resultsWindow_->setOnShortenUrlChanged(std::bind(&CUploadDlg::onShortenUrlChanged, this, _1));
 }
 
-CUploadDlg::~CUploadDlg()
-{
-}
-
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     GuiTools::SetWindowPointer(m_hWnd, this);
@@ -137,10 +133,7 @@ bool CUploadDlg::startUpload() {
 
     urlList_.clear();
 
-
     uploadSession_ = std::make_shared<UploadSession>();
-
-    //serverProfileGroup.addItem(settings->quickScreenshotServer);
 
     int rowIndex = 0;
     for (int i = 0; i < n; i++) {
@@ -157,7 +150,7 @@ bool CUploadDlg::startUpload() {
 
         ServerProfileGroup& serverProfileGroup = isImage ? sessionImageServer_ : sessionFileServer_;
         //serverProfileGroup.addItem();
-        for (const auto& item: serverProfileGroup.getItems()) {
+        for (const auto& serverProfile: serverProfileGroup.getItems()) {
 
             auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
             task->setIndex(/*rowIndex++*/i);
@@ -165,13 +158,13 @@ bool CUploadDlg::startUpload() {
             task->setIsImage(isImage);
             task->setIsVideo(isVideo);
 
-            task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
+            task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/serverProfile);
             task->setUrlShorteningServer(settings->urlShorteningServer);
             using namespace std::placeholders;
-            task->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
-            task->addChildTaskAddedCallback(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
+            task->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+            task->addChildTaskAddedCallback([this](auto && PH1) { onChildTaskAdded(std::forward<decltype(PH1)>(PH1)); });
 
-            task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
+            task->setOnFolderUsedCallback([this](auto && PH1) { OnFolderUsed(std::forward<decltype(PH1)>(PH1)); });
             uploadSession_->addTask(task);
             rowIndex++;
         }
@@ -179,7 +172,7 @@ bool CUploadDlg::startUpload() {
     TotalUploadProgress(0, rowIndex);
     urlList_.resize(rowIndex);
     uploadProgressBar_.SetRange(0, rowIndex);
-    uploadSession_->addSessionFinishedCallback(std::bind(&CUploadDlg::onSessionFinished, this, std::placeholders::_1));
+    uploadSession_->addSessionFinishedCallback([this](auto && PH1) { onSessionFinished(std::forward<decltype(PH1)>(PH1)); });
 
     uploadListModel_ = std::make_unique<UploadListModel>(uploadSession_);
     uploadListView_.SetModel(uploadListModel_.get());
@@ -305,7 +298,7 @@ LRESULT CUploadDlg::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     return 0;
 }
 
-int CUploadDlg::ThreadTerminated(void)
+int CUploadDlg::ThreadTerminated()
 {
     WizardDlg->setQuickUploadMarker(false);
 
@@ -333,7 +326,7 @@ bool CUploadDlg::OnShow()
     bool IsLastVideo=false;
 #ifdef IU_ENABLE_MEDIAINFO
     if ( MediaInfoHelper::IsMediaInfoAvailable()) {
-        CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
+        auto *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
 
         if(vg && !vg->fileName_.IsEmpty())
             IsLastVideo=true;
@@ -523,7 +516,7 @@ void CUploadDlg::updateTotalProgress() {
             int percent = 0;
             UploadProgress* progress = task->progress();
             if (progress->totalUpload) {
-                percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
+                percent = static_cast<int>(100 * static_cast<float>(progress->uploaded) / progress->totalUpload);
                 totalPercent += percent;
             }
         }
@@ -658,11 +651,11 @@ void CUploadDlg::onSessionFinished(UploadSession* session) {
 // This callback is being executed in worker thread
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 {
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     //auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
 
     if (fileTask && fileTask->role() == UploadTask::DefaultRole /* && ok*/) {
-        UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
+        auto* fps = static_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
             return;
@@ -679,7 +672,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
     }
     if (task->role() == UploadTask::UrlShorteningRole && ok) {
         UploadTask* parentTask = task->parentTask();
-        UploadListItem* fps = static_cast<UploadListItem*>(parentTask->userData());
+        auto* fps = static_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
             return;
         }
@@ -698,7 +691,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
     using namespace std::placeholders;
-    child->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+    child->addTaskFinishedCallback([this](auto && PH1, auto && PH2) { onTaskFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
     auto* dispatcher = ServiceLocator::instance()->taskRunner();
     if (!backgroundThreadStarted_) {
         dispatcher->runInGuiThread([wnd = this->m_hWnd, this] {
@@ -754,7 +747,7 @@ LRESULT CUploadDlg::OnCopyLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
         if (nCurItem < urlList_.size()) {
             auto& obj = urlList_[nCurItem];
 
-            std::string url = obj.uploadResult.directUrl.length() ? obj.uploadResult.directUrl : obj.uploadResult.downloadUrl;
+            std::string url = !obj.uploadResult.directUrl.empty() ? obj.uploadResult.directUrl : obj.uploadResult.downloadUrl;
             WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
         }
     }

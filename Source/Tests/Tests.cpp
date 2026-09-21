@@ -12,7 +12,7 @@
 
 #include "sqtest.h"
 #include "TestHelpers.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Logging.h"
@@ -39,7 +39,7 @@
 #endif
 
 void setAppVersion() {
-    AppParams::AppVersionInfo appVersion;
+    AppRuntimeInfo::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = atoi(IU_BUILD_NUMBER);
@@ -47,7 +47,7 @@ void setAppVersion() {
     appVersion.CommitHash = IU_COMMIT_HASH;
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
+    AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 }
 
 void printHandler(HSQUIRRELVM vm, const SQChar *s, ...)
@@ -166,14 +166,13 @@ int main(int argc, char *argv[]){
         if (testScriptsDir.empty()) {
             testScriptsDir = (p.parent_path() / "../Core/Scripting/API/Tests/").string();
         }
-        #ifdef _WIN32
+
         std::string dir = (p.parent_path() / "../../Data").string();
         char* cacheDir = strdup(dir.c_str());
         const char* dirs[2]
             = { cacheDir, nullptr };
         xdg_mime_set_dirs(dirs);
         free(cacheDir);
-        #endif
 
     } catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;

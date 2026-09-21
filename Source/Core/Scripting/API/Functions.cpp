@@ -27,7 +27,7 @@
 #include <json/json.h>
 
 #include "Core/BasicConstants.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Logging.h"
@@ -65,12 +65,12 @@ namespace ScriptAPI {
 
 std::string GetScriptsDirectory()
 {
-    return AppParams::instance()->dataDirectory() + "/Scripts/";
+    return AppRuntimeInfo::instance()->dataDirectory() + "/Scripts/";
 }
 
 std::string GetAppLanguageFile()
 {
-    std::string languageFile = AppParams::instance()->languageFile();
+    std::string languageFile = AppRuntimeInfo::instance()->languageFile();
     if ( languageFile.empty() ) {
         return "English";
     }
@@ -79,14 +79,14 @@ std::string GetAppLanguageFile()
 
 SQInteger GetAppVersion(HSQUIRRELVM vm) {
     Sqrat::Table res(vm);
-    auto version = AppParams::instance()->GetAppVersion();
+    auto version = AppRuntimeInfo::instance()->GetAppVersion();
     if (version) {
         res.SetValue("Major", static_cast<SQInteger>(version->Major));
         res.SetValue("Minor", static_cast<SQInteger>(version->Minor));
         res.SetValue("Release", static_cast<SQInteger>(version->Release));
         res.SetValue("Build", static_cast<SQInteger>(version->Build));
     }
-    res.SetValue("Gui", AppParams::instance()->isGui());
+    res.SetValue("Gui", AppRuntimeInfo::instance()->isGui());
     Sqrat::PushVar(vm, res);
     return 1;
 }
@@ -166,9 +166,9 @@ public:
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
         const Json::Value* root = &translationRoot_;
-        int count = tokens.size();
-        for (int i = 0; i < count; i++) {
-            std::string token = tokens[i];
+        size_t count = tokens.size();
+        for (size_t i = 0; i < count; i++) {
+            const std::string& token = tokens[i];
             if (!root->isMember(token)) {
                 break;
             }
@@ -293,7 +293,7 @@ std::string JsonEscapeString( const std::string& src) {
 }
 
 std::string GetTempDirectory() {
-    return AppParams::instance()->tempDirectory();
+    return AppRuntimeInfo::instance()->tempDirectory();
 }
 
 std::string url_encode(const std::string &value) {
@@ -301,9 +301,7 @@ std::string url_encode(const std::string &value) {
     escaped.fill('0');
     escaped << std::hex << std::uppercase;
 
-    for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
-        std::string::value_type c = (*i);
-
+    for (char c : value) {
         // Keep alphanumeric and other accepted characters intact
         if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
@@ -328,7 +326,7 @@ std::string MessageBox(const std::string& message, const std::string& title, con
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj);
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj);
 
-template<class T,class V> void setObjValues(T key, Json::Value::const_iterator it, V &obj) {
+template<class T,class V> void setObjValues(T key, const Json::Value::const_iterator& it, V &obj) {
     using namespace Json;
 
     try {
@@ -443,7 +441,7 @@ SQInteger ParseJSON(HSQUIRRELVM vm) {
 Json::Value sqValueToJson(const Sqrat::Object& obj ) {
     switch ( obj.GetType() ) {
         case OT_NULL:
-            return Json::Value(Json::nullValue);
+            return {Json::nullValue};
 
         case OT_INTEGER:
             return SQINT_TO_JSON_VALUE(obj.Cast<int>());
@@ -457,7 +455,7 @@ Json::Value sqValueToJson(const Sqrat::Object& obj ) {
         case OT_STRING:
             return obj.Cast<std::string>();
     }
-    return Json::Value(Json::nullValue);
+    return {Json::nullValue};
 }
 Json::Value sqObjToJson(const Sqrat::Object& obj ) {
     HSQUIRRELVM vm = obj.GetVM();
@@ -484,7 +482,7 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
                 }
                 return res;
     }
-    return Json::Value(Json::nullValue);
+    return {Json::nullValue};
 }
 
 std::string ToJSON(const Sqrat::Object&  obj) {
@@ -532,6 +530,16 @@ std::string Md5Crypt(const std::string& password, const std::string& salt) {
         return IuCoreUtils::CryptoUtils::Md5Crypt(password.c_str(), salt.c_str());
     } catch (const std::exception& e) {
         LOG(ERROR) << "Exception in Md5Crypt:" << std::endl
+                   << e.what();
+    }
+    return {};
+}
+
+std::string XXH64FromFile(const std::string& path, int64_t offset, size_t chunkSize) {
+    try {
+        return IuCoreUtils::CryptoUtils::CalcXXH64HashFromFile(path, offset, chunkSize);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in XXH64FromFile:" << std::endl
                    << e.what();
     }
     return {};
@@ -692,6 +700,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Sha256FromFile", &CryptoUtils::CalcSHA256HashFromFile)
         .Func("Sha512", &CryptoUtils::CalcSHA512HashFromString)
         .Func("Sha512FromFile", &CryptoUtils::CalcSHA512HashFromFile)
+        .Func("XXH64", &CryptoUtils::CalcXXH64HashFromString)
+        .Func("XXH64FromFile", XXH64FromFile)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)

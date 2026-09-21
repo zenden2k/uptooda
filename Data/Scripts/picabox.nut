@@ -1,8 +1,8 @@
 function UploadFile(FileName, options) {
     nm.setUrl("https://picabox.ru/image/upload");
     local mimeType = GetFileMimeType(FileName);
-    nm.addQueryParam("ImagesForm[text]", "");
-    nm.addQueryParamFile("ImagesForm[imageFiles][]", FileName, ExtractFileName(FileName), mimeType);
+    nm.addPostField("ImagesForm[text]", "");
+    nm.addPostFieldFile("ImagesForm[imageFiles][]", FileName, ExtractFileName(FileName), mimeType);
     nm.doUploadMultipartData();
     if (nm.responseCode() == 200) {
         local data = nm.responseBody();

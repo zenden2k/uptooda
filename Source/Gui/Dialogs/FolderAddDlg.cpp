@@ -119,7 +119,7 @@ DWORD CFolderAdd::Run()
         GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APP_NAME, MB_ICONINFORMATION);
     else {
         if (m_pWizardDlg->getQuickUploadMarker()) {
-            if (settings->CheckFileTypesBeforeUpload && !m_pWizardDlg->checkFileFormats(m_pWizardDlg->getSessionImageServer(), m_pWizardDlg->getSessionFileServer())) {
+            if (settings->CheckFileTypesBeforeUpload && !m_pWizardDlg->checkFileFormats(m_pWizardDlg->getSessionImageServer(), m_pWizardDlg->getSessionFileServer(), settings->DefaultImageUploadParams)) {
                 m_pWizardDlg->ShowPage(CWizardDlg::wpUploadSettingsPage);
             } else {
                 m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);

@@ -15,9 +15,9 @@ function Authenticate() {
     nm.addQueryHeader("Origin", BASE_HOST);
     
     //nm.addQueryHeader("TE", "trailers");
-    nm.addQueryParam("login", login);
-    nm.addQueryParam("pass", pass);
-    nm.addQueryParam("cnt", nm.urlEncode("/members/?nc=" + time()));
+    nm.addPostField("login", login);
+    nm.addPostField("pass", pass);
+    nm.addPostField("cnt", nm.urlEncode("/members/?nc=" + time()));
     nm.doPost("");
 
     if (nm.responseCode() == 200 || nm.responseCode() == 302) {
@@ -123,12 +123,12 @@ function UploadFile(FileName, options) {
     }
 
     nm.setUrl(BASE_HOST + "/members/album_upload.php?id=" + nm.urlEncode(albumId));
-    nm.addQueryParam("rrocket", rrocket);
-    nm.addQueryParamFile("um[]", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
-    nm.addQueryParam("album_id", albumId);
-    nm.addQueryParam("album_test", (200 + Random()% 1024) + "$rnd" + (200 + Random() % 768));
-    nm.addQueryParam("upload_type", "4");
-    nm.addQueryParam("b_submit", "Загрузить 1 фото в этот альбом");
+    nm.addPostField("rrocket", rrocket);
+    nm.addPostFieldFile("um[]", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+    nm.addPostField("album_id", albumId);
+    nm.addPostField("album_test", (200 + Random()% 1024) + "$rnd" + (200 + Random() % 768));
+    nm.addPostField("upload_type", "4");
+    nm.addPostField("b_submit", "Загрузить 1 фото в этот альбом");
     nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200) {

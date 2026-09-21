@@ -243,7 +243,6 @@ bool CFFmpegSettingsPage::apply() {
             }
         }
 
-
         int videoSourceIndex = videoSourceComboBox_.GetCurSel();
         if (videoSourceIndex >= 0 && videoSourceIndex < videoSources_.size()) {
             recordingSettings.VideoSourceId = videoSources_[videoSourceIndex].first;

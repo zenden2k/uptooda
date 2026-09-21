@@ -63,5 +63,10 @@
         "confirmation" : {
             "text": "You need to sign in to your Imgur account in the web browser that has just opened, then copy the confirmation code into the text field below. Please enter the confirmation code:"
         } 
+    },
+    "oauth": {
+        "success": "Authorization was successful! You can now close this page.",
+        "failed": "Failed to get a confirmation code",
+        "title": "Authorization"
     }
 }

@@ -106,13 +106,13 @@ public:
 
 class UploadListModel {
 public:
-    explicit UploadListModel(std::shared_ptr<UploadSession> session);
+    explicit UploadListModel(const std::shared_ptr<UploadSession>& session);
     ~UploadListModel();
     CString getItemText(int row, int column) const;
     COLORREF getItemTextColor(size_t row, int column) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
-    UploadListItem* getDataByIndex(size_t row);
+    [[nodiscard]] UploadListItem* getDataByIndex(size_t row) const;
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void resetData();
 protected:

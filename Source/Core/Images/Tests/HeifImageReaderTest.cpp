@@ -56,7 +56,7 @@ TEST_F(HeifImageReaderTest, ReadFromMemory) {
     }
     {
         constexpr auto size = 256;
-        uint8_t data[size]={0};
+        uint8_t data[size]{};
 
         HeifImageReader reader;
         auto img = reader.readFromMemory(data, size);

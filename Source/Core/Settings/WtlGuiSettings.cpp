@@ -30,7 +30,7 @@ limitations under the License.
 #include "3rdpart/Registry.h"
 #include "Core/Video/VideoUtils.h"
 #include "Func/WinUtils.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Utils/StringUtils.h"
 #include "Gui/Dialogs/FloatingWindow.h"
 #include "Core/i18n/Translator.h"
@@ -251,17 +251,19 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
     TempInfo.hwnd = NULL;
     BOOL b = FALSE;
     WinUtils::IsElevated(&b);
-    if (WinUtils::IsVistaOrLater() && !b) {
+
+    if (IsWindowsVistaOrGreater() && !b) {
         TempInfo.lpVerb = _T("runas");
     } else {
         TempInfo.lpVerb = _T("open");
     }
+
     TempInfo.lpFile = _T("regsvr32");
     CString parameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
     TempInfo.lpParameters = parameters;
     TempInfo.lpDirectory = s;
     TempInfo.nShow = SW_NORMAL;
-    //MessageBox(0,TempInfo.lpParameters,0,0);
+
     ::ShellExecuteEx(&TempInfo);
     if (TempInfo.hProcess) {
         WaitForSingleObject(TempInfo.hProcess, INFINITE);
@@ -275,7 +277,7 @@ and store it's path into DataFolder member
 */
 void WtlGuiSettings::FindDataFolder()
 {
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
         SettingsFolder = W2U(DataFolder);
@@ -334,7 +336,7 @@ void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
 
-    CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
+    const CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
     if (!defaultImageUED) {
         defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
         if (!defaultImageUED) {
@@ -343,7 +345,7 @@ void WtlGuiSettings::fixInvalidServers() {
             defaultImageServer = defaultImageUED->Name;
         }
     }
-    CUploadEngineData* ue = {};
+    const CUploadEngineData* ue = {};
 
     auto& imageServerItem = imageServer.getByIndex(0);
     ue = imageServerItem.uploadEngineData();
@@ -373,7 +375,7 @@ void WtlGuiSettings::fixInvalidServers() {
     }
 
     std::string defaultFileServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
-    CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
+    const CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
 
     if (!uploadEngineData) {
         uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
@@ -395,7 +397,7 @@ void WtlGuiSettings::fixInvalidServers() {
     if (!ue) {
         std::string defaultServerName = engineList_->getDefaultServerNameForType(
             CUploadEngineData::TypeUrlShorteningServer);
-        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+        const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             urlShorteningServer.setServerName(defaultServerName);
             urlShorteningServer.setProfileName("");
@@ -413,7 +415,7 @@ void WtlGuiSettings::fixInvalidServers() {
     ue = imageSearchServer.uploadEngineData();
     if (!ue) {
         std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
-        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+        const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
 
         if (uploadEngineData) {
             imageSearchServer.setServerName(defaultServerName);
@@ -467,7 +469,6 @@ WtlGuiSettings::WtlGuiSettings() :
     UseDirectLinks = true;
     TrayResult = trJustURL;
     DropVideoFilesToTheList = false;
-    CodeLang = 0;
     ConfirmOnExit = 1;
     EnableToastNotifications = true;
 
@@ -516,7 +517,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.ShowForeground = false;
     ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
     ScreenshotSettings.CopyToClipboard = false;
-    ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
+    ScreenshotSettings.RemoveCorners = !IsWindows8OrGreater();
     ScreenshotSettings.AddShadow = false;
     ScreenshotSettings.RemoveBackground = false;
     ScreenshotSettings.OpenInEditor = true;
@@ -564,9 +565,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
-    if (!imageServer.isEmpty()) {
-        imageServer.getByIndex(0).getImageUploadParamsRef().UseDefaultThumbSettings = false;
-    }
     if (Language == L"T\u00FCrk\u00E7e") {  //fixes
         Language = _T("Turkish");
     } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
@@ -656,6 +654,8 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         VideoSettings.Engine = VideoEngineDirectshow;
     }
 
+    disableWindowsPrintScreenKeyInterception();
+
     notifyChange();
     return true;
 }
@@ -701,7 +701,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (SendToContextMenu_changed || ExplorerContextMenu_changed) {
         AutoStartup_changed = false;
         BOOL b;
-        if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
+        if (IsWindowsVistaOrGreater() && WinUtils::IsElevated(&b) != S_OK) {
             // Start new elevated process
             ApplyRegistrySettings();
         } else {
@@ -734,6 +734,9 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     }
 
     Hotkeys_changed = false;
+
+    disableWindowsPrintScreenKeyInterception();
+
     return true;
 }
 
@@ -746,7 +749,6 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(ExplorerContextMenu);
     /*general.n_bind(ExplorerVideoContextMenu);
     general.n_bind(ExplorerCascadedMenu);*/
-
 
     general.n_bind(ConfirmOnExit);
     general.n_bind(SendToContextMenu);
@@ -764,6 +766,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(RememberImageServer);
     general.n_bind(Hotkeys);
     general.n_bind(DeviceId);
+
     SettingsNode& screenshot = mgr_["Screenshot"];
     screenshot.nm_bind(ScreenshotSettings, Delay);
     screenshot.nm_bind(ScreenshotSettings, Format);
@@ -794,6 +797,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, FillTextBackground);
     imageEditor.nm_bind(ImageEditorSettings, InvertSelection);
+    imageEditor.nm_bind(ImageEditorSettings, DrawBorder);
 
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     imageEditor.nm_bind(ImageEditorSettings, CloseWindowAfterActionInFullScreen);
@@ -895,6 +899,12 @@ void WtlGuiSettings::BindToManager() {
     SettingsNode& serversChecker = mgr_["ServersChecker"];
     serversChecker.n_bind(testFileName);
     serversChecker.n_bind(testUrl);
+}
+
+void WtlGuiSettings::disableWindowsPrintScreenKeyInterception() {
+    if (ShowTrayIcon && IsWindows10OrGreater() && Hotkeys.findByKey(VK_SNAPSHOT, 0) != -1) {
+        DisableWindowsPrintScreenKeyInterception();
+    }
 }
 
 // The following code should  be deleted in next releases
@@ -1023,7 +1033,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 void WtlGuiSettings::Uninstall() {
     BOOL b;
     bool beforeInstall = CmdLine.IsOption(_T("beforeinstall"));
-    if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
+    if (IsWindowsVistaOrGreater() && WinUtils::IsElevated(&b) != S_OK) {
         CString command = _T("/uninstall");
         if (beforeInstall) {
             command += _T(" /beforeinstall");
@@ -1122,56 +1132,15 @@ CString WtlGuiSettings::getFileServerName()  {
 
 CString WtlGuiSettings::getSettingsFileName() const
 {
-    return IuCoreUtils::Utf8ToWstring(fileName_).c_str();
+    return U2WC(fileName_);
 }
 
 ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name)
 {
-    return ServersSettings[IuCoreUtils::WstringToUtf8((LPCTSTR)name)].begin()->second;
+    return ServersSettings[W2U(name)].begin()->second;
 }
 
 ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
 {
     return ServersSettings[name].begin()->second;
 }
-
-void ImageUploadParams::bind(SettingsNode& n){
-    SettingsNode & node = n["ImageUploadParams"];
-    node.n_bind(UseServerThumbs);
-    node.n_bind(CreateThumbs);
-
-    node.n_bind(ProcessImages);
-    node.n_bind(ImageProfileName);
-    node.n_bind(UseDefaultThumbSettings);
-    SettingsNode & thumb = node["Thumb"];
-    thumb.nm_bind(Thumb, TemplateName);
-    thumb.nm_bind(Thumb, Size);
-    thumb.nm_bind(Thumb, Width);
-    thumb.nm_bind(Thumb, Height);
-    thumb["ResizeMode"].bind((int&)Thumb.ResizeMode);
-    thumb.nm_bind(Thumb, AddImageSize);
-    thumb.nm_bind(Thumb, DrawFrame);
-    thumb.nm_bind(Thumb, Quality);
-    thumb.nm_bind(Thumb, Format);
-    thumb.nm_bind(Thumb, Text);
-}
-
-ThumbCreatingParams ImageUploadParams::getThumb()
-{
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (UseDefaultThumbSettings && !Settings->imageServer.isEmpty() &&  &Settings->imageServer.getByIndex(0).imageUploadParams != this) {
-        return Settings->imageServer.getByIndex(0).imageUploadParams.Thumb;
-    }
-    return Thumb;
-}
-
-ThumbCreatingParams& ImageUploadParams::getThumbRef()
-{
-    return Thumb;
-}
-
-void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp)
-{
-    Thumb = tcp;
-}
-

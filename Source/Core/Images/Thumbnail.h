@@ -53,8 +53,8 @@ class Thumbnail
             std::string sprite_source_file;
         };
 
-        Thumbnail();
-        virtual ~Thumbnail();
+        Thumbnail() = default;
+
         bool loadFromFile(const std::string& filename);
         void createNew();
         bool saveToFile(const std::string& filename = "" );

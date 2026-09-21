@@ -28,7 +28,7 @@ public:
     IdNameArray qualities() const override {
         IdNameArray res;
         for (int i = 32; i <= 512; i += 32) {
-            res.push_back({ std::to_string(i), std::to_string(i) + " kpbs" });
+            res.emplace_back( std::to_string(i), std::to_string(i) + " kpbs" );
         }
         return res;
     }

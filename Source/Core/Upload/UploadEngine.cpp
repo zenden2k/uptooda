@@ -41,6 +41,16 @@ CUploadEngineData::CUploadEngineData()
     UploadToTempServer = false;
 }
 
+int CUploadEngineData::addUserType(const std::string_view& name) {
+    auto it = std::find(userTypes.begin(), userTypes.end(), name);
+
+    if (it == userTypes.end()) {
+        userTypes.emplace_back(name);
+        it = userTypes.end() - 1;
+    }
+    return std::distance(userTypes.begin(), it);
+}
+
 bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
@@ -173,12 +183,20 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
     return TypeInvalid;
 }
 
+std::set<unsigned int> CUploadEngineData::getUserTypesIds() const {
+    std::set<unsigned int> res;
+    for (unsigned int i = 0; i < userTypes.size(); i++) {
+        res.insert(i);
+    }
+    return res;
+}
+
 CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 {
 }
 
-CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) {
-    if ( index < m_list.size() ) {
+const CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) const {
+    if (index < m_list.size()) {
         return m_list[index].get();
     }
     return nullptr;
@@ -189,17 +207,18 @@ int CUploadEngineListBase::count() const
     return m_list.size();
 }
 
-CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
+const CUploadEngineData* CUploadEngineListBase::byName(const std::string& name) const
 {
-    for (size_t i = 0; i < m_list.size(); i++)
-    {
-        if (!IuStringUtils::stricmp(m_list[i]->Name.c_str(), name.c_str()))
-            return m_list[i].get();
+    auto index = getUploadEngineIndex(name);
+
+    if (index == -1) {
+        return nullptr;
     }
-    return nullptr;
+
+    return m_list[index].get();
 }
 
-CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) {
+const CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) const {
     for (size_t i = 0; i < m_list.size(); i++)
     {
         if ( m_list[i]->hasType(type)) {
@@ -244,11 +263,11 @@ int CUploadEngineListBase::getRandomFileServer()
 
 int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const
 {
-    for (size_t i = 0; i < m_list.size(); i++)
-    {
-        if (m_list[i]->Name == Name)
-            return i;
+    auto it = serverNameToIndex_.find(IuStringUtils::ToLower(Name));
+    if (it != serverNameToIndex_.end()) {
+        return it->second;
     }
+    
     return -1;
 }
 
@@ -267,9 +286,8 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
     return {};
 }
 
-std::vector<std::string> CUploadEngineListBase::builtInScripts() {
-    auto keys = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
-    return std::vector<std::string>(keys.begin(), keys.end());
+std::vector<std::string_view> CUploadEngineListBase::builtInScripts() {
+    return BUILTIN_SCRIPTS;
 }
 
 void CUploadEngineListBase::removeServer(const std::string& name) {
@@ -285,15 +303,15 @@ void CUploadEngineListBase::removeServer(const std::string& name) {
 }
 
 
-std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData* data) const
+std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData* data)
 {
     if (!data) {
         return {};
     }
-    std::string serverName = data->Name;
-    auto builtInScriptList = builtInScripts();
 
-    if (std::find(builtInScriptList.begin(), builtInScriptList.end(), data->PluginName) != builtInScriptList.end()) {
+    std::string serverName = data->DisplayName.empty() ? data->Name : data->DisplayName;
+
+    if (std::find(BUILTIN_SCRIPTS.begin(), BUILTIN_SCRIPTS.end(), data->PluginName) != BUILTIN_SCRIPTS.end()) {
         serverName = IuStringUtils::Replace(serverName, "(" + data->PluginName + ")", "[" + IuStringUtils::ToUpper(data->PluginName) + "]");
     }
     return serverName;
@@ -354,24 +372,24 @@ void CAbstractUploadEngine::setNetworkClient(INetworkClient* nm)
     m_NetworkClient->setCurlShare(serverSync_->getCurlShare());
 }
 
-void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
+void CAbstractUploadEngine::setUploadData(const CUploadEngineData* data)
 {
     m_UploadData = data;
 }
 
-CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback)
+CAbstractUploadEngine::CAbstractUploadEngine(std::shared_ptr<ServerSync> serverSync, ErrorMessageCallback errorCallback)
 {
     m_bShouldStop = 0;
     m_NetworkClient = nullptr;
     m_UploadData = nullptr;
     currUploader_ = nullptr;
-    serverSync_ = serverSync;
+    serverSync_ = std::move(serverSync);
     m_ServersSettings = nullptr;
     onErrorMessage_ = errorCallback;
 }
 
 
-CUploadEngineData* CAbstractUploadEngine::getUploadData() const
+const CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {
     return m_UploadData;
 }
@@ -396,7 +414,7 @@ void CAbstractUploadEngine::setOnErrorMessageCallback(ErrorMessageCallback cb) {
     onErrorMessage_ = cb;
 }
 
-void CAbstractUploadEngine::setServerSync(ServerSync* sync)
+void CAbstractUploadEngine::setServerSync(std::shared_ptr<ServerSync> sync)
 {
     serverSync_ = sync;
 }
@@ -415,7 +433,7 @@ void CAbstractUploadEngine::stop()
     //serverSync_->stop();
 }
 
-ServerSync* CAbstractUploadEngine::serverSync() const
+std::shared_ptr<ServerSync> CAbstractUploadEngine::serverSync() const
 {
     return serverSync_;
 }

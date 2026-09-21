@@ -40,7 +40,7 @@ class CThumbSettingsPage : public CDialogImpl<CThumbSettingsPage>,
 {
 public:
     CThumbSettingsPage();
-    virtual ~CThumbSettingsPage();
+
     enum { IDD = IDD_THUMBSETTINGSPAGE };
 
     BEGIN_MSG_MAP(CThumbSettingsPage)
@@ -83,13 +83,14 @@ public:
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
         std::unique_ptr<Gdiplus::Bitmap> createSampleImage(int width, int height);
         ThumbCreatingParams params_;
-        std::map<std::string, std::unique_ptr<Thumbnail>> thumb_cache_;
+        std::map<std::string, std::unique_ptr<Thumbnail>> thumbCache_;
         bool m_CatchFormChanges;
         CColorButton ThumbBackground;
         CComboBox thumbsCombo_;
-        CButton thumbTextMacrosesButton_;
-        CIcon iconDropdown_;
+        CButton thumbTextMacrosButton_;
+        CIcon iconInfo_;
         CEdit thumbTextEdit_;
+        CToolTipCtrl tooltipControl_;
 };
 
 #endif // IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H

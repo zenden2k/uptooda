@@ -14,8 +14,8 @@
  bit1; 비트
  bit2; 비트
  bit3; 비트
- bps; bps
  Bps; Bps
+ bps; bps
  Byte1; 바이트
  Byte2; 바이트
  Byte3; 바이트
@@ -49,8 +49,8 @@
  frame3; 프레임
  GB; GB
  Gb; Gb
- Gbps; Gbps
  GBps; GBps
+ Gbps; Gbps
  GHz; GHz
  GiB; GiB
  GibiByte1; GibiBytes
@@ -91,8 +91,8 @@
  KiloByte3; KiloBytes
  MB; MB
  Mb; Mb
- Mbps; Mbps
  MBps; MebiBytes
+ Mbps; Mbps
  MebiBit1; MebiBit
  MebiBit2; MebiBits
  MebiBit3; MebiBits
@@ -127,6 +127,9 @@
  second1; 초
  second2; 초
  second3; 초
+ slice per frame1;
+ slice per frame2;
+ slice per frame3;
  text stream1; 텍스트 스트림
  text stream2; 텍스트 스트림
  text stream3; 텍스트 스트림
@@ -150,10 +153,20 @@
 : ;: 
 3D;
 3DType;
+5.1.2ch;
+5.1.4ch;
+5.1ch;
 608_Mode;
+7.1.2ch;
+7.1ch;
 About;정보
 About_Hint;연락처와 최신 버전 확인
+AC3_Metadata;
 Accompaniment;반주
+acmod;
+Active_DisplayAspectRatio;
+Active_Height;
+Active_Width;
 ActiveFormatDescription;
 ActiveFormatDescription_MuxingMode;
 Actor;배우
@@ -166,8 +179,9 @@ AdID;
 ADM: Show ChannelFormats;
 ADM: Show TrackUIDs;
 AdmProfile;
-Advanced;고급
+Advanced mode -->;
 Advanced mode;고급 모드
+Advanced;고급
 Album;앨범
 Album_ReplayGain_Gain;앨범 재생 게인
 Album_ReplayGain_Peak;앨범 재생 게인 피크
@@ -175,21 +189,32 @@ Alignment;정렬
 Alignment_Aligned;인터리브에 정렬
 Alignment_Split;인터리브로 분할
 All;전체
+AllFields;
 AlternateGroup;
+AnalyzeServicesMenu;
+App_About;MediaInfo에 관하여
+App_Hide;MediaInfo 가리기
+App_Quit;MediaInfo 종료
 Archival_Location;기록 장소
 Arranger;편곡자
 ArtDirector;미술 감독
 AspectRatio;종횡비
 AssistantDirector;조감독
 AssociatedVideo_FrameRate;
-at;at
 At least one file;(최소한 하나의 파일을 열어야 합니다)
-Audio;오디오
+at;at
+Attachments;
 Audio stream(s);오디오 스트림
+Audio;오디오
+Audio_Channels_Total;
 Audio_Codec_List;오디오 코덱
+Audio_Format_List;
+Audio_Format_WithHint_List;
+Audio_Language_List;
 Audio_No;오디오 없음
 Audio1;첫번째 오디오 스트림
 Audio2;두번째 오디오 스트림
+Audio3;
 AudioComments;
 AudioCount;오디오 스트림 개수
 AudioDescription;
@@ -200,6 +225,9 @@ AudioRenderingIndication;
 AudioSceneInfoID;
 AudioTrackLayout;
 Author;작가
+Back4ToBack2;
+Balance_FrontBackListener;
+Balance_FrontBackOverheadFloor;
 BarCode;바코드
 Basic;기본
 Basic_Note;노트 : 이 파일에 관한 더 자세한 정보를 원하시면 다른 보기를 선택하세요(시트, 트리...)
@@ -218,25 +246,36 @@ BitRate_Mode_CBR;고정
 BitRate_Mode_VBR;변동
 BitRate_Nominal;명목상의 비트레이트
 Bits-(Pixel*Frame);비트/(픽셀*프레임)
+BitstreamLevel;
+Bring All to Front;모두 앞으로 가져오기
+bsid;
 BufferSize;
 Cancel;취소
 CaptionServiceName;
+CatalogNumber;
 Channel(s);채널
+Channel(s)_Original;
 ChannelCoded;
 ChannelConfiguration;
+ChannelFormat;
 ChannelLayout;
+ChannelLayout_Original;
 ChannelMode;
 ChannelPositions;채널 위치
+ChannelPositions_Original;
 Chapter(s);챕터
-Chapters;챕터
 Chapters stream(s);챕터 스트림
+Chapters;챕터
 Chapters_Codec_List;챕터 코덱
 Chapters_No;챕터 없음
+Chapters_Pos_Begin;
+Chapters_Pos_End;
 ChaptersCount;챕터 스트림 개수
+CharacterSet;
 CheckNewVersion;최신 버전 확인
-Choose custom;커스텀 선택
 Choose custom sheet;원하는 커스텀 시트를 선택하세요
 Choose custom text;원하는 커스텀 텍스트를 선택하세요
+Choose custom;커스텀 선택
 Choose export format;원하는 내보내기 형식을 선택하세요
 Choose file(s);열기 원하는 파일을 선택하세요
 Choose filename;원하는 파일명을 선택하세요
@@ -246,11 +285,15 @@ Chroma;색차
 ChromaSubsampling;
 Classifier;
 ClearList;
-Close;닫기
 Close all before open;열기 전에 모두 닫기
+Close;닫기
+CloseAll;
 ClosedCaptionsLanguage;
 ClosedCaptionsPresent;
 ClosedCaptionsType;
+CloseFile;
+CloseWindow;창 닫기
+cmixlev;
 Codec;코덱
 Codec_Description;코덱 설명
 Codec_Info;코덱에 대한 상세 정보
@@ -276,11 +319,22 @@ CoDirector;
 Collection;콜렉션
 Colorimetry;색체계
 ColorSpace;
+ColorTheme;테마
+ColorTheme_Dark;어둠
+ColorTheme_Light;밝음
+ColorTheme_System;시스템 설정 사용
+colour_description_present;
+colour_description_present_Source;
 colour_primaries;
+colour_primaries_Source;
 colour_range;
+colour_range_Source;
 Comment;주석
 CommissionedBy;의뢰
+Compare;
+CompareView;
 Compilation;
+ComplementaryObject;
 CompleteName;전체 이름
 CompletionDate;
 ComplexityIndex;
@@ -289,13 +343,19 @@ Compression_Mode;
 Compression_Mode_Lossless;
 Compression_Mode_Lossy;
 Compression_Ratio;압축률
+comprprof;
 Conductor;지휘자
 ConformanceCheck;
+ConformanceErrors;
+ConformanceInfos;
+ConformanceWarnings;
 ContactEmail;
 ContactTelephoneNumber;
 Container and general information;컨테이너와 일반 정보
+Content;
 ContentType;내용 종류
 CoProducer;공동 제작자
+Copy;복사하기
 Copyright;저작권
 CopyrightYear;
 CostumeDesigner;의상 디자이너
@@ -306,22 +366,33 @@ Cover_Datas;표지 정보
 Cover_Description;표지 설명
 Cover_Mime;표지 MIME
 Cover_Type;표지 타입
+CoverData;
+CreatedOn;
 Cropped;자른 영역
 Custom;커스텀
+CustomDownmixTargets;
 Customize;커스터마이즈
 DarkMode;
 Date;날짜
 Debug;디버그
 Decimal point;소수점
+Default translation;
+Default;
 Default_Setting;
 DefaultTargetDeviceConfig;
+DefaultView;
 Delay;딜레이
 Delay_Source;
 Delay_Source_Container;
 Delay_Source_Stream;
 Delete;삭제
 Description;설명
+Details;
 dialnorm;
+dialnorm_Average;
+dialnorm_Count;
+dialnorm_Maximum;
+dialnorm_Minimum;
 DialogueCorrected;
 DialogueEnhancement;
 DialogueNormalization;
@@ -333,41 +404,61 @@ Disabled;
 DisplayAspectRatio;화면 종횡비
 DisplayAspectRatio_CleanAperture;
 DisplayAspectRatio_Original;원본 화면 종횡비
+DisplayCaptions;
+DisplayCaptions_Command;
+DisplayCaptions_Content;
+DisplayCaptions_Stream;
 DistributedBy;배포
 Distributor;
+Documents;
 Dolby_Atmos_Metadata;
 DolbyAtmos;
 Donate;기부하기
 DotsPerInch;인치당 도트
+DownloadFile;
+DownloadFileError;
 Downmix;
 Downmix_5.1.x;
 Downmix_5to2;
-Downmix_5to2_90deg;
 DrcSets_Count;
 DrcSets_Effects;
 Duration;길이
 Duration_End;종료 시간
 Duration_End_Command;
+Duration_Source;
 Duration_Start;시작 시간
 Duration_Start_Command;
 Duration_Start2End;
+DynamicObject;
 DynamicRangeControl;
+dynrngprof;
 Eac3DrcProfile;
 Edit;편집
 EditedBy;편집
 EditorialClassification;
+ElementaryStream;
 ElementCount;
 EMail;이메일
+Enable FFmpeg plugin;
 Encoded_Application;인코딩 프로그램
+Encoded_Application_Name;
+Encoded_Application_Version;
 Encoded_Date;인코딩 날짜
+Encoded_Hardware;
 Encoded_Library;인코딩 라이브러리
+Encoded_Library_Name;
 Encoded_Library_Settings;인코딩 설정
+Encoded_Library_Version;
 Encoded_Original;원본
 EncodedBy;인코딩
 EPG_Positions;EPG 포지션 (내부)
 EpisodeTitleNumber;
+Error;
 Error_File;파일을 읽는 중 에러
 Error_File_Write;
+Error_Open;
+Error_Save;
+Events_MinDuration;
 Events_PaintOn;
 Events_PopOn;
 Events_RollUp;
@@ -381,8 +472,13 @@ Extensions;일반적인 확장자
 External_Media_NotMounted;
 Family;가족
 Fax;팩스
-File;파일
+Feature_AdvancedMode;
+Feature_FilesCompare;
+Feature_More;
+Feature_SelectView;
+Field;
 File size;파일 크기
+File;파일
 File_Append;존재하는 파일에 이어쓰기 (경고 : 같은 파라미터인지 주의하세요)
 File_Created_Date;파일 만든 날짜
 File_Created_Date_Local;파일 만든 날짜 (로컬)
@@ -393,17 +489,22 @@ FileExtension;파일 확장자
 FileName;파일명
 FileNameExtension;
 FileSize;파일 크기
+Fill with a Dummy movie;
+Fill with a realistic movie;
 FirstDisplay_Delay_Frames;
 FirstDisplay_Type;
+FirstFrameOfAction;
 FlatPanelTv;
 FlowID;
-Folder;폴더
 Folder (R);폴더 (R)
 Folder (R)_Hint;조사할 폴더를 선택 (모든 하위 폴더를 포함)
 Folder (Recursively);폴더 (하위 포함)
+Folder;폴더
 Folder_Hint;조사할 폴더를 선택
 FolderName;폴더명
+Forced;
 Format;포맷
+Format_AdditionalFeatures;
 Format_Commercial;
 Format_Commercial_IfAny;
 Format_Compression;
@@ -436,25 +537,33 @@ Format_Settings_QPel;포맷 설정, QPel
 Format_Settings_RefFrames;포맷 설정, RefFrames
 Format_Settings_SBR;포맷 설정, SBR
 Format_Settings_Sign;포맷 설정, Sign
+Format_Settings_SliceCount;
 Format_Settings_Wrapping;
 Format_Tier;
 Format_Url;포맷 웹링크
 Format_Version;포맷 버전
+FormatDefinition;
 FpaManufacturer;
 FpaPass;
 FpaVersion;
 FrameCount;포맷 개수
+FrameCount_Source;
 FrameRate;프레임레이트
-FrameRate_MaxFrameNumber;
+FrameRate_Den;
 FrameRate_Maximum;최대 프레임레이트
 FrameRate_Minimum;최소 프레임레이트
 FrameRate_Mode;프레임레이트 모드
 FrameRate_Mode_CFR;고정
 FrameRate_Mode_VFR;변동
 FrameRate_Nominal;명목상의 프레임레이트
+FrameRate_Num;
 FrameRate_Original;원본 프레임레이트
 FrameRate_Real;
+FullParsing;
+FullParsingTips;
+Gallery;
 General;일반
+GeneralCompliance;
 Genre;장르
 Genre_000;Blues
 Genre_001;Classic Rock
@@ -664,6 +773,7 @@ Height;높이
 Height_CleanAperture;
 Height_Original;
 Help;도움말
+HideOthers;기타 가리기
 Hint;힌트
 HomeTheaterAvr;
 How many audio streams?;몇 개의 오디오 스트림?
@@ -674,13 +784,14 @@ HTML;HTML
 ID;ID
 IdentClockStart;
 IFrameInterval;
-Image;이미지
 Image stream(s);이미지 스트림
+Image;이미지
 Image_Codec_List;이미지 코덱
 ImageCount;이미지 스트림 개수
 ImmersiveStereo;
 Info;정보
 Instruments;악기
+IntegratedLoudness;
 IntegratedLoudness_Level;
 IntegratedLoudness_Speech;
 InteractivityEnabled;
@@ -698,21 +809,7 @@ InternetMediaType;
 IRCA;IRCA
 ISBN;ISBN
 ISRC;ISRC
-JocBalance_FrontBackListener;
-JocBalance_FrontBackOverheadFloor;
-JocTrim_Center;
-JocTrim_Height;
-JocTrim_Surround;
-JocTrimMode;
-JocTrimMode0i;
-JocTrimMode1i;
-JocTrimMode2i;
-JocTrimMode3i;
-JocTrimMode4i;
-JocTrimMode5i;
-JocTrimMode6i;
-JocTrimMode7i;
-JocTrimMode8i;
+IsStreamable;
 Keywords;키워드
 Known codecs;알고 있는 코덱
 Known formats;알고 있는 포맷
@@ -744,6 +841,7 @@ Language_bs;Bosnian
 Language_ca;Catalan
 Language_ce;Chechen
 Language_ch;Chamorro
+Language_cmn;
 Language_co;Corsican
 Language_cr;Cree
 Language_cs;Czech
@@ -767,6 +865,7 @@ Language_eu;Basque
 Language_fa;Persian
 Language_ff;Fulah
 Language_fi;Finnish
+Language_fil;
 Language_fj;Fijian
 Language_fo;Faroese
 Language_fr;French
@@ -827,6 +926,7 @@ Language_lv;Latvian
 Language_mg;Malagasy
 Language_mh;Marshallese
 Language_mi;Maori
+Language_mis;
 Language_mk;Macedonian
 Language_ml;Malayalam
 Language_mn;Mongolian
@@ -903,6 +1003,7 @@ Language_tw;Twi
 Language_ty;Tahitian
 Language_ug;Uighur
 Language_uk;Ukrainian
+Language_und;
 Language_ur;Urdu
 Language_uz;Uzbek
 Language_ve;Venda
@@ -913,15 +1014,27 @@ Language_wo;Wolof
 Language_xh;Xhosa
 Language_yi;Yiddish
 Language_yo;Yoruba
+Language_yue;
 Language_za;Zhuang
 Language_zh;Chinese
+Language_zh-cmn;
+Language_zh-CN;
 Language_zh-cn;Chinese (China)
+Language_zh-Hans;
+Language_zh-Hant;
+Language_zh-TW;
 Language_zh-tw;Chinese (Taiwan)
+Language_zh-yue;
 Language_zu;Zulu
+Language_zxx;
+LanguageChanges;
+Languages;
 LawRating;법률 등급
 LCCN;LCCN
+LegacyStreamDisplay;
 LfeAttenuationKnown;
 LfeMixGain;
+lfeon;
 Library;Muxing 라이브러리
 Lifetime_Subscribe_Button;
 Lightness;밝기
@@ -930,15 +1043,18 @@ Lines_MaxCountPerEvent;
 LineUpStart;
 LinkedTo_Bed_Pos;
 LinkedTo_ChannelFormat_Pos;
+LinkedTo_ComplementaryObject_Pos;
 LinkedTo_Content_Pos;
 LinkedTo_Group_Pos;
 LinkedTo_Object_Pos;
 LinkedTo_PackFormat_Pos;
 LinkedTo_SignalGroup_Pos;
+LinkedTo_StreamFormat_Pos;
 LinkedTo_Substream_Pos;
 LinkedTo_TrackFormat_Pos;
 LinkedTo_TrackUID_Pos;
 List;목록
+LongTermLoudness;
 LoRoCenterMixGain;
 LoRoSurroundMixGain;
 Loudness_Anchor;
@@ -963,6 +1079,7 @@ LtRtCenterMixGain;
 LtRtSurroundMixGain;
 Lyricist;작사가
 Lyrics;가사
+MacCreatedBy;
 Mastered_Date;마스터 날짜
 MasteredBy;마스터
 MasteringDisplay_ColorPrimaries;
@@ -970,16 +1087,20 @@ MasteringDisplay_Luminance;
 Matrix_Channel(s);
 Matrix_ChannelPositions;
 matrix_coefficients;
+matrix_coefficients_Source;
 Matrix_Format;
 MaxCLL;
 MaxFALL;
 MaxGain;
 MaximumMomentaryLoudness;
 MaxTruePeak;
+MD5;
+MD5_Unencoded;
 MediaInfo_About;미디어 파일에 대한\r\n상세한 정보를 제공:\r\nMatroska, OGG (OGM 포함)\r\nMPEG1 (VCD 포함)\r\nMPEG2 (DVD와 SVCD 포함)\r\nMPEG4 (Itunes M4A 포함)\r\nQuicktime\r\nRealMedia\r\nWindowsMedia (WMV, WMA 포함)\r\nMicrosoft RIFF (AVI, WAV 포함)\r\n음악 포맷 (AC3, DTS, AAC, AU, AIFF...)
 MediaInfo_About_About;
-Menu;메뉴
+MediaInfo_WebSite;
 Menu stream(s);메뉴 스트림
+Menu;메뉴
 Menu_Codec_List;메뉴 코덱
 Menu_Hint;더 자세히
 Menu_No;메뉴 없음
@@ -988,6 +1109,7 @@ MenuID;메뉴 ID
 Metadata_Format;
 Metadata_Format_Type;
 Metadata_MuxingMode;
+Minimize;최소화
 MixType;
 mn;분
 Mood;무드
@@ -996,6 +1118,7 @@ Movie;영화 이름
 ms;미리초
 MSDI;MSDI
 MultipleStream;
+MultiView_Count;
 MusicBy;음악
 MuxingMode;먹싱 모드
 MuxingMode_MoreInfo;먹싱 모드, 추가 정보
@@ -1023,49 +1146,19 @@ NumberOfSubstreams;
 NumberOfTrackFormats;
 NumberOfTrackUIDs;
 NumColors;색상수
+Object;
 ObjectCount;
 OK;확인
 One output file per input file;입력 파일 마다 하나의 출력 파일
+OnlyDiffer;
+OnlyIdentical;
 Open;열기
-OpenCandy_01;________ 다운로드 중
-OpenCandy_02;__% 완료
-OpenCandy_03;인터넷 연결 중단
-OpenCandy_04;________ 다운로드 완료
-OpenCandy_05;클릭하면 ________ 설치를 시작합니다
-OpenCandy_06;설치를 중단하시겠습니까?\r\n설치를 다음에 하시려면 '아니오'를 선택해주십시오.\r\n주: 시스템 재시작 시에 다시 설치하려면 메뉴에서 종료를 선택할 수 있습니다.
-OpenCandy_07;________ 다운로드를 일시정지했습니다.\r\n다운로드를 다시 시작하려면 트레이 아이콘을 클릭해주십시오.
-OpenCandy_08;심각한 오류가 발생했습니다. _________ 설치가 중단됩니다.
-OpenCandy_09;다운로드 일시정지
-OpenCandy_10;설치 중단
-OpenCandy_11;다운로드 재시작
-OpenCandy_12;설치 종료
-OpenCandy_13;___________ - ____________ 추천
-OpenCandy_14;_________ 다운로드 중
-OpenCandy_15;요청하신 ___________, ___________가 추천한 소프트웨어,가 다운로드 중입니다. 설치 준비가 완료되면 알려드리겠습니다.
-OpenCandy_16;___________ 설치가 준비되었습니다.
-OpenCandy_17;___________가 다운로드되었습니다. 설치를 진행하시려면 '설치'를 눌러주십시오.
-OpenCandy_18;___________ / ___________ 다운로드
-OpenCandy_19;Powered by OpenCandy
-OpenCandy_20;Learn more at OpenCandy.com
-OpenCandy_21;설치
-OpenCandy_22;___________ 설치
-OpenCandy_23;___________ 설치를 중단합니다.\r\n종료하시겠습니까?
-OpenCandy_24;일시정지
-OpenCandy_25;다운로드를 일시정지했습니다. 다시 시작하려면 '재시작'를 눌러주십시오.
-OpenCandy_26;재시작
-OpenCandy_27;지금 설치
-OpenCandy_28;다운로드 일시정지
-OpenCandy_29;다운로드 재시작
-OpenCandy_30;설치 중단
-OpenCandy_31;설치 옵션을 선택해주십시오.
-OpenCandy_32;___________ 설치
-OpenCandy_33;설치하지 않음
-OpenCandy_34;설치 옵션을 선택해주십시오.
-OpenCandy_35;______에서 이 소프트웨어를 추천합니다.
-OpenCandy_36;현재 설치 과정은 중단되지 않습니다.
 OpenCaptionsLanguage;
 OpenCaptionsPresent;
 OpenCaptionsType;
+OpenFile;
+OpenFileError;
+OpenRecent;
 Options;옵션
 Options_Hint;환경 설정
 Original;원본
@@ -1077,16 +1170,21 @@ Originator;
 Other;기타
 OtherIdentifier;
 OtherIdentifierType;
-Output;출력
+OtherViews;
 Output format;출력 형식
+Output;출력
 OverallBitRate;총 비트레이트
 OverallBitRate_Maximum;최대 총 비트레이트
 OverallBitRate_Minimum;최소 총 비트레이트
 OverallBitRate_Mode;총 비트레이트 모드
 OverallBitRate_Nominal;명목상의 총 비트레이트
+OverallBitRate_Precision_Max;
+OverallBitRate_Precision_Min;
 PackageName;
+PackFormat;
 Part;파트
 Part_Count;총계
+PartialParsing;
 PartNumber;
 PartTotal;
 Performer;연기자
@@ -1113,12 +1211,14 @@ Position_Total;전체
 Preferences;환경 설정
 PreferredDownmix;
 Premium;
+Premium_Feature;
 Premium_Summary;
 PreselectionLabel;
 Presentation;
 PresentationConfig;
 PresentationConfig_ContentClassifier;
 PresentationID;
+PresentationLevel;
 PreviousDownmixType5ch;
 PreviousMixType2ch;
 PrimaryAudioLanguage;
@@ -1127,17 +1227,21 @@ ProductionDesigner;프로덕션
 ProductionNumber;
 ProductionStudio;스튜디오
 ProductPlacement;
+Program name;
+Programme;
 ProgrammeHasText;
 ProgrammeTextLanguage;
 ProgrammeTitle;
 Publisher;발행자
 Purchased_Date;구매일
+PurchaseInformation;
 Quote character;인용 문자
 RadioStation;라디오 스테이션
 Rating;등급
 RealtimeLoudnessCorrected;
 Recorded_Date;기록일
 Recorded_Location;기록 장소
+Reel;
 Released_Date;개봉일
 RemixedBy;리믹스
 RenderMode;
@@ -1145,13 +1249,18 @@ Renew;
 ReplayGain_Gain;재생 게인
 ReplayGain_Peak;재생 게인 피크
 Report;
+ReportBy;
 Resolution;해상도
 RestoreLifetimeSubscription;
+Retry;
 s;초
+Sampled_Height;
+Sampled_Width;
 SamplePeakLevel;
 SamplePeakLevel_Album;
 SamplesPerFrame;
 SamplingCount;
+SamplingCount_Source;
 SamplingRate;샘플링레이트
 Save;저장
 ScanOrder;스캔 순서
@@ -1163,9 +1272,13 @@ ScanType;스캔 방식
 ScanType_Original;
 ScanType_StoreMethod;
 ScreenplayBy;각본
+ScreenToCenter;
+ScreenToFront;
 Season;시즌
 SecondaryAudioLanguage;
 see below;아래 참고
+Select your directory;
+SelectAll;전체 선택
 Send HeaderFile;여기로 헤더 파일을 보내주세요 : http://sourceforge.net/projects/mediainfo/ (Bug section)
 Separator_Columns;컬럼 구분자
 Separator_Lines;라인 구분자
@@ -1174,20 +1287,25 @@ ServiceChannel;서비스 채널 번호
 ServiceKind;
 ServiceName;서비스 이름
 ServiceProvider;서비스 제공자
+Services;서비스
 ServiceType;서비스 종류
 Set;세트
 Set_Count;세트 개수
 Setup;설정
 Sharpness;샤프니스
-Sheet;시트
 Sheet (Complete);시트 (전체)
-Shell extension;쉘 익스텐션 (탐색기 마우스 오른쪽 버튼 메뉴에 Media Info를 추가합니다)
+Sheet;시트
 Shell extension, folder;폴더에도 추가
+Shell extension, separate instance;
+Shell extension;쉘 익스텐션 (탐색기 마우스 오른쪽 버튼 메뉴에 Media Info를 추가합니다)
 Shell InfoTip;쉘 인포팁 (탐색기에서 파일에 마우스를 올려 놓으면 정보를 보여줍니다)
 ShimName;
 ShimVersion;
 Show menu;메뉴 보기
 Show toolbar;도구 모음 보기
+Show;
+ShowAll;모두 보기
+ShowMore;
 SignalGroup;
 SigningPresent;
 SignLanguage;
@@ -1202,6 +1320,7 @@ Source_StreamSize;
 Source_StreamSize_Encoded;
 SpokenSubtitles;
 Standard;표준
+Stored_Height;
 StoreMethod_InterleavedFields;
 StoreMethod_SeparatedFields;
 StoreMethod_SeparatedFields_1;
@@ -1209,11 +1328,14 @@ StoreMethod_SeparatedFields_2;
 Stream;스트림
 Stream_MoreInfo;이 스트림에 대한 자세한 정보
 StreamCount;이 종류의 스트림 개수
+StreamFormat;
 StreamID;스트림 ID
 streamIdentifier;
 StreamKind;스트림 종류
 StreamKindID;스트림 ID
 StreamKindPos;스트림 ID
+StreamOrder;
+Streams;
 StreamSize;스트림 크기
 StreamSize_Demuxed;
 StreamSize_Encoded;
@@ -1223,6 +1345,7 @@ Subscribe;
 Subscribe_Button;
 Subscribe_Failed;
 Subscribe_Manage;
+Subscribe_Premium;
 Subscribe_Renew;
 Subscribe_Renew_Price;
 Subscribe_Unaviable;
@@ -1240,6 +1363,8 @@ Summary;요약
 Supported formats;지원하는 포맷
 Supported?;지원?
 SupportUs;
+SupportUs2;
+surmixlev;
 SurroundAttenuationKnown;
 SwitchGroup;
 Synopsis;시놉시스
@@ -1250,12 +1375,16 @@ TargetDeviceConfig;
 Technician;기술자
 TermsOfUse;사용권한
 TertiaryAudioLanguage;
-Text;텍스트
+TestContinuousFileNames;
 Text - Custom;텍스트 - 커스텀
 Text (HTML);텍스트 (HTML)
 Text stream(s);텍스트 스트림
 Text streams;텍스트 스트팀
+Text;텍스트
 Text_Codec_List;텍스트 코덱
+Text_Format_List;
+Text_Format_WithHint_List;
+Text_Language_List;
 Text_No;텍스트 없음
 Text1;첫번째 텍스트 스트림
 Text2;두번째 텍스트 스트림
@@ -1266,31 +1395,73 @@ ThanksTo;감사
 Thousands separator;천단위 구분자
 TimeCode;
 TimeCode_FirstFrame;
+TimeCode_LastFrame;
 TimeCode_MaxFrameNumber;
 TimeCode_MaxFrameNumber_Theory;
 TimeCode_Settings;
 TimeCode_Source;
-TimeCode_Striped;
+TimeCode_Stripped;
 TimeStamp;
 TimeZone;시간대
 Title;제목
 Title_More;제목, 자세히
+Top4ToTop2;
+TopBackToFront;
+TopBackToSide;
+TopFrontToBack;
+TopFrontToFront;
+TopFrontToSide;
 Total;총
 TotalNumberOfParts;
 TotalProgrammeDuration;
 Track;트랙 이름
 Track_Count;트랙 개수
+TrackFormat;
 TrackIndex;
 TrackUID;
 transfer_characteristics;
+transfer_characteristics_Source;
 Translate_Reports;
 Translator;번역
 Transport;
-Tree;트리
 Tree & Text;트리 & 텍스트
+Tree;트리
+Trim_Center;
+Trim_Height;
+Trim_Surround;
+TrimMode;
+TrimMode0i;
+TrimMode1i;
+TrimMode2i;
+TrimMode3i;
+TrimMode4i;
+TrimMode5i;
+TrimMode6i;
+TrimMode7i;
+TrimMode8i;
 TruePeakLevel;
 TruePeakLevel_Album;
 Type;
+Type_Composer;
+Type_Conductor;
+Type_Cover;
+Type_Cover_Back;
+Type_Cover_Media;
+Type_DuringPerformance;
+Type_DuringRecording;
+Type_FileIcon;
+Type_FileIcon_32x32;
+Type_Illustration;
+Type_LeafletPage;
+Type_Lyricist;
+Type_Performer;
+Type_Performer_Lead;
+Type_PerformerLogo;
+Type_Picture;
+Type_PublisherLogo;
+Type_RecordingLocation;
+Type_ScreenCapture;
+Type_Thumbnail;
 TypeDefinition;
 UniqueID;
 UniversalAdID;
@@ -1298,13 +1469,19 @@ UniversalAdID_Registry;
 UniversalAdID_Value;
 Unknown;알 수 없음
 Url;Url
-Video;비디오
+Value;
 Video stream(s);비디오 스트림
+Video;비디오
 Video_Codec_List;비디오 코덱
 Video_Delay;비디오 딜레이
+Video_Format_List;
+Video_Format_WithHint_List;
+Video_Language_List;
 Video_No;비디오 없음
 Video0_Delay;비디오0 딜레이
 Video1;첫번째 비디오 스트림
+Video2;
+Video3;
 VideoComments;
 VideoCount;비디오 스트림 개수
 View;보기
@@ -1325,6 +1502,7 @@ WebSite_Video_More;이 비디오 코덱을 찾기 위한 웹사이트(%Url%)로 
 Width;폭
 Width_CleanAperture;
 Width_Original;
+Window;윈도우
 WriteMe;제작자에게 메일쓰기
 WriteToTranslator;번역자에게 메일쓰기
 Written_Date;제작일
@@ -1332,5 +1510,7 @@ Written_Location;제작 장소
 WrittenBy;제작자
 Yes;예
 Your system;이 시스템
-ZZ_Automatic_Percent;70
-ZZ_AutomaticLanguage_Percent;74
+Your translation;
+Zoom;확대/축소
+ZZ_Automatic_Percent;60
+ZZ_AutomaticLanguage_Percent;64

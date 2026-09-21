@@ -30,6 +30,7 @@ crash_rpt::CrashRpt g_crashRpt(
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
+#include <string_view>
 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
@@ -44,7 +45,7 @@ crash_rpt::CrashRpt g_crashRpt(
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
 #include "Func/WtlScriptDialogProvider.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Func/LangClass.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Gui/Dialogs/LangSelect.h"
@@ -94,6 +95,12 @@ public:
 private:
     HRESULT m_hr;
 };
+
+#ifndef NDEBUG
+extern "C" const char* __asan_default_options() {
+    return "continue_on_error=1";
+}
+#endif
 
 COleInitialize oleInitializer;
 
@@ -152,7 +159,7 @@ public:
     }
 
     static void setAppVersion() {
-        AppParams::AppVersionInfo appVersion;
+        AppRuntimeInfo::AppVersionInfo appVersion;
         appVersion.FullVersion = IU_APP_VER;
         appVersion.FullVersionClean = IU_APP_VER_CLEAN;
         appVersion.Build = atoi(IU_BUILD_NUMBER);
@@ -160,11 +167,10 @@ public:
         appVersion.CommitHash = IU_COMMIT_HASH;
         appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
         appVersion.BranchName = IU_BRANCH_NAME;
-        AppParams::instance()->setVersionInfo(appVersion);
+        AppRuntimeInfo::instance()->setVersionInfo(appVersion);
     }
 
     void initBasicServices() {
-        AbstractImage::autoRegisterFactory<void>();
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         logger_ = std::make_shared<DefaultLogger>();
         myLogSink_ = std::make_unique<MyLogSink>(logger_.get());
@@ -181,6 +187,7 @@ public:
     }
 
     void initServices() {
+        AbstractImage::autoRegisterFactory<void>();
         CString dataFolder = settings_.DataFolder;
         if (dataFolder.Right(1) == "\\") {
             dataFolder.Truncate(dataFolder.GetLength() - 1);
@@ -188,7 +195,7 @@ public:
         std::string dir = W2U(dataFolder);
 
         dotenv::init(dotenv::Preserve, (dir + "/.env").c_str());
-        char* cacheDir = strdup(dir.c_str());
+        char* cacheDir = _strdup(dir.c_str());
         if (cacheDir) {
             const char* dirs[2]
                 = { cacheDir, nullptr };
@@ -217,7 +224,7 @@ public:
         serviceLocator->setMyEngineList(engineList_.get());
         settings_.setEngineList(engineList_.get());
         uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList_.get(), uploadErrorHandler, serviceLocator->networkClientFactory());
-        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList_.get(), scriptsManager_.get(),
+        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), scriptsManager_.get(),
             uploadErrorHandler, serviceLocator->networkClientFactory(), &settings_, settings_.MaxThreads);
         serviceLocator->setUploadManager(uploadManager_.get());
 
@@ -284,7 +291,7 @@ public:
 
         IuCommonFunctions::CreateTempFolder(commonTempFolder_, tempFolder_);
 
-        AppParams::instance()->setTempDirectory(W2U(tempFolder_));
+        AppRuntimeInfo::instance()->setTempDirectory(W2U(tempFolder_));
         std::vector<CString> fileList;
         WinUtils::GetFolderFileList(fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old"));
         for (const auto& file : fileList) {
@@ -348,7 +355,6 @@ public:
                     settings_.Language = U2W(it->first);
                 }
 
-
                 /*CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
                 if (!foundName.IsEmpty()) {
                     settings_.Language = foundName;
@@ -387,7 +393,7 @@ public:
             lang_.LoadLanguage(settings_.Language);
         }
 
-        //AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
+        //AppRuntimeInfo::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
 
         if (lang_.isRTL()) {
             SetProcessDefaultLayout(LAYOUT_RTL);
@@ -425,7 +431,6 @@ public:
     }
 };
 
-
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
     // Create and install global locale
@@ -448,14 +453,31 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
-    google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
+    std::string logDir;
+    constexpr std::wstring_view LOG_DIR_OPTION = L"/log_dir=";
+    for (const auto& argument : CmdLine) {
+        const std::wstring_view argumentView(argument.GetString(), argument.GetLength());
+        if (argumentView.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0) {
+            logDir = IuCoreUtils::WstringToSystemLocale(std::wstring(argumentView.substr(LOG_DIR_OPTION.size())));
+            FLAGS_log_dir = logDir;
+            FLAGS_logtostderr = false;
+            break;
+        }
+    }
+    std::string argv = WCstringToUtf8(WinUtils::GetAppFileName());
 
+    google::InitGoogleLogging(argv.c_str());
+    google::SetLogDestination(google::GLOG_WARNING, "");
+    google::SetLogDestination(google::GLOG_ERROR, "");
+    google::SetLogDestination(google::GLOG_FATAL, "");
+
+    LOG(INFO) << "Application started";
     // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
-    ::DefWindowProc( NULL, 0, 0, 0L );
+    ::DefWindowProc( nullptr, 0, 0, 0L );
 
     AtlInitCommonControls( ICC_BAR_CLASSES | ICC_USEREX_CLASSES  );    // add flags to support other controls
 
-    HRESULT hRes = _Module.Init( NULL, hInstance );
+    HRESULT hRes = _Module.Init( nullptr, hInstance );
     int nRet;
     ATLASSERT( SUCCEEDED( hRes ) );
     {

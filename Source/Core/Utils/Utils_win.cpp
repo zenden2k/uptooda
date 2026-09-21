@@ -61,6 +61,10 @@ std::string AnsiToUtf8(const std::string &str, int codepage)
     return wstostr(strtows(str, codepage), CP_UTF8);
 }
 
+std::string WstringToSystemLocale(const std::wstring &str) {
+    return wstostr(str, CP_ACP);
+}
+
 std::string WstringToUtf8(const std::wstring &str)
 {
     return wstostr(str, CP_UTF8);

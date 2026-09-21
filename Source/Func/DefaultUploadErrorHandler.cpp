@@ -89,7 +89,7 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         IProgramWindow* appWindow = ServiceLocator::instance()->programWindow();
         HWND hwndParent = appWindow ? appWindow->getNativeHandle() : GetActiveWindow();
 
-        IMyFileDialog::FileFilterArray filters = {
+        const IMyFileDialog::FileFilterArray filters = {
             { TR("HTML files"), CString(_T("*.html;*.htm")) },
             { TR("Text files"), CString(_T("*.txt")) },
             { TR("JSON files"), CString(_T("*.json")) },
@@ -98,7 +98,7 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         CString fileName;
         fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
 
-        CTextViewDlg textViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
+        CTextViewDlg textViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server response")), CString(_T("Server response:")),
             _T("Save to file?"));
 
         textViewDlg.setFileDialogOptions(filters, fileName);

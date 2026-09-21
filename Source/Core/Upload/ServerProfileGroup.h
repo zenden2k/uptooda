@@ -8,7 +8,6 @@
 class ServerProfileGroup {
 public:
     ServerProfileGroup();
-    explicit ServerProfileGroup(bool canFirstUseDefaultSettings);
     ServerProfileGroup(const ServerProfile& profile);
     void addItem(const ServerProfile& profile);
 
@@ -24,6 +23,5 @@ public:
     }*/
 private:
     std::vector<ServerProfile> items_;
-    bool canFirstUseDefaultSettings_;
 };
 #endif

@@ -23,7 +23,7 @@ limitations under the License.
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include <winsock2.h>
+#include <WinSock2.h>
 #include <iphlpapi.h>
 #define SECURITY_WIN32
 #include <security.h>
@@ -49,15 +49,16 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
-    const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
+    const CString addFileProtocolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
 
-    SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
+    SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProtocolLabelText);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON), dpi);
-    SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
-    presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
+    presetButton_ = GetDlgItem(IDC_PRESETSBUTTON);
+    presetButton_.SetIcon(presetButtonIcon_);
+
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     LoadComputerAddresses();
     GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
@@ -170,14 +171,14 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 
     PSHARE_INFO_502 BufPtr,p;
     NET_API_STATUS res;
-    LPTSTR lpszServer = NULL;
     DWORD er=0,tr=0,resume=0;
     sharedFolders_.clear();
 
     //
     do // begin do
     {
-        res = NetShareEnum ((LPTSTR)lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
+        LPTSTR lpszServer = nullptr;
+        res = NetShareEnum (lpszServer, 502, (LPBYTE *) &BufPtr, MAX_PREFERRED_LENGTH, &er, &tr, &resume);
         //
         // If the call succeeds,
         //
@@ -207,7 +208,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
             NetApiBufferFree(BufPtr);
         }
         else
-            printf("Error: %ld\n",(int)res);
+            printf("Error: %ld\n",static_cast<long>(res));
     }
     // Continue to call NetShareEnum while
     // there are more entries.
@@ -218,7 +219,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
 }
 
 LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    if ( GetFocus() == hWndCtl ) {
+    if (GetFocus() == hWndCtl) {
         downloadUrlEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT).IsEmpty();
         GenerateExampleUrl();
     }
@@ -400,9 +401,9 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     popupMenu.CreatePopupMenu();
     int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
 
-    for( size_t i =0; i < sharedFolders_.size(); i++ ) {
+    for(const auto & sharedFolder : sharedFolders_) {
         // Adding Unicode Left-To-Right marks to text to be rendered correctly if RTL language is choosen
-        CString itemTitle = L"\u200E" + sharedFolders_[i];
+        CString itemTitle = L"\u200E" + sharedFolder;
         if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");
@@ -411,8 +412,8 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
 
     }
     id =  IDC_PRESETMENU_FIRST_ID;
-    for (size_t i = 0; i < addresses_.size(); i++) {
-        CString itemTitle = L"\u200E" +  addresses_[i];
+    for (const auto & address : addresses_) {
+        CString itemTitle = L"\u200E" +  address;
         if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");

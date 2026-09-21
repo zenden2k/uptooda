@@ -20,69 +20,71 @@
 
 #include "HtmlElementPrivate_win.h"
 #include "Func/WinUtils.h"
+
 namespace ScriptAPI {
-    CComQIPtr<IHTMLElement> AccessibleToHTMLElement(IAccessible* pAccessible)
-    {
-        ATLASSERT(pAccessible != NULL);
 
-        // Query for IServiceProvider interface.
-        CComQIPtr<IServiceProvider> spServProvider = pAccessible;
-        if (spServProvider != NULL)
-        {
-            // Ask the service for a IHTMLElement object.
-            CComQIPtr<IHTMLElement> spHtmlElement;
-            /*HRESULT hRes = */ spServProvider->QueryService(IID_IHTMLElement, IID_IHTMLElement,
-                (void**)&spHtmlElement);
+CComQIPtr<IHTMLElement> AccessibleToHTMLElement(IAccessible* pAccessible) {
+    ATLASSERT(pAccessible != nullptr);
 
-            return spHtmlElement;
-        }
+    // Query for IServiceProvider interface.
+    CComQIPtr<IServiceProvider> spServProvider = pAccessible;
+    if (spServProvider != nullptr) {
+        // Ask the service for a IHTMLElement object.
+        CComQIPtr<IHTMLElement> spHtmlElement;
+        /*HRESULT hRes = */
+        spServProvider->QueryService(IID_IHTMLElement, IID_IHTMLElement,
+                                     (void**)&spHtmlElement);
 
-        return CComQIPtr<IHTMLElement>();
+        return spHtmlElement;
     }
 
+    return {};
+}
+
 void HtmlElementPrivate::setValue(const std::string& value) {
-    CComQIPtr<IHTMLInputElement>  input = disp_ ? CComQIPtr<IHTMLInputElement> (disp_) : CComQIPtr<IHTMLInputElement> (elem_);
-    if ( !input ) {
+    CComQIPtr<IHTMLInputElement> input = disp_
+                                             ? CComQIPtr<IHTMLInputElement>(disp_)
+                                             : CComQIPtr<IHTMLInputElement>(elem_);
+    if (!input) {
         LOG(WARNING) << "setValue: element is not an input.";
         return;
     }
 
-
-        input->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str()));
+    input->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str()));
 }
 
-std::string HtmlElementPrivate::getValue()
-{
-    CComQIPtr<IHTMLInputElement>  input = disp_ ? CComQIPtr<IHTMLInputElement> (disp_) : CComQIPtr<IHTMLInputElement> (elem_);
-    if ( !input ) {
+std::string HtmlElementPrivate::getValue() {
+    CComQIPtr<IHTMLInputElement> input = disp_
+                                             ? CComQIPtr<IHTMLInputElement>(disp_)
+                                             : CComQIPtr<IHTMLInputElement>(elem_);
+    if (!input) {
         LOG(WARNING) << "getValue: element is not an input.";
-        return std::string();
+        return {};
     }
 
     CComBSTR res;
-    if ( SUCCEEDED( input->get_value(&res) )  && res  ) {
-        return IuCoreUtils::WstringToUtf8((OLECHAR*)res);
+    if (SUCCEEDED(input->get_value(&res)) && res) {
+        return IuCoreUtils::WstringToUtf8(static_cast<OLECHAR*>(res));
     }
-    return std::string();
+    return {};
 }
 
-CComQIPtr<IAccessible> HTMLElementToAccessible(IHTMLElement* pHtmlElement)
-{
-    ATLASSERT(pHtmlElement != NULL);
+CComQIPtr<IAccessible> HTMLElementToAccessible(IHTMLElement* pHtmlElement) {
+    ATLASSERT(pHtmlElement != nullptr);
 
     // Query for IServiceProvider interface.
     CComQIPtr<IServiceProvider> spServProvider = pHtmlElement;
-    if (spServProvider != NULL)
-    {
+    if (spServProvider != nullptr) {
         // Ask the service for a IAccessible object.
         CComQIPtr<IAccessible> spAccessible;
-        /*HRESULT hRes = */spServProvider->QueryService(IID_IAccessible, IID_IAccessible,
-            (void**)&spAccessible);
+        /*HRESULT hRes = */
+        spServProvider->QueryService(IID_IAccessible, IID_IAccessible,
+                                     (void**)&spAccessible);
 
         return spAccessible;
     }
 
-    return CComQIPtr<IAccessible>();
+    return {};
 }
 
 }

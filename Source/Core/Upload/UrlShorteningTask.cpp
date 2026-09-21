@@ -54,8 +54,7 @@ void UrlShorteningTask::setParentUrlType(ParentUrlType type)
     parentUrlType_ = type;
 }
 
-UrlShorteningTask::ParentUrlType UrlShorteningTask::parentUrlType()
-{
+UrlShorteningTask::ParentUrlType UrlShorteningTask::parentUrlType() const {
     return parentUrlType_;
 }
 

@@ -10,7 +10,7 @@ std::string AbstractParameter::getName() const
     return name_;
 }
 
-void AbstractParameter::setTitle(const std::string title) {
+void AbstractParameter::setTitle(const std::string& title) {
     title_ = title;
 }
 

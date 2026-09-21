@@ -23,36 +23,29 @@ CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks] = {
 std::mutex AvailableCallbackSlotsMutex;
 
 struct Dummy {
-
-    ~Dummy()
-    {
-        for (auto it : AvailableCallbackSlots)
-        {
+    ~Dummy() {
+        for (auto it : AvailableCallbackSlots) {
             delete it;
         }
     }
 };
+
 Dummy dummyObject;
 
-CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback& method)
-{
+CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback& method) {
     std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
     constexpr int imax = std::size(AvailableCallbackSlots);
-    for( m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex )
-    {
-        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve( method);
-        if (m_cbCallback != NULL)
-        {
+    for (m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex) {
+        m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve(method);
+        if (m_cbCallback != nullptr) {
             return;
         }
     }
     LOG(ERROR) << "Cannot create member function callback";
 }
 
-CBTHookMemberFunctionCallback::~CBTHookMemberFunctionCallback()
-{
-    if( IsValid() )
-    {
+CBTHookMemberFunctionCallback::~CBTHookMemberFunctionCallback() {
+    if (IsValid()) {
         std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
         AvailableCallbackSlots[m_nAllocIndex]->Free();
     }

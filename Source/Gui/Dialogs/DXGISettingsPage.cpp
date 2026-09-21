@@ -2,8 +2,6 @@
 
 #include "Core/CommonDefs.h"
 #include "WizardDlg.h"
-#include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "ScreenCapture/ScreenRecorder/DXGIOptionsManager.h"
 #include "Gui/Components/MyFileDialog.h"
@@ -125,7 +123,6 @@ LRESULT CDXGISettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
         }
     }
-
 
     videoQualityTrackBar_.SetPos(recordingSettings.VideoQuality);
     updateVideoQualityLabel();

@@ -101,7 +101,7 @@ function _SendOauthRequest(method, url, params, token, tokenSecret) {
         local tableLen = params.len();
 
         for ( local i=0; i< tableLen; i++ ) {
-            nm.addQueryParam( params[i].a, params[i].b);
+            nm.addPostField( params[i].a, params[i].b);
         }
         nm.doPost("");
     }
@@ -194,12 +194,12 @@ function UploadFile(filePath, options) {
         params.append({a="content_type", b="3"});
     }*/
     _SignRequest("POST", uploadUrl, params, oauth_token, oauth_token_secret);
-    nm.addQueryParamFile("photo", filePath, task.getDisplayName(), GetFileMimeType(filePath));
+    nm.addPostFieldFile("photo", filePath, task.getDisplayName(), GetFileMimeType(filePath));
 
     local tableLen = params.len();
 
     for ( local i=0; i< tableLen; i++ ) {
-        nm.addQueryParam( params[i].a, params[i].b);
+        nm.addPostField( params[i].a, params[i].b);
     }
 
     nm.doUploadMultipartData();

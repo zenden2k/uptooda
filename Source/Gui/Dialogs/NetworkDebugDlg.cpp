@@ -13,9 +13,7 @@
 #include "Core/Utils/IOException.h"
 
 CNetworkDebugDlg::CNetworkDebugDlg()
-    : model_()
-    , listView_(&model_)
-{
+    : listView_(&model_) {
     contextMenuItemId = -1;
 }
 

@@ -20,7 +20,7 @@ public:
     void abort();
     bool isRunning() const;
     void setFrameCount(int frameCount);
-    using FrameGrabbedCallback = std::function<void(const std::string&, int64_t, std::shared_ptr<AbstractImage>)>;
+    using FrameGrabbedCallback = std::function<void(const std::string&, int64_t, const std::shared_ptr<AbstractImage>&)>;
     using FinishCallback = std::function<void(bool)>;
     void setOnFrameGrabbed(FrameGrabbedCallback cb);
     void setOnFinished(FinishCallback cb);
@@ -40,4 +40,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 
-#endif // VIDEOGRABBER_H
+#endif // IU_CORE_VIDEO_VIDEOGRABBER_H

@@ -42,7 +42,7 @@ public:
     bool save(AbstractParameter* parameter, const CComVariant& value) override {
         auto par = dynamic_cast<BooleanParameter*>(parameter);
         if (!par) {
-            return nullptr;
+            return false;
         }
         par->setValue(value.boolVal);
         return true;
@@ -106,7 +106,7 @@ ParameterListAdapter::ParameterListAdapter(ParameterList* parameterList, CProper
 
 void ParameterListAdapter::updateControl(ServerSettingsStruct* serverSettings) {
     std::sort(parameterList_->begin(), parameterList_->end(), [](auto& l, auto& r) {
-        int res = lstrcmpi(IuCoreUtils::Utf8ToWstring(l->getName()).c_str(), IuCoreUtils::Utf8ToWstring(r->getName()).c_str());
+        int res = lstrcmpi(U2WC(l->getName()), U2WC(r->getName()));
         return res < 0;
     });
     for (const auto& parameter : *parameterList_) {
@@ -175,7 +175,6 @@ void ParameterListAdapter::browseFileDialog(HPROPERTY prop) {
             return;
         }
         vart.bstrVal = dlg->getFile().AllocSysString();
-        
     } else {
         CString initialDir = U2W(fileNameParameter->getValueAsString());
         CNewStyleFolderDialog dlg(control_->m_hWnd, initialDir, TR("Choose folder"), true);

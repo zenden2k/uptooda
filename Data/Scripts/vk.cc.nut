@@ -3,9 +3,9 @@ apiVersion <- "5.131";
 serviceKey <- "d909ba70d909ba70d909ba70ccd943bde3dd909d909ba70825007ca7ecade18db9543b1";
 
 function ShortenUrl(url, options) {
-    nm.addQueryParam("url", url);
-    nm.addQueryParam("private", "0");
-    nm.setUrl("https://api.vk.com/method/utils.getShortLink?v=" + apiVersion + "&access_token=" + serviceKey);
+    nm.addPostField("url", url);
+    nm.addPostField("private", "0");
+    nm.setUrl("https://api.vk.ru/method/utils.getShortLink?v=" + apiVersion + "&access_token=" + serviceKey);
     nm.doPost("");
 
     if (nm.responseCode() == 200) {

@@ -11,7 +11,7 @@ function UploadFile(pathToFile, options) {
     nm.doGet(BASE_URL);
     // Step 1: Upload the file
     nm.setUrl(BASE_URL + "/plugins/uploadify/uploadify.php?u_id=0");
-    nm.addQueryParamFile("Filedata", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostFieldFile("Filedata", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {

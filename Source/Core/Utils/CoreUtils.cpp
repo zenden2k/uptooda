@@ -213,43 +213,46 @@ std::string ExtractFileName(const std::string& fileName) {
     return fileName.substr(i + 1);
 }
 
-std::string ExtractFileExt(const std::string& fileName)
-{
-    int nLen = fileName.length();
+std::string ExtractFileExt(const std::string& fileName) {
+    if (fileName.empty()) {
+        return {};
+    }
 
-    std::string result;
-    for( int i=nLen-1; i>=0; i-- )
-    {
-        if(fileName[i] == '.')
-        {
-            result = fileName.substr(i + 1);
+    size_t len = fileName.length();
+
+    for (size_t i = len; i > 0; i--) {
+        char ch = fileName[i - 1];
+        if (ch == '.') {
+            return fileName.substr(i);
+        }
+
+        if (ch == '\\' || ch == '/') {
             break;
         }
-        else if(fileName[i] == '\\' || fileName[i] == '/') break;
     }
-    return result;
+    return {};
 }
 
-std::string ExtractFilePath(const std::string& fileName)
-{
-    int i, len = fileName.length();
-    for(i = len-1; i >= 0; i--)
-    {
-        if(fileName[i] == '\\' || fileName[i]=='/')
-        {
-            return fileName.substr(0, i+1);
-        }
-
+std::string ExtractFilePath(const std::string& fileName) {
+    if (fileName.empty()) {
+        return {};
     }
+
+    size_t pos = fileName.find_last_of("/\\");
+
+    if (pos != std::string::npos) {
+        return fileName.substr(0, pos + 1);
+    }
+
     return {};
 }
 
 std::string ExtractFileNameNoExt(const std::string& fileName)
 {
     std::string result = ExtractFileName(fileName);
-    size_t Qpos = result.find_last_of('.');
-    if (Qpos != std::string::npos) {
-        result = result.substr(0, Qpos);
+    size_t pos = result.find_last_of('.');
+    if (pos != std::string::npos) {
+        result = result.substr(0, pos);
     }
     return result;
 }
@@ -268,16 +271,6 @@ std::string IncrementFileName(const std::string& originalFileName, int counter) 
         name += "." + ext;
     }
     return name;
-}
-
-std::string StrReplace(std::string text, std::string s, std::string d)
-{
-    for(size_t index=0; index=text.find(s, index), index!=std::string::npos;)
-    {
-        text.replace(index, s.length(), d);
-        index += d.length();
-    }
-    return text;
 }
 
 bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
@@ -690,24 +683,27 @@ std::string GetFileMimeTypeByContents(const std::string& fileName) {
 
 std::string GenerateRandomFilename(const std::string& path, int suffixLen)
 {
+    if (path.empty()) {
+        return IuStringUtils::RandomString(suffixLen);
+    }
     if (!suffixLen) {
         suffixLen = 8;
     }
-    int i, len = path.length();
-    if (!len) {
-        return IuStringUtils::RandomString(suffixLen);
-    }
-    for (i = len - 1; i >= 0; i--) {
-        if (path[i] == '\\' || path[i] == '/') {
+    size_t i, len = path.length();
+
+    for (i = len; i > 0; i--) {
+        char c = path[i - 1];
+        if (c == '\\' || c == '/') {
             break;
         }
     }
-    std::string filename = path.substr(i + 1);
+
+    std::string filename = path.substr(i);
     size_t dotPos = filename.find_last_of('.');
     if (dotPos != std::string::npos) {
-        return path.substr(0, i + 1) + filename.substr(0, dotPos) + "_" + IuStringUtils::RandomString(suffixLen) + filename.substr(dotPos);
+        return path.substr(0, i) + filename.substr(0, dotPos) + "_" + IuStringUtils::RandomString(suffixLen) + filename.substr(dotPos);
     }
-    return path.substr(0, i + 1) + filename + "_" + IuStringUtils::RandomString(suffixLen);
+    return path.substr(0, i) + filename + "_" + IuStringUtils::RandomString(suffixLen);
 }
 
 } // end of namespace IuCoreUtils

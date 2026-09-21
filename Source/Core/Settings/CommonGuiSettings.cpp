@@ -20,16 +20,18 @@ limitations under the License.
 
 #include "CommonGuiSettings.h"
 
+#include "Core/ServiceLocator.h"
+
 #ifndef IU_QT
 #include "Func/WinUtils.h"
 #endif
 
 CommonGuiSettings::CommonGuiSettings()
-    : BasicSettings()
-    , imageServer(false) {
+    : DefaultImageUploadParams(false) {
     // Default values of settings
     MaxThreads = 3;
     DeveloperMode = false;
+
 #ifndef IU_QT
     HistorySettings.EnableDownloading = true;
     HistorySettings.HistoryConverted = false;
@@ -83,8 +85,6 @@ bool CommonGuiSettings::SaveServerProfiles(SimpleXmlNode root)
         SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
 
         std::string profileName = SettingsStringToUtf8(it->first);
-
-        //ServerProfile sp = ;
         SettingsManager mgr;
         it->second.bind(mgr.root());
         mgr["@ServerProfileId"].bind(profileName);
@@ -107,7 +107,6 @@ bool CommonGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfile
         group.getItems().clear();
         for (size_t i = 0; i < servers.size(); i++) {
             SimpleXmlNode serverProfileNode = servers[i];
-            /*std::string profileName = serverProfileNode.Attribute("ServerProfileId");*/
             ServerProfile sp;
             SettingsManager mgr;
             sp.bind(mgr.root());
@@ -188,6 +187,8 @@ void CommonGuiSettings::BindToManager() {
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);
+    DefaultImageUploadParams.bind(upload["DefaultImageUploadParams"]);
+    ServerListSettings.bind(upload["ServerList"]);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);
@@ -197,6 +198,7 @@ void CommonGuiSettings::BindToManager() {
     SettingsNode& screenRecording = mgr_["ScreenRecording"];
     screenRecording.nm_bind(ScreenRecordingSettings, Backend);
     screenRecording.nm_bind(ScreenRecordingSettings, OutDirectory);
+    screenRecording.nm_bind(ScreenRecordingSettings, FileNameTemplate);
     screenRecording.nm_bind(ScreenRecordingSettings, FrameRate);
     screenRecording.nm_bind(ScreenRecordingSettings, CaptureCursor);
     screenRecording.nm_bind(ScreenRecordingSettings, Delay);
@@ -248,4 +250,58 @@ void DXGISettingsStruct::bind(SettingsNode& node) {
     node.n_bind(AudioSources);
     node.n_bind(AudioCodecId);
     node.n_bind(AudioBitrate);
+}
+
+ThumbCreatingParams ImageUploadParams::getThumb() const {
+    auto settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+    if (UseDefaultThumbSettings) {
+        return settings->DefaultImageUploadParams.Thumb;
+    }
+    return Thumb;
+}
+
+void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp) {
+    Thumb = tcp;
+}
+
+bool ServerListSettingsStruct::isServerFavorite(const std::string& server) {
+    return FavoriteServers.find(server) != FavoriteServers.end();
+}
+
+bool ServerListSettingsStruct::isServerBlacklisted(const std::string& server) {
+    return BlacklistedServers.find(server) != BlacklistedServers.end();
+}
+
+void ServerListSettingsStruct::addServerToFavorites(const std::string& serverId) {
+    removeServerFromBlacklist(serverId);
+    FavoriteServers.insert(serverId);
+}
+
+void ServerListSettingsStruct::removeServerFromFavorites(const std::string& serverId) {
+    auto it = FavoriteServers.find(serverId);
+    if (it != FavoriteServers.end()) {
+        FavoriteServers.erase(it);
+    }
+}
+
+void ServerListSettingsStruct::addServerToBlacklist(const std::string& serverId) {
+    removeServerFromFavorites(serverId);
+    BlacklistedServers.insert(serverId);
+}
+
+void ServerListSettingsStruct::removeServerFromBlacklist(const std::string& serverId) {
+    auto it = BlacklistedServers.find(serverId);
+    if (it != BlacklistedServers.end()) {
+        BlacklistedServers.erase(it);
+    }
+}
+
+void ServerListSettingsStruct::bind(SettingsNode& node) {
+    node.n_bind(FavoriteServers);
+    node.n_bind(BlacklistedServers);
+    node.n_bind(ShowFavoritesOnly);
+    node.n_bind(HideBlackListed);
+#ifndef IU_QT
+    node.n_bind(ViewMode);
+#endif
 }

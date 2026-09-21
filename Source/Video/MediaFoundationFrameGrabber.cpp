@@ -4,6 +4,15 @@
 
 #include "MediaFoundationFrameGrabber.h"
 
+// Direct2D
+#include <D2d1.h>
+#include <D2d1helper.h>
+
+// Misc
+#include <strsafe.h>
+#include <assert.h>
+#include <propvarutil.h>
+
 #include <comdef.h>
 
 #include "Core/Utils/CoreUtils.h"
@@ -13,8 +22,8 @@
 
 RECT CorrectAspectRatio(const RECT& src, const MFRatio& srcPAR);
 
-const LONGLONG SEEK_TOLERANCE = 10000000;
-const LONGLONG MAX_FRAMES_TO_SKIP = 10;
+constexpr LONGLONG SEEK_TOLERANCE = 10000000;
+constexpr LONGLONG MAX_FRAMES_TO_SKIP = 10;
 
 class MFVideoFrame : public AbstractVideoFrame {
 public:
@@ -58,11 +67,6 @@ MediaFoundationFrameGrabber::MediaFoundationFrameGrabber()
         
     //}
     ZeroMemory(&format_, sizeof(format_));
-}
-
-MediaFoundationFrameGrabber::~MediaFoundationFrameGrabber()
-{
-
 }
 
 bool MediaFoundationFrameGrabber::open(const std::string& fileName)

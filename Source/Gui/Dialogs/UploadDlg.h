@@ -41,7 +41,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
 {
     public:
         CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager);
-        ~CUploadDlg();
+
         enum { IDD = IDD_UPLOADDLG };
         enum {
             IDC_UPLOADPROCESSTAB = 14000, IDC_UPLOADRESULTSTAB, ID_RETRYUPLOAD, ID_VIEWIMAGE, ID_SHOWLOGFORTHISFILE,
@@ -77,7 +77,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         bool startUpload();
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
-        int ThreadTerminated(void);
+        int ThreadTerminated();
         std::vector<Uptooda::Core::OutputGenerator::UploadObject> urlList_;
         bool OnShow() override;
         bool OnNext() override;

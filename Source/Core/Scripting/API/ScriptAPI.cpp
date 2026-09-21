@@ -362,7 +362,7 @@ std::string GetCurrentTopLevelFileName() {
     if (it != currentTopLevelFileName.end()) {
         return it->second;
     }
-    return std::string();
+    return {};
 }
 void ClearVmData(Sqrat::SqratVM& vm)
 {

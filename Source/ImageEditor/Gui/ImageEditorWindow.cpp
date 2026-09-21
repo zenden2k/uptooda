@@ -18,31 +18,40 @@
 #include "Core/AbstractServerIconCache.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 
 namespace ImageEditor {
 
-ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider, bool onlySelectRegion)
+const auto UPLOAD_BUTTON_MAX_LENGTH = 35;
+
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
+ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider,
+    UploadEngineManager* uploadEngineManager, bool onlySelectRegion)
     : horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion)
-    , verticalToolbar_(Toolbar::orVertical)
-{
+    , verticalToolbar_(Toolbar::orVertical),
+    uploadEngineManager_(uploadEngineManager) {
     currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
     onlySelectRegion_ = onlySelectRegion;
 
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(settings->quickScreenshotServer.getByIndex(0).uploadEngineData());
+
     init();
 }
 
-ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical)
-{
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
+ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):
+    horizontalToolbar_(Toolbar::orHorizontal), verticalToolbar_(Toolbar::orVertical)
+    , uploadEngineManager_(nullptr) {
     currentDoc_ = std::make_unique<ImageEditor::Document>(imageFileName);
 
     sourceFileName_ = imageFileName;
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
-    setSuggestedFileName(WinUtils::myExtractFileName(sourceFileName_));
     init();
 }
 
@@ -292,25 +301,9 @@ void ImageEditorWindow::showAddToWizardButton(bool show)
     showAddToWizardButton_ = show;
 }
 
-void ImageEditorWindow::setSuggestedFileName(CString fileName)
+void ImageEditorWindow::setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData)
 {
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-
-    CString fileExt = WinUtils::GetFileExt(suggestedFileName_);
-    fileExt.MakeLower();
-
-    //ImageUtils::SaveImageFormat savingFormat = static_cast<ImageUtils::SaveImageFormat>();
-    TCHAR* imgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp") };
-    int format = settings->ScreenshotSettings.Format;
-    if (format >= 0 && format < std::size(imgTypes)) {
-        fileExt = imgTypes[format];
-    }
-
-    if (fileExt.IsEmpty()) {
-        fileExt = _T("png");
-    }
-
-    suggestedFileName_ = WinUtils::GetOnlyFileName(fileName) + _T(".") + fileExt;
+    screenshotData_ = screenshotData;
 }
 
 std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
@@ -326,14 +319,13 @@ CRect ImageEditorWindow::getSelectedRect() const {
     return selectedRect_;
 }
 
-void ImageEditorWindow::setServerDisplayName(const CString & serverName)
-{
-    serverDisplayName_ = serverName;
-}
-
 void ImageEditorWindow::setAskBeforeClose(bool ask)
 {
     askBeforeClose_ = ask;
+}
+
+CString ImageEditorWindow::outFileName() const {
+    return outFileName_;
 }
 
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode, bool forceShowParent) {
@@ -388,7 +380,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
 
     CRect workArea;
-    MONITORINFO mi;
+    MONITORINFO mi{};
     mi.cbSize = sizeof(mi);
     ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
     workArea = mi.rcWork;
@@ -447,6 +439,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
         { FVIRTKEY | FCONTROL, 'S', ID_SAVE },
+        { FVIRTKEY | FCONTROL | FSHIFT, 'S', ID_SAVE_ALT },
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
         { FVIRTKEY | FCONTROL | FSHIFT, 'C', ID_COPYBITMAPTOCLIBOARD_ALT },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
@@ -498,6 +491,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setInvertSelection(configurationProvider_->invertSelection());
         canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
         canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(configurationProvider_->getArrowMode()));
+        canvas_->setDrawBorder(configurationProvider_->getDrawBorder());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
@@ -524,16 +518,26 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     using namespace std::placeholders;
 
     if (!onlySelectRegion_) {
-        canvas_->onDrawingToolChanged.connect(std::bind(&ImageEditorWindow::OnDrawingToolChanged, this, _1));
-        canvas_->onForegroundColorChanged.connect(std::bind(&ImageEditorWindow::OnForegroundColorChanged, this, _1));
-        canvas_->onBackgroundColorChanged.connect(std::bind(&ImageEditorWindow::OnBackgroundColorChanged, this, _1));
-        canvas_->onFontChanged.connect(std::bind(&ImageEditorWindow::onFontChanged, this, _1));
-        canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
-        canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
-        canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
+        canvas_->onDrawingToolChanged.connect([this](auto && PH1) { OnDrawingToolChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onForegroundColorChanged.connect([this](auto && PH1) { OnForegroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onBackgroundColorChanged.connect([this](auto && PH1) { OnBackgroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onFontChanged.connect([this](auto && PH1) { onFontChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextEditStarted.connect([this](auto && PH1) { OnTextEditStarted(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextEditFinished.connect([this](auto && PH1) { OnTextEditFinished(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onSelectionChanged.connect([this] { OnSelectionChanged(); });
     }
-    canvas_->onCropChanged.connect(std::bind(&ImageEditorWindow::OnCropChanged, this, _1, _2, _3, _4));
-    canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
+    canvas_->onCropChanged.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
+        OnCropChanged(
+            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
+        );
+    });
+    canvas_->onCropFinished.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
+        OnCropFinished(
+            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
+        );
+    });
     canvas_->onDocumentModified.connect([this] { updateWindowTitle();  });
 
     if (initialDrawingTool_ != DrawingToolType::dtCrop) {
@@ -548,7 +552,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         updateToolbarDrawingTool(initialDrawingTool_);
     }
     if (displayMode_ == wdmWindowed) {
-        MONITORINFO mi;
+        MONITORINFO mi{};
         mi.cbSize = sizeof(mi);
         ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
         workArea = mi.rcWork;
@@ -612,8 +616,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 //        delete resultingBitmap_;
         //resultingBitmap_ = 0;
     }
-
-
 
     return dialogResult_;
 }
@@ -727,7 +729,7 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
     if ( !horizontalToolbar_.m_hWnd ) {
         return 0;
     }
-    MINMAXINFO* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
+    auto* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
     RECT horRc, vertRc;
     horizontalToolbar_.GetClientRect(&horRc);
     verticalToolbar_.GetClientRect(&vertRc);
@@ -744,6 +746,10 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 }
 
 LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    if (!wasOpenedAfterScreenshot() && canvas_->applyCurrentOperation()) {
+        updateApplyButtons();
+        return 0;
+    }
     if (showUploadButton_ || showAddToWizardButton_ ) {
         if (!sourceFileName_.IsEmpty()) {
             outFileName_ = sourceFileName_;
@@ -761,20 +767,31 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     if (onlySelectRegion_) {
         return 0;
     }
-    if (wParam == VK_OEM_6) { // ']'
-         canvas_->beginPenSizeChanging();
-         canvas_->setPenSize(canvas_->getPenSize()+1);
-         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-         updatePixelLabels();
-         m_view.SendMessage(WM_SETCURSOR, (LPARAM)m_view.m_hWnd, 0);
-     }
-     else if (wParam == VK_OEM_4 ) { //'['
-         canvas_->beginPenSizeChanging();
-         canvas_->setPenSize(canvas_->getPenSize()-1);
-         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-         updatePixelLabels();
-         m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
-     }
+
+    bool noMod = WinUtils::NoModifiersPressed();
+
+    if (!noMod) {
+        return 0;
+    }
+
+    switch (wParam) {
+    case VK_OEM_6:
+        canvas_->beginPenSizeChanging();
+        canvas_->setPenSize(canvas_->getPenSize()+1);
+        horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+        updatePixelLabels();
+        m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
+        break;
+    case VK_OEM_4:
+        canvas_->beginPenSizeChanging();
+        canvas_->setPenSize(canvas_->getPenSize()-1);
+        horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+        updatePixelLabels();
+        m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
+        break;
+    default:;
+    }
+
     return 0;
 }
 
@@ -837,7 +854,7 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
@@ -925,7 +942,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
                 mi.wID = ID_SEARCHBYIMAGE_START + i;
                 mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                 mi.cch = itemText.GetLength();
-                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name, dpi);
+                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name, dpi, true);
 
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;
@@ -942,7 +959,29 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     } else if (item->command == ID_MOREACTIONS) {
         showMoreActionsDropdownMenu(item);
+    } else if (item->command == ID_UPLOAD) {
+        auto serviceLocator = ServiceLocator::instance();
+        auto* settings = serviceLocator->settings<WtlGuiSettings>();
+        CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
+        serverSelectorControl.setServersMask(CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer);
+        serverSelectorControl.setTitle(TR("Server for quick screenshot uploading"));
+        serverSelectorControl.setServerProfile(settings->quickScreenshotServer.getByIndex(0));
+        RECT rc = item->rect;
+        horizontalToolbar_.ClientToScreen(&rc);
+        serverSelectorControl.showPopup(m_hWnd, rc, true);
+        settings->quickScreenshotServer.getByIndex(0) = serverSelectorControl.serverProfile();
+        serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(serverSelectorControl.serverProfile().uploadEngineData());
+        item->title = U2WC(getUploadButtonText());
+        item->hint = WinUtils::TrimStringEnd(item->title, UPLOAD_BUTTON_MAX_LENGTH);
+        horizontalToolbar_.update();
     }
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
+    
     return 0;
 }
 
@@ -980,22 +1019,25 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONOK), ID_CONTINUE, buttonHint));
     } else {
         if (showUploadButton_) {
-            CString fullUploadButtonText, uploadButtonText;
-            if (serverDisplayName_.IsEmpty()) {
-                fullUploadButtonText = uploadButtonText = TR("Upload to Web");
-            } else {
-                fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverDisplayName_));
-                uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
-            }
-            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
+            CString fullUploadButtonText = U2WC(getUploadButtonText());
+            CString uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, UPLOAD_BUTTON_MAX_LENGTH);
+            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itComboButton));
         }
-        //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
-        horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")), sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
 
-        
         bool doClose = checkCloseWindowAfterAction();
+
         const std::string secondLine = doClose ? _("Pressing this button while holding Shift will not close the window.") : _("Pressing this button while holding Shift will close the window.");
-        std::string copyFormatStr = doClose ? _("Copy to clipboard and close (%s)") : _("Copy to clipboard (%s)"); 
+
+        std::string saveFormatStr = doClose ? _("Save and close (%s)") : _("Save (%s)");
+        if (canCloseAfterAction()) {
+            saveFormatStr += "\r\n\r\n";
+            saveFormatStr += secondLine;
+        }
+
+        const std::string saveButtonHint = str(IuStringUtils::FormatNoExcept(saveFormatStr) % "Ctrl+S");
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, U2W(saveButtonHint), Toolbar::itComboButton));
+
+        std::string copyFormatStr = doClose ? _("Copy to clipboard and close (%s)") : _("Copy to clipboard (%s)");
         if (canCloseAfterAction()) {
             copyFormatStr += "\r\n\r\n";
             copyFormatStr += secondLine;
@@ -1031,7 +1073,6 @@ void ImageEditorWindow::createToolbars()
 
     if ( !verticalToolbar_.Create(m_hWnd, !allowAltTab_, child, child ? GetSysColor(COLOR_APPWORKSPACE) : RGB(255, 50, 56)) ) {
         LOG(ERROR) << "Failed to create vertical toolbar";
-
     }
 
     if (!onlySelectRegion_) {
@@ -1079,6 +1120,7 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
         horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
         horizontalToolbar_.setInvertSelectionCheckbox(canvas_->getInvertSelection());
+        horizontalToolbar_.setDrawBorderCheckbox(canvas_->getDrawBorder());
     }
 }
 
@@ -1181,7 +1223,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
     if (!onlySelectRegion_) {
-        showApplyButtons();
+        updateApplyButtons();
     }
 
     OnCropChanged(x,y,w,h);
@@ -1261,10 +1303,15 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     bool showFillBackgound = currentDrawingTool_ == DrawingToolType::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
 
+    bool showDrawBorder = currentDrawingTool_ == DrawingToolType::dtFilledRectangle
+        || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle
+        || currentDrawingTool_ == DrawingToolType::dtFilledEllipse;
+
+    horizontalToolbar_.showDrawBorderCheckbox(showDrawBorder);
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 
-    showApplyButtons();
+    updateApplyButtons();
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
@@ -1291,7 +1338,7 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource
     if (!resize) {
         return bm;
     }
-    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -1313,7 +1360,7 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadMenuIcon(int resource, b
     if (!resize) {
         return bm;
     }
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -1350,7 +1397,7 @@ LRESULT ImageEditorWindow::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    canvas_->setDrawingToolType(DrawingToolType::dtText );
+    canvas_->setDrawingToolType(DrawingToolType::dtText);
     updateToolbarDrawingTool(DrawingToolType::dtText);
     return 0;
 }
@@ -1367,7 +1414,7 @@ void ImageEditorWindow::onClose() {
         int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APP_NAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if (msgBoxResult == IDYES) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
-            if(!OnClickedSave()) {
+            if(!onSave(false)) {
                 return;
             }
         }
@@ -1409,21 +1456,23 @@ LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if ( saveDocument() ) {
+    if (saveDocument()) {
         EndDialog(drShare);
     }
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnClickedSave(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    OnClickedSave();
+    bool closeFlag = wID == ID_SAVE_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    onSave(closeFlag);
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnClickedSaveAs(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    OnSaveAs();
+    bool closeFlag = wID == ID_SAVEAS_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    onSaveAs(closeFlag);
     return 0;
 }
 
@@ -1532,8 +1581,6 @@ bool ImageEditorWindow::createTooltip() {
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
     // Set up "tool" information. In this case, the "tool" is the entire parent window.
-
-
     TOOLINFO ti = {};
     CString title = TR("Select region");
     ti.cbSize   = sizeof(TOOLINFO);
@@ -1556,7 +1603,7 @@ void ImageEditorWindow::updatePixelLabels()
     horizontalToolbar_.blurRadiusLabel_.SetWindowText(IuCoreUtils::Utf8ToWstring(s).c_str());
 }
 
-bool ImageEditorWindow::OnSaveAs()
+bool ImageEditorWindow::onSaveAs(bool closeFlag)
 {
     IMyFileDialog::FileFilterArray filters = {
         { _T("PNG"), CString(_T("*.png")) },
@@ -1565,10 +1612,10 @@ bool ImageEditorWindow::OnSaveAs()
         { TR("All files"), _T("*.*") }
     };
 
-    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
-
-    dlg->setFileName(suggestedFileName_);
-    CString ext = WinUtils::GetFileExt(suggestedFileName_);
+    CString fileName = makeFileName();
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetFilePath(fileName), CString(), filters, false, false);
+    dlg->setFileName(WinUtils::DoExtractFileName(fileName));
+    CString ext = WinUtils::GetFileExt(fileName);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
 
@@ -1577,7 +1624,7 @@ bool ImageEditorWindow::OnSaveAs()
     });
 
     if (it != filters.end()) {
-        int index = it - filters.begin() + 1; // This is a one-based index, not zero-based.
+        size_t index = it - filters.begin() + 1; // This is a one-based index, not zero-based.
         dlg->setFileTypeIndex(index);
     }
     enableToolbarsIfNecessary(false);
@@ -1590,8 +1637,11 @@ bool ImageEditorWindow::OnSaveAs()
 
     if (saveDocument(ClipboardFormat::None, true)) {
         auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-        setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
-            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));
+        /*setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
+            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));*/
+        if (canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
+            EndDialog(drSave);
+        }
     }
     return true;
 }
@@ -1611,7 +1661,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setStepForegroundColor(canvas_->getStepForegroundColor());
         configurationProvider_->setStepBackgroundColor(canvas_->getStepBackgroundColor());
         configurationProvider_->setArrowMode(static_cast<int>(canvas_->getArrowMode()));
-
+        configurationProvider_->setDrawBorder(canvas_->getDrawBorder());
         configurationProvider_->saveConfiguration();
     }
 }
@@ -1622,7 +1672,7 @@ bool ImageEditorWindow::copyBitmapToClipboard(ClipboardFormat format, bool close
     }
     const bool res = saveDocument(format);
     if (res && canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
-        EndDialog(drCopiedToClipboard);
+        EndDialog(drCopyToClipboard);
     }
     return res;
 }
@@ -1654,18 +1704,31 @@ BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
     return FALSE;
 }
 
-bool ImageEditorWindow::OnClickedSave() {
+bool ImageEditorWindow::onSave(bool closeFlag) {
+
     if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
+
     if (!sourceFileName_.IsEmpty()) {
-        //CString ext = WinUtils::GetFileExt(sourceFileName_);
         outFileName_ = sourceFileName_;
-        saveDocument();
+    } else if (wasOpenedAfterScreenshot()) {
+        CString fileName = makeFileName();
+        if (WinUtils::GetFilePath(fileName).IsEmpty()) {
+            return onSaveAs(closeFlag);
+        }
+        outFileName_ = fileName;
     } else {
-        return OnSaveAs();
+        return onSaveAs(closeFlag);
     }
-    return true;
+
+    bool res = saveDocument();
+
+    if (res && canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
+        EndDialog(drSave);
+    }
+
+    return res;
 }
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1811,7 +1874,7 @@ void ImageEditorWindow::updateWindowTitle() {
         windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
     }
     else {
-        CString fileNameStr = WinUtils::TrimString(WinUtils::myExtractFileName(sourceFileName_), 60);
+        CString fileNameStr = WinUtils::TrimString(WinUtils::DoExtractFileName(sourceFileName_), 60);
         std::wstring fileNameWstring{ fileNameStr };
 
         windowTitle = str(boost::wformat(TR("Image Editor - %1% (%2%x%3%)")) % fileNameWstring % currentDoc_->getWidth() % currentDoc_->getHeight());
@@ -1828,17 +1891,17 @@ void ImageEditorWindow::updateWindowTitle() {
 
 LRESULT ImageEditorWindow::OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->applyCurrentOperation();
-    showApplyButtons();
+    updateApplyButtons();
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->cancelCurrentOperation();
-    showApplyButtons();
+    updateApplyButtons();
     return 0;
 }
 
-void ImageEditorWindow::showApplyButtons() {
+void ImageEditorWindow::updateApplyButtons() {
     horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
 }
 
@@ -1944,13 +2007,60 @@ void ImageEditorWindow::createIcons() {
     }
 }
 
-bool ImageEditorWindow::checkCloseWindowAfterAction() {
-    return displayMode_ == wdmFullscreen && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
+bool ImageEditorWindow::checkCloseWindowAfterAction() const {
+    return wasOpenedAfterScreenshot() && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
 }
 
+bool ImageEditorWindow::canCloseAfterAction() const {
+    return wasOpenedAfterScreenshot() && sourceFileName_.IsEmpty();
+}
 
-bool ImageEditorWindow::canCloseAfterAction() {
-    return displayMode_ == wdmFullscreen && sourceFileName_.IsEmpty();
+std::string ImageEditorWindow::getUploadButtonText() const {
+    if (serverDisplayName_.empty()) {
+        return _("Upload to Web");
+    } 
+
+    return str(IuStringUtils::FormatNoExcept(_("Upload to %s")) % serverDisplayName_);   
+}
+
+bool ImageEditorWindow::wasOpenedAfterScreenshot() const {
+    return displayMode_ == wdmFullscreen;
+}
+
+CString ImageEditorWindow::makeFileName() const {
+    const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const ScreenshotSettingsStruct& screenshotSettings = settings->ScreenshotSettings;
+    CString suggestingFileName;
+
+    if (sourceFileName_.IsEmpty()) {
+        const SIZE bitmapSize = canvas_->getExportBitmapSize();
+        suggestingFileName = IuCommonFunctions::MakeScreenshotFileName(screenshotData_, bitmapSize);
+    } else {
+        suggestingFileName = sourceFileName_;
+    }
+
+    CString result;
+    int dotPos = suggestingFileName.Find(_T("."));
+    if (dotPos != -1) {
+        result = suggestingFileName.Left(dotPos);
+    } else {
+        result = suggestingFileName;
+    }
+
+    CString fileExt = suggestingFileName.Mid(dotPos + 1);
+    fileExt.MakeLower();
+
+    std::wstring_view imgTypes[] = {_T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
+    int format = screenshotSettings.Format;
+    if (format >= 0 && format < std::size(imgTypes)) {
+        fileExt = imgTypes[format].data();
+    }
+
+    if (fileExt.IsEmpty()) {
+        fileExt = _T("png");
+    }
+
+    return result + +_T(".") + fileExt;
 }
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -1958,24 +2068,20 @@ LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
 
-
 LRESULT ImageEditorWindow::OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::Rotate90FlipNone);
     return 0;
 }
-
 
 LRESULT ImageEditorWindow::OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::Rotate270FlipNone);
     return 0;
 }
 
-
 LRESULT ImageEditorWindow::OnFlipVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::RotateNoneFlipY);
     return 0;
 }
-
 
 LRESULT ImageEditorWindow::OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::RotateNoneFlipX);
@@ -1990,18 +2096,21 @@ LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID
     return 0;
 }
 
-
 LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     EndDialog(drRecordScreen);
     return 0;
 }
-
 
 LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     // This ensures lastCrop is stored
     //resultingBitmap_ = canvas_->getBitmapForExport();
 
     EndDialog(drContinue);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->setDrawBorder(horizontalToolbar_.isDrawBorderChecked());
     return 0;
 }
 

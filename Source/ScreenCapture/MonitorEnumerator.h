@@ -9,7 +9,7 @@
 class MonitorEnumerator {
 
 public:
-    MonitorEnumerator();
+    MonitorEnumerator() = default;
     BOOL enumDisplayMonitors(HDC hdc, LPCRECT lprcClip);
     [[nodiscard]] size_t getCount() const;
 
@@ -19,8 +19,8 @@ public:
         CString deviceName;
     };
 
-    [[nodiscard]] std::vector<MonitorInfo>::const_iterator begin();
-    [[nodiscard]] std::vector<MonitorInfo>::const_iterator end();
+    [[nodiscard]] std::vector<MonitorInfo>::const_iterator begin() const;
+    [[nodiscard]] std::vector<MonitorInfo>::const_iterator end() const;
 
     MonitorInfo* getByIndex(size_t index);
 protected:

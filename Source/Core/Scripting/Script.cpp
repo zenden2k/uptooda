@@ -25,11 +25,11 @@ limitations under the License.
 #include "Core/Logging.h"
 #include "Core/ThreadSync.h"
 
-Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
+Script::Script(const std::string& fileName, std::shared_ptr<ThreadSync> serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
     m_CreationTime = time(nullptr);
     m_bIsPluginLoaded = false;
-    sync_ = serverSync;
+    sync_ = std::move(serverSync);
     owningThread_ = std::this_thread::get_id();
     networkClientFactory_ = std::move(networkClientFactory);
     fileName_ = fileName;
@@ -50,7 +50,7 @@ void Script::CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQC
 
 void Script::InitScriptEngine()
 {
-    ScriptAPI::SetPrintCallback(vm_, std::bind(&Script::PrintCallback, this, std::placeholders::_1));
+    ScriptAPI::SetPrintCallback(vm_, [this](auto && PH1) { PrintCallback(std::forward<decltype(PH1)>(PH1)); });
     sqstd_seterrorhandlers(vm_.GetVM());
     ScriptAPI::SetScriptName(vm_, fileName_);
     sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
@@ -71,7 +71,7 @@ bool Script::preLoad()
     networkClient_ = networkClientFactory_->create();
     networkClient_->setCurlShare(sync_->getCurlShare());
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
-    rootTable.SetInstance("Sync", sync_);
+    rootTable.SetInstance("Sync", sync_.get());
     rootTable.SetInstance("nm", networkClient_.get());
     return true;
 }

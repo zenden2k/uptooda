@@ -40,17 +40,13 @@ void CTextViewDlg::setFileDialogOptions(IMyFileDialog::FileFilterArray filters, 
     suggestedFileName_ = suggestedFileName;
 }
 
-CTextViewDlg::~CTextViewDlg()
-{
-}
-
 LRESULT CTextViewDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     DlgResize_Init();
     CenterWindow(GetParent());
     SetDlgItemText(IDOK, m_okCaption);
     SetDlgItemText(IDCANCEL, m_cancelCaption);
-    const CString normalizedText = WinUtils::NormalizLineEndings(m_text);
+    const CString normalizedText = WinUtils::NormalizeLineEndings(m_text);
 
     SetDlgItemText(IDC_TEXTEDIT, normalizedText);
     SetDlgItemText(IDC_QUESTIONLABEL, m_question);

@@ -10,7 +10,7 @@ public:
     virtual ~AbstractParameter() = default;
 
     std::string getName() const;
-    void setTitle(const std::string title);
+    void setTitle(const std::string& title);
     std::string getTitle() const;
     virtual std::string getType() const = 0; 
 

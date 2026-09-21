@@ -87,7 +87,7 @@ void CMediaInfoDlg::ShowInfo(HWND parentWnd, LPCTSTR FileName)
 
 DWORD CMediaInfoDlg::Run()
 {
-    CString ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
+    CString ShortFileName = WinUtils::TrimString(WinUtils::DoExtractFileName(m_FileName), 40);
     if(!WinUtils::FileExists(m_FileName))
     {
         SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));

@@ -50,7 +50,7 @@ bool IULaunchCopy(CString additionalParams)
     // Start the child process.
     if ( !CreateProcess(
             NULL,              // No module name (use command line).
-            (LPWSTR)(LPCTSTR)TempCmdLine, // Command line.
+            const_cast<LPWSTR>(TempCmdLine.GetString()), // Command line.
             NULL,                // Process handle not inheritable.
             NULL,                // Thread handle not inheritable.
             FALSE,               // Set handle inheritance to FALSE.
@@ -120,7 +120,7 @@ void IU_RunElevated(CString params)
     TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
     TempInfo.fMask = 0;
     TempInfo.hwnd = NULL;
-    if (WinUtils::IsVistaOrLater())
+    if (IsWindowsVistaOrGreater())
         TempInfo.lpVerb = _T("runas");
     else
         TempInfo.lpVerb = _T("open");
@@ -281,4 +281,65 @@ CString HotkeyToString(CString funcName, CString menuItemText) {
         return menuItemText;
     }
     return menuItemText + _T("\t") + hotkeyStr;
+}
+
+void OpenDocumentation(HWND parent, const CString& file, const CString& id /*= {}*/) {
+    CString docsFolder = WinUtils::GetAppFolder() + "Docs\\";
+    CString actualFile;
+
+    if (!file.IsEmpty()) {
+        CString locale = U2W(ServiceLocator::instance()->translator()->getCurrentLocale());
+        CString tryFile = docsFolder + locale + _T("\\") + file + _T(".html");
+        CString tryFile2 = docsFolder + _T("en_US\\") + file + _T(".html");
+
+        if (WinUtils::FileExists(tryFile)) {
+            actualFile = tryFile;
+        } else if (WinUtils::FileExists(tryFile2)) {
+            actualFile = tryFile2;
+        } 
+
+        /*if (!actualFile.IsEmpty()) {
+            actualFile += _T("#");
+            actualFile += id;
+        }*/
+   }
+
+    if (actualFile.IsEmpty()) {
+        actualFile = docsFolder + _T("index.html");
+    }
+
+    try {
+        WinUtils::ShellOpenFileOrUrl(actualFile, parent, {}, true);
+    } catch (const Win32Exception& ex) {
+        GuiTools::LocalizedMessageBox(parent, TR("Cannot open documentation: ") + ex.getMessage(), TR("Error"), MB_ICONERROR); 
+    }
+}
+
+bool DisableWindowsPrintScreenKeyInterception() {
+    HKEY hKey;
+    DWORD value = 1, size = sizeof(value);
+    LSTATUS res = RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Keyboard", 0, KEY_ALL_ACCESS, &hKey);
+    if (res == ERROR_SUCCESS) {
+        RegQueryValueExW(hKey, L"PrintScreenKeyForSnippingEnabled", nullptr, nullptr, reinterpret_cast<LPBYTE>(&value), &size);
+
+        if (value != 0) {
+            value = 0;
+            RegSetValueExW(
+                hKey, L"PrintScreenKeyForSnippingEnabled", 0,
+                REG_DWORD, reinterpret_cast<const BYTE*>(&value), sizeof(value)
+            );
+            SendMessageTimeoutW(
+                HWND_BROADCAST, WM_SETTINGCHANGE, 0, reinterpret_cast<LPARAM>(L"Control Panel\\Keyboard"),
+                SMTO_ABORTIFHUNG, 5000, nullptr
+            );
+        }
+
+        RegCloseKey(hKey);
+        return true;
+    }
+
+
+    LOG(ERROR) << L"Cannot open registry key for disabling default PrintScreen key interception."
+        << std::endl << WinUtils::FormatWindowsErrorMessage(res) << std::endl;
+    return false;
 }

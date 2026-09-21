@@ -4,11 +4,12 @@
 #pragma once
 #include <string>
 
-namespace DesktopUtils
-{
-/** 
-Opens a file or an URL in associated application
+namespace DesktopUtils {
+
+/**
+Opens a file or a URL in associated application
 **/
 bool ShellOpenUrl(const std::string& url);
+
 }
 #endif

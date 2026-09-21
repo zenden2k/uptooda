@@ -7,9 +7,7 @@
 
 class FFmpegArgsBase {
 public:
-    virtual ~FFmpegArgsBase() {
-
-    }
+    virtual ~FFmpegArgsBase() = default;
     virtual std::vector<std::string> getArgs() {
         return args_;
     }

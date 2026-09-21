@@ -6,7 +6,7 @@
 #include "atlheaders.h"
 #include "CommonGuiSettings.h"
 #include "Func/WinUtils.h"
-#include "Gui/Dialogs/HotkeySettings.h"
+#include "Gui/Dialogs/HotkeySettingsPage.h"
 #include "Core/SearchByImage.h"
 #include "3rdpart/GdiplusH.h" 
 #include "Core/Images/Utils.h"
@@ -33,6 +33,7 @@ struct ImageEditorSettingsStruct {
     bool AllowEditingInFullscreen;
     bool FillTextBackground = false;
     bool InvertSelection = false;
+    bool DrawBorder = true;
     int ArrowType;
     bool CloseWindowAfterActionInFullScreen = false; // Close after copying or searching
 };
@@ -61,12 +62,13 @@ struct ScreenshotSettingsStruct {
     int MonitorMode;
 };
 
+
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
 
 inline void myFromString(const std::string& text, CHotkeyList& value) {
-    value.DeSerialize(IuCoreUtils::Utf8ToWstring(text).c_str());
+    value.deserialize(IuCoreUtils::Utf8ToWstring(text).c_str());
 }
 
 /* LOGFONT serialization support */
@@ -98,7 +100,7 @@ inline void myFromString(const std::string& text, Gdiplus::Color& value)
 class WtlGuiSettings : public CommonGuiSettings {
 public:
     WtlGuiSettings();
-    ~WtlGuiSettings();
+    ~WtlGuiSettings() override;
 
     void setFloatWnd(CFloatingWindow* floatWnd);
     ImageEditorSettingsStruct ImageEditorSettings;
@@ -140,6 +142,7 @@ public:
 
     std::string testFileName, testUrl;
 
+
     CString getServerName();
     CString getQuickServerName();
     CString getFileServerName();
@@ -168,6 +171,7 @@ protected:
     void PostLoadServerProfile(ServerProfile& profile) override;
 
     void BindToManager();
+    void disableWindowsPrintScreenKeyInterception();
 private:
     TCHAR m_Directory[MAX_PATH];
     CFloatingWindow* floatWnd_;

@@ -14,7 +14,6 @@ void UploadObject::fillFromUploadResult(UploadResult* res, UploadTask* task) {
             displayFileName = IuCoreUtils::ExtractFileName(localFilePath);
         }
         fileIndex = fileTask->index();
-        //it.ServerName = U2W(lastUploadedItem_->serverName());
     }
     uploadFileSize = task->getDataLength();
 }

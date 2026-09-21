@@ -2,12 +2,12 @@
 
 #define APP_NAME_LITERAL "Uptooda"
 
-inline constexpr const char* APP_NAME_A = APP_NAME_LITERAL;
+inline constexpr auto APP_NAME_A = APP_NAME_LITERAL;
 
 #ifdef _WIN32
 #include <tchar.h>
 
-inline constexpr const TCHAR* APP_NAME = _T(APP_NAME_LITERAL);
+inline constexpr auto APP_NAME = _T(APP_NAME_LITERAL);
 #endif 
 
 #undef APP_NAME_LITERAL

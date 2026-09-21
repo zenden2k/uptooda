@@ -30,11 +30,6 @@
 #include <commctrl.h>
 #include <wincodec.h> */          // WIC
 
-typedef HRESULT (WINAPI *FN_GetBufferedPaintBits) (HPAINTBUFFER hBufferedPaint, RGBQUAD **ppbBuffer, int *pcxRow);
-typedef HPAINTBUFFER (WINAPI *FN_BeginBufferedPaint) (HDC hdcTarget, const RECT *prcTarget, BP_BUFFERFORMAT dwFormat, BP_PAINTPARAMS *pPaintParams, HDC *phdc);
-typedef HRESULT (WINAPI *FN_EndBufferedPaint) (HPAINTBUFFER hBufferedPaint, BOOL fUpdateTarget);
-
-
 /**
  * \ingroup utils
  * provides helper functions for converting icons to bitmaps
@@ -42,23 +37,17 @@ typedef HRESULT (WINAPI *FN_EndBufferedPaint) (HPAINTBUFFER hBufferedPaint, BOOL
 class IconBitmapUtils
 {
 public:
-    IconBitmapUtils(void);
-    ~IconBitmapUtils(void);
+    IconBitmapUtils() = default;
+    ~IconBitmapUtils();
 
     HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
-    HBITMAP HIconToBitmapPARGB32(HICON hIcon, int dpi);
-    HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, int dpi);
+    HBITMAP HIconToBitmapPARGB32(HICON hIcon, UINT dpi);
+    HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, UINT dpi);
     HRESULT Create32BitHBITMAP(HDC hdc, const SIZE *psize, __deref_opt_out void **ppvBits, __out HBITMAP* phBmp);
     HRESULT ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC hdc, HICON hicon, SIZE& sizIcon);
     bool HasAlpha(__in Gdiplus::ARGB *pargb, SIZE& sizImage, int cxRow);
     HRESULT ConvertToPARGB32(HDC hdc, __inout Gdiplus::ARGB *pargb, HBITMAP hbmp, SIZE& sizImage, int cxRow);
 
-
 private:
-    HMODULE hUxTheme;
     std::map<UINT, HBITMAP>        bitmaps;
-
-    FN_GetBufferedPaintBits pfnGetBufferedPaintBits;
-    FN_BeginBufferedPaint pfnBeginBufferedPaint;
-    FN_EndBufferedPaint pfnEndBufferedPaint;
 };

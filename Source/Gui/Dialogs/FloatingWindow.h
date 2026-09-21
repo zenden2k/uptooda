@@ -72,6 +72,7 @@ constexpr int IDM_TOPWINDOWSCREENSHOT = IDM_UPLOADFILES + 33;
 constexpr int IDM_SCREENRECORDINGDIALOG = IDM_UPLOADFILES + 34;
 constexpr int IDM_SCREENRECORDINGSTART = IDM_UPLOADFILES + 35;
 constexpr int IDM_SCREENRECORDINGSTOP = IDM_UPLOADFILES + 36;
+constexpr int IDM_HISTORY = IDM_UPLOADFILES + 37;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_FIRST = IDM_REUPLOADIMAGES + 50;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_LAST = IDM_REUPLOADIMAGES + 50 + 25;
 
@@ -118,6 +119,7 @@ public:
         MSG_WM_CREATE(OnCreate)
         COMMAND_ID_HANDLER_EX(IDM_EXIT, OnExit)
         COMMAND_ID_HANDLER_EX(IDM_SETTINGS, OnMenuSettings)
+        COMMAND_ID_HANDLER_EX(IDM_HISTORY, OnShowHistory)
         COMMAND_ID_HANDLER_EX(IDM_IMPORTVIDEO, OnImportvideo)
         COMMAND_ID_HANDLER_EX(IDM_UPLOADFILES, OnUploadFiles)
         COMMAND_ID_HANDLER_EX(IDM_UPLOADIMAGES, OnUploadImages)
@@ -172,11 +174,12 @@ public:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-     LRESULT OnClose(void);
+     LRESULT OnClose();
      LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
      LRESULT OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
      LRESULT OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam);
      LRESULT OnReloadSettings(UINT uMsg, WPARAM wParam, LPARAM lParam);
      LRESULT OnImportvideo(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -240,8 +243,8 @@ public:
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(UploadTask* task, const CString& url);
-     void ShowScreenshotCopiedToClipboardMessage();
-     bool canExitApp();
+     void ShowScreenshotCopiedToClipboardMessage(CString message);
+     bool canExitApp() const;
 
      int iconAnimationCounter_;
      std::shared_ptr<UploadSession> currentUploadSession_;
@@ -258,7 +261,8 @@ public:
     std::unique_ptr<Uptooda::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
-    CBitmap addFilesBitmap_, screenshotBitmap_, regionScreenshotBitmap_, screenRecordingBitmap_, startRecordingBitmap_, settingsBitmap_;
+    CBitmap addFilesBitmap_, screenshotBitmap_, regionScreenshotBitmap_, screenRecordingBitmap_, startRecordingBitmap_, settingsBitmap_, historyBitmap_;
+    std::optional<GUID> trayIconGuid_;
 };
 
 #endif

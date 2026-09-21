@@ -7,20 +7,20 @@
 #include "Core/Settings/CommonGuiSettings.h"
 #endif
 
-ServerProfile::ServerProfile(bool useDefaultSettings) {
-    UseDefaultSettings = useDefaultSettings;
+ServerProfile::ServerProfile() {
     shortenLinks_ = false;
+    useDefaultSettings_ = false;
 }
 
 ServerProfile::ServerProfile(const std::string&  newServerName){
     serverName_ = newServerName;
-    UseDefaultSettings = false;
+    useDefaultSettings_ = false;
     shortenLinks_ = false;
 }
 
 void ServerProfile::setProfileName(const std::string& newProfileName) {
     profileName_ = newProfileName;
-    UseDefaultSettings = true;
+    useDefaultSettings_ = true;
 }
 
 std::string ServerProfile::profileName() const {
@@ -83,7 +83,7 @@ void ServerProfile::setShortenLinks(bool shorten)
     shortenLinks_ = shorten;
 }
 
-void ServerProfile::setParentIds(const std::vector<std::string> parentIds) {
+void ServerProfile::setParentIds(const std::vector<std::string>& parentIds) {
     folder_.parentIds = parentIds;
 }
 
@@ -105,8 +105,8 @@ ServerProfile ServerProfile::deepCopy()
 {
     ServerProfile res = *this;
     res.imageUploadParams = getImageUploadParams();
-    res.UseDefaultSettings = false;
-    UseDefaultSettings = false;
+    res.useDefaultSettings_ = false;
+    useDefaultSettings_ = false;
     return res;
 }
 
@@ -117,7 +117,7 @@ void ServerProfile::bind(SettingsNode& serverNode)
     serverNode["@FolderTitle"].bind(folder_.title);
     serverNode["@FolderUrl"].bind(folder_.viewUrl);
     serverNode["@ProfileName"].bind(profileName_);
-    serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
+    serverNode["@UseDefaultSettings"].bind(useDefaultSettings_);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
     serverNode["@ParentIds"].bind(folder_.parentIds);
 #ifdef _WIN32
@@ -128,9 +128,9 @@ void ServerProfile::bind(SettingsNode& serverNode)
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
 #ifdef _WIN32
-    CommonGuiSettings* Settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-    if (UseDefaultSettings && Settings && !Settings->imageServer.isEmpty() && &Settings->imageServer.getByIndex(0) != this) {
-        return Settings->imageServer.getByIndex(0).imageUploadParams;
+    auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+    if (useDefaultSettings_ && settings) {
+        return settings->DefaultImageUploadParams;
     }
 #endif
     return imageUploadParams;
@@ -146,7 +146,40 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
     imageUploadParams = std::move(iup);
 }
 
+bool ServerProfile::useDefaultSettings() const {
+    return useDefaultSettings_;
+}
+
+void ServerProfile::setUseDefaultSettings(bool useDefaultSettings) {
+    useDefaultSettings_ = useDefaultSettings;
+}
+
 // TODO: Remove this method
-CUploadEngineData* ServerProfile::uploadEngineData() const {
+const CUploadEngineData* ServerProfile::uploadEngineData() const {
     return ServiceLocator::instance()->engineList()->byName(serverName_);
+}
+
+void ImageUploadParams::bind(SettingsNode& n) {
+    SettingsNode& node = n["ImageUploadParams"];
+    node.n_bind(UseServerThumbs);
+    node.n_bind(CreateThumbs);
+
+    node.n_bind(ProcessImages);
+    node.n_bind(ImageProfileName);
+    node.n_bind(UseDefaultThumbSettings);
+    SettingsNode& thumb = node["Thumb"];
+    thumb.nm_bind(Thumb, TemplateName);
+    thumb.nm_bind(Thumb, Size);
+    thumb.nm_bind(Thumb, Width);
+    thumb.nm_bind(Thumb, Height);
+    thumb["ResizeMode"].bind((int&)Thumb.ResizeMode);
+    thumb.nm_bind(Thumb, AddImageSize);
+    thumb.nm_bind(Thumb, DrawFrame);
+    thumb.nm_bind(Thumb, Quality);
+    thumb.nm_bind(Thumb, Format);
+    thumb.nm_bind(Thumb, Text);
+}
+
+ThumbCreatingParams& ImageUploadParams::getThumbRef() {
+    return Thumb;
 }

@@ -95,7 +95,7 @@ void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& l
 
 }
 
-CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings,
+CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, std::shared_ptr<ServerSync> serverSync, ServerSettingsStruct* settings,
                                          std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
     CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback)),
     Script(fileName, serverSync, std::move(factory), false)
@@ -104,11 +104,6 @@ CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync
     newAuthMode_ = false;
     name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);
     load(fileName);
-}
-
-CScriptUploadEngine::~CScriptUploadEngine()
-{
-
 }
 
 void CScriptUploadEngine::PrintCallback(const std::string& output)
@@ -127,7 +122,6 @@ int CScriptUploadEngine::doProcessTask(std::shared_ptr<UploadTask> task, UploadP
         return doUpload(task, params);
     }
 }
-
 
 int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
     SetStatus(stAuthorization);
@@ -283,7 +277,7 @@ bool CScriptUploadEngine::preLoad()
         ServerSettingsStruct* par = m_ServersSettings;
         Sqrat::RootTable& rootTable = vm_.GetRootTable();
         rootTable.SetInstance("ServerParams", par);
-        rootTable.SetInstance("Sync", serverSync_);
+        rootTable.SetInstance("Sync", serverSync_.get());
     } catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::preLoad failed\r\n" + std::string("Error: ") + e.what());
         return false;
@@ -535,10 +529,8 @@ void CScriptUploadEngine::setNetworkClient(INetworkClient* nm)
         nm->setUserAgent(m_UploadData->UserAgent);
     }
     nm->setCurlShare(sync_->getCurlShare());
-    //nm->setErrorLogId("[" + name_ + ".nut]");
     nm->setLogger(this);
     vm_.GetRootTable().SetInstance("nm", nm);
-    //BindVariable(m_Object, nm, "nm");
 }
 
 bool CScriptUploadEngine::supportsSettings()

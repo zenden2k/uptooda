@@ -34,12 +34,12 @@ function UploadFile(FileName, options) {
     nm.setUrl(uploadUrl);
     nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
     nm.addQueryHeader("Accept-Language", "ru,ru-RU;q=0.9,en-US;q=0.8,en;q=0.7");
-    nm.addQueryParam("_sessionid", sessionId);
-    nm.addQueryParam("cTracker", cTracker);
-    nm.addQueryParam("maxChunkSize", "100000000");
-    nm.addQueryParam("folderId", "");
+    nm.addPostField("_sessionid", sessionId);
+    nm.addPostField("cTracker", cTracker);
+    nm.addPostField("maxChunkSize", "100000000");
+    nm.addPostField("folderId", "");
     
-    nm.addQueryParamFile("files[]", FileName, name, mime);
+    nm.addPostFieldFile("files[]", FileName, name, mime);
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {

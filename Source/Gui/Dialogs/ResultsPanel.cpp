@@ -34,7 +34,7 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
@@ -367,18 +367,17 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     ::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc);
     int count = 0;
-        mi.fType = MFT_STRING;
-        mi.wID = IDC_SHORTENURLITEM;
-        CString menuItemTitle;
-        if (onShortenUrlChanged_) {
-            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str());
-        } else {
-            menuItemTitle = TR("Shorten URL");
-        }
-        mi.dwTypeData  = const_cast<LPWSTR>(menuItemTitle.GetString());
-        mi.cch = menuItemTitle.GetLength();
-        sub.InsertMenuItem(count++, true, &mi);
-
+    mi.fType = MFT_STRING;
+    mi.wID = IDC_SHORTENURLITEM;
+    CString menuItemTitle;
+    if (onShortenUrlChanged_) {
+        menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str());
+    } else {
+        menuItemTitle = TR("Shorten URL");
+    }
+    mi.dwTypeData = const_cast<LPWSTR>(menuItemTitle.GetString());
+    mi.cch = menuItemTitle.GetLength();
+    sub.InsertMenuItem(count++, true, &mi);    
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
@@ -406,7 +405,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     for(size_t i=0; i<m_Servers.size(); i++)
     {
         const auto& server = m_Servers[i];
-        CUploadEngineData* ue = server.uploadEngineData();
+        const CUploadEngineData* ue = server.uploadEngineData();
         if (!ue) {
             continue;
         }
@@ -414,7 +413,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         if (server.folderTitle().empty() || server.folderUrl().empty()) {
             continue;
         }
-        std::string titleU8 = str(IuStringUtils::FormatNoExcept(_("Copy URL of %1%->%2%")) % ue->Name % server.folderTitle());
+        std::string titleU8 = str(IuStringUtils::FormatNoExcept(_("Copy URL of %1%->%2%")) % CUploadEngineListBase::getServerDisplayName(ue) % server.folderTitle());
         CString title = U2WC(titleU8);
         mi.wID = IDC_COPYFOLDERURL + i;
         mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
@@ -468,7 +467,7 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
 {
     int index = wID - IDC_COPYFOLDERURL;
 
-    CUploadEngineData *ue = m_Servers[index].uploadEngineData();
+    const CUploadEngineData *ue = m_Servers[index].uploadEngineData();
     if(!ue) return 0;
     CString folderUrl = Utf8ToWCstring( m_Servers[index].folderUrl());
     WinUtils::CopyTextToClipboard(folderUrl);
@@ -519,7 +518,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
             url = this->UrlList[0].getDownloadUrl();
         }
     } else {
-        std::string outputTempFileName = AppParams::instance()->tempDirectory()  + "preview.html";
+        std::string outputTempFileName = AppRuntimeInfo::instance()->tempDirectory()  + "preview.html";
         std::string code = GenerateOutput();
         /*if ( m_Page == 0) {
             code = Utf8ToWCstring(IuTextUtils::BbCodeToHtml(WCstringToUtf8(code)));

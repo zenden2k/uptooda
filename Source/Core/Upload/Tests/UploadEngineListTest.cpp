@@ -20,7 +20,7 @@ TEST_F(UploadEngineListTest, loadFromFile)
     // List is sorted alphabetically
     EXPECT_TRUE(res);
     EXPECT_EQ(5, list.count());
-    CUploadEngineData* engineData = list.byIndex(2);
+    const CUploadEngineData* engineData = list.byIndex(2);
     ASSERT_TRUE(engineData != nullptr);
     EXPECT_EQ("radikal.ru", engineData->Name);
     EXPECT_EQ(10000000, engineData->MaxFileSize);
@@ -111,19 +111,19 @@ TEST_F(UploadEngineListTest, getByIndex)
     // List is sorted alphabetically
     EXPECT_TRUE(res);
     EXPECT_EQ(5, list.count());
-    CUploadEngineData* ued = list.byName("fastpic.ru");
+    const CUploadEngineData* ued = list.byName("fastpic.ru");
     ASSERT_TRUE(ued != nullptr);
     EXPECT_EQ("fastpic.ru", ued->Name);
-    CUploadEngineData* ued2 = list.firstEngineOfType(CUploadEngineData::TypeImageServer);
+    const CUploadEngineData* ued2 = list.firstEngineOfType(CUploadEngineData::TypeImageServer);
     ASSERT_TRUE(ued2 != nullptr);
     EXPECT_EQ("8b.kz", ued2->Name);
 
-    CUploadEngineData* ued3 = list.firstEngineOfType(CUploadEngineData::TypeFileServer);
+    const CUploadEngineData* ued3 = list.firstEngineOfType(CUploadEngineData::TypeFileServer);
     EXPECT_TRUE(ued3 == nullptr);
 
     int index = list.getRandomImageServer();
     EXPECT_TRUE(index >= 0 && index < list.count());
-    CUploadEngineData* ued4 = list.byIndex(index);
+    const CUploadEngineData* ued4 = list.byIndex(index);
     ASSERT_TRUE(ued4 != nullptr);
     ASSERT_TRUE(ued4->hasType(CUploadEngineData::TypeImageServer));
 
@@ -150,7 +150,7 @@ TEST_F(UploadEngineListTest, formats)
     ServerSettingsMap settings;
     bool res = list.loadFromFile(fileName, settings);
     EXPECT_TRUE(res);
-    CUploadEngineData* engineData = list.byIndex(2);
+    const CUploadEngineData* engineData = list.byIndex(2);
 
     engineData = list.byName("radikal.ru");
     ASSERT_TRUE(engineData != nullptr);

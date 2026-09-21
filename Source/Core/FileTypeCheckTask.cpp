@@ -1,6 +1,7 @@
 #include "FileTypeCheckTask.h"
 
 #include <boost/format.hpp>
+#include <utility>
 
 #include "Core/i18n/Translator.h"
 #include "Core/Upload/UploadEngine.h"
@@ -10,12 +11,11 @@
 
 constexpr auto MAX_BAD_ITEMS = std::numeric_limits<size_t>::max();
 
-FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer)
-    :
-    fileList_(fileList),
-    sessionImageServer_(sessionImageServer),
-    sessionFileServer_(sessionFileServer)
-{
+FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, ServerProfileGroup sessionImageServer, ServerProfileGroup sessionFileServer, ImageUploadParams defaultImageUploadParams) :
+    fileList_(fileList)
+    , sessionImageServer_(std::move(sessionImageServer))
+    , sessionFileServer_(std::move(sessionFileServer))
+    , defaultImageUploadParams_(std::move(defaultImageUploadParams)) {
 
 }
 
@@ -51,7 +51,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             
             
             if (item->isImage()) {
-                ImageConverterFilter::supposedOutputFormat(sf, serverProfile);
+                ImageConverterFilter::supposedOutputFormat(sf, serverProfile, defaultImageUploadParams_);
             }
             if (sf.fileSize < 0) {
                 sf.fileSize = size;
@@ -59,7 +59,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             std::string onlyName = IuCoreUtils::ExtractFileName(sf.fileName);
             std::string extension = IuCoreUtils::ExtractFileExt(sf.fileName);
 
-            CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
+            const CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
             ServerSettingsStruct* sss = settings->getServerSettings(serverProfile, false);
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
             std::string userType { isAuthorized ? UserTypes::REGISTERED : UserTypes::ANONYMOUS };

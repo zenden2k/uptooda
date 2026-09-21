@@ -19,7 +19,7 @@ class CResultsListView : public CWindowImpl<CResultsListView, CListViewCtrl> {
     CResultsListView();
     void Init();
     void SetModel(UploadListModel* model);
-    bool AttachToDlgItem(HWND parent, UINT dlgID);
+    bool AttachToDlgItem(HWND parent, int dlgID);
     //LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     LRESULT OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);

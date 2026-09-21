@@ -1,6 +1,5 @@
 #include "Helpers.h"
 
-#include "Func/WinUtils.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -23,8 +22,8 @@ CString GetFileInfo(CString fileName, MyFileInfo* mfi) {
     if (wideMimeType.Find(_T("image/")) >= 0) {
         Gdiplus::Image pic(fileName);
         if (pic.GetLastStatus() == Gdiplus::Ok) {
-            int width = pic.GetWidth();
-            int height = pic.GetHeight();
+            int width = static_cast<int>(pic.GetWidth());
+            int height = static_cast<int>(pic.GetHeight());
             if (mfi) {
                 mfi->width = width;
                 mfi->height = height;

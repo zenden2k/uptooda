@@ -35,6 +35,13 @@ namespace IuStringUtils
     void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
     std::vector<std::string_view> SplitSV(std::string_view strv, std::string_view delims, int maxCount = -1);
 
+    template <typename T, typename = void>
+    struct has_push_back : std::false_type {};
+
+    template <typename T>
+    struct has_push_back<T, std::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
+        : std::true_type {};
+
     template <typename OutputIterator>
     void SplitTo(const std::string& str, const std::string& delimiters,
         OutputIterator output, int maxCount = -1) {
@@ -60,6 +67,20 @@ namespace IuStringUtils
         }
     }
 
+    // Версия для контейнеров с push_back (vector, list, deque...)
+    template <typename Container,
+              typename std::enable_if<has_push_back<Container>::value, int>::type = 0>
+    void Split(const std::string& str, const std::string& delimiters, Container& result) {
+        SplitTo(str, delimiters, std::back_inserter(result));
+    }
+
+    // Версия для контейнеров без push_back (set, unordered_set, map...)
+    template <typename Container,
+              typename std::enable_if<!has_push_back<Container>::value, int>::type = 0>
+    void Split(const std::string& str, const std::string& delimiters, Container& result) {
+        SplitTo(str, delimiters, std::inserter(result, result.end()));
+    }
+
     template <typename Container>
     std::string Join(const Container& container, const std::string& delim) {
         std::ostringstream result;
@@ -81,12 +102,7 @@ namespace IuStringUtils
     std::string ToLower(const std::string& str);
     std::string ToUpper(const std::string& str);
 
-    //  The stricmp() function compares the two strings s1 and s2,
-    //  ignoring the case of the characters. It returns an integer less than,
-    //     equal to, or greater than zero if s1 is found, respectively, to be less than,
-    //     to match, or be greater than s2.
-    // IT WORKS ONLY WITH ANSI STRINGS!
-    int stricmp(const char *s1, const char *s2);
+    int StrCaseInsensitiveCompare(const std::string& s1, const std::string& s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);
     boost::format FormatNoExcept(const char* str);

@@ -37,6 +37,7 @@ function UploadFile(pathToFile, options) {
      */
     local task = options.getTask().getFileTask();
     local apiToken = ServerParams.getParam("apiToken");
+    local folderId = options.getFolderID();
 
     if (apiToken == "") {
         WriteLog("error", "[example.com] API token not set!");
@@ -117,6 +118,7 @@ function UploadFile(pathToFile, options) {
 * @return int - success(1), failure(0)
 */
 function Authenticate() {
+    local userName = ServerParams.getParam("Login");
     if (ServerParams.getParam("token") != "") {
         return ResultCode.Success;
     }
@@ -141,7 +143,8 @@ function Authenticate() {
 * @return int - success(1), failure(0)
 */
 function GetFolderList(list) {
-    nm.doGet(BASE_URL + "/albums");
+    local parentId = list.parentFolder().getId();
+    nm.doGet(BASE_URL + "/albums?parentId=" + nm.urlEncode(parentId));
     local obj = ParseJSON(nm.responseBody());
     if (obj != null) {
         if ("success" in obj && obj.success) {

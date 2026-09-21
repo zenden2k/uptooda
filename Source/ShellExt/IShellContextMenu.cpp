@@ -78,9 +78,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
-		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedHIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = IsWindowsVistaOrGreater() ? GetCachedHIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
 	} else {
-        MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(resid) : HBMMENU_CALLBACK;
+        MenuItem.hbmpItem = IsWindowsVistaOrGreater() ? GetCachedIconToBitmapPARGB32(resid) : HBMMENU_CALLBACK;
 	}
 
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
@@ -323,7 +323,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		InternalMenuItem.text = MenuItem.dwTypeData;
 
 		InternalMenuItem.icon= IDI_ICONMAIN;
-		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(IDI_ICONMAIN): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = IsWindowsVistaOrGreater() ? GetCachedIconToBitmapPARGB32(IDI_ICONMAIN): HBMMENU_CALLBACK;
 
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
@@ -331,7 +331,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 	}
 
-	if (Helpers::IsVistaOrLater())
+	if (IsWindowsVistaOrGreater())
 	{
 		MENUINFO MenuInfo;
 

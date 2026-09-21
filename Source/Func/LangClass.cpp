@@ -84,6 +84,7 @@ CString CLang::getLocale() const
 {
     return localeName_;
 }
+
 #ifndef IU_SHELLEXT
 std::string CLang::getCurrentLanguage() {
     return W2U(m_sLang);
@@ -104,10 +105,6 @@ std::wstring CLang::translateW(const char* str)  {
 
 bool CLang::isRTL() const {
     return std::string(_("LAYOUT_DIRECTION")) == "RTL";
-}
-
-CLang::~CLang()
-{
 }
 
 CString CLang::getCurrentLanguageFile() const {

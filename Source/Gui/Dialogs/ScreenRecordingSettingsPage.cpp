@@ -8,6 +8,8 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "FFmpegSettingsPage.h"
 #include "DXGISettingsPage.h"
+#include "Gui/Helpers/DPIHelper.h"
+#include "Gui/Constants.h"
 
 CScreenRecordingSettingsPage::CScreenRecordingSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -18,6 +20,7 @@ void CScreenRecordingSettingsPage::TranslateUI() {
     TRC(IDC_OUTFOLDERLABEL, "Video recordings folder:");
     TRC(IDC_OUTFOLDERBROWSEBUTTON, "Browse...");
     TRC(IDC_FRAMERATELABEL, "Frame rate:");
+    TRC(IDC_FILENAMETEMPLATELABEL, "Filename and path template:");
 }
 
 template <typename T, typename... Args>
@@ -77,12 +80,31 @@ void CScreenRecordingSettingsPage::showSubPage(SubPage pageId) {
     curPage_ = pageId;
 }
 
+void CScreenRecordingSettingsPage::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (helpButtonIcon_) {
+        helpButtonIcon_.DestroyIcon();
+    }
+
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
+    helpButton_.SetIcon(helpButtonIcon_);
+
+    if (iconInfo_) {
+        iconInfo_.DestroyIcon();
+    }
+    iconInfo_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+    fileNameMacrosButton_.SetIcon(iconInfo_);
+}
+
 LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     TranslateUI();
     DoDataExchange(FALSE);
 
     int backendComboIndex = -1;
-    for (const auto& backendName : settings_->ScreenRecordingBackends) {
+    for (const auto& backendName : WtlGuiSettings::ScreenRecordingBackends) {
         int index = backendCombobox_.AddString(U2WC(backendName));
         if (backendName == settings_->ScreenRecordingSettings.Backend) {
             backendComboIndex = index;
@@ -93,9 +115,21 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
+    fileNameTemplateEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FileNameTemplate));
 
     frameRateUpDownControl_.SetRange(1, 60);
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
+
+    toolTip_.Create(m_hWnd);
+    CString tooltipText = TR("Help");
+    CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    toolTip_.AddTool(tip);
+
+    tooltipText = TR("Macros list");
+    CToolInfo fileNameMacrosTooltip(TTF_SUBCLASS, fileNameMacrosButton_, 0, nullptr, const_cast<LPTSTR>(tooltipText.GetString()));
+    toolTip_.AddTool(fileNameMacrosTooltip);
+
+    createResources();
 
     return 1;  // Let the system set the focus
 }
@@ -114,8 +148,22 @@ LRESULT CScreenRecordingSettingsPage::OnBnClickedHelpButton(WORD wNotifyCode, WO
     return 0;
 }
 
+LRESULT CScreenRecordingSettingsPage::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
+    return 0;
+}
+
 bool CScreenRecordingSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
+        const CString fileNameTemplate = GuiTools::GetWindowText(fileNameTemplateEditControl_);
+
+        if (fileNameTemplate.IsEmpty()) {
+            throw ValidationException(TR("The filename template cannot be empty!"), fileNameTemplateEditControl_);
+        }
+
+        if (fileNameTemplate.FindOneOf(FORBIDDEN_FILEPATH_TEMPLATE_CHARACTERS) != -1) {
+            throw ValidationException(TR("The filename template contains forbidden characters!"), fileNameTemplateEditControl_);
+        }
 
         for (int i = 0; i < std::size(subPages_); i++) {
             const auto& page = subPages_[i];
@@ -164,11 +212,12 @@ bool CScreenRecordingSettingsPage::apply() {
 
         auto& recodingSettings = settings_->ScreenRecordingSettings;
         int backendComboIndex_ = backendCombobox_.GetCurSel();
-        if (backendComboIndex_ >= 0 && backendComboIndex_ < settings_->ScreenRecordingBackends.size()) {
-            recodingSettings.Backend = settings_->ScreenRecordingBackends[backendComboIndex_];
+        if (backendComboIndex_ >= 0 && backendComboIndex_ < CommonGuiSettings::ScreenRecordingBackends.size()) {
+            recodingSettings.Backend = CommonGuiSettings::ScreenRecordingBackends[backendComboIndex_];
         }
 
         recodingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
+        recodingSettings.FileNameTemplate = W2U(fileNameTemplate);
 
         recodingSettings.FrameRate = frameRateUpDownControl_.GetPos();
        
@@ -179,7 +228,6 @@ bool CScreenRecordingSettingsPage::apply() {
 }
 
 LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    HWND editControl = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
     CString folder;
     outFolderEditControl_.GetWindowText(folder);
     CNewStyleFolderDialog fd(m_hWnd, folder, TR("Select folder"));
@@ -191,5 +239,45 @@ LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode
         return true;
     }
     
+    return 0;
+}
+
+LRESULT CScreenRecordingSettingsPage::OnFilenameMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+    const std::vector<std::pair<CString, CString>> items {
+            { _T("%y"), TR("year")},
+            { _T("%m"), TR("month")},
+            { _T("%d"), TR("day")},
+            { _T("%h"), TR("hour")},
+            { _T("%n"), TR("minute")},
+            { _T("%s"), TR("second")},
+            { _T("%i"), TR("index")},
+            { _T("%width%"), TR("video width")},
+            { _T("%height%"), TR("video height") }
+        };
+    RECT rc {};
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu macrosMenu;
+
+    int id = 1;
+    macrosMenu.CreatePopupMenu();
+
+    for (const auto& item : items) {
+        CString title = item.first + _T(" - ") + item.second;
+        macrosMenu.AppendMenu(MF_STRING, id++, title);
+    }
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    if (result && (result - 1 < items.size())) {
+        fileNameTemplateEditControl_.ReplaceSel(items[result - 1].first, TRUE);
+    }
+
     return 0;
 }

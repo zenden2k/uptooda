@@ -17,7 +17,7 @@ class ThreadSync
     public:
         ThreadSync();
         explicit ThreadSync(ThreadSyncPrivate* priv);
-        virtual ~ThreadSync();
+        virtual ~ThreadSync() = default;
         void setValue(const std::string& name, const std::string& value);
         std::string getValue(const std::string& name);
         /*! @cond PRIVATE */

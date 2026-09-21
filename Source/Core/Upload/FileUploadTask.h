@@ -7,7 +7,6 @@
 class FileUploadTask: public UploadTask {
     public:
         FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = nullptr);
-        ~FileUploadTask();
         Type type() const override;
         std::string getMimeType() const override;
         int64_t getDataLength() const override;
@@ -17,7 +16,7 @@ class FileUploadTask: public UploadTask {
         std::string getDisplayName() const;
         void setDisplayName(const std::string& name);
         std::string originalFileName() const;
-        void finishTask(Status status = StatusFinished) override;
+        void finishTask(Status status) override;
         std::string toString() override;
         std::string title() const override;
         bool isImage() const;

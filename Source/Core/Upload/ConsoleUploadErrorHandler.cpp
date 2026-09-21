@@ -4,9 +4,6 @@
 
 #include "Core/Upload/UploadEngine.h"
 
-ConsoleUploadErrorHandler::ConsoleUploadErrorHandler(CUploadEngineListBase* engineList) : engineList_(engineList) {
-}
-
 void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
     std::string errorMsg;
 
@@ -15,7 +12,7 @@ void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
         infoText += "File: " + errorInfo.FileName + "\n";
 
     if (!errorInfo.ServerName.empty()) {
-        std::string serverName = (errorInfo.uploadEngineData && engineList_) ? engineList_->getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName;
+        std::string serverName = errorInfo.uploadEngineData ? CUploadEngineListBase::getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName;
         if (!errorInfo.sender.empty())
             serverName += "(" + errorInfo.sender + ")";
         infoText += "Server: " + serverName + "\n";

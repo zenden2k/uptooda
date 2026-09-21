@@ -13,7 +13,6 @@ namespace ImageEditor
     class Region {
     public:
         Region(int x,int y, int w, int h);
-        ~Region();
         #ifndef QT_VERSION
         Region(Gdiplus::Region* rgn );
         #endif

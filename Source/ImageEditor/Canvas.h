@@ -35,19 +35,19 @@ class Canvas {
             public:
                 virtual void updateView(Canvas* canvas, Gdiplus::Rect rect, bool fullRender) = 0;
                 virtual void canvasSizeChanged() = 0;
-                virtual ~Callback(){}
+                virtual ~Callback()= default;
         }; 
 
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges
+            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges, uitDrawBorderChanged
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kMaxBlurRadius = 10, kDefaultStepFontSize = 14 };
 
         struct UndoHistoryItemElement {
             MovableElement* movableElement;
-            int pos;
+            size_t pos;
             POINT startPoint{};
             POINT endPoint{};
             Gdiplus::Color color;
@@ -58,7 +58,7 @@ class Canvas {
             std::string rawText;
 
             UndoHistoryItemElement() {
-                pos = -1;
+                pos = 0;
                 startPoint.x = -1;
                 startPoint.y = -1;
                 endPoint.x = -1;
@@ -127,6 +127,7 @@ class Canvas {
         Gdiplus::Bitmap* getBufferBitmap() const;
         void addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item);
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
+        SIZE getExportBitmapSize() const;
     
         float getZoomFactor() const;
         MovableElement* getElementAtPosition(int x, int y, ElementType et = ElementType::etNone);
@@ -141,7 +142,7 @@ class Canvas {
         std::shared_ptr<InputBox> getInputBox( const RECT& rect ); 
         TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
-        int unselectAllElements();
+        size_t unselectAllElements();
         bool unselectElement(MovableElement* element);
         HWND getRichEditControl() const;
         void updateView();
@@ -174,6 +175,9 @@ class Canvas {
         void setInvertSelection(bool invert);
         bool getInvertSelection() const;
 
+        void setDrawBorder(bool enable);
+        bool getDrawBorder() const;
+
         void setArrowMode(Arrow::ArrowMode arrowMode);
         Arrow::ArrowMode getArrowMode() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
@@ -182,7 +186,7 @@ class Canvas {
 
         Gdiplus::Rect lastCrop() const;
 
-        void applyCurrentOperation();
+        bool applyCurrentOperation();
         void cancelCurrentOperation();
 
         bool hasElementOfType(ElementType type) const;
@@ -261,6 +265,7 @@ private:
         int stepFontSize_;
         bool fillTextBackground_;
         bool invertSelection_;
+        bool drawBorder_;
         Arrow::ArrowMode arrowMode_;
         
         Gdiplus::Rect updatedRect_;

@@ -1,3 +1,4 @@
+#include <string_view>
 #include <QApplication>
 #include <QDir>
 #include <QTemporaryDir>
@@ -14,7 +15,7 @@
 #include "Gui/MainWindow.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "QtUploadErrorHandler.h"
 #include "QtDefaultLogger.h"
 #include "QtScriptDialogProvider.h"
@@ -62,7 +63,7 @@ class MyApplication : public QApplication
 public:
     MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
     {
-
+        AbstractImage::autoRegisterFactory<void>();
     }
 #ifdef _WIN32
     MediaFoundationInitializer mediaFoundationInitializer_;
@@ -88,6 +89,24 @@ protected:
 
 };
 
+std::string GetLogDirectory(int argc, char* argv[]) {
+    constexpr std::string_view LOG_DIR_OPTION = "--log_dir";
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view argument(argv[i]);
+        if (argument == LOG_DIR_OPTION && i + 1 < argc) {
+            return argv[i + 1];
+        }
+
+        if (argument.compare(0, LOG_DIR_OPTION.size(), LOG_DIR_OPTION) == 0 && argument.size() > LOG_DIR_OPTION.size()
+            && argument[LOG_DIR_OPTION.size()] == '=') {
+            return std::string(argument.substr(LOG_DIR_OPTION.size() + 1));
+            }
+    }
+
+    return {};
+}
+
 int main(int argc, char *argv[])
 {
     ServiceLocator::instance()->setSettings(&Settings);
@@ -107,10 +126,15 @@ int main(int argc, char *argv[])
 #else
         FLAGS_logtostderr = true;
 #endif
+    std::string logDirectory = GetLogDirectory(argc, argv);
+    if (!logDirectory.empty()) {
+        FLAGS_log_dir = logDirectory;
+        FLAGS_logtostderr = false;
+    }
 
     google::InitGoogleLogging(argv[0]);
 
-    AppParams::AppVersionInfo appVersion;
+    AppRuntimeInfo::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = std::stoi(IU_BUILD_NUMBER);
@@ -118,7 +142,7 @@ int main(int argc, char *argv[])
     appVersion.CommitHash = IU_COMMIT_HASH;
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
+    AppRuntimeInfo::instance()->setVersionInfo(appVersion);
 
     MyApplication a(argc, argv);
     logWindow = std::make_unique<LogWindow>();
@@ -139,7 +163,6 @@ int main(int argc, char *argv[])
     serviceLocator->setLogger(logger);
     serviceLocator->setDialogProvider(&dlgProvider);
     serviceLocator->setSettings(&Settings);
-    AbstractImage::autoRegisterFactory<void>();
 
     QString appDirectory = QCoreApplication::applicationDirPath();
     QString settingsFolder;
@@ -163,7 +186,7 @@ settingsDir.mkpath(settingsFolder);
 #endif
     qDebug() << "Data directory:" << dataFolder;
     qDebug() << "Settings directory:" << settingsFolder;
-    AppParams* params = AppParams::instance();
+    AppRuntimeInfo* params = AppRuntimeInfo::instance();
     std::string dataFolderU8 = Q2U(dataFolder);
     params->setDataDirectory(dataFolderU8);
     params->setSettingsDirectory(Q2U(settingsFolder));
@@ -176,9 +199,9 @@ settingsDir.mkpath(settingsFolder);
         LOG(ERROR) << "Unable to create temp directory!";
     }
 
-    Settings.LoadSettings(AppParams::instance()->settingsDirectory(), "uptooda.xml");
+    Settings.LoadSettings(AppRuntimeInfo::instance()->settingsDirectory(), "uptooda.xml");
 
-	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
+	if (!engineList->loadFromFile(AppRuntimeInfo::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
 	}
     ServiceLocator::instance()->setEngineList(engineList.get());

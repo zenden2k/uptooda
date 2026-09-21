@@ -11,6 +11,6 @@ public:
     bool PreUpload(UploadTask* task) override;
     bool PostUpload(UploadTask* task) override;
 
-    static bool supposedOutputFormat(SupposedFormat& fileFormat, ServerProfile serverProfile);
+    static bool supposedOutputFormat(SupposedFormat& fileFormat, ServerProfile serverProfile, const ImageUploadParams& defaultImageUploadParams);
 };
 #endif

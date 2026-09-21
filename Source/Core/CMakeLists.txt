@@ -34,7 +34,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     OutputGenerator/XmlTemplateGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
-    AppParams.cpp
+        AppRuntimeInfo.cpp
     Scripting/API/Functions.cpp
     Scripting/API/RegularExpression.cpp
     Scripting/API/ScriptAPI.cpp
@@ -95,7 +95,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/SystemUtils.cpp
     Settings/EncodedPassword.cpp
     Scripting/API/WebBrowserPrivateBase.cpp
-    Utils/GlobalMutex.cpp
     Utils/TextUtils.cpp
     Scripting/UploadFilterScript.cpp
     3rdpart/htmlentities.cpp
@@ -159,7 +158,7 @@ set(HEADER_LIST
     OutputGenerator/XmlTemplateGenerator.h
     UploadEngineList.h
     SettingsManager.h
-    AppParams.h
+        AppRuntimeInfo.h
     Scripting/API/Functions.h
     Scripting/API/RegularExpression.h
     Scripting/API/ScriptAPI.h
@@ -219,8 +218,10 @@ if(WIN32)
     list(APPEND SRC_LIST 
         Utils/Utils_win.cpp
         Utils/CryptoUtils_win.cpp
+        Utils/SystemUtils_win.cpp
         Utils/IOUtf8_win.cpp
-        DefaultProxyProvider.cpp 
+        Utils/GlobalMutex_win.cpp
+        DefaultProxyProvider.cpp
         3rdpart/CodePages.cpp 
         Scripting/API/HtmlDocument.cpp
         Scripting/API/COMUtils.cpp
@@ -291,7 +292,10 @@ if(WIN32)
 else()
     list(APPEND SRC_LIST  
         Utils/Utils_unix.cpp 
-        Utils/CryptoUtils_unix.cpp)
+        Utils/SystemUtils_unix.cpp
+        Utils/CryptoUtils_unix.cpp
+        Utils/GlobalMutex_unix.cpp
+    )
 endif()
 
 if(IU_ENABLE_MEGANZ)
@@ -320,6 +324,7 @@ target_link_libraries(iu_core PUBLIC
     gumbo-parser::gumbo-parser 
     aklomp::base64
     tinyxml2::tinyxml2
+    xxHash::xxhash
     ${COMMON_LIBS_LIST}
 )
 

@@ -38,12 +38,8 @@ CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& ini
 
     newStyleDialog_->GetOptions(&dwFlags);
 
-    dwFlags |= FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM | FOS_OVERWRITEPROMPT;
+    dwFlags |=  FOS_FORCEFILESYSTEM | FOS_OVERWRITEPROMPT;
     newStyleDialog_->SetOptions(dwFlags);
-}
-
-
-CNewStyleFileSaveDialog::~CNewStyleFileSaveDialog() {
 }
 
 INT_PTR CNewStyleFileSaveDialog::DoModal(HWND hWndParent) {
@@ -89,7 +85,7 @@ void CNewStyleFileSaveDialog::setFileName(LPCWSTR fileName) {
 }
 
 void CNewStyleFileSaveDialog::getFiles(std::vector<CString>& arr) {
-    // If the user chose any files, loop thru the array of files.
+    // If the user chose any files, loop through the array of files.
 
     CComPtr<IShellItem> pItem;
 

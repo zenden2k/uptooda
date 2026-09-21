@@ -77,7 +77,7 @@ void CHyperLinkControl::Init(COLORREF BkColor)
     createGdiResources();
     m_BkColor = BkColor;
     OpenThemeData();
-    CreateDoubleBuffer();
+    createDoubleBuffer();
 }
 
 size_t CHyperLinkControl::ItemCount() const {
@@ -177,7 +177,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     const int iconSmallWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconSmallHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     const int iconBigWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
@@ -205,7 +205,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
         itemRect.top = BottomY;
 
         if (BottomY && m_bHyperLinks) {
-            itemRect.top += scaleY(15);
+            itemRect.top += scaleY(20);
         }
 
         itemRect.right = scaleX(10) + itemRect.left + iconBigWidth + TitleWidth + 1 /*ClientRect.right*/;
@@ -295,7 +295,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
     return 0;
 }
 
-LRESULT CHyperLinkControl::OnMouseLeave(void)
+LRESULT CHyperLinkControl::OnMouseLeave()
 {
     HoverItem(-1);
     Track = false;
@@ -425,11 +425,11 @@ int CHyperLinkControl::NotifyParent(int nItem)
 }
 
 LRESULT CHyperLinkControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    CreateDoubleBuffer();
+    createDoubleBuffer();
     return 0;
 }
 
-void CHyperLinkControl::CreateDoubleBuffer() {
+void CHyperLinkControl::createDoubleBuffer() {
     if (dcMem_.m_hDC) {
         SelectObject(dcMem_, bmpOld_);
         dcMem_.DeleteDC();
@@ -743,6 +743,6 @@ LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 LRESULT CHyperLinkControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     createGdiResources();
-    CreateDoubleBuffer();
+    createDoubleBuffer();
     return 0;
 }

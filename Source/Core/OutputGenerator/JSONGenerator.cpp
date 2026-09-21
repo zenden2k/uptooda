@@ -15,6 +15,8 @@ std::string JSONGenerator::doGenerate(const std::vector<UploadObject>& items) {
         objValue["thumb_url"] = item.uploadResult.thumbUrl;
         objValue["view_url"] = item.getDownloadUrl(shortenUrl_);
         objValue["delete_url"] = item.uploadResult.deleteUrl;
+        objValue["edit_url"] = item.uploadResult.editUrl;
+        objValue["message"] = item.uploadResult.message;
         objValue["filename"] = item.displayFileName;
         arrValue.append(objValue);
     }

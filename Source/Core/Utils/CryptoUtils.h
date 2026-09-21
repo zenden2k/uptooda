@@ -45,6 +45,11 @@ namespace IuCoreUtils::CryptoUtils {
 
     std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
     std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
+
+    std::string CalcXXH64Hash(const void* data, size_t size);
+    std::string CalcXXH64HashFromString(const std::string& data);
+    std::string CalcXXH64HashFromFile(const std::string& filename, int64_t offset = 0, size_t chunkSize = 0);
+
     std::string Base64Encode(const std::string& data);
     std::string Base64EncodeRaw(const char* bytes, unsigned int len);
     std::string Base64Decode(const std::string& data);

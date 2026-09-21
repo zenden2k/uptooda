@@ -35,22 +35,16 @@ bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet
 
 inline bool IsVideoFile(LPCWSTR szFileName)
 {
-    return IsFileOfType(szFileName, VideoUtils::instance().videoFilesExtensionsSet);
+    return IsFileOfType(szFileName, VideoUtils::videoFilesExtensions);
 }
 
 inline bool IsAudioFile(LPCWSTR szFileName)
 {
-    return IsFileOfType(szFileName, VideoUtils::instance().audioFilesExtensionsSet);
+    return IsFileOfType(szFileName, VideoUtils::audioFilesExtensions);
 }
 
 CString PrepareVideoDialogFilters();
 CString PrepareAudioDialogFilters();
-
-LPTSTR fgetline(LPTSTR buf, int num, FILE* f);
-
-LPCTSTR CopyToStartOfW(LPCTSTR szString, LPCTSTR szPattern, LPTSTR szBuffer, int nBufferSize);
-
-LPTSTR MoveToEndOfW(LPTSTR szString, LPTSTR szPattern);
 
 #endif
 

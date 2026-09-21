@@ -87,14 +87,12 @@ void MovableElement::renderGrips(Painter* gr)
 
         createGrips();
 
-
-        for (size_t i = 0; i < grips_.size(); i++) {
-            int x = grips_[i].pt.x;
-            int y = grips_[i].pt.y;
+        for (const auto& grip: grips_) {
+            int x = grip.pt.x;
+            int y = grip.pt.y;
             gr->FillRectangle( &brush, x-halfSizeX, y-halfSizeY, rectSizeX, rectSizeY );
             gr->DrawRectangle( &pen2, x-halfSizeX-1, y-halfSizeY-1, rectSizeX+1, rectSizeY+1 );
         }
-
     }
 }
 
@@ -165,7 +163,6 @@ void MovableElement::setPos(int x, int y) {
     int height = getHeight();
     int canvasWidth = canvas_->getWidth();
     int canvasHeight = canvas_->getHeigth();
-
 
     if (x <= 0) {
         x = 0;
@@ -252,14 +249,14 @@ void MovableElement::createGrips()
     };
 
     for( int i = 0; i < 8; i++ ) {
-        int x = pts[i].x;
-        int y = pts[i].y;
+        int ptX = pts[i].x;
+        int ptY = pts[i].y;
         Grip grip;
-        grip.pt.x = x;
-        grip.pt.y = y;
-        if ( x == startPoint_.x && y == startPoint_.y ) {
+        grip.pt.x = ptX;
+        grip.pt.y = ptY;
+        if ( ptX == startPoint_.x && ptY == startPoint_.y ) {
             grip.gpt = GripPointType::gptStartPoint;
-        } else if ( x == endPoint_.x &&   y == endPoint_.y ) {
+        } else if ( ptX == endPoint_.x && ptY == endPoint_.y ) {
             grip.gpt = GripPointType::gptEndPoint;
         }
         grip.bt = static_cast<BoundaryType>(i);
@@ -320,6 +317,14 @@ POINT* MovableElement::getMinPoint(Axis axis)
     } else {
         return startPoint_.y < endPoint_.y ? &startPoint_ : &endPoint_;
     }
+}
+
+void MovableElement::setDrawBorder(bool enable) {
+    drawBorder_ = enable;
+}
+
+bool MovableElement::getDrawBorder() const {
+    return drawBorder_;
 }
 
 }

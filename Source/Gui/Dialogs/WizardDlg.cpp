@@ -61,7 +61,7 @@
 #include "Func/MyUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
-#include "Core/AppParams.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "ScreenCapture/MonitorEnumerator.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -80,9 +80,11 @@
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     #include "Gui/Dialogs/NetworkDebugDlg.h"
 #endif
-#include "ScreenCapture/WindowsHider.h"
+
 #include "Gui/Helpers/DPIHelper.h"
 #include "History/HistoryManagerImpl.h"
+#include "Gui/IconBitmapUtils.h"
+#include "HistoryWindow.h"
 
 using namespace Gdiplus;
 namespace
@@ -100,13 +102,13 @@ struct TaskDispatcherMessageStruct {
 
 CString MakeTempFileName(const CString& FileName)
 {
-    CString FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
+    CString FileNameBuf = AppRuntimeInfo::instance()->tempDirectoryW() + FileName;
 
     if (WinUtils::FileExists(FileNameBuf))
     {
         CString OnlyName = WinUtils::GetOnlyFileName(FileName);
         CString Ext = WinUtils::GetFileExt(FileName);
-        FileNameBuf = AppParams::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
+        FileNameBuf = AppRuntimeInfo::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
     }
     return FileNameBuf;
 }
@@ -191,7 +193,7 @@ std::optional<CString> SaveClipboardBinaryData(UINT format, const CString& exten
                 return std::nullopt;
             }
 
-            CString tempFilePath = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + L"\\clipboard." + extension);
+            CString tempFilePath = WinUtils::GetUniqFileName(AppRuntimeInfo::instance()->tempDirectoryW() + L"\\clipboard." + extension);
 
             HANDLE hFile = CreateFile(tempFilePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hFile == INVALID_HANDLE_VALUE) {
@@ -261,7 +263,6 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     scriptsManager_(scriptsManager),
     Settings(*settings),
     logger_(std::move(logger)),
-    sessionImageServer_(false),
     enginelist_(enginelist)
 {
     mainThreadId_ = GetCurrentThreadId();
@@ -279,20 +280,12 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     lastScreenshotMonitor_ = nullptr;
     m_bShowWindow = true;
     using namespace std::placeholders;
+    iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
-    if (settings) {
-        if (!settings->imageServer.isEmpty()) {
-            const std::string templateName = settings->imageServer.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName;
-            if (sessionImageServer_.isEmpty()) {
-                sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
-            }
-
-        }
-    }
 
     enginelist_->setNumOfRetries(settings->FileRetryLimit, settings->ActionRetryLimit);
 
@@ -336,7 +329,7 @@ bool CWizardDlg::pasteFromClipboard() {
         CString text;
         WinUtils::GetClipboardText(text);
         CString outFileName;
-        if (ImageUtils::SaveImageFromCliboardDataUriFormat(text, outFileName)) {
+        if (ImageUtils::SaveImageFromClipboardDataUriFormat(text, outFileName)) {
             CreatePage(wpMainPage);
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             if (MainDlg) {
@@ -373,7 +366,6 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
     RECT clientRect;
     GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();
@@ -405,11 +397,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 #endif
     SetWindowText(APP_NAME);
 
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGSBLUE), iconWidth, iconHeight);
 
     helpButton_ = GetDlgItem(IDC_HELPBUTTON);
     helpButton_.SetIcon(helpButtonIcon_);
@@ -427,7 +419,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
 
-        const auto aumi = WinToast::configureAUMI(L"SergeySvistunov", L"Uptooda", {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        const auto aumi = WinToast::configureAUMI(L"SergeySvistunov", L"Uptooda", {}, IuCoreUtils::Utf8ToWstring(AppRuntimeInfo::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);
 
         if (!toast->initialize()) {
@@ -454,9 +446,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
-    for(size_t i=0; i<list.size(); i++)
+    for(const auto & i : list)
     {
-        LoadUploadEngines(serversFolder+list[i], ErrorStr);
+        LoadUploadEngines(serversFolder+i, ErrorStr);
     }
     list.clear();
 
@@ -467,9 +459,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         if (boost::filesystem::exists(userServersFolderPath) && boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
             WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
 
-            for (size_t i = 0; i < list.size(); i++)
+            for (const auto & fileName : list)
             {
-                LoadUploadEngines(userServersFolder + list[i], ErrorStr);
+                LoadUploadEngines(userServersFolder + fileName, ErrorStr);
             }
         }
     } catch (const std::exception& ex) {
@@ -607,8 +599,8 @@ bool CWizardDlg::ParseCmdLine()
             ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmWindowed);
             if (dr == ImageEditorWindow::drCancel) {
                 PostQuitMessage(0);
-            } else if (dr != ImageEditorWindow::drCopiedToClipboard){
-                this->AddImage(imageFileName, WinUtils::myExtractFileName(imageFileName), true);
+            } else if (dr != ImageEditorWindow::drCopyToClipboard){
+                this->AddImage(imageFileName, WinUtils::DoExtractFileName(imageFileName), true);
                 //ShowPage(1);
                 m_bShowAfter = true;
                 m_bShowWindow = true;
@@ -652,7 +644,7 @@ bool CWizardDlg::ParseCmdLine()
                 CmdLine.RemoveOption(_T("quick"));
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
-                CUploadEngineData *ued = sp.uploadEngineData();
+                const CUploadEngineData *ued = sp.uploadEngineData();
                 if ( ued ) {
                     if ( ued ->hasType(CUploadEngineData::TypeFileServer) ) {
                         sessionImageServer_ = sp;
@@ -679,7 +671,7 @@ bool CWizardDlg::ParseCmdLine()
 
 	if (CmdLine.IsOption(_T("importvideo")) && CmdLine.GetNextFile(FileName, nIndex)) {
         ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
-        CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
+        auto* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
         dlg->SetFileName(FileName);
         return true;
     }
@@ -1183,7 +1175,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
         }
 
         if (!enableDragndropOverlay_) {
-            queryDropFiledescriptors(pDataObj, &enableDragndropOverlay_);
+            queryDropFileDescriptors(pDataObj, &enableDragndropOverlay_);
         }
     }
 
@@ -1213,13 +1205,13 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
     return S_OK;
 }
 
-STDMETHODIMP CWizardDlg::DragLeave( void)
+STDMETHODIMP CWizardDlg::DragLeave()
 {
     dragndropOverlay_.ShowWindow(SW_HIDE);
     return S_OK;
 }
 
-bool CWizardDlg::queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay) {
+bool CWizardDlg::queryDropFileDescriptors(IDataObject* pDataObj, bool* enableOverlay) {
     FORMATETC tc2 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     if (pDataObj->QueryGetData(&tc2) == S_OK)
     {
@@ -1241,7 +1233,7 @@ bool CWizardDlg::queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOve
     return false;
 }
 
-bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
+bool CWizardDlg::HandleDropFileDescriptors(IDataObject *pDataObj)
 {
     FORMATETC fileDescriptorFormat = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
    
@@ -1401,7 +1393,7 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
     if (!hasBitmap && HandleDropHDROP(pDataObj))
         return S_OK;
 
-    if (HandleDropFiledescriptors(pDataObj))
+    if (HandleDropFileDescriptors(pDataObj))
         return S_OK;
 
     if(HandleDropBitmap(pDataObj))
@@ -1472,7 +1464,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
         try {
             if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, ImageUtils::sifPNG, 100)) {
                 CreatePage(wpMainPage);
-                CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+                auto* MainDlg = getPage<CMainDlg>(wpMainPage);
                 MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
                 ShowPage(wpMainPage);
             }
@@ -1496,7 +1488,7 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
     CreatePage(wpMainPage);
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return false;
     }
@@ -1522,8 +1514,7 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    int PageIndex = wParam;
-    ShowPage(static_cast<WizardPageId>(PageIndex));
+    ShowPage(static_cast<WizardPageId>(wParam));
     return 0;
 }
 
@@ -1764,6 +1755,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcFromClipboard(fromCmdLine);
     else if (funcName == _T("settings"))
         return funcSettings();
+    else if (funcName == _T("history"))
+        return funcHistory();
     else if (funcName == _T("reuploadimages"))
         return funcReuploadImages();
     else if (funcName == _T("shortenurl"))
@@ -2016,14 +2009,14 @@ void CWizardDlg::CloseWizard(bool force)
 
 bool CWizardDlg::RegisterLocalHotkeys() {
     m_hotkeys = Settings.Hotkeys;
-    int n = m_hotkeys.size();
-    constexpr auto PREDEFINED_ACCEL_COUNT = 2;
+    size_t n = m_hotkeys.size();
+    constexpr size_t PREDEFINED_ACCEL_COUNT = 2;
     auto accels = std::make_unique<ACCEL[]>(n + PREDEFINED_ACCEL_COUNT);
     accels[0] = {FVIRTKEY, VK_F1, IDC_DOCUMENTATION};
     accels[1] = {FVIRTKEY | FCONTROL | FSHIFT, 'L', IDC_SHOWLOG};
 
-    int j = PREDEFINED_ACCEL_COUNT;
-    for (int i = 0; i < n; i++) {
+    size_t j = PREDEFINED_ACCEL_COUNT;
+    for (size_t i = 0; i < n; i++) {
         if (!m_hotkeys[i].localKey.keyCode) {
             continue;
         }
@@ -2033,7 +2026,7 @@ bool CWizardDlg::RegisterLocalHotkeys() {
     }
 
     localHotkeys_.DestroyObject();
-    localHotkeys_.CreateAcceleratorTable(accels.get(), j);
+    localHotkeys_.CreateAcceleratorTable(accels.get(), static_cast<int>(j));
     return true;
 }
 
@@ -2066,6 +2059,12 @@ bool CWizardDlg::funcSettings()
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
     return true;
+}
+
+bool CWizardDlg::funcHistory() {
+    CHistoryWindow dlg(this);
+    dlg.DoModal(m_hWnd);
+    return 0;
 }
 
 bool CWizardDlg::funcDownloadImages()
@@ -2122,7 +2121,7 @@ bool CWizardDlg::funcAddFiles()
 
     if (!files.empty()) {
         CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        auto* mainDlg = getPage<CMainDlg>(wpMainPage);
         int nCount = 0;
         for (const auto& fileName : files) {
             if (mainDlg->AddToFileList(fileName)) {
@@ -2172,7 +2171,7 @@ void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreens
     }
 }
 
-void CWizardDlg::addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb) {
+void CWizardDlg::addLastRegionAvailabilityChangeCallback(const std::function<void(bool)>& cb) {
     lastRegionAvailabilityChangeCallbacks_.push_back(cb);
 }
 
@@ -2215,7 +2214,7 @@ bool CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params
 
     if (screenRecorderWindow->doModal(m_hWnd, params, forceShowWizardAfter) == ScreenRecorderWindow::drSuccess) {
         CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        auto* mainDlg = getPage<CMainDlg>(wpMainPage);
         mainDlg->AddToFileList(screenRecorderWindow->outFileName());
         mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
         mainDlg->ThumbsView.SelectLastItem();
@@ -2381,27 +2380,28 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
     using namespace ImageEditor;
     std::optional<ImageEditorWindow::DialogResult> dialogResult;
-    CString suggestingFileName;
+    IuCommonFunctions::ScreenshotData screenshotData{};
     if (result) {
-        suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+        screenshotData.index = IuCommonFunctions::screenshotIndex;
+        screenshotData.time = time(nullptr);
     }
 
     std::shared_ptr<Gdiplus::Bitmap> bitmapToCopy;
+    bool saved = false;
+    bool showNotification = true;
     defer d2([&] {
-        if (bitmapToCopy) {
-            showScreenshotCopiedToClipboardMessage(bitmapToCopy, outFileName);
+        if (showNotification && (bitmapToCopy || dialogResult == ImageEditorWindow::drSave)) {
+            showNotificationAfterScreenshot(bitmapToCopy, outFileName, saved, !!bitmapToCopy);
         }
     });
+
     if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
     {
         ImageEditorConfigurationProvider configProvider;
-        ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
+        ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider, uploadEngineManager_);
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(fromTray);
-        if ( fromTray ) {
-            imageEditor.setServerDisplayName(Utf8ToWCstring(enginelist_->getServerDisplayName(Settings.quickScreenshotServer.getByIndex(0).uploadEngineData())));
-        }
-        imageEditor.setSuggestedFileName(suggestingFileName);
+        imageEditor.setScreenshotData(screenshotData);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
@@ -2412,7 +2412,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
-        if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
+
+        if (dialogResult == ImageEditorWindow::drSave) {
+            outFileName = imageEditor.outFileName();
+            saved = true;
+        }
+
+        if (dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload) {
             result = imageEditor.getResultingBitmap();
         } else if (dialogResult == ImageEditorWindow::drRecordScreen) {
             result.reset();
@@ -2427,69 +2433,81 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             }, true);
 
             needToShow = false;
-        }
-        else {
-            if (dialogResult == ImageEditorWindow::drCopiedToClipboard) {
+        } else {
+            if (dialogResult == ImageEditorWindow::drCopyToClipboard || Settings.ScreenshotSettings.CopyToClipboard) {
                 bitmapToCopy = imageEditor.getResultingBitmap();
             }
             CanceledByUser = true;
         }
     }
 
-    if(!CanceledByUser)
-    {
-        if(result)
-        {
+    if (!CanceledByUser) {
+        if (result) {
             Result = true;
-            bool CopyToClipboard = false;
-            if((fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
-            {
 
-                CopyToClipboard = true;
-            }
             auto savingFormat = static_cast<ImageUtils::SaveImageFormat>(Settings.ScreenshotSettings.Format);
             if (savingFormat == ImageUtils::sifJPEG) {
-                ImageUtils::Gdip_RemoveAlpha(*result, Color(255, 255, 255, 255));
+                ImageUtils::RemoveAlphaFromBitmap(*result, Color(255, 255, 255, 255));
             }
 
-            CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+            if ((fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.
+                ScreenshotSettings.CopyToClipboard) {
+                bitmapToCopy = result;
+            }
+
             try {
-                ImageUtils::MySaveImage(result.get(),suggestingFileName,outFileName,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
-            } catch (const std::exception& ex) {
+                CString suggestingFileName = IuCommonFunctions::MakeScreenshotFileName(screenshotData,
+                    {static_cast<LONG>(result->GetWidth()), static_cast<LONG>(result->GetHeight())}
+                );
+
+                CString folder = WinUtils::GetFilePath(suggestingFileName);
+                ImageUtils::MySaveImage(result.get(), WinUtils::DoExtractFileName(suggestingFileName), outFileName,
+                                        savingFormat,
+                                        Settings.ScreenshotSettings.Quality,
+                                        Settings.ScreenshotSettings.Folder.IsEmpty() ? nullptr : folder.GetString()
+                );
+
+                if (!Settings.ScreenshotSettings.Folder.IsEmpty()) {
+                    saved = true;
+                }
+            }
+            catch (const std::exception& ex) {
                 LOG(ERROR) << ex.what();
             }
             IuCommonFunctions::screenshotIndex++;
-            if ( CopyToClipboard )
-            {
-                if (ClipboardUtils::CopyBitmapToClipboard(result.get(), m_hWnd)) {
-                    if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
-                        && !dialogResult) {
-                        bitmapToCopy = result;
-                        Result = false;
-                    }
-                }
-            }
+
             if (!fromTray || dialogResult == ImageEditorWindow::drAddToWizard
                 || (!dialogResult && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD
                         || Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_SHOWWIZARD)
-                   )
-            ){
+                )
+            ) {
                 CreatePage(wpMainPage);
                 auto mainDlg = getPage<CMainDlg>(wpMainPage);
                 mainDlg->AddToFileList(outFileName);
                 mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
-//                mainDlg->ThumbsView.LoadThumbnails();
+                //                mainDlg->ThumbsView.LoadThumbnails();
                 mainDlg->ThumbsView.SetFocus();
                 ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
-            } else if (fromTray && (dialogResult == ImageEditorWindow::drUpload || (!dialogResult && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD))) {
+            } else if (fromTray && (dialogResult == ImageEditorWindow::drUpload || (!dialogResult && Settings.
+                TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD))) {
                 Result = false;
-                CString displayFileName = WinUtils::myExtractFileName(outFileName);
+                CString displayFileName = WinUtils::DoExtractFileName(outFileName);
+                if (IsWindows10OrGreater()) {
+                    showNotification = false;
+                }
                 floatWnd_->UploadScreenshot(outFileName, displayFileName);
             }
-        }
-        else
-        {
+        } else {
             LocalizedMessageBox(TR("Unable to make screenshot!"));
+        }
+    }
+
+    if (bitmapToCopy) {
+        if (ClipboardUtils::CopyBitmapToClipboard(bitmapToCopy.get(), m_hWnd)) {
+            if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
+                && dialogResult == ImageEditorWindow::drCancel) {
+                Result = false;
+            }
         }
     }
 
@@ -2508,9 +2526,18 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     return Result;
 }
 
-void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath) {
+void CWizardDlg::showNotificationAfterScreenshot(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath, bool saved, bool copied) {
+    std::string message;
+    if (saved && copied) {
+        message = _("Screenshot has been saved and copied to the clipboard.");
+    } else if (copied) {
+        message = _("Screenshot has been copied to the clipboard.");
+    } else {
+        message = _("Screenshot has been saved.");
+    }
+
     if (false && trayIconEnabled()) {
-        floatWnd_->ShowScreenshotCopiedToClipboardMessage();
+        floatWnd_->ShowScreenshotCopiedToClipboardMessage(U2W(message));
     } else {
         using namespace WinToastLib;
         if (WinToast::isCompatible()) {
@@ -2523,7 +2550,7 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
                     templ.setImagePath(imageFilePath.GetString());
                 }
 
-                templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
+                templ.setTextField(IuCoreUtils::Utf8ToWstring(message), WinToastTemplate::FirstLine);
                 const auto toast_id = instance->showToast(templ, new WinToastHandler());
                 if (toast_id < 0) {
                     LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
@@ -2559,10 +2586,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
         {
             CString text;
             WinUtils::GetClipboardText(text, m_hWnd);
-            if (text.Left(5) == _T("data:")) {
-                IsClipboard = true;
-            }
-            else if(CImageDownloaderDlg::LinksAvailableInText(text))
+            if (text.Left(5) == _T("data:") || CImageDownloaderDlg::LinksAvailableInText(text))
             {
                 IsClipboard = true;
             }
@@ -2587,7 +2611,7 @@ bool CWizardDlg::funcOpenScreenshotFolder() {
     CString screenshotFolder = Settings.ScreenshotSettings.Folder;
 
     if (screenshotFolder.IsEmpty()) {
-        screenshotFolder = AppParams::instance()->tempDirectoryW();
+        screenshotFolder = AppRuntimeInfo::instance()->tempDirectoryW();
     }
 
     if (!screenshotFolder.IsEmpty()) {
@@ -2729,6 +2753,16 @@ LRESULT CWizardDlg::OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHand
     return 0;
 }
 
+LRESULT CWizardDlg::OnShowSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL &bHandled) {
+    funcSettings();
+    return 0;
+}
+
+LRESULT CWizardDlg::OnShowHistory(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL &bHandled) {
+    funcHistory();
+    return 0;
+}
+
 #ifdef IU_ENABLE_SERVERS_CHECKER
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
@@ -2750,7 +2784,7 @@ bool CWizardDlg::acceptsDragnDrop() const {
 
 void CWizardDlg::beginAddFiles() {
     CreatePage(wpMainPage);
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return;
     }
@@ -2759,18 +2793,18 @@ void CWizardDlg::beginAddFiles() {
 }
 
 void  CWizardDlg::endAddFiles() {
-    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    auto* MainDlg = getPage<CMainDlg>(wpMainPage);
     if (!MainDlg) {
         return;
     }
     MainDlg->ThumbsView.endAdd();
 }
 
-bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer) {
+bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer, ImageUploadParams defaultImageUploadParams) {
     auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
     // Must be kept alive until fileFormatDlg is destroyed
-    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer);
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer, std::move(defaultImageUploadParams));
 
     auto dlg = CStatusDlg::create(task);
 
@@ -2809,22 +2843,53 @@ void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin = { rc.left, rc.bottom };
 
+    const UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    auto loadSmallIconBitmap = [&](int resourceId) -> HBITMAP {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        if (!icon) {
+            return nullptr;
+        }
+        return iconBitmapUtils_->HIconToBitmapPARGB32(icon, dpi);
+    };
+
+    if (!settingsBitmap_) {
+        settingsBitmap_ = loadSmallIconBitmap(IDI_ICONSETTINGS);
+    }
+
+    if (!historyBitmap_) {
+        historyBitmap_ = loadSmallIconBitmap(IDI_ICONHISTORY);
+    }
+
+    if (!helpBitmap_) {
+        helpBitmap_ = loadSmallIconBitmap(IDI_ICON_HELP_DROPDOWN);
+    }
+
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
-    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
-    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")));
-    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
-    popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
+    GuiTools::InsertMenu(popupMenu, 0, IDC_SETTINGS, TR("Settings") + CString(_T("...")), settingsBitmap_);
+    GuiTools::InsertMenu(popupMenu, 1, IDM_VIEWHISTORY, TR("History"), historyBitmap_);
+
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, TR("Network Debugger"));
 #endif
-
 #if defined(IU_ENABLE_SERVERS_CHECKER) && !defined(NDEBUG)
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
 #endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
+
+    popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
+
+    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
+
+    GuiTools::InsertMenu(popupMenu, popupMenu.GetMenuItemCount(), IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")), helpBitmap_);
+    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -2852,7 +2917,7 @@ bool CWizardDlg::canExitApp() const {
 }
 
 void CWizardDlg::createIcons() {
-    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     if (windowIcon_) {
         windowIcon_.DestroyIcon();
     }
@@ -2865,4 +2930,15 @@ void CWizardDlg::createIcons() {
     smallWindowIcon_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME, dpi);
     SetIcon(smallWindowIcon_, FALSE);
 
+    if (settingsBitmap_) {
+        settingsBitmap_.DeleteObject();
+    }
+
+    if (historyBitmap_) {
+        historyBitmap_.DeleteObject();
+    }
+
+    if (helpBitmap_) {
+        helpBitmap_.DeleteObject();
+    }
 }

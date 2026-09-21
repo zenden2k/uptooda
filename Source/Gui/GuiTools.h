@@ -43,7 +43,7 @@ namespace GuiTools
     RECT GetDialogItemRect(HWND dialog, int itemId);
     void ShowDialogItem(HWND dlg, int itemId, bool show);
     void EnableDialogItem(HWND dlg, int itemId, bool enable);
-    void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx);
+    void RemoveWindowStyleEx(HWND hWnd, LONG styleEx);
 
     // Converts pixels to Win32 dialog units
     int dlgX(int WidthInPixels);
@@ -84,8 +84,8 @@ namespace GuiTools
     void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text);
     CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
     LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
-    HICON LoadSmallIcon(int resourceId, int dpi = 0);
-    HICON LoadBigIcon(int resourceId, int dpi = 0);
+    HICON LoadSmallIcon(int resourceId, UINT dpi = 0);
+    HICON LoadBigIcon(int resourceId, UINT dpi = 0);
     int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
     BOOL SetClientRect(HWND hWnd, int x, int y);
     BOOL IsWindowCloaked(HWND hwnd);
@@ -108,7 +108,7 @@ namespace GuiTools
         ARROW_RIGHT // ▶
     };
     std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int width, int height, ArrowOrientation orientation = ARROW_DOWN);
-    HICON CreateDropDownArrowIcon(HWND wnd, int dpi, ArrowOrientation orientation = ARROW_DOWN);
+    HICON CreateDropDownArrowIcon(HWND wnd, UINT dpi, ArrowOrientation orientation = ARROW_DOWN);
 
     HICON GetMenuArrowIcon();
 

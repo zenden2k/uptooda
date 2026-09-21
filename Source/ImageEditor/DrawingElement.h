@@ -35,8 +35,8 @@ class DrawingElement {
         int getWidth() const;
         int getHeight() const;
     protected:
-        POINT startPoint_;
-        POINT endPoint_;
+        POINT startPoint_{};
+        POINT endPoint_{};
         Gdiplus::Color color_;
         Gdiplus::Color backgroundColor_;
         int penSize_;
@@ -56,7 +56,7 @@ class AffectedSegments {
         HRGN createRegionFromSegments();
         void clear();
         void getRects( std::deque<RECT>& rects, int maxWidth = 0, int maxHeight = 0) const;
-        AffectedSegments& operator+= ( const AffectedSegments& segments_);
+        AffectedSegments& operator+= ( const AffectedSegments& segments);
     private:
         std::map<unsigned int, bool> segments_;
         int maxWidth_;

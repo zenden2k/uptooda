@@ -11,15 +11,15 @@ class WinUtilsTest : public ::testing::Test {
 
 TEST_F(WinUtilsTest, myExtractFileName) {
     CString fileName = L"c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
-    CString result = myExtractFileName(fileName);
+    CString result = DoExtractFileName(fileName);
     EXPECT_STREQ(L"Image Uploader.exe", result);
-    result = myExtractFileName(L"c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
+    result = DoExtractFileName(L"c:/Program Files (x86)\\Image Uploader/ExplorerIntegration64.dll");
     EXPECT_STREQ(L"ExplorerIntegration64.dll", result);
-    result = myExtractFileName(L"avcodec-56.dll");
+    result = DoExtractFileName(L"avcodec-56.dll");
     EXPECT_STREQ(L"avcodec-56.dll", result);
-    result = myExtractFileName(L"\\\\?\\d:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Source\\Tests\\CMakeLists.txt");
+    result = DoExtractFileName(L"\\\\?\\d:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Source\\Tests\\CMakeLists.txt");
     EXPECT_STREQ(L"CMakeLists.txt", result);
-    result = myExtractFileName(L"\\\\?\\d:\\Develop\\imageuploader-1.3.2-vs2013\\..\\Source\\Tests\\CMakeLists2.txt");
+    result = DoExtractFileName(L"\\\\?\\d:\\Develop\\imageuploader-1.3.2-vs2013\\..\\Source\\Tests\\CMakeLists2.txt");
     EXPECT_STREQ(L"CMakeLists2.txt", result);
 }
 

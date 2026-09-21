@@ -26,13 +26,11 @@ namespace ImageEditor {
 CropTool::CropTool(Canvas* canvas) : MoveAndResizeTool(canvas, ElementType::etCrop) {
 }
 
-void CropTool::beginDraw(int x, int y)
-{
-    MoveAndResizeTool::beginDraw(x,y);
+void CropTool::beginDraw(int x, int y) {
+    MoveAndResizeTool::beginDraw(x, y);
 }
 
-void CropTool::continueDraw(int x, int y, DWORD flags)
-{
+void CropTool::continueDraw(int x, int y, DWORD flags) {
     if (x >= canvas_->getWidth()) {
         x = canvas_->getWidth() - 1;
     }
@@ -48,34 +46,34 @@ void CropTool::continueDraw(int x, int y, DWORD flags)
     MoveAndResizeTool::continueDraw(x, y, flags);
 }
 
-void CropTool::endDraw(int x, int y)
-{
+void CropTool::endDraw(int x, int y) {
     MoveAndResizeTool::endDraw(x, y);
-    if ( currentElement_ ) {
-        if ( x == startPoint_.x && y == startPoint_.y ) {
+    if (currentElement_) {
+        if (x == startPoint_.x && y == startPoint_.y) {
             canvas_->deleteMovableElement(currentElement_);
             currentElement_ = nullptr;
             canvas_->showOverlay(false);
         } else {
-
         }
         canvas_->updateView();
         currentElement_ = nullptr;
     }
 }
 
-void CropTool::applyOperation() {
+bool CropTool::applyOperation() {
     std::vector<MovableElement*> elements;
     canvas_->getElementsByType(ElementType::etCrop, elements);
 
     if (!elements.empty()) {
-        Crop* cropEl = dynamic_cast<Crop*>(elements[0]);
+        auto cropEl = dynamic_cast<Crop*>(elements[0]);
         if (cropEl) {
             canvas_->applyCrop(cropEl);
             canvas_->deleteMovableElement(cropEl);
             canvas_->showOverlay(false);
+            return true;
         }
     }
+    return false;
 }
 
 void CropTool::cancelOperation() {

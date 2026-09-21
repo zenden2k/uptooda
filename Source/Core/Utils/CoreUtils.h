@@ -85,6 +85,25 @@ make_unique_malloc(std::size_t size) noexcept
     static_assert(std::is_trivial_v<T>);
     return unique_c_ptr<T>{static_cast<T*>(std::malloc(size))};
 }
+
+template <typename T>
+inline void hash_combine(std::size_t& seed, const T& val) {
+    std::hash<T> hasher;
+    seed ^= hasher(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+//  taken from https://stackoverflow.com/a/7222201/916549
+//
+template <typename S, typename T>
+struct std::hash<std::pair<S, T>> {
+    inline size_t operator()(const std::pair<S, T>& val) const {
+        size_t seed = 0;
+        hash_combine(seed, val.first);
+        hash_combine(seed, val.second);
+        return seed;
+    }
+};
+
 namespace IuCoreUtils
 {
     // A version of fopen() function which supports utf8 file names
@@ -109,7 +128,6 @@ namespace IuCoreUtils
     std::string GetFileMimeTypeByName(const std::string& fileName);
     std::string GetFileMimeTypeByContents(const std::string& fileName);
     std::string GetDefaultExtensionForMimeType(const std::string&);
-    std::string StrReplace(std::string text, std::string s, std::string d);
     std::string ConvertToUtf8(const std::string &text, const std::string& codePage);
     bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data);
 
@@ -124,7 +142,9 @@ namespace IuCoreUtils
     std::string GetFileContents(const std::string& filename);
 
     /**
-     * @throws std::system_error, std::out_of_range, std::runtime_error
+     * @throws std::system_error
+     * @throws std::out_of_range
+     * @throws std::runtime_error
      */
     std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead = false);
 
@@ -133,7 +153,7 @@ namespace IuCoreUtils
     int64_t GetFileSize(const std::string& utf8Filename);
     std::wstring Utf8ToWstring(const std::string &str);
     std::string WstringToUtf8(const std::wstring &str);
-
+    std::string WstringToSystemLocale(const std::wstring &str);
     // Convert UTF16-LE encoded string to Utf-8
     std::string Utf16ToUtf8(const std::u16string& src);
 

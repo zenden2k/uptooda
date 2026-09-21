@@ -4,26 +4,13 @@
 #include <string>
 #include <memory>
 
-#include "Core/CommonDefs.h"
+#include "Core/Video/VideoUtils.h"
 #include "../3rdpart/Registry.h"
 
 namespace Helpers {
 
-bool IsVistaOrLater() {
-    static int isVista = -1;
-    if (isVista == -1) {
-        OSVERSIONINFO osver;
-        osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-
-        isVista = (::GetVersionEx(&osver) &&
-            osver.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-            (osver.dwMajorVersion >= 6));
-    }
-    return isVista != FALSE;
-}
-
 bool FileExists(LPCWSTR FileName) {
-    return (FileName && GetFileAttributesW(FileName) != -1);
+    return FileName && GetFileAttributesW(FileName) != -1;
 }
 
 LPWSTR ExtractFilePath(LPCWSTR FileName, LPWSTR buf, size_t bufferSize) {
@@ -201,10 +188,11 @@ CString FindDataFolder() {
     return DataFolder;
 }
 
-bool IsFileOfType(LPCWSTR szFileName, const std::unordered_set<std::string>& extensionsSet) {
+bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet) {
     if (!szFileName) {
         return false;
     }
+
     CString extension = GetFileExt(szFileName);
 
     if (extension.IsEmpty()) {
@@ -212,48 +200,17 @@ bool IsFileOfType(LPCWSTR szFileName, const std::unordered_set<std::string>& ext
     }
 
     extension.MakeLower();
-    std::string extensionA(CW2A(extension, CP_UTF8));
+    const std::string extensionA(CW2A(extension, CP_UTF8));
     return extensionsSet.find(extensionA) != extensionsSet.end();
 }
 
-void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount)
-{
-    // Skip delimiters at beginning.
-    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    std::string::size_type pos = str.find_first_of(delimiters, lastPos);
-    int counter = 0;
-    while (std::string::npos != pos || std::string::npos != lastPos) {
-        counter++;
-        if (counter == maxCount) {
-            tokens.emplace_back(str.substr(lastPos, str.length()));
-            break;
-        } else
-            // Found a token, add it to the vector.
-            tokens.emplace_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-    }
+bool IsVideoFile(LPCWSTR szFileName) {
+    return IsFileOfType(szFileName, VideoUtils::videoFilesExtensions);
 }
 
-VideoUtils& VideoUtils::instance()
+bool IsAudioFile(LPCWSTR szFileName)
 {
-    static VideoUtils theSingleInstance;
-    return theSingleInstance;
-}
-
-VideoUtils::VideoUtils()
-{
-    std::vector<std::string> extensions;
-   
-    Split(IU_VIDEOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
-    videoFilesExtensionsSet.insert(extensions.begin(), extensions.end());
-    extensions.clear();
-
-    Split(IU_AUDIOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
-    audioFilesExtensionsSet.insert(extensions.begin(), extensions.end());
+    return IsFileOfType(szFileName, VideoUtils::audioFilesExtensions);
 }
 
 

@@ -42,7 +42,7 @@ PCWSTR const c_rgpszFiles[] =
 namespace
 {
 // Determines if the provided IShellItem is listed in the array of items that the user has removed
-bool _IsItemInArray(IShellItem *psi, IObjectArray *poaRemoved)
+bool IsItemInArray(IShellItem *psi, IObjectArray *poaRemoved)
 {
 	bool fRet = false;
 	UINT cItems;

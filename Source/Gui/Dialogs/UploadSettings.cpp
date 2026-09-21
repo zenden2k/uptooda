@@ -134,20 +134,11 @@ CUploadSettings::~CUploadSettings() {
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 {
-    auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
-    if (settings) {
-        if (!settings->imageServer.isEmpty()) {
-            const std::string templateName = settings->imageServer.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName;
-            if (sessionImageServer_.isEmpty()) {
-                sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
-            }
-
-        }
-    }
+    //auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
 }
 
 void CUploadSettings::updateButtonIcons() {
-    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -212,6 +203,7 @@ void CUploadSettings::TranslateUI()
 
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     PageWnd = m_hWnd;
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     sessionFileServer_ = WizardDlg->getSessionFileServer();
@@ -246,7 +238,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 6, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
 
     ShowParams();
-    CString profileName = sessionImageServer_.isEmpty() ? U2W(sessionImageServer_.getByIndex(0).getImageUploadParams().ImageProfileName) : _T("");
+    CString profileName = U2W(settings->DefaultImageUploadParams.ImageProfileName);
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         profileName = _T("Default");
     }
@@ -287,7 +279,8 @@ LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 {
-    ImageUploadParams params = sessionImageServer_.isEmpty() ? ImageUploadParams() : sessionImageServer_.getByIndex(0).getImageUploadParams();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const ImageUploadParams& params = settings->DefaultImageUploadParams;
     SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, params.ProcessImages);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>(params.getThumb().Format));
     SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_SETCHECK, params.CreateThumbs);
@@ -309,7 +302,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
     updateUrlShorteningCheckboxLabel();
 }
 
-LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+LRESULT CUploadSettings::OnBnClickedCreateThumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
     BOOL checked = SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_GETCHECK, 0, 0);
 
@@ -334,7 +327,7 @@ bool CUploadSettings::OnNext()
 
     if(!sessionImageServer.serverName().empty())
     {
-        CUploadEngineData *ue = sessionImageServer.uploadEngineData();
+        const CUploadEngineData *ue = sessionImageServer.uploadEngineData();
         if (ue->NeedAuthorization == CUploadEngineData::naObligatory && sessionImageServer.profileName().empty())
         {
             CString errorMsg;
@@ -352,7 +345,7 @@ bool CUploadSettings::OnNext()
     }
     if(!sessionFileServer.serverName().empty())
     {
-        CUploadEngineData *ue2 = sessionFileServer.uploadEngineData();
+        const CUploadEngineData *ue2 = sessionFileServer.uploadEngineData();
         if (ue2->NeedAuthorization == CUploadEngineData::naObligatory && sessionFileServer.profileName().empty())
         {
             CString errorMsg;
@@ -362,7 +355,7 @@ bool CUploadSettings::OnNext()
         }
     }
 
-    ImageUploadParams& imageUploadParams = sessionImageServer.getImageUploadParamsRef();
+    ImageUploadParams imageUploadParams = settings->DefaultImageUploadParams;
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
     imageUploadParams.CreateThumbs = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     imageUploadParams.UseServerThumbs = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
@@ -387,8 +380,6 @@ bool CUploadSettings::OnNext()
         thumb.ResizeMode = ThumbCreatingParams::trByWidth;
     }
 
-
-
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
     {
@@ -397,7 +388,7 @@ bool CUploadSettings::OnNext()
         sessionFileServer.setShortenLinks(shorten);
     }
 
-    if (settings->CheckFileTypesBeforeUpload && !WizardDlg->checkFileFormats(sessionImageServer_, sessionFileServer_)) {
+    if (settings->CheckFileTypesBeforeUpload && !WizardDlg->checkFileFormats(sessionImageServer_, sessionFileServer_, imageUploadParams)) {
         return false;
     }
 
@@ -409,6 +400,7 @@ bool CUploadSettings::OnNext()
     if ( settings->RememberFileServer ) {
         settings->fileServer = sessionFileServer_;
     }
+    settings->DefaultImageUploadParams = imageUploadParams;
 
     SaveCurrentProfile();
 
@@ -417,6 +409,7 @@ bool CUploadSettings::OnNext()
 
 bool CUploadSettings::OnShow()
 {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     ShowPrev();
     ShowNext();
     BOOL temp;
@@ -436,14 +429,14 @@ bool CUploadSettings::OnShow()
         mainDlg->FileList[i].setSkipped(false);
     }
 
-    CString profileName = sessionImageServer_.isEmpty() ? _T(""): U2W(sessionImageServer_.getByIndex(0).getImageUploadParamsRef().ImageProfileName);
+    CString profileName = U2W(settings->DefaultImageUploadParams.ImageProfileName);
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         profileName = _T("Default");
     }
     ShowParams(profileName);
     UpdateProfileList();
     UpdateAllPlaceSelectors();
-    OnBnClickedCreatethumbnails(0, 0, 0, temp);
+    OnBnClickedCreateThumbnails(0, 0, 0, temp);
     OnBnClickedKeepasis(0, 0, 0, temp);
     SetNextCaption(TR("&Upload"));
     EnableNext();
@@ -493,7 +486,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 	bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
 
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
-    CUploadEngineData *ue = serverProfile.uploadEngineData();
+    const CUploadEngineData *ue = serverProfile.uploadEngineData();
 
 	if (!ue) {
 		LOG(ERROR) << "serverProfile.uploadEngineData() cannot be NULL";
@@ -563,11 +556,11 @@ void CUploadSettings::UpdateToolbarIcons()
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     if (!getSessionImageServerItem().isNull()) {
-        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi);
+        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi, true);
     }
 
     if (!getSessionFileServerItem().isNull()) {
-        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi);
+        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi, true);
     }
 
     if(hImageIcon)
@@ -672,16 +665,29 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     TBBUTTONINFO bi;
     CToolBarCtrl& currentToolbar = ImageServer ? Toolbar: FileServerSelectBar;
 
-//    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
+    const ServerProfileGroup& serverProfileGroup = ImageServer ? sessionImageServer_: sessionFileServer_;
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
-    CUploadEngineData* uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
+    const CUploadEngineData* uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
 
-    CString serverTitle = (!serverProfile.isNull() && uploadEngine) ? Utf8ToWCstring(m_EngineList->getServerDisplayName(uploadEngine)) : TR("Choose server");
+    std::wstring serverButtonTitleWideStr;
+    if (serverProfile.isNull() || !uploadEngine) {
+        serverButtonTitleWideStr = TR("Choose server");
+    } else {
+        if (serverProfileGroup.getCount() == 1) {
+            serverButtonTitleWideStr = IuCoreUtils::Utf8ToWstring(CMyEngineList::getServerDisplayName(uploadEngine));
+        } else {
+            serverButtonTitleWideStr = IuCoreUtils::Utf8ToWstring(str(
+                IuStringUtils::FormatNoExcept(_c("upload_settings_wizard_page.server_button", "%1% + %2%"))
+                    % CMyEngineList::getServerDisplayName(uploadEngine)
+                % (serverProfileGroup.getCount() - 1)
+            ));
+        }
+    }
 
     ZeroMemory(&bi, sizeof(bi));
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_TEXT;
-    bi.pszText = const_cast<LPWSTR>(serverTitle.GetString());
+    bi.pszText = const_cast<LPWSTR>(serverButtonTitleWideStr.c_str());
     currentToolbar.SetButtonInfo(ID_SERVERBUTTON, &bi);
 
     if(serverProfile.isNull())
@@ -736,11 +742,11 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 }
 void CUploadSettings::UpdateAllPlaceSelectors()
 {
-    UpdatePlaceSelector(false); // Update server selector (image hosting)
-    UpdatePlaceSelector(true); // Update server selector (file hosting)
+    UpdatePlaceSelector(false); // Update server selector (file hosting)
+    UpdatePlaceSelector(true); // Update server selector (image hosting)
     UpdateToolbarIcons();
-    updateMoreImageServersLink();
-    updateMoreFileServersLink();
+    updateMoreServersLink(false); // file hosting
+    updateMoreServersLink(true); // image hosting
 }
 
 LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -771,7 +777,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     bool isImageServer = idCtrl == IDC_IMAGETOOLBAR;
     ServerProfile & serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     std::vector<HBITMAP> bitmaps;
-    CUploadEngineData *uploadEngine = nullptr;
+    const CUploadEngineData *uploadEngine = nullptr;
     if(!serverProfile.isNull())
     {
         uploadEngine = serverProfile.uploadEngineData();
@@ -795,7 +801,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         if(!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end()) )
         {
             bool addedSeparator = false;
-            CAdvancedUploadEngine* plug = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+            auto plug = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
             /*if(!plug) return TBDDRET_TREATPRESSED;*/
 
             int i =0;
@@ -975,7 +981,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
     bool ImageServer = (wID % 2)!=0;
     ServerProfile & serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
 
-    auto uploadEngine = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+    auto uploadEngine = std::dynamic_pointer_cast<CAdvancedUploadEngine>(uploadEngineManager_->getUploadEngine(serverProfile));
     if (!uploadEngine) {
         return 0;
     }
@@ -1039,7 +1045,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     if ( serverProfile.isNull() ) {
         return;
     }
-    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const UINT dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
@@ -1087,7 +1093,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
     //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
-    CUploadEngineData *ue = serverProfile.uploadEngineData();
+    const CUploadEngineData *ue = serverProfile.uploadEngineData();
     if (!ue->UsingPlugin && ue->Engine.empty()) {
         GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APP_NAME, MB_ICONINFORMATION);
         return false;
@@ -1106,7 +1112,7 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
     bool ImageServer = (wID % 2)!=0;
     ServerProfile & serverProfile = ImageServer? getSessionImageServerItem() : getSessionFileServerItem();
 
-    CUploadEngineData *ue = serverProfile.uploadEngineData();
+    const CUploadEngineData *ue = serverProfile.uploadEngineData();
     if (ue && !ue->RegistrationUrl.empty()) {
         WinUtils::ShellOpenFileOrUrl(U2W(ue->RegistrationUrl), m_hWnd);
     }
@@ -1163,7 +1169,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     m_ShorteningServerButton.GetClientRect(&buttonRect);
     m_ShorteningServerButton.ClientToScreen(&buttonRect);
     
-    serverSelectorControl.setOnChangeCallback(std::bind(&CUploadSettings::shorteningUrlServerChanged, this, std::placeholders::_1));
+    serverSelectorControl.setOnChangeCallback([this](auto && PH1) { shorteningUrlServerChanged(std::forward<decltype(PH1)>(PH1)); });
     serverSelectorControl.showPopup(m_hWnd, buttonRect);
     Settings.urlShorteningServer = serverSelectorControl.serverProfile();
     updateUrlShorteningCheckboxLabel();
@@ -1187,16 +1193,18 @@ LRESULT CUploadSettings::OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID,
    ::SetDlgItemText(m_hWnd, IDC_IMAGEHEIGHT, resizePresets[presetIndex].height.c_str());
    return 0;
 }
+
 LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-   SaveCurrentProfile();
-   CSettingsDlg dlg(CSettingsDlg::spImages, uploadEngineManager_);
-   dlg.DoModal(m_hWnd);
-   CurrentProfileName.Empty();
-   ShowParams(U2W(sessionImageServer_.getByIndex(0).getImageUploadParamsRef().ImageProfileName));
-   UpdateProfileList();
-   ShowParams(U2W(sessionImageServer_.getByIndex(0).getImageUploadParamsRef().ImageProfileName));
-   return 0;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    SaveCurrentProfile();
+    CSettingsDlg dlg(CSettingsDlg::spImages, uploadEngineManager_);
+    dlg.DoModal(m_hWnd);
+    CurrentProfileName.Empty();
+    ShowParams(U2W(settings->DefaultImageUploadParams.ImageProfileName));
+    UpdateProfileList();
+    ShowParams(U2W(settings->DefaultImageUploadParams.ImageProfileName));
+    return 0;
 }
 
  void CUploadSettings::UpdateProfileList()
@@ -1215,40 +1223,39 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName);
  }
 
- void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex)
- {
-     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-     sp.setServerName(myEngineList->byIndex(serverIndex)->Name);
-     std::map <std::string, ServerSettingsStruct>& serverSettings = Settings.ServersSettings[sp.serverName()];
-     std::map <std::string, ServerSettingsStruct>::iterator firstAccount = serverSettings.begin();
-     if ( firstAccount != serverSettings.end() ) {
-         if ( firstAccount->first == "" ) {
-             ++firstAccount;
-         }
-         if ( firstAccount != serverSettings.end() ) {
-             sp.setProfileName(firstAccount->first);
-         }
-     } else {
-         sp.setProfileName("");
-     }
-     ServerSettingsStruct* ss = Settings.getServerSettings(sp);
-     sp.setFolder(ss ? ss->defaultFolder : CFolderItem ());
- }
+void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex) {
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    sp.setServerName(myEngineList->byIndex(serverIndex)->Name);
+    std::map<std::string, ServerSettingsStruct>& serverSettings = Settings.ServersSettings[sp.serverName()];
+    auto firstAccount = serverSettings.begin();
+    if (firstAccount != serverSettings.end()) {
+        if (firstAccount->first.empty()) {
+            ++firstAccount;
+        }
+        if (firstAccount != serverSettings.end()) {
+            sp.setProfileName(firstAccount->first);
+        }
+    } else {
+        sp.setProfileName("");
+    }
+    ServerSettingsStruct* ss = Settings.getServerSettings(sp);
+    sp.setFolder(ss ? ss->defaultFolder : CFolderItem());
+}
 
 void CUploadSettings::updateUrlShorteningCheckboxLabel()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString text;
-    CString serverName = Utf8ToWCstring(Settings.urlShorteningServer.serverName());
-    text.Format(TR("Shorten URL using %s"), static_cast<LPCTSTR>(serverName));
+    CString serverName = Utf8ToWCstring(settings->urlShorteningServer.serverName());
+    text.Format(TR("Shorten URL using %s"), serverName.GetString());
     SetDlgItemText(IDC_SHORTENLINKSCHECKBOX, text);
 }
 
 void CUploadSettings::shorteningUrlServerChanged(CServerSelectorControl* serverSelectorControl)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.urlShorteningServer = serverSelectorControl->serverProfile();
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->urlShorteningServer = serverSelectorControl->serverProfile();
     updateUrlShorteningCheckboxLabel();
 }
 
@@ -1356,7 +1363,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
 {
     bool isImageServer = (wID % 2)!=0;
 
-    ServerProfile & serverProfile = isImageServer? getSessionImageServerItem() : getSessionFileServerItem();
+    ServerProfile & serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     ServerProfile serverProfileCopy = serverProfile;
     serverProfileCopy.setProfileName("");
     CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
@@ -1374,7 +1381,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
 LRESULT CUploadSettings::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     bool ImageServer = (wID % 2)!=0;
-    ServerProfile & serverProfile = ImageServer? getSessionImageServerItem() : getSessionFileServerItem();
+    ServerProfile & serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     serverProfile.setProfileName("");
     serverProfile.clearFolderInfo();
     UpdateAllPlaceSelectors();
@@ -1383,6 +1390,7 @@ LRESULT CUploadSettings::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWn
 
 void CUploadSettings::SaveCurrentProfile()
 {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString saveToProfile = CurrentProfileName;
     if (CurrentProfileOriginalName == _T("Default"))
         saveToProfile = CurrentProfileOriginalName;
@@ -1390,14 +1398,15 @@ void CUploadSettings::SaveCurrentProfile()
     if (!SaveParams(convert_profiles_[saveToProfile]))
         return;
 
-    getSessionImageServerItem().getImageUploadParamsRef().ImageProfileName = W2U(saveToProfile);
+   settings->DefaultImageUploadParams.ImageProfileName = W2U(saveToProfile);
 }
 
-bool  CUploadSettings::OnHide()
+bool CUploadSettings::OnHide()
 {
    SaveCurrentProfile();
    return true;
 }
+
 LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     CString profile = GuiTools::GetWindowText(GetDlgItem(IDC_PROFILECOMBO));
@@ -1410,6 +1419,7 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
 ServerProfile& CUploadSettings::getSessionImageServerItem() {
     return sessionImageServer_.getByIndex(0);
 }
+
 ServerProfile& CUploadSettings::getSessionFileServerItem() {
     return sessionFileServer_.getByIndex(0);
 }
@@ -1436,35 +1446,30 @@ LRESULT CUploadSettings::OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD w
 
 LRESULT CUploadSettings::OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     bool ImageServer = (wID % 2) != 0;
-    ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    const ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
 
-    CUploadEngineData* ue = serverProfile.uploadEngineData();
+    const CUploadEngineData* ue = serverProfile.uploadEngineData();
     if (ue && !ue->WebsiteUrl.empty()) {
         WinUtils::ShellOpenFileOrUrl(U2WC(ue->WebsiteUrl), m_hWnd);
     }
     return  0;
 }
 
-void CUploadSettings::updateMoreImageServersLink() {
+void CUploadSettings::updateMoreServersLink(bool isImageServer) {
+    const ServerProfileGroup& serverGroup = isImageServer ? sessionImageServer_ : sessionFileServer_;
+    CHyperLink& hyperLink = isImageServer ? moreImageServersLink_ : moreFileServersLink_;
+
     std::wstring text;
-    if (sessionImageServer_.getCount() == 1) {
+    if (serverGroup.getCount() == 1) {
         text = TR("Choose more servers...");
     } else {
-        text = str(boost::wformat(TR("Selected servers: %d"))% sessionImageServer_.getCount());
+        text = IuCoreUtils::Utf8ToWstring(str(IuStringUtils::FormatNoExcept(
+                _nc("upload_settings_wizard_page.more_servers_link", "%d server selected in total...",
+                                                      "%d servers selected in total...", serverGroup.getCount()
+                ))
+            % serverGroup.getCount()
+        ));
     }
 
-    moreImageServersLink_.SetLabel(text.c_str());
-}
-
-
-void CUploadSettings::updateMoreFileServersLink() {
-    std::wstring text;
-    if (sessionFileServer_.getCount() == 1) {
-        text = TR("Choose more servers...");
-    }
-    else {
-        text = str(boost::wformat(TR("Selected servers: %d")) % sessionFileServer_.getCount());
-    }
-
-    moreFileServersLink_.SetLabel(text.c_str());
+    hyperLink.SetLabel(text.c_str());
 }

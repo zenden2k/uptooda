@@ -5,11 +5,13 @@
 
 
 #include <map>
+#include <unordered_set>
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ServerProfile.h"
 #include "BasicSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
+#include "Gui/Interfaces/IFavoriteServers.h"
 
 #ifdef IU_QT
     #include <QString>
@@ -95,14 +97,35 @@ struct ScreenRecordingStruct {
     int MonitorMode = -1; // kAllMonitors
     //std::string Preset;
     std::string OutDirectory;
+    std::string FileNameTemplate = "capture %y-%m-%d %h-%n-%s";
     FFMpegSettingsStruct FFmpegSettings;
     DXGISettingsStruct DXGISettings;
 };
 
+struct ServerListSettingsStruct: IFavoriteServers {
+public:
+#ifndef IU_QT
+    int ViewMode = LV_VIEW_DETAILS;
+#endif
+    bool ShowFavoritesOnly = false;
+    bool HideBlackListed = false;
+    std::unordered_set<std::string> FavoriteServers;
+    std::unordered_set<std::string> BlacklistedServers;
+
+    bool isServerFavorite(const std::string& serverId) override;
+    bool isServerBlacklisted(const std::string& serverId) override;
+    void addServerToFavorites(const std::string& serverId);
+    void removeServerFromFavorites(const std::string& serverId);
+    void addServerToBlacklist(const std::string& serverId);
+    void removeServerFromBlacklist(const std::string& serverId);
+
+    void bind(SettingsNode& node);
+};
+
 #ifndef IU_QT
 struct MediaInfoSettingsStruct {
-    int InfoType; // 0 - short summary, 1 - full info
-    bool EnableLocalization;
+    int InfoType = 0; // 0 - short summary, 1 - full info
+    bool EnableLocalization = true;
 };
 
 struct HistorySettingsStruct {
@@ -114,7 +137,7 @@ struct HistorySettingsStruct {
 class CommonGuiSettings : public BasicSettings {
     public:   
         CommonGuiSettings();
-        ~CommonGuiSettings();
+        ~CommonGuiSettings() override;
 
         bool UseDirectLinks = true;
 
@@ -123,6 +146,10 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfilesMap ServerProfiles;
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
+        ImageUploadParams DefaultImageUploadParams;
+
+        ServerListSettingsStruct ServerListSettings;
+
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -136,8 +163,8 @@ class CommonGuiSettings : public BasicSettings {
         MediaInfoSettingsStruct MediaInfoSettings;
         HistorySettingsStruct HistorySettings;
 
-        int CodeLang;
-        int CodeType;
+        int CodeLang = 0;
+        int CodeType = 0;
 
         bool IsPortable = true;
         CString VideoFolder, ImagesFolder;
@@ -158,6 +185,7 @@ class CommonGuiSettings : public BasicSettings {
         bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
         void PostLoadServerProfileGroup(ServerProfileGroup& profile);
         virtual void PostLoadServerProfile(ServerProfile& profile);
+
     public:
         inline static const std::string VideoEngineDirectshow = "DirectShow";
         inline static const std::string VideoEngineDirectshow2 = "DirectShow v2";

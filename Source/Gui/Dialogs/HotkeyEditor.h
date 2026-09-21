@@ -25,7 +25,7 @@
 #include "resource.h"       // main symbols
 #include "3rdpart/WinHotkeyCtrl.h"
 #include "3rdpart/vkCodes.h"
-#include "HotkeySettings.h"
+#include "HotkeySettingsPage.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 constexpr auto HOTKEY_GROUP_APP = 0;

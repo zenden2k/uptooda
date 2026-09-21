@@ -14,8 +14,8 @@
  bit1;بیت
  bit2;بیت ها
  bit3;بیت ها
- bps; b/s
  Bps; B/s
+ bps; b/s
  Byte1;بایت
  Byte2;بایت ها
  Byte3;بایت ها
@@ -49,8 +49,8 @@
  frame3;فریم ها
  GB; GB
  Gb; Gb
- Gbps; Gb/s
  GBps; GB/s
+ Gbps; Gb/s
  GHz; GHz
  GiB; GiB
  GibiByte1; GibiBytes
@@ -91,8 +91,8 @@
  KiloByte3;کیلوبایت ها
  MB; MB
  Mb; Mb
- Mbps; Mb/s
  MBps; MebiBytes
+ Mbps; Mb/s
  MebiBit1; MebiBit
  MebiBit2; MebiBits
  MebiBit3; MebiBits
@@ -127,6 +127,9 @@
  second1;ثانیه
  second2;ثانیه ها
  second3;ثانیه ها
+ slice per frame1;
+ slice per frame2;
+ slice per frame3;
  text stream1;استریم متن
  text stream2;استریم متن ها
  text stream3;استریم متن ها
@@ -150,10 +153,20 @@
 : ;: 
 3D;
 3DType;
+5.1.2ch;
+5.1.4ch;
+5.1ch;
 608_Mode;
+7.1.2ch;
+7.1ch;
 About;درباره
 About_Hint;ارتباط با من و آخرین نسخه
+AC3_Metadata;
 Accompaniment;همراهی
+acmod;
+Active_DisplayAspectRatio;
+Active_Height;
+Active_Width;
 ActiveFormatDescription;
 ActiveFormatDescription_MuxingMode;
 Actor;بازیگر
@@ -166,8 +179,9 @@ AdID;
 ADM: Show ChannelFormats;
 ADM: Show TrackUIDs;
 AdmProfile;
-Advanced;پیشرفته
+Advanced mode -->;
 Advanced mode;حالت پیشرفته
+Advanced;پیشرفته
 Album;آلبوم
 Album_ReplayGain_Gain;Album replay gain
 Album_ReplayGain_Peak;Album replay gain peak
@@ -175,21 +189,32 @@ Alignment;هم ترازی
 Alignment_Aligned;هم ترازی بین صفحات
 Alignment_Split;شکاف بین صفحات
 All;همه
+AllFields;
 AlternateGroup;
+AnalyzeServicesMenu;
+App_About;
+App_Hide;
+App_Quit;
 Archival_Location;مسیر بایگانی
 Arranger;مرتب کننده
 ArtDirector;کارگردان هنری
 AspectRatio;نسبت تصوير
 AssistantDirector;دستیار کارگردان
 AssociatedVideo_FrameRate;
-at;در
 At least one file;(حداقل یک فایل را باز کنید)
-Audio;صوت
+at;در
+Attachments;
 Audio stream(s);استریم صوت ها
+Audio;صوت
+Audio_Channels_Total;
 Audio_Codec_List;کدک صوت ها
+Audio_Format_List;
+Audio_Format_WithHint_List;
+Audio_Language_List;
 Audio_No;صوتی موجود نیست
 Audio1;اولین استریم صوت
 Audio2;دومبن استریم صوت
+Audio3;
 AudioComments;
 AudioCount;تعداد استریم صوت
 AudioDescription;
@@ -200,6 +225,9 @@ AudioRenderingIndication;
 AudioSceneInfoID;
 AudioTrackLayout;
 Author;نویسنده
+Back4ToBack2;
+Balance_FrontBackListener;
+Balance_FrontBackOverheadFloor;
 BarCode;بارکد
 Basic;اولیه
 Basic_Note;برای اطلاعات بیشتر اینجا را کلیک کنید
@@ -218,25 +246,36 @@ BitRate_Mode_CBR;پايدار
 BitRate_Mode_VBR;متغییر
 BitRate_Nominal;نرخ بيت غیرواقعی 
 Bits-(Pixel*Frame);بیتها /(Pixel*Frame)
+BitstreamLevel;
+Bring All to Front;
+bsid;
 BufferSize;
 Cancel;لغو
 CaptionServiceName;
+CatalogNumber;
 Channel(s);کانال ها
+Channel(s)_Original;
 ChannelCoded;
 ChannelConfiguration;
+ChannelFormat;
 ChannelLayout;
+ChannelLayout_Original;
 ChannelMode;
 ChannelPositions;موقعیت کانال ها
+ChannelPositions_Original;
 Chapter(s);فصل ها
-Chapters;فصل ها
 Chapters stream(s);استریم فصل ها
+Chapters;فصل ها
 Chapters_Codec_List;کدک فصل ها
 Chapters_No;فصلی وجود ندارد
+Chapters_Pos_Begin;
+Chapters_Pos_End;
 ChaptersCount;تعداد استریم فصل ها
+CharacterSet;
 CheckNewVersion;کنترل نسخه جدید
-Choose custom;انتخاب دیگر
 Choose custom sheet;ورقه موردنظر را انتخاب کنید
 Choose custom text;متن موردنظر را انتخاب کنید
+Choose custom;انتخاب دیگر
 Choose export format;فرمت خروجی را انتخاب کنید
 Choose file(s);فایل را برای باز کردن انتخاب کنید
 Choose filename;نام فایل موردنظر را انتخاب کنید
@@ -246,11 +285,15 @@ Chroma;رنگينى
 ChromaSubsampling;
 Classifier;
 ClearList;
-Close;ببند
 Close all before open;قبل از باز کردن ببند
+Close;ببند
+CloseAll;
 ClosedCaptionsLanguage;
 ClosedCaptionsPresent;
 ClosedCaptionsType;
+CloseFile;
+CloseWindow;
+cmixlev;
 Codec;کدک
 Codec_Description;شرح کدک
 Codec_Info;جزییات کدک
@@ -276,11 +319,22 @@ CoDirector;
 Collection;جمع اورى
 Colorimetry;سنجش رنگ
 ColorSpace;
+ColorTheme;
+ColorTheme_Dark;
+ColorTheme_Light;
+ColorTheme_System;
+colour_description_present;
+colour_description_present_Source;
 colour_primaries;
+colour_primaries_Source;
 colour_range;
+colour_range_Source;
 Comment;توضيح
 CommissionedBy;مجاز توسط
+Compare;
+CompareView;
 Compilation;
+ComplementaryObject;
 CompleteName;نام کامل
 CompletionDate;
 ComplexityIndex;
@@ -289,13 +343,19 @@ Compression_Mode;
 Compression_Mode_Lossless;
 Compression_Mode_Lossy;
 Compression_Ratio;نرخ فشردگی
+comprprof;
 Conductor;رهبر اکسترر
 ConformanceCheck;
+ConformanceErrors;
+ConformanceInfos;
+ConformanceWarnings;
 ContactEmail;
 ContactTelephoneNumber;
 Container and general information;محتوی و اطلاعات کلی
+Content;
 ContentType;نوع محتوا
 CoProducer;تهیه کننده
+Copy;
 Copyright;کپی رایت
 CopyrightYear;
 CostumeDesigner;طراح لباس
@@ -306,22 +366,33 @@ Cover_Datas;داده روکش ها
 Cover_Description;شرح روکش
 Cover_Mime;روکش MIME
 Cover_Type;نوع روکش
+CoverData;
+CreatedOn;
 Cropped;بریدن اندازه
 Custom;دیگر
+CustomDownmixTargets;
 Customize;شخصی سازی
 DarkMode;
 Date;تاریخ
 Debug;اشکال زدائى
 Decimal point;مميز اعشارى
+Default translation;
+Default;
 Default_Setting;
 DefaultTargetDeviceConfig;
+DefaultView;
 Delay;مکث
 Delay_Source;
 Delay_Source_Container;
 Delay_Source_Stream;
 Delete;حذف
 Description;شرح
+Details;
 dialnorm;
+dialnorm_Average;
+dialnorm_Count;
+dialnorm_Maximum;
+dialnorm_Minimum;
 DialogueCorrected;
 DialogueEnhancement;
 DialogueNormalization;
@@ -333,41 +404,61 @@ Disabled;
 DisplayAspectRatio;نمایش نسبت تصوير
 DisplayAspectRatio_CleanAperture;
 DisplayAspectRatio_Original;نمایش نسبت تصوير اصلی
+DisplayCaptions;
+DisplayCaptions_Command;
+DisplayCaptions_Content;
+DisplayCaptions_Stream;
 DistributedBy;توزيع شده توسط
 Distributor;
+Documents;
 Dolby_Atmos_Metadata;
 DolbyAtmos;
 Donate;کمک مالی
 DotsPerInch;نقطه بر اینچ
+DownloadFile;
+DownloadFileError;
 Downmix;
 Downmix_5.1.x;
 Downmix_5to2;
-Downmix_5to2_90deg;
 DrcSets_Count;
 DrcSets_Effects;
 Duration;مدت
 Duration_End;زمان پایان
 Duration_End_Command;
+Duration_Source;
 Duration_Start;زمان شروع
 Duration_Start_Command;
 Duration_Start2End;
+DynamicObject;
 DynamicRangeControl;
+dynrngprof;
 Eac3DrcProfile;
 Edit;ویرایش
 EditedBy;ویرایش شده توست
 EditorialClassification;
+ElementaryStream;
 ElementCount;
 EMail;ایمیل
+Enable FFmpeg plugin;
 Encoded_Application;برنامه نوشتاری
+Encoded_Application_Name;
+Encoded_Application_Version;
 Encoded_Date;تاریخ رمزى شده
+Encoded_Hardware;
 Encoded_Library;کتابخان نوشتاری
+Encoded_Library_Name;
 Encoded_Library_Settings;تنظینات رمزى شده
+Encoded_Library_Version;
 Encoded_Original;حمایت اصلی
 EncodedBy;رمزى شده توسط
 EPG_Positions;EPG موقعیت (internal)
 EpisodeTitleNumber;
+Error;
 Error_File;خطا هنگام خواندن فایل
 Error_File_Write;
+Error_Open;
+Error_Save;
+Events_MinDuration;
 Events_PaintOn;
 Events_PopOn;
 Events_RollUp;
@@ -381,8 +472,13 @@ Extensions;پسوند معمولا استفاده شده است
 External_Media_NotMounted;
 Family;خانوادگی
 Fax;فکس
-File;فایل
+Feature_AdvancedMode;
+Feature_FilesCompare;
+Feature_More;
+Feature_SelectView;
+Field;
 File size;اندازه فایل
+File;فایل
 File_Append;هشدار : از پارامترهای یکسان استفاده نکنید
 File_Created_Date;تاریخ ایجاد فایل
 File_Created_Date_Local;تاریخ ایجاد فایل (local)
@@ -393,17 +489,22 @@ FileExtension;پسوند فایل
 FileName;نام فایل
 FileNameExtension;
 FileSize;اندازه فایل
+Fill with a Dummy movie;
+Fill with a realistic movie;
 FirstDisplay_Delay_Frames;
 FirstDisplay_Type;
+FirstFrameOfAction;
 FlatPanelTv;
 FlowID;
-Folder;پوشه
 Folder (R);پوشه (R)
 Folder (R)_Hint;انتخاب پوشه (with all folders recursively)
 Folder (Recursively);پوشه (Recursively)
+Folder;پوشه
 Folder_Hint;انتخاب پوشه
 FolderName;نام پوشه
+Forced;
 Format;فرمت
+Format_AdditionalFeatures;
 Format_Commercial;
 Format_Commercial_IfAny;
 Format_Compression;
@@ -436,25 +537,33 @@ Format_Settings_QPel;تنظیمات فرمت, QPel
 Format_Settings_RefFrames;تنظیمات فرمت, RefFrames
 Format_Settings_SBR;تنظیمات فرمت, SBR
 Format_Settings_Sign;تنظیمات فرمت, Sign
+Format_Settings_SliceCount;
 Format_Settings_Wrapping;
 Format_Tier;
 Format_Url;لینک فرمت
 Format_Version;نسخه فرمت
+FormatDefinition;
 FpaManufacturer;
 FpaPass;
 FpaVersion;
 FrameCount;تعداد فرمت
+FrameCount_Source;
 FrameRate;نرخ فرمت
-FrameRate_MaxFrameNumber;
+FrameRate_Den;
 FrameRate_Maximum;بیشترین نرخ فرمت
 FrameRate_Minimum;کمترین نرخ فرمت
 FrameRate_Mode;حالت نرخ فرمت
 FrameRate_Mode_CFR;پایدار
 FrameRate_Mode_VFR;متغییر
 FrameRate_Nominal;نرخ فرمت غیر واقعی
+FrameRate_Num;
 FrameRate_Original;نرخ فرمت اصلی
 FrameRate_Real;
+FullParsing;
+FullParsingTips;
+Gallery;
 General;کلی
+GeneralCompliance;
 Genre;دسته
 Genre_000;Blues
 Genre_001;Classic Rock
@@ -664,6 +773,7 @@ Height;بلندی
 Height_CleanAperture;
 Height_Original;
 Help;راهنمایی
+HideOthers;
 Hint;اشارات
 HomeTheaterAvr;
 How many audio streams?;تعداد استریم صوت?
@@ -674,13 +784,14 @@ HTML;HTML
 ID;ID
 IdentClockStart;
 IFrameInterval;
-Image;تصویر
 Image stream(s);استریم تصویر
+Image;تصویر
 Image_Codec_List;کدک تصویر
 ImageCount;تعداد استریم تصویر
 ImmersiveStereo;
 Info;اطلاعات
 Instruments;ساز
+IntegratedLoudness;
 IntegratedLoudness_Level;
 IntegratedLoudness_Speech;
 InteractivityEnabled;
@@ -698,21 +809,7 @@ InternetMediaType;
 IRCA;IRCA
 ISBN;ISBN
 ISRC;ISRC
-JocBalance_FrontBackListener;
-JocBalance_FrontBackOverheadFloor;
-JocTrim_Center;
-JocTrim_Height;
-JocTrim_Surround;
-JocTrimMode;
-JocTrimMode0i;
-JocTrimMode1i;
-JocTrimMode2i;
-JocTrimMode3i;
-JocTrimMode4i;
-JocTrimMode5i;
-JocTrimMode6i;
-JocTrimMode7i;
-JocTrimMode8i;
+IsStreamable;
 Keywords;کلمه کلیدی
 Known codecs;کدک مشخص
 Known formats;فرمت مشخص
@@ -744,6 +841,7 @@ Language_bs;Bosnian
 Language_ca;Catalan
 Language_ce;Chechen
 Language_ch;Chamorro
+Language_cmn;
 Language_co;Corsican
 Language_cr;Cree
 Language_cs;Czech
@@ -767,6 +865,7 @@ Language_eu;Basque
 Language_fa;Persian
 Language_ff;Fulah
 Language_fi;Finnish
+Language_fil;
 Language_fj;Fijian
 Language_fo;Faroese
 Language_fr;French
@@ -827,6 +926,7 @@ Language_lv;Latvian
 Language_mg;Malagasy
 Language_mh;Marshallese
 Language_mi;Maori
+Language_mis;
 Language_mk;Macedonian
 Language_ml;Malayalam
 Language_mn;Mongolian
@@ -903,6 +1003,7 @@ Language_tw;Twi
 Language_ty;Tahitian
 Language_ug;Uighur
 Language_uk;Ukrainian
+Language_und;
 Language_ur;Urdu
 Language_uz;Uzbek
 Language_ve;Venda
@@ -913,15 +1014,27 @@ Language_wo;Wolof
 Language_xh;Xhosa
 Language_yi;Yiddish
 Language_yo;Yoruba
+Language_yue;
 Language_za;Zhuang
 Language_zh;Chinese
+Language_zh-cmn;
+Language_zh-CN;
 Language_zh-cn;Chinese (China)
+Language_zh-Hans;
+Language_zh-Hant;
+Language_zh-TW;
 Language_zh-tw;Chinese (Taiwan)
+Language_zh-yue;
 Language_zu;Zulu
+Language_zxx;
+LanguageChanges;
+Languages;
 LawRating;Law rating
 LCCN;LCCN
+LegacyStreamDisplay;
 LfeAttenuationKnown;
 LfeMixGain;
+lfeon;
 Library;کتابخانه تسهيم کننده
 Lifetime_Subscribe_Button;
 Lightness;روشنايى
@@ -930,15 +1043,18 @@ Lines_MaxCountPerEvent;
 LineUpStart;
 LinkedTo_Bed_Pos;
 LinkedTo_ChannelFormat_Pos;
+LinkedTo_ComplementaryObject_Pos;
 LinkedTo_Content_Pos;
 LinkedTo_Group_Pos;
 LinkedTo_Object_Pos;
 LinkedTo_PackFormat_Pos;
 LinkedTo_SignalGroup_Pos;
+LinkedTo_StreamFormat_Pos;
 LinkedTo_Substream_Pos;
 LinkedTo_TrackFormat_Pos;
 LinkedTo_TrackUID_Pos;
 List;لیست
+LongTermLoudness;
 LoRoCenterMixGain;
 LoRoSurroundMixGain;
 Loudness_Anchor;
@@ -963,6 +1079,7 @@ LtRtCenterMixGain;
 LtRtSurroundMixGain;
 Lyricist;لایرسکسیست
 Lyrics;متن آهنگ
+MacCreatedBy;
 Mastered_Date;تاریخ مستر
 MasteredBy;مستر شده توسط
 MasteringDisplay_ColorPrimaries;
@@ -970,16 +1087,20 @@ MasteringDisplay_Luminance;
 Matrix_Channel(s);
 Matrix_ChannelPositions;
 matrix_coefficients;
+matrix_coefficients_Source;
 Matrix_Format;
 MaxCLL;
 MaxFALL;
 MaxGain;
 MaximumMomentaryLoudness;
 MaxTruePeak;
+MD5;
+MD5_Unencoded;
 MediaInfo_About;اطلاعات جزیی\r\nدرباره فایل مولتی مدیا:\r\nMatroska, OGG (including OGM)\r\nMPEG1 (including VCD)\r\nMPEG2 (including DVD and SVCD)\r\nMPEG4 (including Itunes M4A)\r\nQuicktime\r\nRealMedia\r\nWindowsMedia (including WMV, WMA)\r\nMicrosoft RIFF (including AVI, WAV)\r\nSound-only formats (AC3, DTS, AAC, AU, AIFF...)
 MediaInfo_About_About;
-Menu;منو
+MediaInfo_WebSite;
 Menu stream(s);استریم منو
+Menu;منو
 Menu_Codec_List;کدک منو
 Menu_Hint;احتمالات بیشتر
 Menu_No;منویی وجود ندارد
@@ -988,6 +1109,7 @@ MenuID;هویت منو
 Metadata_Format;
 Metadata_Format_Type;
 Metadata_MuxingMode;
+Minimize;
 MixType;
 mn; min
 Mood;حالت
@@ -996,6 +1118,7 @@ Movie;نام فیلم
 ms; ms
 MSDI;MSDI
 MultipleStream;
+MultiView_Count;
 MusicBy;موسیقی توسط
 MuxingMode;حالت تسهيم کننده
 MuxingMode_MoreInfo;حالت تسهيم کننده, اطلاعات بیشتر
@@ -1023,49 +1146,19 @@ NumberOfSubstreams;
 NumberOfTrackFormats;
 NumberOfTrackUIDs;
 NumColors;تعداد رنگ ها
+Object;
 ObjectCount;
 OK;موافق
 One output file per input file;یک فایل خروجی بر فابل ورودی
+OnlyDiffer;
+OnlyIdentical;
 Open;باز کن
-OpenCandy_01;در حال دانلود ________
-OpenCandy_02;__% تکمیل شده
-OpenCandy_03;قطع ارتباط اینترنتی
-OpenCandy_04;________ دانلود کامل شد
-OpenCandy_05;کلیک برای نصب ________
-OpenCandy_06;لغو نصب?\r\nتاخیر تا ریبوت بعدی
-OpenCandy_07;دانلود ________ متوقف شد.\r\nکلیک کنید برای ادامه
-OpenCandy_08;خطا در نصب _________ باید خارج شود.
-OpenCandy_09;توقف دانلود
-OpenCandy_10;لغو نصب
-OpenCandy_11;ادامه دانلود
-OpenCandy_12;خروج از نصب
-OpenCandy_13;___________ - توصیه شده توسط ____________
-OpenCandy_14;در حال دانلود _________
-OpenCandy_15;___________, توصیه شده توسط ___________, در حال دانلود است
-OpenCandy_16;___________ برای نصب آماده است
-OpenCandy_17;___________ دانلود کامل شد برای نصب کردن کلیک کنید
-OpenCandy_18;___________ از ___________ دانلود شده
-OpenCandy_19;OpenCandy توسط
-OpenCandy_20;OpenCandy.com اطلاعات بیشتر در
-OpenCandy_21;نصب
-OpenCandy_22;نصب ___________
-OpenCandy_23;موجب لغو نصب می شود ___________\r\nخارج می شوید?
-OpenCandy_24;توقف
-OpenCandy_25;دانلود متوقف شد. هر وقت آماده اید بر روی ادامه کلیک کنید.
-OpenCandy_26;ادامه
-OpenCandy_27;اکنون نصب کن
-OpenCandy_28;توقف دانلود
-OpenCandy_29;ادامه دانلود
-OpenCandy_30;لغو نصب
-OpenCandy_31;انتخاب تنظیمات نصب
-OpenCandy_32;نصب ___________
-OpenCandy_33;نصب نکن
-OpenCandy_34;انتخاب تنظیمات نصب
-OpenCandy_35;______ این نرم افزار پیشنهاد میشود
-OpenCandy_36;نصب فعلی متوقف نمی شود
 OpenCaptionsLanguage;
 OpenCaptionsPresent;
 OpenCaptionsType;
+OpenFile;
+OpenFileError;
+OpenRecent;
 Options;تنظیمات
 Options_Hint;تنظیمات
 Original;اصلی
@@ -1077,16 +1170,21 @@ Originator;
 Other;دیگر
 OtherIdentifier;
 OtherIdentifierType;
-Output;خروجی
+OtherViews;
 Output format;فرمت خروجی
+Output;خروجی
 OverallBitRate;نرخ بیت کل
 OverallBitRate_Maximum;بیشترین نرخ بیت کل
 OverallBitRate_Minimum;کمترین نرخ بیت کل
 OverallBitRate_Mode;حالت نرخ بیت کل
 OverallBitRate_Nominal;نرخ بیت کل غیرواقعی
+OverallBitRate_Precision_Max;
+OverallBitRate_Precision_Min;
 PackageName;
+PackFormat;
 Part;قسمت
 Part_Count;کل تعداد
+PartialParsing;
 PartNumber;
 PartTotal;
 Performer;مجرى
@@ -1113,12 +1211,14 @@ Position_Total;کل
 Preferences;تنظیمات
 PreferredDownmix;
 Premium;
+Premium_Feature;
 Premium_Summary;
 PreselectionLabel;
 Presentation;
 PresentationConfig;
 PresentationConfig_ContentClassifier;
 PresentationID;
+PresentationLevel;
 PreviousDownmixType5ch;
 PreviousMixType2ch;
 PrimaryAudioLanguage;
@@ -1127,17 +1227,21 @@ ProductionDesigner;طراح محصول
 ProductionNumber;
 ProductionStudio;استودیو محصول
 ProductPlacement;
+Program name;
+Programme;
 ProgrammeHasText;
 ProgrammeTextLanguage;
 ProgrammeTitle;
 Publisher;ناشر
 Purchased_Date;تاریخ خرید
+PurchaseInformation;
 Quote character;کاراکتر اعلام
 RadioStation;ایستگاه رادیو
 Rating;رتبه
 RealtimeLoudnessCorrected;
 Recorded_Date;تاریخ ضبط
 Recorded_Location;مکان ضبط
+Reel;
 Released_Date;تاریخ انتشار
 RemixedBy;ریمیکس توسط
 RenderMode;
@@ -1145,13 +1249,18 @@ Renew;
 ReplayGain_Gain;Replay gain
 ReplayGain_Peak;Replay gain peak
 Report;
+ReportBy;
 Resolution;وضوح
 RestoreLifetimeSubscription;
+Retry;
 s;s
+Sampled_Height;
+Sampled_Width;
 SamplePeakLevel;
 SamplePeakLevel_Album;
 SamplesPerFrame;
 SamplingCount;
+SamplingCount_Source;
 SamplingRate;نرخ نمونه
 Save;ذخیره
 ScanOrder;دستور اسکن
@@ -1163,9 +1272,13 @@ ScanType;نوع اسکن
 ScanType_Original;
 ScanType_StoreMethod;
 ScreenplayBy;نمايشنامه توسط
+ScreenToCenter;
+ScreenToFront;
 Season;فصل
 SecondaryAudioLanguage;
 see below;پایین را ببینید
+Select your directory;
+SelectAll;
 Send HeaderFile;فایل سرصفحه را اینجا بفرستید : http://sourceforge.net/projects/mediainfo/ (قسمت باگ)
 Separator_Columns;جدا کننده ستون
 Separator_Lines;جدا کننده خطوط
@@ -1174,20 +1287,25 @@ ServiceChannel;شماره کانال سرویس
 ServiceKind;
 ServiceName;نام سرویس
 ServiceProvider;مهيا کننده سرویس
+Services;
 ServiceType;نوع سرویس
 Set;آماده کردن
 Set_Count;آماده کردن تعداد
 Setup;نصب
 Sharpness;تیزی
-Sheet;ورقه
 Sheet (Complete);ورقه کامل
-Shell extension;Shell extension (in Explorer, right click there will be a MediaInfo option)
+Sheet;ورقه
 Shell extension, folder;برای پوشه ها هم همینطور
+Shell extension, separate instance;
+Shell extension;Shell extension (in Explorer, right click there will be a MediaInfo option)
 Shell InfoTip;Shell InfoTip (in Explorer, move the mouse over the file, info will be displayed)
 ShimName;
 ShimVersion;
 Show menu;نمایش منو
 Show toolbar;نمایش نوارابزار
+Show;
+ShowAll;
+ShowMore;
 SignalGroup;
 SigningPresent;
 SignLanguage;
@@ -1202,6 +1320,7 @@ Source_StreamSize;
 Source_StreamSize_Encoded;
 SpokenSubtitles;
 Standard;استاندارد
+Stored_Height;
 StoreMethod_InterleavedFields;
 StoreMethod_SeparatedFields;
 StoreMethod_SeparatedFields_1;
@@ -1209,11 +1328,14 @@ StoreMethod_SeparatedFields_2;
 Stream;استریم
 Stream_MoreInfo;اطلاعات بیشتر درمورد استریم
 StreamCount;تعداد این نوع استریم
+StreamFormat;
 StreamID;هویت استریم
 streamIdentifier;
 StreamKind;نوع استریم
 StreamKindID;معرف استریم
 StreamKindPos;معرف استریم
+StreamOrder;
+Streams;
 StreamSize;اندازه استریم
 StreamSize_Demuxed;
 StreamSize_Encoded;
@@ -1223,6 +1345,7 @@ Subscribe;
 Subscribe_Button;
 Subscribe_Failed;
 Subscribe_Manage;
+Subscribe_Premium;
 Subscribe_Renew;
 Subscribe_Renew_Price;
 Subscribe_Unaviable;
@@ -1240,6 +1363,8 @@ Summary;خلاصه
 Supported formats;فرمت های پشتيبانى شده
 Supported?;پشتيبانى شده?
 SupportUs;
+SupportUs2;
+surmixlev;
 SurroundAttenuationKnown;
 SwitchGroup;
 Synopsis;خلاصه
@@ -1250,12 +1375,16 @@ TargetDeviceConfig;
 Technician;تکنيسين
 TermsOfUse;شرایط استفاده
 TertiaryAudioLanguage;
-Text;استریم متن
+TestContinuousFileNames;
 Text - Custom;متن - Custom
 Text (HTML);متن (HTML)
 Text stream(s);استریم متن
 Text streams;استریم متن
+Text;استریم متن
 Text_Codec_List;کدک متن
+Text_Format_List;
+Text_Format_WithHint_List;
+Text_Language_List;
 Text_No;متنی وجود ندارد
 Text1;اولین استریم متن
 Text2;دومین استریم متن
@@ -1266,31 +1395,73 @@ ThanksTo;تشکر از
 Thousands separator;هزاران جداکننده
 TimeCode;
 TimeCode_FirstFrame;
+TimeCode_LastFrame;
 TimeCode_MaxFrameNumber;
 TimeCode_MaxFrameNumber_Theory;
 TimeCode_Settings;
 TimeCode_Source;
-TimeCode_Striped;
+TimeCode_Stripped;
 TimeStamp;
 TimeZone;منطقه ساعتى جهانى
 Title;عنوان
 Title_More;عنوان, اطلاعات بیشتر
+Top4ToTop2;
+TopBackToFront;
+TopBackToSide;
+TopFrontToBack;
+TopFrontToFront;
+TopFrontToSide;
 Total;کلی
 TotalNumberOfParts;
 TotalProgrammeDuration;
 Track;نام ترک
 Track_Count;تعداد ترک
+TrackFormat;
 TrackIndex;
 TrackUID;
 transfer_characteristics;
+transfer_characteristics_Source;
 Translate_Reports;
 Translator;مترجم
 Transport;
-Tree;درختی
 Tree & Text;درختی ومتنی
+Tree;درختی
+Trim_Center;
+Trim_Height;
+Trim_Surround;
+TrimMode;
+TrimMode0i;
+TrimMode1i;
+TrimMode2i;
+TrimMode3i;
+TrimMode4i;
+TrimMode5i;
+TrimMode6i;
+TrimMode7i;
+TrimMode8i;
 TruePeakLevel;
 TruePeakLevel_Album;
 Type;
+Type_Composer;
+Type_Conductor;
+Type_Cover;
+Type_Cover_Back;
+Type_Cover_Media;
+Type_DuringPerformance;
+Type_DuringRecording;
+Type_FileIcon;
+Type_FileIcon_32x32;
+Type_Illustration;
+Type_LeafletPage;
+Type_Lyricist;
+Type_Performer;
+Type_Performer_Lead;
+Type_PerformerLogo;
+Type_Picture;
+Type_PublisherLogo;
+Type_RecordingLocation;
+Type_ScreenCapture;
+Type_Thumbnail;
 TypeDefinition;
 UniqueID;
 UniversalAdID;
@@ -1298,13 +1469,19 @@ UniversalAdID_Registry;
 UniversalAdID_Value;
 Unknown;نامعلوم
 Url;Url
-Video;ویدیو
+Value;
 Video stream(s);استریم ویدیو
+Video;ویدیو
 Video_Codec_List;کدک ویدیو
 Video_Delay;مکث ویدیو
+Video_Format_List;
+Video_Format_WithHint_List;
+Video_Language_List;
 Video_No;ویدیویی وجود ندارد
 Video0_Delay;Video0 delay
 Video1;اولین استریم ویدیو
+Video2;
+Video3;
 VideoComments;
 VideoCount;تعداد استریم ویدیو
 View;نمایش
@@ -1325,6 +1502,7 @@ WebSite_Video_More;به سایت (%Url%) برای پیدا کردن ویدیو �
 Width;عرض
 Width_CleanAperture;
 Width_Original;
+Window;
 WriteMe;نوشته برای نویسنده
 WriteToTranslator;نوشته برای مترجم
 Written_Date;تاریخ نوشته
@@ -1332,5 +1510,7 @@ Written_Location;مکان نوشته
 WrittenBy;نوشته شده توسط
 Yes;بلی
 Your system;سیستم شما
-ZZ_Automatic_Percent;70
-ZZ_AutomaticLanguage_Percent;74
+Your translation;
+Zoom;
+ZZ_Automatic_Percent;59
+ZZ_AutomaticLanguage_Percent;63

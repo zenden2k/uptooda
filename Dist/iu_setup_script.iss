@@ -20,7 +20,7 @@
 AppId={{44F06965-E6A9-4147-A44A-E78403428560}
 ; Old AppId: {24F211C6-2732-4564-B602-CDA2DE2A13FC}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
+AppVersion={#IU_APP_VER_CLEAN}.{#IU_BUILD_NUMBER}
 AppVerName={#MyAppName} {#MyAppVersion} Build {#IU_BUILD_NUMBER}
 UninstallDisplayName={#MyAppName} {#MyAppVersion}
 UninstallDisplayIcon="{app}\{#MyAppExeName}"
@@ -54,13 +54,14 @@ Name: "hr"; MessagesFile: "Languages\Croatian.isl"
 Name: "ro"; MessagesFile: "Languages\Romanian.isl"
 Name: "fa"; MessagesFile: "Languages\Farsi.isl"
 Name: "sr"; MessagesFile: "Languages\SerbianCyrillic.isl"
-Name: "sv"; MessagesFile: "Languages\Swedish.isl"
+Name: "sv"; MessagesFile: "compiler:Languages\Swedish.isl"
 Name: "tr"; MessagesFile: "compiler:Languages\Turkish.isl"
-Name: "ko"; MessagesFile: "Languages\Korean.isl"
-Name: "hu"; MessagesFile: "Languages\Hungarian.isl"
+Name: "ko"; MessagesFile: "compiler:Languages\Korean.isl"
+Name: "hu"; MessagesFile: "compiler:Languages\Hungarian.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
-Name: "ar"; MessagesFile: "Languages\Arabic.isl"
+Name: "ar"; MessagesFile: "compiler:Languages\Arabic.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+Name: "bg"; MessagesFile: "compiler:Languages\Bulgarian.isl"
 
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (for better video formats support)
@@ -367,11 +368,11 @@ begin
   end
   else if (CurStep=ssInstall) then
   begin
-    if (UnInstallOldVersion() = 2) then
-    begin
+    //if (UnInstallOldVersion() = 2) then
+    //begin
       //MsgBox('Error during uninstallation of the old version', mbError, MB_OK);
       //Abort;
-    end;
+    //end;
   end;
 end;
 

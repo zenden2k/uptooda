@@ -35,8 +35,7 @@ class SimpleXml_impl
         {
         }
 
-        virtual ~SimpleXml_impl(){
-        }
+        virtual ~SimpleXml_impl()= default;
 
         XMLDocument doc;
         XMLHandle docHandle;
@@ -168,11 +167,11 @@ std::string SimpleXmlNode::Attribute(const std::string& name) const {
 }
 
 int SimpleXmlNode::AttributeInt(const std::string& name) const {
-    return atoi(Attribute(name).c_str());
+    return std::atoi(Attribute(name).c_str());
 }
 
 bool SimpleXmlNode::AttributeBool(const std::string& name) const {
-    return atoi(Attribute(name).c_str()) != 0;
+    return std::atoi(Attribute(name).c_str()) != 0;
 }
 
 int64_t SimpleXmlNode::AttributeInt64(const std::string& name) const {

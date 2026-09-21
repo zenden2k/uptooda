@@ -1,7 +1,7 @@
 clientId <- "62e3f09c348d5696c9805ef1f200d5663b026283";
 clientSecret <- "8acf539a452aae12f0d8156140f9cc3d05bd7cf6";
-redirectUri <- "https://oauth.vk.com/blank.html";
-redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
+redirectUri <- "https://svistunov.dev/blank.html";;
+redirectUrlEscaped <- "https:\\/\\/svistunov\\.dev\\/blank\\.html";
 code <- "";
 login <- "";
 //Docs: https://dev.bitly.com/get_started.html
@@ -50,10 +50,10 @@ function Authenticate() {
 
     if (code != ""){
         nm.setUrl("https://api-ssl.bitly.com/oauth/access_token");
-        nm.addQueryParam("client_id", clientId);
-        nm.addQueryParam("client_secret", clientSecret);
-        nm.addQueryParam("code", code);
-        nm.addQueryParam("redirect_uri", redirectUri);
+        nm.addPostField("client_id", clientId);
+        nm.addPostField("client_secret", clientSecret);
+        nm.addPostField("code", code);
+        nm.addPostField("redirect_uri", redirectUri);
         nm.addQueryHeader("Accept", "application/json");
         nm.doPost("");
         if (nm.responseCode() == 200){
