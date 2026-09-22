@@ -876,43 +876,45 @@ void Canvas::setCursor(CursorType cursorType) {
 void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
     using namespace Gdiplus;
     currentRenderingRect_ = rc;
+    Gdiplus::Region reg(rc);
+
     if (!fullRender_ && !forExport) {
-        Gdiplus::Region reg(rc);
+
         bufferedGr_->SetClip(&reg);
     } else {
-        /* Gdiplus::Region reg;
-        bufferedGr_->SetClip(&reg);
-        */
         bufferedGr_->ResetClip();
     }
     //LOG(INFO) << "renderInBuffer " << rc.X << " " << rc.Y << " " << rc.Width << " " <<rc.Height << " forExport=" << forExport;
     bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
     bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
 
-    if (doc_->hasTransparentPixels()) {
-        if (!forExport) {
-            SolidBrush whiteBrush(Color(255, 255, 255));
-            bufferedGr_->FillRectangle(&whiteBrush, rc);
-            /*int kSquareSize = 40;
-            SolidBrush dark(Color(50,50,50));
-            SolidBrush light(Color(100,100,100));
-            int startX = rc.X - rc.X % kSquareSize;
-            int startY = rc.Y - rc.Y % kSquareSize;
-            int xCount = ceil(float(rc.Width) / kSquareSize)+1;
-            int yCount = ceil(float(rc.Height) / kSquareSize)+1;
-            bool isDark =  !(rc.Y / kSquareSize)%2 ;
-            isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
-            for (int j = 0; j < yCount; j++) {
-                for (int i = 0; i < xCount; i++)
-                {
-                    bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
-                    isDark = !isDark;
-                }
+    if (!forExport) {
+        // The document may contain transparent pixels even when its sampled
+        // transparency flag is false. Clear previous element pixels before
+        // compositing the document into the affected area again.
+        SolidBrush whiteBrush(Color(255, 255, 255));
+        bufferedGr_->FillRectangle(&whiteBrush, rc);
+        /*int kSquareSize = 40;
+        SolidBrush dark(Color(50,50,50));
+        SolidBrush light(Color(100,100,100));
+        int startX = rc.X - rc.X % kSquareSize;
+        int startY = rc.Y - rc.Y % kSquareSize;
+        int xCount = ceil(float(rc.Width) / kSquareSize)+1;
+        int yCount = ceil(float(rc.Height) / kSquareSize)+1;
+        bool isDark =  !(rc.Y / kSquareSize)%2 ;
+        isDark =  (rc.X / kSquareSize)%2 == ( isDark ? 0 : 1);
+        for (int j = 0; j < yCount; j++) {
+            for (int i = 0; i < xCount; i++)
+            {
+                bufferedGr_->FillRectangle(isDark ? &dark : &light, startX + i * kSquareSize, startY + j * kSquareSize, kSquareSize, kSquareSize);
                 isDark = !isDark;
-            }*/
-        } else {
-            bufferedGr_->Clear(Color(0, 0, 0, 0));
-        }
+            }
+            isDark = !isDark;
+        }*/
+    } else if (doc_->hasTransparentPixels()) {
+        bufferedGr_->Clear(Color(0, 0, 0, 0));
+    } else {
+        bufferedGr_->Clear(Color::Transparent);
     }
 
     doc_->render(bufferedGr_.get(), rc);
@@ -944,8 +946,18 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
             bottom == 0) {
             continue;
         }
+
+        if (element->getType() == ElementType::etText) {
+            bufferedGr_->Flush();
+            bufferedGr_.reset();
+            dynamic_cast<TextElement*>(element)->prepareBackground(buffer_.get());
+            bufferedGr_ = std::make_unique<Gdiplus::Graphics>(buffer_.get());
+            bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
+            bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
+        }
         element->render(bufferedGr_.get());
     }
+
     if (!forExport) {
         if (overlay_ && showOverlay_) {
             overlay_->render(bufferedGr_.get());
@@ -958,7 +970,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
     canvasChanged_ = false;
     fullRender_ = false;
     updatedRect_ = Rect();
-    bufferedGr_->ResetClip();
+    //bufferedGr_->ResetClip();
 }
 
 void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const {
@@ -1297,10 +1309,8 @@ std::shared_ptr<InputBox> Canvas::getInputBox(const RECT& rect) {
     /*HWND wnd =*/
     inputBox_->Create(parentWindow_, rc, WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN | ES_NOHIDESEL /*| ES_LEFT */, /* WS_EX_TRANSPARENT |*/ rtlStyle);
 
-    inputBox_->SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
     inputBox_->setFont(font_, CFM_FACE | CFM_SIZE | CFM_CHARSET
                        | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
-    inputBox_->SetFocus();
     return inputBox_;
 }
 

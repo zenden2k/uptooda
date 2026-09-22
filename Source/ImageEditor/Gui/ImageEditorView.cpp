@@ -7,6 +7,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
 #include "../MovableElements.h"
+#include "../InputBox.h"
 #include "resource.h"
 
 namespace ImageEditor {
@@ -104,6 +105,10 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
 }
 
 LRESULT CImageEditorView::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (textMouseCapture_) {
+        forwardTextMouse(uMsg, wParam, lParam, true);
+        return 0;
+    }
     int cx = GET_X_LPARAM(lParam);
     int cy = GET_Y_LPARAM(lParam);
 
@@ -185,6 +190,13 @@ void CImageEditorView::computeAutoScrollDelta(int cx, int cy, const RECT& rc, in
 }
 
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (forwardTextMouse(uMsg, wParam, lParam)) {
+        if (GetFocus() != m_hWnd)
+            SetFocus();
+        textMouseCapture_ = activeTextElement();
+        SetCapture();
+        return 0;
+    }
     int cx = GET_X_LPARAM(lParam);
     int cy = GET_Y_LPARAM(lParam);
     
@@ -213,6 +225,12 @@ LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (textMouseCapture_) {
+        forwardTextMouse(uMsg, wParam, lParam, true);
+        textMouseCapture_ = nullptr;
+        ReleaseCapture();
+        return 0;
+    }
     if ( !mouseDown_ ) {
         return 0;
     }
@@ -234,8 +252,14 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return 0;
 }
 
-LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
+    bHandled = false;
+
+    if (forwardTextMouse(WM_RBUTTONUP, 0, lParam)) {
+        return 0;
+    }
+
     int cx = GET_X_LPARAM(lParam);
     int cy = GET_Y_LPARAM(lParam);
     POINT ptScroll;
@@ -251,8 +275,16 @@ LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
     return 0;
 }
 
+LRESULT CImageEditorView::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    bHandled = false;
+
+    return 0;
+}
+
 LRESULT CImageEditorView::OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    if (forwardTextMouse(WM_LBUTTONDBLCLK, 0, lParam))
+        return 0;
     int cx = GET_X_LPARAM(lParam);
     int cy = GET_Y_LPARAM(lParam);
     POINT ptScroll;
@@ -291,6 +323,10 @@ LRESULT CImageEditorView::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 }
 
 LRESULT CImageEditorView::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (auto* textElement = activeTextElement()) {
+        textElement->getInputBox()->handleMessage(WM_CONTEXTMENU, wParam, lParam);
+        return 0;
+    }
     /*HWND     hwnd = (HWND) wParam;  
     POINT ClientPoint, ScreenPoint;
 
@@ -342,18 +378,52 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 LRESULT CImageEditorView::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    if (auto* textElement = activeTextElement())
+        return textElement->getInputBox()->handleMessage(uMsg, wParam, lParam);
     ::SendMessage(GetParent(), uMsg, wParam, lParam);
     return 0;
 }
 
 LRESULT CImageEditorView::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    if (auto* textElement = activeTextElement())
+        return textElement->getInputBox()->handleMessage(uMsg, wParam, lParam);
     ::SendMessage(GetParent(), uMsg, wParam, lParam);
     return 0;
 }
 
-LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT CImageEditorView::OnTextInput(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (auto* textElement = activeTextElement())
+        return textElement->getInputBox()->handleMessage(uMsg, wParam, lParam);
+    bHandled = FALSE;
+    return 0;
+}
+
+TextElement* CImageEditorView::activeTextElement() const {
+    if (!canvas_)
+        return nullptr;
+    auto* element = canvas_->getCurrentlyEditedTextElement();
+    return element && element->isSelected() && element->getInputBox() && element->getInputBox()->isVisible() ? element
+                                                                                                             : nullptr;
+}
+
+bool CImageEditorView::forwardTextMouse(UINT message, WPARAM wParam, LPARAM lParam, bool allowOutside) {
+    auto* element = textMouseCapture_ ? textMouseCapture_ : activeTextElement();
+    if (!element)
+        return false;
+
+    POINT scrollOffset;
+    GetScrollOffset(scrollOffset);
+    const int x = GET_X_LPARAM(lParam) + scrollOffset.x - element->getX() - 3;
+    const int y = GET_Y_LPARAM(lParam) + scrollOffset.y - element->getY() - 3;
+    if (!allowOutside && (x < 0 || y < 0 || x >= element->getWidth() - 6 || y >= element->getHeight() - 6))
+        return false;
+
+    element->getInputBox()->handleMessage(message, wParam, MAKELPARAM(x, y));
+    return true;
+}
+
+LRESULT CImageEditorView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     Invalidate(true);
     return 0;
 }

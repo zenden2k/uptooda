@@ -22,6 +22,7 @@
 #include <d2d1helper.h>
 
 namespace ImageEditor {
+class TextElement;
 
 class WindowlessRichEditUIA;
 
@@ -37,12 +38,12 @@ class InputBoxControl : public CWindowImpl<InputBoxControl, CWindow, CControlWin
                         public IRawElementProviderWindowlessSite {
 public:
     DECLARE_WND_CLASS_EX(L"WindowlessInputBox", CS_DBLCLKS, COLOR_WINDOW);
-    inline static auto CARET_TIMER_ID = 1;
+    inline static auto CARET_TIMER_ID = 0xBEEF;
     explicit InputBoxControl(Canvas* canvas);
     ~InputBoxControl() override;
 
     // Создание/уничтожение
-    HWND Create(HWND hParent, const RECT& rc, DWORD style = WS_CHILD | WS_VISIBLE, DWORD exStyle = 0);
+    HWND Create(HWND hParent, const RECT& rc, DWORD style = WS_CHILD, DWORD exStyle = 0);
     void Destroy();
 
     // InputBox
@@ -57,6 +58,7 @@ public:
     void setRawText(const std::string& text) override;
     std::string getRawText() override;
     bool isEmpty() override;
+    LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) override;
 
     // WTL messages
     BEGIN_MSG_MAP(InputBoxControl)
@@ -158,8 +160,8 @@ public:
     HRESULT OnTxParaFormatChange(CONST PARAFORMAT*) override { return S_OK; }
     HRESULT TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) override;
     HRESULT TxNotify(DWORD iNotify, void* pv) override;
-    HIMC TxImmGetContext() override { return ::ImmGetContext(m_hWnd); }
-    void TxImmReleaseContext(HIMC himc) override { ::ImmReleaseContext(m_hWnd, himc); }
+    HIMC TxImmGetContext() override { return ::ImmGetContext(GetParent()); }
+    void TxImmReleaseContext(HIMC himc) override { ::ImmReleaseContext(GetParent(), himc); }
     HRESULT TxGetWindow(HWND* phwnd) override;
     HRESULT TxSetForegroundWindow() override {
         ::SetForegroundWindow(m_hWnd);
@@ -245,7 +247,7 @@ public:
     }
 
     void setHostWindow(HWND wnd) override;
-
+    std::unique_ptr<Gdiplus::Bitmap> prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) override;
 private:
     HRESULT GetRichEditProvider(IRawElementProviderFragment** ppProvider);
     // Создание движка и дефолтные настройки
@@ -275,6 +277,7 @@ private:
 private:
     // Состояние
     Canvas* canvas_ {};
+    TextElement* textElement_ {};
     CComPtr<ITextServices> services_;
     CComPtr<ITextServices2> services2_;
     CComPtr<IUnknown> servicesUnk_;
@@ -282,17 +285,19 @@ private:
     CComPtr<ID2D1DCRenderTarget> renderTarget_;
     //CComPtr<ID2D1HwndRenderTarget> renderTarget_;
     RECT clientRect_ {};
+    POINT canvasOrigin_ {};
     DWORD maxLength_ { INFINITE };
     CHARFORMAT2 charFormat_ {};
     PARAFORMAT paraFormat_ {};
     LOGFONT logFont_ {};
     COLORREF textColor_ { RGB(0, 0, 0) };
-    bool visible_ { true };
+    bool visible_ { false };
     LONG refCount_ { 1 };
     bool contextMenuOpened_ { false };
     std::vector<MovableElement::Grip> grips_;
     HCURSOR cursor_;
     bool InitializeD2D();
+    bool isCaretItalic();
     bool d2dMode_;
     POINT caretPos_ {};
     bool caretVisible_ = false;

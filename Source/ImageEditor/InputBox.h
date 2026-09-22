@@ -21,6 +21,8 @@ class InputBox {
         virtual void setHostWindow(HWND wnd) = 0;
         virtual std::string getRawText() = 0;
         virtual bool isEmpty() = 0;
+        virtual std::unique_ptr<Gdiplus::Bitmap> prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) = 0;
+        virtual LRESULT handleMessage(UINT message, WPARAM wParam, LPARAM lParam) = 0;
         boost::signals2::signal<void(LPCTSTR)> onTextChanged;
         boost::signals2::signal<void()> onEditCanceled;
         boost::signals2::signal<void()> onEditFinished;

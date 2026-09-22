@@ -1265,7 +1265,7 @@ void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement
     textParamsWindow_.SetWindowPos(0,x,y, 0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOZORDER);
 
     textParamsWindow_.ShowWindow(SW_SHOW);
-    control->SetFocus();
+    m_view.SetFocus();
 }
 
 void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement * textElement)
@@ -1679,6 +1679,9 @@ bool ImageEditorWindow::copyBitmapToClipboard(ClipboardFormat format, bool close
 
 BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
     if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_SYSKEYDOWN) {
+        if (pMsg->hwnd == m_view.m_hWnd && canvas_ && canvas_->getCurrentlyEditedTextElement()) {
+            return FALSE;
+        }
         // Disable accelerators for child controls of the view window (now it's just InputBoxControl)
         // and all edit controls in toolbars.
         HWND parent = ::GetParent(pMsg->hwnd);

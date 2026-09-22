@@ -26,6 +26,7 @@
 //#include <dwrite.h>
 //#include <dcommon.h>
 #include <wincodec.h>
+#include <Windows.ApplicationModel.Appointments.h>
 
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
@@ -131,8 +132,9 @@ POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
     return logicalPoint;
 }
 
-InputBoxControl::InputBoxControl(Canvas* canvas)
-    : canvas_(canvas) {
+InputBoxControl::InputBoxControl(Canvas* canvas):
+    canvas_(canvas)
+{
     d2dMode_ = false;
     ZeroMemory(&charFormat_, sizeof(charFormat_));
     ZeroMemory(&paraFormat_, sizeof(paraFormat_));
@@ -143,6 +145,8 @@ InputBoxControl::InputBoxControl(Canvas* canvas)
 }
 
 InputBoxControl::~InputBoxControl() {
+    if (IsWindow())
+        DestroyWindow();
     Destroy();
 }
 
@@ -156,6 +160,8 @@ HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD ex
     if (!pCreateTextServices)
         return nullptr;
     RECT rcCopy = rc;
+    POINT scrollOffset = canvas_ ? canvas_->GetScrollOffset() : POINT{};
+    canvasOrigin_ = {rc.left + scrollOffset.x, rc.top + scrollOffset.y};
     CWindowImpl::Create(hParent, rcCopy, L"", style, exStyle);
     ::GetClientRect(m_hWnd, &clientRect_);
     if (!CreateTextServices()) {
@@ -170,7 +176,6 @@ void InputBoxControl::Destroy() {
     services_.Release();
     services2_.Release();
     servicesUnk_.Release();
-    ::DestroyCaret();
     //UiaReturnRawElementProvider(hostWindow_, 0, 0, NULL);
     /*if (m_hWnd)
         DestroyWindow();*/
@@ -237,19 +242,33 @@ void InputBoxControl::ApplyDefaults() {
 
 // InputBox
 void InputBoxControl::show(bool show) {
+    if (visible_ == show)
+        return;
     visible_ = show;
     if (!show) {
         if (services_) {
             services_->TxSendMessage(EM_SETSEL, 0, 0, nullptr);
         }
     }
-    ShowWindow(show ? SW_SHOWNA : SW_HIDE);
-    if (!show)
-        ::SetFocus(GetParent());
+    // The HWND only hosts text services and timers; pixels are drawn by TextElement.
+    ShowWindow(SW_HIDE);
+    if (services_) {
+        if (show) {
+            services_->OnTxInPlaceActivate(nullptr);
+            services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
+            TxShowCaret(TRUE);
+        } else {
+            TxShowCaret(FALSE);
+            services_->TxSendMessage(WM_KILLFOCUS, 0, 0, nullptr);
+            services_->OnTxInPlaceDeactivate();
+        }
+    }
+    invalidate();
 }
 
 void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) {
     grips_ = std::move(grips);
+    canvasOrigin_ = {x, y};
     POINT scrollOffset { 0, 0 };
     if (canvas_)
         scrollOffset = canvas_->GetScrollOffset();
@@ -263,49 +282,52 @@ void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElem
 }
 
 bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap) {
-    if (!renderTarget_ || !gdipBitmap)
+    if (!renderTarget_ || !gdipBitmap || sourceRect.IsEmptyArea()) {
         return false;
-
-    // Создаем временный bitmap для конвертации
-    Gdiplus::Bitmap tempBitmap(sourceRect.Width, sourceRect.Height, PixelFormat32bppPARGB);
-    Gdiplus::Graphics tempGraphics(&tempBitmap);
-
-    // Копируем нужную область
-    tempGraphics.DrawImage(gdipBitmap,
-        Gdiplus::Rect(0, 0, sourceRect.Width, sourceRect.Height),
-        sourceRect.X, sourceRect.Y, sourceRect.Width, sourceRect.Height,
-        Gdiplus::UnitPixel);
+    }
 
     // Получаем данные пикселей
     Gdiplus::BitmapData bitmapData;
-    Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
-    tempBitmap.LockBits(&lockRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData);
-    FLOAT dpiX = 96.0f, dpiY = 96.0f;
-    //renderTarget_->GetDpi(&dpiX, &dpiY);
+    //Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
+    if (gdipBitmap->LockBits(&sourceRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData) == Gdiplus::Ok) {
+        FLOAT dpiX = 96.0f, dpiY = 96.0f;
+        //renderTarget_->GetDpi(&dpiX, &dpiY);
 
-    // Создаем D2D bitmap
-    D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
-        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-        dpiX, dpiY);
+        // Создаем D2D bitmap
+        D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
+            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+            dpiX, dpiY);
 
-    HRESULT hr = renderTarget_->CreateBitmap(
-        D2D1::SizeU(sourceRect.Width, sourceRect.Height),
-        bitmapData.Scan0,
-        bitmapData.Stride,
-        bitmapProps,
-        d2dBitmap);
+        HRESULT hr = renderTarget_->CreateBitmap(
+            D2D1::SizeU(sourceRect.Width, sourceRect.Height),
+            bitmapData.Scan0,
+            bitmapData.Stride,
+            bitmapProps,
+            d2dBitmap);
 
-    tempBitmap.UnlockBits(&bitmapData);
+        gdipBitmap->UnlockBits(&bitmapData);
+        return SUCCEEDED(hr);
+    }
 
-    return SUCCEEDED(hr);
+    return false;
 }
 
 void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
+    Gdiplus::Rect rc = canvas_->currentRenderingRect();
+    Gdiplus::Rect rcRelative = rc;
+    rcRelative.Intersect(layoutArea);
+    rcRelative.Offset(-layoutArea.GetLeft(), -layoutArea.GetTop());
+
+    CRect updateRect { rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetBottom() };
+    CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };;
+
+
     if (!d2dMode_ || !InitializeD2D()) {
         HDC mainHdc = graphics->GetHDC();
 
         // Создаем memory DC и bitmap
-        HDC memHdc = ::CreateCompatibleDC(mainHdc);
+        CDC memHdc;
+        memHdc.CreateCompatibleDC(mainHdc);
 
         // Создаем DIB section для лучшего контроля
         BITMAPINFO bmi = {};
@@ -317,8 +339,9 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
         bmi.bmiHeader.biCompression = BI_RGB;
 
         void* bits = nullptr;
-        HBITMAP textBitmap = ::CreateDIBSection(memHdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
-        HBITMAP oldBitmap = (HBITMAP)::SelectObject(memHdc, textBitmap);
+        CBitmap textBitmap;
+        textBitmap.CreateDIBSection(memHdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+        HBITMAP oldBitmap = memHdc.SelectBitmap(textBitmap);
 
         // Копируем фон с основного graphics
         if (background) {
@@ -330,26 +353,42 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
         } else {
             // Заливаем нужным цветом
             RECT fillRect = { 0, 0, layoutArea.Width, layoutArea.Height };
-            HBRUSH brush = ::CreateSolidBrush(RGB(255, 255, 255)); // Или нужный вам цвет
-            ::FillRect(memHdc, &fillRect, brush);
-            ::DeleteObject(brush);
+            CBrush brush;
+            brush.CreateSolidBrush(RGB(255, 255, 255)); // Или нужный вам цвет
+            memHdc.FillRect(&fillRect, brush);
         }
 
         // Настройки рендеринга
-        ::SetBkMode(memHdc, TRANSPARENT);
+        memHdc.SetBkMode(TRANSPARENT);
 
         // Рендерим текст
         RECTL rc = { 0, 0, layoutArea.Width, layoutArea.Height };
         services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, memHdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
+        if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
+            const int caretWidth = std::max(1, caretWidth_);
+            if (isCaretItalic()) {
+                const int slant = std::max(1, caretHeight_ / 4);
+                POINT points[] = { { caretPos_.x + slant, caretPos_.y },
+                                   { caretPos_.x + slant + caretWidth, caretPos_.y },
+                                   { caretPos_.x + caretWidth, caretPos_.y + caretHeight_ },
+                                   { caretPos_.x, caretPos_.y + caretHeight_ } };
+                CRgn caretRegion;
+                caretRegion.CreatePolygonRgn(points, 4, WINDING);
+                if (caretRegion) {
+                    memHdc.FillRgn(caretRegion, static_cast<HBRUSH>(::GetStockObject(BLACK_BRUSH)));
+                }
+            } else {
+                RECT caretRect = { caretPos_.x, caretPos_.y, caretPos_.x + caretWidth, caretPos_.y + caretHeight_ };
+                memHdc.FillRect(&caretRect, static_cast<HBRUSH>(::GetStockObject(BLACK_BRUSH)));
+            }
+        }
         graphics->ReleaseHDC(mainHdc);
         // Конвертируем в GDI+ Bitmap и рисуем
         Gdiplus::Bitmap gdipBitmap(textBitmap, nullptr);
         graphics->DrawImage(&gdipBitmap, layoutArea.X, layoutArea.Y);
 
         // Очистка
-        ::SelectObject(memHdc, oldBitmap);
-        ::DeleteObject(textBitmap);
-        ::DeleteDC(memHdc);
+        memHdc.SelectBitmap(oldBitmap);
         return;
     }
 
@@ -374,12 +413,14 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     FLOAT dpiX = 96.0f, dpiY = 96.0f;
     renderTarget_->GetDpi(&dpiX, &dpiY);
 
-    CRect bgRect = ScaleRectToLogical(bindRect, dpiX);
+    CRect bgRect = ScaleRectToLogical(updateRectRelative, dpiX);
     if (background) {
-        // Конвертируем GDI+ bitmap в D2D bitmap и рисуем фон
         CComPtr<ID2D1Bitmap> d2dBackground;
-        if (CreateD2DBitmapFromGdiplus(background, layoutArea, &d2dBackground)) {
-            D2D1_RECT_F destRect = D2D1::RectF(0, 0, (FLOAT)bgRect.Width(), (FLOAT)bgRect.Height());
+        rc.Offset(-layoutArea.X, -layoutArea.Y);
+
+        if (CreateD2DBitmapFromGdiplus(background, rcRelative, &d2dBackground)) {
+            //D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
+            D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
             renderTarget_->DrawBitmap(d2dBackground, destRect);
         }
     } else {
@@ -392,19 +433,67 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
 
     // Теперь рендерим текст поверх подготовленного фона
     RECTL textRect = { 0, 0, layoutArea.Width, layoutArea.Height };
-    hr = services2_->TxDrawD2D(renderTarget_, &textRect, nullptr, 0);
 
-    HRESULT endHr = renderTarget_->EndDraw();
+    //updateRect = ScaleRectToLogical(updateRect, dpiX);
+
+    services2_->TxDrawD2D(renderTarget_, &textRect, &updateRectRelative, 0);
+
+    if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
+        CComPtr<ID2D1SolidColorBrush> caretBrush;
+        if (SUCCEEDED(renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &caretBrush))) {
+            if (isCaretItalic()) {
+                const FLOAT slant = static_cast<FLOAT>(std::max(1, caretHeight_ / 4));
+                renderTarget_->DrawLine(
+                    D2D1::Point2F(static_cast<FLOAT>(caretPos_.x) + slant, static_cast<FLOAT>(caretPos_.y)),
+                    D2D1::Point2F(static_cast<FLOAT>(caretPos_.x), static_cast<FLOAT>(caretPos_.y + caretHeight_)),
+                    caretBrush, static_cast<FLOAT>(std::max(1, caretWidth_)));
+            } else {
+                const D2D1_RECT_F caretRect
+                    = D2D1::RectF(static_cast<FLOAT>(caretPos_.x), static_cast<FLOAT>(caretPos_.y),
+                                  static_cast<FLOAT>(caretPos_.x + std::max(1, caretWidth_)),
+                                  static_cast<FLOAT>(caretPos_.y + caretHeight_));
+                renderTarget_->FillRectangle(caretRect, caretBrush);
+            }
+        }
+    }
+
+    renderTarget_->EndDraw();
     graphics->ReleaseHDC(mainHdc);
 }
 
-bool InputBoxControl::isVisible() {
-    return IsWindowVisible() != FALSE;
+bool InputBoxControl::isCaretItalic() {
+    CHARFORMAT2 format { };
+    format.cbSize = sizeof(format);
+    if (services_
+        && SUCCEEDED(
+            services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&format), nullptr))) {
+        return (format.dwMask & CFM_ITALIC) && (format.dwEffects & CFE_ITALIC);
+    }
+    return (charFormat_.dwEffects & CFE_ITALIC) != 0;
 }
 
+bool InputBoxControl::isVisible() { return visible_; }
+
 void InputBoxControl::invalidate() {
-    if (m_hWnd)
-        Invalidate(false);
+    if (canvas_ && visible_ && clientRect_.right > 0 && clientRect_.bottom > 0) {
+        RECT rect = { canvasOrigin_.x, canvasOrigin_.y, canvasOrigin_.x + clientRect_.right,
+                      canvasOrigin_.y + clientRect_.bottom };
+        canvas_->updateView(rect);
+    }
+}
+
+LRESULT InputBoxControl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam) {
+    BOOL handled = TRUE;
+    if (message >= WM_MOUSEFIRST && message <= WM_MOUSELAST)
+        return OnMouse(message, wParam, lParam, handled);
+    if (message >= WM_KEYFIRST && message <= WM_KEYLAST)
+        return OnKey(message, wParam, lParam, handled);
+    if ((message >= WM_IME_STARTCOMPOSITION && message <= WM_IME_ENDCOMPOSITION) || message == WM_IME_CHAR
+        || message == WM_IME_NOTIFY || message == WM_IME_REQUEST)
+        return OnIme(message, wParam, lParam, handled);
+    if (message == WM_CONTEXTMENU)
+        return OnContextMenu(message, wParam, lParam, handled);
+    return 0;
 }
 
 void InputBoxControl::setTextColor(Gdiplus::Color color) {
@@ -665,7 +754,7 @@ LRESULT InputBoxControl::OnTimer(UINT, WPARAM id, LPARAM lParam, BOOL&) {
     if (id == CARET_TIMER_ID) {
         caretBlinkOn_ = !caretBlinkOn_;
         if (caretVisible_) {
-            Invalidate(TRUE);
+            invalidate();
         }
         return 0;
     }
@@ -714,8 +803,7 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
 
     if (x == -1 && y == -1) {
-        POINT pt;
-        GetCaretPos(&pt);
+        POINT pt = caretPos_;
         ClientToScreen(&pt);
         x = pt.x;
         y = pt.y;
@@ -745,18 +833,18 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     contextMenu.AppendMenu(MF_SEPARATOR);
 
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_CUT, TR("Cut"));
+        ID_EDIT_CUT, TR("Cut") + CString("\tCtrl+X"));
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_COPY, TR("Copy"));
+        ID_EDIT_COPY, TR("Copy") + CString("\tCtrl+C"));
     contextMenu.AppendMenu(MF_STRING | (canPaste ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_PASTE, TR("Paste"));
+        ID_EDIT_PASTE, TR("Paste")+ CString("\tCtrl+V"));
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_DELETE, TR("Delete"));
+        ID_EDIT_DELETE, TR("Delete")+ CString("\tDel"));
 
     contextMenu.AppendMenu(MF_SEPARATOR);
 
     contextMenu.AppendMenu(MF_STRING | (hasText ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_SELECT_ALL, TR("Select All"));
+        ID_EDIT_SELECT_ALL, TR("Select All")+ CString("\tCtrl+A"));
 
 
     contextMenuOpened_ = true;
@@ -913,16 +1001,23 @@ INT InputBoxControl::TxReleaseDC(HDC hdc) {
 }
 
 void InputBoxControl::TxInvalidateRect(LPCRECT prc, BOOL) {
-    RECT rc = prc ? *prc : clientRect_;
-    InvalidateRect(&rc, FALSE);
+    invalidate();
 }
 
 void InputBoxControl::TxViewChange(BOOL fUpdate) {
     if (fUpdate)
-        UpdateWindow();
+        invalidate();
 }
 
 BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    caretWidth_ = MulDiv(xWidth, USER_DEFAULT_SCREEN_DPI, dpi);
+    caretHeight_ = MulDiv(yHeight,  USER_DEFAULT_SCREEN_DPI, dpi);
+
+    /*caretWidth_ = xWidth;
+    caretHeight_ = yHeight;*/
+
+    caretCreated_ = true;
     if (d2dMode_) {
         if (caretBitmap_ != hbmp) {
             d2dCaretBitmap_.Release();
@@ -934,56 +1029,43 @@ BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
         } else {
             caretBitmap_ = hbmp;
         }
-        caretWidth_ = xWidth;
-        caretHeight_ = yHeight;
-        caretCreated_ = true;
-    } 
-    return ::CreateCaret(m_hWnd, hbmp, xWidth, yHeight);
+    }
+    return TRUE;
 }
 
 BOOL InputBoxControl::TxShowCaret(BOOL fShow) {
     caretVisible_ = fShow;
-    if (d2dMode_) {
-        if (fShow) {
-            caretBlinkOn_ = true;
-            TxInvalidateRect(nullptr, FALSE);
-            SetTimer(CARET_TIMER_ID, GetCaretBlinkTime(), nullptr);
-        } else {
-            KillTimer(CARET_TIMER_ID);
-        }
-    }
     if (fShow) {
-        return ::ShowCaret(m_hWnd);
+        caretBlinkOn_ = true;
+        SetTimer(CARET_TIMER_ID, GetCaretBlinkTime(), nullptr);
     } else {
-        return ::HideCaret(m_hWnd);
+        KillTimer(CARET_TIMER_ID);
     }
+    invalidate();
+    return TRUE;
 }
 
 BOOL InputBoxControl::TxSetCaretPos(INT x, INT y) {
-    if (d2dMode_) {
-        caretPos_ = { x, y };
-        Invalidate();
-    }
-    return ::SetCaretPos(x, y);
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    x = MulDiv(x, USER_DEFAULT_SCREEN_DPI, dpi);
+    y = MulDiv(y,  USER_DEFAULT_SCREEN_DPI, dpi);
+    caretPos_ = { x, y };
+    invalidate();
+    return TRUE;
 }
 
-BOOL InputBoxControl::TxSetTimer(UINT idTimer, UINT uTimeout) {
-    return SetTimer(idTimer, uTimeout) != 0;
-}
+BOOL InputBoxControl::TxSetTimer(UINT idTimer, UINT uTimeout) { return SetTimer(idTimer, uTimeout) != 0; }
 void InputBoxControl::TxKillTimer(UINT idTimer) {
     if (IsWindow())
     KillTimer(idTimer);
 }
 
 void InputBoxControl::TxSetCapture(BOOL fCapture) {
-    if (fCapture)
-        SetCapture();
-    else
-        ReleaseCapture();
+    // CImageEditorView owns capture while forwarding a text selection drag.
 }
 
 void InputBoxControl::TxSetFocus() {
-    ::SetFocus(m_hWnd);
+    ::SetFocus(GetParent());
 }
 
 void InputBoxControl::TxSetCursor(HCURSOR hcur, BOOL fText) {
@@ -1150,7 +1232,7 @@ HRESULT InputBoxControl::TxGetEditStyle(DWORD dwItem, DWORD* pdwData) {
 
 HRESULT InputBoxControl::TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) {
     if (pdwStyle)
-        *pdwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPSIBLINGS;
+        *pdwStyle = WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS;
     if (pdwExStyle)
         *pdwExStyle = 0;
     return S_OK;
@@ -1158,6 +1240,20 @@ HRESULT InputBoxControl::TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) {
 
 void InputBoxControl::setHostWindow(HWND wnd) {
     hostWindow_ = wnd;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> InputBoxControl::prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) {
+    // Создаем временный bitmap для конвертации
+    auto tempBitmap = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
+    Gdiplus::Graphics tempGraphics(tempBitmap.get());
+    tempGraphics.Clear(Gdiplus::Color::Transparent);
+    // Копируем нужную область
+    tempGraphics.DrawImage(source,
+        Gdiplus::Rect(0, 0, rc.Width, rc.Height),
+        rc.X, rc.Y, rc.Width, rc.Height,
+        Gdiplus::UnitPixel);
+
+    return tempBitmap;
 }
 
 }

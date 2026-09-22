@@ -27,13 +27,27 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
             MESSAGE_HANDLER( WM_MOUSEMOVE, OnMouseMove )
             MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
             MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
+            MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
+            MESSAGE_HANDLER( WM_RBUTTONDOWN, OnRButtonDown )
             MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
             MESSAGE_HANDLER( WM_LBUTTONDBLCLK , OnLButtonDblClick )
             MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
-            MESSAGE_HANDLER( WM_CONTEXTMENU, OnContextMenu )
             MESSAGE_HANDLER( WM_SETCURSOR, OnSetCursor )
             MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
             MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
+            MESSAGE_HANDLER( WM_SYSKEYDOWN, OnKeyDown )
+            MESSAGE_HANDLER( WM_SYSKEYUP, OnKeyUp )
+            MESSAGE_HANDLER( WM_CHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_DEADCHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_UNICHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_SYSCHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_SYSDEADCHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_STARTCOMPOSITION, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_COMPOSITION, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_ENDCOMPOSITION, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_CHAR, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_NOTIFY, OnTextInput )
+            MESSAGE_HANDLER( WM_IME_REQUEST, OnTextInput )
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
             //MESSAGE_HANDLER( WM_SIZE, OnSize )
             REFLECT_NOTIFICATIONS()
@@ -55,12 +69,14 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnTextInput(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         POINT oldPoint{};
@@ -82,6 +98,9 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         static double positionalSpeed(int distOutside);
         void computeAutoScrollDelta(int cx, int cy, const RECT& rc, int& dx, int& dy) const;
         bool isAutoScrollActive_ = false;
+        TextElement* textMouseCapture_ = nullptr;
+        TextElement* activeTextElement() const;
+        bool forwardTextMouse(UINT message, WPARAM wParam, LPARAM lParam, bool allowOutside = false);
 };
 
 }
