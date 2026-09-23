@@ -191,7 +191,7 @@ void TextElement::render(Painter* gr) {
         gr->SetSmoothingMode(prevSmoothingMode);
     }
     if (inputBox_) {
-        inputBox_->render(gr, backgroundBitmap_.get(), Rect(getX()+3,getY()+3,getWidth()-5,getHeight()-5));
+        inputBox_->render(gr, backgroundBitmap_.get(), Rect(getX()+3,getY()+3,getWidth()-6,getHeight()-6));
     }
 }
 
@@ -390,7 +390,7 @@ bool TextElement::move(int offsetX, int offsetY, bool checkBounds /*= true*/) {
 }
 
 void TextElement::prepareBackground(Gdiplus::Bitmap* source) {
-    Gdiplus::Rect rc (getX()+3,getY()+3,getWidth()-5,getHeight()-5);
+    Gdiplus::Rect rc (getX()+3,getY()+3,getWidth()-6,getHeight()-6);
     // Создаем временный bitmap для конвертации
     backgroundBitmap_ = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
     Gdiplus::Graphics tempGraphics(backgroundBitmap_.get());

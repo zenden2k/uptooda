@@ -115,13 +115,11 @@ CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITM
     return d2dBitmap;
 }
 
-RECT ScaleRectToLogical(const RECT& physicalRect, int dpi) {
-    RECT logicalRect;
-    logicalRect.left = MulDiv(physicalRect.left, 96, dpi);
-    logicalRect.top = MulDiv(physicalRect.top, 96, dpi);
-    logicalRect.right = MulDiv(physicalRect.right, 96, dpi);
-    logicalRect.bottom = MulDiv(physicalRect.bottom,96, dpi);
-    return logicalRect;
+D2D1_RECT_F ScaleRectToLogical(const RECT& physicalRect, FLOAT dpiX, FLOAT dpiY) {
+    const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
+    const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
+    return D2D1::RectF(physicalRect.left * scaleX, physicalRect.top * scaleY,
+        physicalRect.right * scaleX, physicalRect.bottom * scaleY);
 }
 
 POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
@@ -173,6 +171,16 @@ HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD ex
 }
 
 void InputBoxControl::Destroy() {
+    if (services_) {
+        if (uiActive_) {
+            services_->OnTxUIDeactivate();
+            uiActive_ = false;
+        }
+        if (inPlaceActive_) {
+            services_->OnTxInPlaceDeactivate();
+            inPlaceActive_ = false;
+        }
+    }
     services_.Release();
     services2_.Release();
     servicesUnk_.Release();
@@ -228,9 +236,19 @@ void InputBoxControl::ApplyDefaults() {
     // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
     //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
 
-    // Включаем расширенную типографику для emoji
-    LONG langOptions = IMF_UIFONTS | IMF_AUTOFONT | IMF_DUALFONT;
+    // Preserve the RichEdit defaults, but do not let keyboard-layout font binding override
+    // a font explicitly selected in TextParamsWindow.
+    LRESULT langOptions = 0;
+    services_->TxSendMessage(EM_GETLANGOPTIONS, 0, 0, &langOptions);
+    langOptions |= IMF_UIFONTS;
+    langOptions &= ~(IMF_AUTOFONT | IMF_DUALFONT);
     services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
+
+    BIDIOPTIONS bidiOptions {};
+    bidiOptions.cbSize = sizeof(bidiOptions);
+    bidiOptions.wMask = BOM_UNICODEBIDI;
+    bidiOptions.wEffects = BOE_UNICODEBIDI;
+    services_->TxSendMessage(EM_SETBIDIOPTIONS, 0, (LPARAM)&bidiOptions, nullptr);
 
     // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
     //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
@@ -254,13 +272,35 @@ void InputBoxControl::show(bool show) {
     ShowWindow(SW_HIDE);
     if (services_) {
         if (show) {
-            services_->OnTxInPlaceActivate(nullptr);
-            services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
-            TxShowCaret(TRUE);
+            if (!inPlaceActive_) {
+                services_->OnTxInPlaceActivate(nullptr);
+                inPlaceActive_ = true;
+            }
+            if (::GetFocus() != m_hWnd) {
+                ::SetFocus(m_hWnd);
+            }
+            if (::GetFocus() != m_hWnd) {
+                // Keep ordinary input working even if Windows refuses to focus the hidden host window.
+                if (!uiActive_) {
+                    services_->OnTxUIActivate();
+                    uiActive_ = true;
+                }
+                services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
+                TxShowCaret(TRUE);
+            }
         } else {
-            TxShowCaret(FALSE);
-            services_->TxSendMessage(WM_KILLFOCUS, 0, 0, nullptr);
-            services_->OnTxInPlaceDeactivate();
+            if (::GetFocus() == m_hWnd) {
+                ::SetFocus(GetParent());
+            } else if (uiActive_) {
+                TxShowCaret(FALSE);
+                services_->TxSendMessage(WM_KILLFOCUS, 0, 0, nullptr);
+                services_->OnTxUIDeactivate();
+                uiActive_ = false;
+            }
+            if (inPlaceActive_) {
+                services_->OnTxInPlaceDeactivate();
+                inPlaceActive_ = false;
+            }
         }
     }
     invalidate();
@@ -413,22 +453,20 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     FLOAT dpiX = 96.0f, dpiY = 96.0f;
     renderTarget_->GetDpi(&dpiX, &dpiY);
 
-    CRect bgRect = ScaleRectToLogical(updateRectRelative, dpiX);
+    D2D1_RECT_F bgRect = ScaleRectToLogical(updateRectRelative, dpiX, dpiY);
     if (background) {
         CComPtr<ID2D1Bitmap> d2dBackground;
         rc.Offset(-layoutArea.X, -layoutArea.Y);
 
         if (CreateD2DBitmapFromGdiplus(background, rcRelative, &d2dBackground)) {
             //D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
-            D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
-            renderTarget_->DrawBitmap(d2dBackground, destRect);
+            renderTarget_->DrawBitmap(d2dBackground, bgRect);
         }
     } else {
         // Заливаем белым фоном
         CComPtr<ID2D1SolidColorBrush> whiteBrush;
         renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush);
-        D2D1_RECT_F rect = D2D1::RectF(0, 0, (FLOAT)bgRect.Width(), (FLOAT)bgRect.Height());
-        renderTarget_->FillRectangle(rect, whiteBrush);
+        renderTarget_->FillRectangle(bgRect, whiteBrush);
     }
 
     // Теперь рендерим текст поверх подготовленного фона
@@ -437,6 +475,10 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     //updateRect = ScaleRectToLogical(updateRect, dpiX);
 
     services2_->TxDrawD2D(renderTarget_, &textRect, &updateRectRelative, 0);
+    /*const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
+    const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
+    const FLOAT caretWidth = scaleX * caretWidth_;
+    const FLOAT caretHeight = scaleY * caretHeight_;*/
 
     if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
         CComPtr<ID2D1SolidColorBrush> caretBrush;
@@ -472,6 +514,44 @@ bool InputBoxControl::isCaretItalic() {
     return (charFormat_.dwEffects & CFE_ITALIC) != 0;
 }
 
+LOGFONT InputBoxControl::getSelectionFont() {
+    LOGFONT result = logFont_;
+    if (!services_)
+        return result;
+
+    CHARFORMAT2 format {};
+    format.cbSize = sizeof(format);
+    services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, (LPARAM)&format, nullptr);
+
+    if (format.dwMask & CFM_FACE) {
+        wcsncpy_s(result.lfFaceName, format.szFaceName, _TRUNCATE);
+    }
+    if (format.dwMask & CFM_SIZE) {
+        int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+        result.lfHeight = -MulDiv(format.yHeight, dpi, 72 * 20);
+    }
+    if (format.dwMask & CFM_WEIGHT) {
+        result.lfWeight = format.wWeight;
+    }
+    if (format.dwMask & CFM_BOLD) {
+        result.lfWeight = (format.dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
+    }
+    if (format.dwMask & CFM_ITALIC) {
+        result.lfItalic = (format.dwEffects & CFE_ITALIC) != 0;
+    }
+    if (format.dwMask & CFM_UNDERLINE) {
+        result.lfUnderline = (format.dwEffects & CFE_UNDERLINE) != 0;
+    }
+    if (format.dwMask & CFM_STRIKEOUT) {
+        result.lfStrikeOut = (format.dwEffects & CFE_STRIKEOUT) != 0;
+    }
+    if (format.dwMask & CFM_CHARSET) {
+        result.lfCharSet = format.bCharSet;
+    }
+
+    return result;
+}
+
 bool InputBoxControl::isVisible() { return visible_; }
 
 void InputBoxControl::invalidate() {
@@ -500,69 +580,86 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
     textColor_ = color.ToCOLORREF();
     charFormat_.crTextColor = textColor_;
     charFormat_.dwMask |= CFM_COLOR;
+
     if (services_) {
-        services_->TxSendMessage(EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&charFormat_, nullptr);
+        if (visible_ && ::GetFocus() != m_hWnd)
+            ::SetFocus(m_hWnd);
+
+        CHARFORMAT2 format {};
+        format.cbSize = sizeof(format);
+        format.dwMask = CFM_COLOR;
+        format.crTextColor = textColor_;
+        WPARAM flags = visible_ ? SCF_SELECTION : SCF_ALL;
+        LRESULT result = 0;
+        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
+        if (FAILED(hr) || !result)
+            LOG(ERROR) << "Failed to set RichEdit text color, hr=" << hr;
     }
 }
 
 void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
     LOG(WARNING) << "setFont mask=" << std::hex << changeMask;
     logFont_ = font;
-    charFormat_.cbSize = sizeof(charFormat_);
-    // Расширенная маска для всех стилей
-    DWORD defaultMask = CFM_FACE | CFM_SIZE | CFM_CHARSET | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
-    charFormat_.dwMask |= (changeMask ? changeMask : defaultMask);
 
-    if (logFont_.lfHeight != 0) {
+    constexpr DWORD DEFAULT_MASK
+        = CFM_FACE | CFM_SIZE | CFM_CHARSET | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
+    CHARFORMAT2 format {};
+    format.cbSize = sizeof(format);
+    format.dwMask = changeMask ? changeMask : DEFAULT_MASK;
+    if (format.dwMask & CFM_FACE)
+        format.dwMask |= CFM_CHARSET;
+
+    if ((format.dwMask & CFM_SIZE) && logFont_.lfHeight != 0) {
         int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
         int pointSize = MulDiv(-logFont_.lfHeight, 72, dpi);
-        charFormat_.yHeight = pointSize * 20;
+        format.yHeight = pointSize * 20;
+        charFormat_.yHeight = format.yHeight;
     }
 
-    wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
-
-    charFormat_.dwEffects = 0; 
-
-    if (logFont_.lfWeight >= FW_BOLD) {
-        charFormat_.dwEffects |= CFE_BOLD;
+    if (format.dwMask & CFM_FACE) {
+        wcsncpy_s(format.szFaceName, logFont_.lfFaceName, _TRUNCATE);
+        wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
+    }
+    if (format.dwMask & CFM_CHARSET) {
+        format.bCharSet = logFont_.lfCharSet;
+        charFormat_.bCharSet = logFont_.lfCharSet;
+    }
+    if (format.dwMask & CFM_WEIGHT) {
+        format.wWeight = static_cast<WORD>(logFont_.lfWeight);
+        charFormat_.wWeight = format.wWeight;
+    }
+    if (format.dwMask & CFM_OFFSET) {
+        format.yOffset = 0;
+        charFormat_.yOffset = 0;
     }
 
-    if (logFont_.lfItalic) {
-        charFormat_.dwEffects |= CFE_ITALIC;
-    }
+    auto setEffect = [this, &format](DWORD mask, DWORD effect, bool enabled) {
+        if (!(format.dwMask & mask))
+            return;
+        if (enabled) {
+            format.dwEffects |= effect;
+            charFormat_.dwEffects |= effect;
+        } else {
+            charFormat_.dwEffects &= ~effect;
+        }
+    };
+    setEffect(CFM_BOLD, CFE_BOLD, logFont_.lfWeight >= FW_BOLD);
+    setEffect(CFM_ITALIC, CFE_ITALIC, logFont_.lfItalic != FALSE);
+    setEffect(CFM_UNDERLINE, CFE_UNDERLINE, logFont_.lfUnderline != FALSE);
+    setEffect(CFM_STRIKEOUT, CFE_STRIKEOUT, logFont_.lfStrikeOut != FALSE);
 
-    if (logFont_.lfUnderline) {
-        charFormat_.dwEffects |= CFE_UNDERLINE;
-    }
-
-    if (logFont_.lfStrikeOut) {
-        charFormat_.dwEffects |= CFE_STRIKEOUT;
-    }
+    charFormat_.cbSize = sizeof(charFormat_);
+    charFormat_.dwMask |= format.dwMask;
 
     if (services_) {
-        CHARRANGE selection = { 0 };
+        if (visible_ && ::GetFocus() != m_hWnd)
+            ::SetFocus(m_hWnd);
 
-        if (services_) {
-            services_->TxSendMessage(EM_EXGETSEL, 0, (LPARAM)&selection, nullptr);
-        }
-
-        bool hasSelection = (selection.cpMax > selection.cpMin);
-
-        WPARAM flags = 0;
-        if (visible_) {
-            flags = SCF_SELECTION;
-            
-                /* if (hasSelection) {
-                flags = SCF_SELECTION | SCF_DEFAULT;
-            } else {
-                flags = SCF_DEFAULT;
-            }*/
-        } else {
-            flags = SCF_ALL;
-        }
-        services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&charFormat_, nullptr);
-       
-        //Invalidate();
+        WPARAM flags = visible_ ? SCF_SELECTION : SCF_ALL;
+        LRESULT result = 0;
+        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
+        if (FAILED(hr) || !result)
+            LOG(ERROR) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
     }
 }
 
@@ -726,26 +823,35 @@ LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
     return 0;
 }
 
-LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
-    DWORD oldMask = charFormat_.dwMask;
-    charFormat_.dwMask = 0;
+LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM, LPARAM, BOOL&) {
     if (services_) {
-        services_->OnTxInPlaceActivate(nullptr);
-        services_->TxSendMessage(WM_SETFOCUS, wParam, 0, nullptr);
+        if (!inPlaceActive_) {
+            services_->OnTxInPlaceActivate(nullptr);
+            inPlaceActive_ = true;
+        }
+        if (!uiActive_) {
+            services_->OnTxUIActivate();
+            uiActive_ = true;
+        }
+        // Windowless RichEdit requires a null opposite-window handle for focus messages.
+        services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
     }
     TxShowCaret(TRUE);
 
     return 0;
 }
-LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
+LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM, LPARAM, BOOL&) {
     TxShowCaret(FALSE);
     //charFormat_.dwMask = 0;
 
     LRESULT result = 0;
-    if (services_)
-        services_->TxSendMessage(WM_KILLFOCUS, wParam, 0, &result);
-
-    services_->OnTxInPlaceDeactivate();
+    if (services_) {
+        services_->TxSendMessage(WM_KILLFOCUS, 0, 0, &result);
+        if (uiActive_) {
+            services_->OnTxUIDeactivate();
+            uiActive_ = false;
+        }
+    }
 
     return result;
 }
@@ -800,6 +906,9 @@ LRESULT InputBoxControl::OnIme(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
 }
 
 LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
+    constexpr UINT ID_TEXT_DIRECTION_LTR = 0xF100;
+    constexpr UINT ID_TEXT_DIRECTION_RTL = 0xF101;
+
     int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
 
     if (x == -1 && y == -1) {
@@ -811,17 +920,22 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     LRESULT canUndo = 0, canRedo = 0;
     CHARRANGE selection = { 0 };
     LRESULT textLength = 0;
+    PARAFORMAT2 paragraphFormat {};
+    paragraphFormat.cbSize = sizeof(paragraphFormat);
+    paragraphFormat.dwMask = PFM_RTLPARA;
 
     if (services_) {
         services_->TxSendMessage(EM_CANUNDO, 0, 0, &canUndo);
         services_->TxSendMessage(EM_CANREDO, 0, 0, &canRedo);
         services_->TxSendMessage(EM_EXGETSEL, 0, (LPARAM)&selection, nullptr);
         services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &textLength);
+        services_->TxSendMessage(EM_GETPARAFORMAT, 0, (LPARAM)&paragraphFormat, nullptr);
     }
 
     bool hasSelection = (selection.cpMax > selection.cpMin);
     bool hasText = (textLength > 0);
     bool canPaste = IsClipboardFormatAvailable(CF_TEXT) || IsClipboardFormatAvailable(CF_UNICODETEXT);
+    bool isRtl = (paragraphFormat.dwMask & PFM_RTLPARA) && (paragraphFormat.wEffects & PFE_RTLPARA);
 
     CMenu contextMenu;
     contextMenu.CreatePopupMenu();
@@ -845,6 +959,15 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
 
     contextMenu.AppendMenu(MF_STRING | (hasText ? MF_ENABLED : MF_GRAYED),
         ID_EDIT_SELECT_ALL, TR("Select All")+ CString("\tCtrl+A"));
+
+    contextMenu.AppendMenu(MF_SEPARATOR);
+    CMenu textDirectionMenu;
+    textDirectionMenu.CreatePopupMenu();
+    textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_LTR, TR("Left to right"));
+    textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_RTL, TR("Right to left"));
+    textDirectionMenu.CheckMenuRadioItem(ID_TEXT_DIRECTION_LTR, ID_TEXT_DIRECTION_RTL,
+        isRtl ? ID_TEXT_DIRECTION_RTL : ID_TEXT_DIRECTION_LTR, MF_BYCOMMAND);
+    contextMenu.AppendMenu(MF_POPUP, reinterpret_cast<UINT_PTR>(textDirectionMenu.Detach()), TR("Text direction"));
 
 
     contextMenuOpened_ = true;
@@ -880,6 +1003,17 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     case ID_EDIT_SELECT_ALL:
         services_->TxSendMessage(EM_SETSEL, 0, -1, nullptr);
         break;
+
+    case ID_TEXT_DIRECTION_LTR:
+    case ID_TEXT_DIRECTION_RTL: {
+        PARAFORMAT2 format {};
+        format.cbSize = sizeof(format);
+        format.dwMask = PFM_RTLPARA | PFM_ALIGNMENT;
+        format.wEffects = id == ID_TEXT_DIRECTION_RTL ? PFE_RTLPARA : 0;
+        format.wAlignment = id == ID_TEXT_DIRECTION_RTL ? PFA_RIGHT : PFA_LEFT;
+        services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&format, nullptr);
+        break;
+    }
 
     default:
         break;
@@ -1010,6 +1144,20 @@ void InputBoxControl::TxViewChange(BOOL fUpdate) {
 }
 
 BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
+    if (systemCaretCreated_) {
+        ::DestroyCaret();
+        systemCaretCreated_ = false;
+        systemCaretVisible_ = false;
+    }
+
+    systemCaretCreated_ = ::CreateCaret(m_hWnd, nullptr, std::max(1, xWidth), std::max(1, yHeight));
+    if (systemCaretCreated_) {
+        ::SetCaretPos(systemCaretPos_.x, systemCaretPos_.y);
+        if (caretVisible_) {
+            systemCaretVisible_ = ::ShowCaret(m_hWnd);
+        }
+    }
+
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     caretWidth_ = MulDiv(xWidth, USER_DEFAULT_SCREEN_DPI, dpi);
     caretHeight_ = MulDiv(yHeight,  USER_DEFAULT_SCREEN_DPI, dpi);
@@ -1036,9 +1184,16 @@ BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
 BOOL InputBoxControl::TxShowCaret(BOOL fShow) {
     caretVisible_ = fShow;
     if (fShow) {
+        if (systemCaretCreated_ && !systemCaretVisible_) {
+            systemCaretVisible_ = ::ShowCaret(m_hWnd);
+        }
         caretBlinkOn_ = true;
         SetTimer(CARET_TIMER_ID, GetCaretBlinkTime(), nullptr);
     } else {
+        if (systemCaretVisible_) {
+            ::HideCaret(m_hWnd);
+            systemCaretVisible_ = false;
+        }
         KillTimer(CARET_TIMER_ID);
     }
     invalidate();
@@ -1046,6 +1201,11 @@ BOOL InputBoxControl::TxShowCaret(BOOL fShow) {
 }
 
 BOOL InputBoxControl::TxSetCaretPos(INT x, INT y) {
+    systemCaretPos_ = { x, y };
+    if (systemCaretCreated_) {
+        ::SetCaretPos(x, y);
+    }
+
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     x = MulDiv(x, USER_DEFAULT_SCREEN_DPI, dpi);
     y = MulDiv(y,  USER_DEFAULT_SCREEN_DPI, dpi);
@@ -1065,7 +1225,7 @@ void InputBoxControl::TxSetCapture(BOOL fCapture) {
 }
 
 void InputBoxControl::TxSetFocus() {
-    ::SetFocus(GetParent());
+    ::SetFocus(m_hWnd);
 }
 
 void InputBoxControl::TxSetCursor(HCURSOR hcur, BOOL fText) {
@@ -1165,7 +1325,8 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
-    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE;
+    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG
+        | TXTBIT_CLIENTRECTCHANGE | TXTBIT_SAVESELECTION;
     if (d2dMode_) {
         bits |= TXTBIT_D2DDWRITE | TXTBIT_D2DSUBPIXELLINES;
     }
@@ -1194,6 +1355,7 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
     }
     case EN_SELCHANGE: {
         auto* sc = reinterpret_cast<SELCHANGE*>(pv);
+        logFont_ = getSelectionFont();
         onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_);
         break;
     }
@@ -1209,6 +1371,11 @@ HRESULT InputBoxControl::TxGetWindow(HWND* phwnd) {
 }
 
 HRESULT InputBoxControl::TxDestroyCaret() {
+    if (systemCaretCreated_) {
+        ::DestroyCaret();
+        systemCaretCreated_ = false;
+        systemCaretVisible_ = false;
+    }
     caretBitmap_ = 0;
     caretCreated_ = false;
     d2dCaretBitmap_.Release();

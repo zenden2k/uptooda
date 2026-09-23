@@ -850,7 +850,7 @@ void Canvas::updateView(RECT boundingRect) {
     }
 
     if (callback_) {
-        callback_->updateView(this, updatedRect_, fullRender_);
+        callback_->updateView(this, updatedRect_, /*fullRender_*/true);
     }
 }
 
@@ -911,8 +911,6 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
             }
             isDark = !isDark;
         }*/
-    } else if (doc_->hasTransparentPixels()) {
-        bufferedGr_->Clear(Color(0, 0, 0, 0));
     } else {
         bufferedGr_->Clear(Color::Transparent);
     }

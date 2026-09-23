@@ -191,8 +191,9 @@ void CImageEditorView::computeAutoScrollDelta(int cx, int cy, const RECT& rc, in
 
 LRESULT CImageEditorView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     if (forwardTextMouse(uMsg, wParam, lParam)) {
-        if (GetFocus() != m_hWnd)
-            SetFocus();
+        HWND inputBox = canvas_->getRichEditControl();
+        if (inputBox && ::GetFocus() != inputBox)
+            ::SetFocus(inputBox);
         textMouseCapture_ = activeTextElement();
         SetCapture();
         return 0;
