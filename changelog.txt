@@ -2,7 +2,7 @@
 #
 # https://svistunov.dev/uptooda
 
-v1.4.7 build 5524 (2026-01-02)
+v1.4.7 build 5524 (2026-09-20)
 
 New features and improvements
 
