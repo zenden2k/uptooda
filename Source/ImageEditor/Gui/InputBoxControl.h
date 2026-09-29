@@ -340,20 +340,19 @@ public:
         accessibility_ = textServices_;
 
         // Получаем accessibility интерфейс
-        
         if (!accessibility_) {
-            LOG(ERROR) << "IRichEditWindowlessAccessibility not supported";
+            //LOG(WARNING) << "IRichEditWindowlessAccessibility not supported";
             return S_FALSE;
         }
 
         // Создаем UIA провайдер
         HRESULT hr = accessibility_->CreateProvider(site_, &uiaProvider_);
         if (FAILED(hr)) {
-            LOG(ERROR) << "Failed to create UIA provider: " << hr;
+            //LOG(WARNING) << "Failed to create UIA provider: " << hr;
             return hr;
         }
 
-        LOG(INFO) << "Successfully created UIA provider for windowless RichEdit";
+        //LOG(INFO) << "Successfully created UIA provider for windowless RichEdit";
         return S_OK;
     }
 
@@ -364,7 +363,7 @@ public:
     void UpdateBounds(const RECT& newBounds) {
         controlBounds_ = newBounds;
 
-        // Уведомляем UIA о изменении расположения
+        // Уведомляем UIA об изменении расположения
         if (uiaProvider_) {
             UiaRaiseStructureChangedEvent(uiaProvider_,
                 StructureChangeType_ChildrenInvalidated,

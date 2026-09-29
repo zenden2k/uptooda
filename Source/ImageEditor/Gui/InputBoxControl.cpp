@@ -604,14 +604,13 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
         format.crTextColor = textColor_;
         WPARAM flags = visible_ ? SCF_SELECTION : SCF_ALL;
         LRESULT result = 0;
-        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
+        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, reinterpret_cast<LPARAM>(&format), &result);
         if (FAILED(hr) || !result)
-            LOG(ERROR) << "Failed to set RichEdit text color, hr=" << hr;
+            LOG(WARNING) << "Failed to set RichEdit text color, hr=" << hr;
     }
 }
 
 void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
-    LOG(WARNING) << "setFont mask=" << std::hex << changeMask;
     logFont_ = font;
 
     constexpr DWORD DEFAULT_MASK
@@ -672,7 +671,7 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         LRESULT result = 0;
         HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
         if (FAILED(hr) || !result)
-            LOG(ERROR) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
+            LOG(WARNING) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
     }
 }
 
