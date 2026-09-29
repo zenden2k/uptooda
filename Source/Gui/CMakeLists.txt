@@ -375,6 +375,7 @@ endif ()
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 #source_group("Resource Files" FILES ${RESOURCE_LIST})
 
+
 add_executable(GUI WIN32
         ${SRC_LIST} ${HEADER_LIST} ${RESOURCE_LIST}
 )
@@ -383,7 +384,7 @@ set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_D
 
 set(LIBS_LIST
         gdiplus Ws2_32 dwmapi wininet IPHLPAPI
-        Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon
+        Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon Imm32 Dwrite Uiautomationcore
         minizip::minizip
 )
 

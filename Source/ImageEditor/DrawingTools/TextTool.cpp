@@ -44,6 +44,7 @@ void TextTool::beginDraw(int x, int y) {
             if (input) {
                 textElement->beginEdit();
                 input->show(true);
+                canvas_->setCurrentlyEditedTextElement(textElement);
                 canvas_->onTextEditStarted(textElement);
             }
         }
@@ -100,6 +101,11 @@ ImageEditor::CursorType TextTool::getCursor(int x, int y) {
     CursorType ct = MoveAndResizeTool::getCursor(x, y);
     auto* textElement = dynamic_cast<TextElement*>(currentElement_);
     auto inputBox = textElement ? textElement->getInputBox() : nullptr;
+    if (textElement && inputBox && inputBox->isVisible() && textElement->isSelected() &&
+        x >= textElement->getX() + 3 && x < textElement->getX() + textElement->getWidth() - 3 &&
+        y >= textElement->getY() + 3 && y < textElement->getY() + textElement->getHeight() - 3) {
+        return CursorType::ctEdit;
+    }
     if ((ct == CursorType::ctDefault || (ct == CursorType::ctMove && canvas_->getElementAtPosition(x, y) !=
             currentElement_)) &&
         (!inputBox || !inputBox->isVisible())) {

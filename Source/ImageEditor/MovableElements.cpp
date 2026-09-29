@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <Windows.ApplicationModel.Appointments.h>
 
 #include "3rdpart/GdiplusH.h"
 #include "Region.h"
@@ -189,8 +190,8 @@ void TextElement::render(Painter* gr) {
         gr->FillRectangle(&br, getX(), getY(), getWidth(), getHeight());
         gr->SetSmoothingMode(prevSmoothingMode);
     }
-    if ( inputBox_  && !inputBox_->isVisible()) {
-        inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+4,getY()+3,getWidth()-5,getHeight()-6));
+    if (inputBox_) {
+        inputBox_->render(gr, fillBackground_ ? nullptr : backgroundBitmap_.get(), backgroundColor_, Rect(getX()+3,getY()+3,getWidth()-6,getHeight()-6));
     }
 }
 
@@ -267,7 +268,12 @@ void TextElement::onEditFinished()
 
 void TextElement::onControlResized(int w, int h)
 {
-    resize(w+6, h+6);
+    RECT oldPaintRect = getPaintBoundingRect();
+    MovableElement::resize(w + 6, h + 6);
+    RECT newPaintRect = getPaintBoundingRect();
+    RECT updateRect;
+    UnionRect(&updateRect, &oldPaintRect, &newPaintRect);
+    canvas_->updateView(updateRect);
 }
 
 void TextElement::setTextColor()
@@ -365,6 +371,35 @@ void TextElement::setFillBackground(bool fill) {
 
 bool TextElement::getFillBackground() const {
     return fillBackground_;
+}
+
+
+void TextElement::setPos(int x, int y) {
+    MovableElement::setPos(x, y);
+    if (inputBox_) {
+        inputBox_->resize(x + 3, y + 3, -1, -1, grips_);
+    }
+}
+
+bool TextElement::move(int offsetX, int offsetY, bool checkBounds /*= true*/) {
+    bool res = MovableElement::move(offsetX, offsetY, checkBounds);
+    if (inputBox_) {
+        inputBox_->resize(getX() + 3, getY() + 3, -1, -1, grips_);
+    }
+    return res;
+}
+
+void TextElement::prepareBackground(Gdiplus::Bitmap* source) {
+    Gdiplus::Rect rc (getX()+3,getY()+3,getWidth()-6,getHeight()-6);
+    // Создаем временный bitmap для конвертации
+    backgroundBitmap_ = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
+    Gdiplus::Graphics tempGraphics(backgroundBitmap_.get());
+    tempGraphics.Clear(Gdiplus::Color::Transparent);
+    // Копируем нужную область
+    tempGraphics.DrawImage(source,
+        Gdiplus::Rect(0, 0, rc.Width, rc.Height),
+        rc.X, rc.Y, rc.Width, rc.Height,
+        Gdiplus::UnitPixel);
 }
 
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {

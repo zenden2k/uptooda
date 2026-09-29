@@ -92,6 +92,7 @@ class ImageUploaderRecipe(ConanFile):
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0")
             self.requires("libheif/1.13.0@zenden2k/stable") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
+
             #self.requires("qt/5.15.16")
 
     def layout(self):

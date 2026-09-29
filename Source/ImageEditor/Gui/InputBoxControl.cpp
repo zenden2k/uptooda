@@ -21,270 +21,1345 @@
 #include "InputBoxControl.h"
 
 #include <sstream>
+#include <ComDef.h>
+#include <strsafe.h>
+//#include <dwrite.h>
+//#include <dcommon.h>
+#include <wincodec.h>
+#include <Windows.ApplicationModel.Appointments.h>
+
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "ImageEditor/Canvas.h"
 #include "Core/i18n/Translator.h"
+#include "Gui/Helpers/DPIHelper.h"
+
+#ifndef TO_DEFAULTCOLOREMOJI
+    #define TO_DEFAULTCOLOREMOJI 0x1000
+#endif
+#ifndef TO_DISPLAYFONTCOLOR
+    #define TO_DISPLAYFONTCOLOR 0x2000
+#endif
+
+EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices = { 0x8d33f740, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+
+//EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost = { 0xc5bdd8d0, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+
+//EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost2 = { 0xc5bdd8d7, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+const GUID IID_ITextHost = {
+    0x13E670F4, // Data1
+    0x1A5A, // Data2
+    0x11CF, // Data3
+    { 0xAB, 0xEB, 0x00, 0xAA, 0x00, 0xB6, 0x5E, 0xA1 } // Data4
+};
+
+const GUID IID_ITextHost2 = {
+    0x13E670F5, // Data1
+    0x1A5A, // Data2
+    0x11CF, // Data3
+    { 0xAB, 0xEB, 0x00, 0xAA, 0x00, 0xB6, 0x5E, 0xA1 } 
+};
+EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices2 = { 0x8d33f741, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+
+EXTERN_C const GUID IID_IRicheditWindowlessAccessibility = {
+    0x983E572D, 
+    0x20CD,
+    0x460B, 
+    { 0x91, 0x04, 0x83, 0x11, 0x15, 0x92, 0xDD, 0x10 } 
+};
 
 namespace ImageEditor {
-// CLogListBox
-InputBoxControl::InputBoxControl(Canvas* canvas) : canvas_(canvas) {
-    contextMenuOpened_ = false;
+
+static HRESULT(STDAPICALLTYPE* pCreateTextServices)(IUnknown*, ITextHost*, IUnknown**) = nullptr;
+
+CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITMAP hBitmap) {
+    if (!hBitmap)
+        return nullptr;
+
+    BITMAP bmp {};
+    GetObject(hBitmap, sizeof(BITMAP), &bmp);
+
+    if (bmp.bmWidth == 0 || bmp.bmHeight == 0) {
+        return {};
+    }
+    D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+
+    CComPtr<IWICImagingFactory> wicFactory;
+    CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER,
+        IID_PPV_ARGS(&wicFactory));
+
+    CComPtr<IWICBitmap> wicBitmap;
+    HRESULT hr = wicFactory->CreateBitmapFromHBITMAP(
+        hBitmap, nullptr, WICBitmapUseAlpha, &wicBitmap);
+    if (FAILED(hr))
+        return nullptr;
+
+    CComPtr<IWICFormatConverter> converter;
+    wicFactory->CreateFormatConverter(&converter);
+    converter->Initialize(wicBitmap, GUID_WICPixelFormat32bppPBGRA,
+        WICBitmapDitherTypeNone, nullptr, 0.0f, WICBitmapPaletteTypeCustom);
+
+    CComPtr<ID2D1Bitmap> d2dBitmap;
+    CComPtr<IWICBitmapSource> source;
+    converter.QueryInterface(&source);
+
+    CComPtr<IWICBitmapLock> lock;
+    UINT width, height;
+    source->GetSize(&width, &height);
+
+    D2D1_SIZE_U size = { width, height };
+
+    target->CreateBitmapFromWicBitmap(source, &props, &d2dBitmap);
+
+    return d2dBitmap;
+}
+
+D2D1_RECT_F ScaleRectToLogical(const RECT& physicalRect, FLOAT dpiX, FLOAT dpiY) {
+    const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
+    const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
+    return D2D1::RectF(physicalRect.left * scaleX, physicalRect.top * scaleY,
+        physicalRect.right * scaleX, physicalRect.bottom * scaleY);
+}
+
+POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
+    POINT logicalPoint;
+    logicalPoint.x = MulDiv(physicalPoint.x, 96, dpi);
+    logicalPoint.y = MulDiv(physicalPoint.y, 96, dpi);
+
+    return logicalPoint;
+}
+
+inline D2D1_COLOR_F ToD2DColor(const Gdiplus::Color& c) {
+    return D2D1::ColorF(c.GetR() / 255.0f,
+                        c.GetG() / 255.0f,
+                        c.GetB() / 255.0f,
+                        c.GetA() / 255.0f);
+}
+
+InputBoxControl::InputBoxControl(Canvas* canvas):
+    canvas_(canvas)
+{
+    d2dMode_ = false;
+    ZeroMemory(&charFormat_, sizeof(charFormat_));
+    ZeroMemory(&paraFormat_, sizeof(paraFormat_));
+    ZeroMemory(&logFont_, sizeof(logFont_));
+
+    cursor_ = ::LoadCursor(nullptr, IDC_IBEAM);
+    richEditUIA_ = std::make_unique<WindowlessRichEditUIA>(this);
 }
 
 InputBoxControl::~InputBoxControl() {
+    if (IsWindow())
+        DestroyWindow();
+    Destroy();
 }
 
-LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
-{
-    bHandled = false;
-    SetEventMask(ENM_CHANGE|ENM_REQUESTRESIZE|ENM_SELCHANGE );
-    CFont systemDialogFont = GuiTools::GetSystemDialogFont();
-    biggerFont_ = GuiTools::MakeFontBigger(systemDialogFont);
-    SetFont(biggerFont_);
-    //SetWindowLong(GWL_ID, (LONG)m_hWnd);
-    return 0;
-}
-
-LRESULT InputBoxControl::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
-{
-    bHandled = true;
-    return 1;
-}
-
-LRESULT InputBoxControl::OnKillFocus(HWND hwndNewFocus) {
-    //ShowWindow( SW_HIDE );
-    return 0;
-}
-
-BOOL  InputBoxControl::SubclassWindow(HWND hWnd) {
-    BOOL Result = Base::SubclassWindow(hWnd);
-
-    return Result;
-}
-
-void InputBoxControl::show(bool s)
-{
-    ShowWindow(s? SW_SHOW: SW_HIDE);
-    if ( !s ) {
-        ::SetFocus(GetParent());
+HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD exStyle) {
+    d2dMode_ = IsWindows8OrGreater();
+    HMODULE h  = ::LoadLibrary(_T("msftedit.dll"));
+    if (!h) {
+        return nullptr;
     }
-}
-
-void InputBoxControl::resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips)
-{
-    POINT scrollOffset = canvas_->GetScrollOffset();
-    SetWindowPos(/*HWND_TOP*/0, x - scrollOffset.x, y - scrollOffset.y, w, h, 0);
-    /*CRgn rgn;
-    rgn.CreateRectRgn(0,0,w,h);
-    for ( int i = 0; i < grips.size(); i++ ) {
-        CRgn gripRgn;
-        int gripX = grips[i].pt.x-x;
-        int gripY = grips[i].pt.y-y;
-        gripRgn.CreateRectRgn(gripX, gripY,gripX + MovableElement::kGripSize, gripY + MovableElement::kGripSize);
-        rgn.CombineRgn(gripRgn, RGN_DIFF);
+    pCreateTextServices = reinterpret_cast<decltype(pCreateTextServices)>(::GetProcAddress(h, "CreateTextServices"));
+    if (!pCreateTextServices)
+        return nullptr;
+    RECT rcCopy = rc;
+    POINT scrollOffset = canvas_ ? canvas_->GetScrollOffset() : POINT{};
+    canvasOrigin_ = {rc.left + scrollOffset.x, rc.top + scrollOffset.y};
+    CWindowImpl::Create(hParent, rcCopy, L"", style, exStyle);
+    ::GetClientRect(m_hWnd, &clientRect_);
+    if (!CreateTextServices()) {
+        DestroyWindow();
+        return nullptr;
     }
-    SetWindowRgn(rgn, true);
-    rgn.Detach();*/
+    richEditUIA_->Initialize(services_, hostWindow_, clientRect_);
+    return m_hWnd;
 }
 
-void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea)
-{
-    ImageUtils::PrintRichEdit(m_hWnd, graphics, background, layoutArea);
+void InputBoxControl::Destroy() {
+    if (services_) {
+        if (uiActive_) {
+            services_->OnTxUIDeactivate();
+            uiActive_ = false;
+        }
+        if (inPlaceActive_) {
+            services_->OnTxInPlaceDeactivate();
+            inPlaceActive_ = false;
+        }
+    }
+    services_.Release();
+    services2_.Release();
+    servicesUnk_.Release();
+    //UiaReturnRawElementProvider(hostWindow_, 0, 0, NULL);
+    /*if (m_hWnd)
+        DestroyWindow();*/
 }
 
-bool InputBoxControl::isVisible()
-{
-    return IsWindowVisible()!=FALSE;
+bool InputBoxControl::CreateTextServices() {
+    if (!pCreateTextServices)
+        return false;
+    CComPtr<IUnknown> punk;
+    HRESULT hr = pCreateTextServices(nullptr, static_cast<ITextHost*>(this), &punk);
+    if (FAILED(hr))
+        return false;
+
+    servicesUnk_ = punk;
+    hr = punk->QueryInterface(IID_ITextServices, (void**)&services_);
+    if (FAILED(hr))
+        return false;
+
+    hr = punk->QueryInterface(IID_ITextServices2, (void**)&services2_);
+
+    ApplyDefaults();
+    return true;
 }
 
-void InputBoxControl::invalidate()
-{
-    Invalidate(false);
+void InputBoxControl::ApplyDefaults() {
+    if (!services_)
+        return;
+
+    LRESULT editStyle = 0;
+
+    //services_->TxSendMessage(EM_SETEDITSTYLE, SES_SCROLLONKILLFOCUS, SES_SCROLLONKILLFOCUS, nullptr);
+    
+    if (d2dMode_ ) {
+        services_->TxSendMessage(EM_SETEDITSTYLE, 0, SES_LOGICALCARET, nullptr);
+    }
+    services_->TxSendMessage(EM_GETEDITSTYLE, 0, 0, &editStyle);
+
+    // Прозрачный фон, шрифт/параграф, событийная маска
+    services_->TxSendMessage(EM_SETBKGNDCOLOR, 0, CLR_NONE, nullptr);
+    services_->TxSendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&charFormat_, nullptr);
+    services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&paraFormat_, nullptr);
+
+    DWORD mask = ENM_CHANGE | ENM_REQUESTRESIZE | ENM_SELCHANGE;
+    services_->TxSendMessage(EM_SETEVENTMASK, 0, mask, nullptr);
+
+    // Многострочность, автоскролл, не скрывать выделение
+    LONG style = ES_MULTILINE | ES_AUTOVSCROLL  | ES_NOHIDESEL |  ES_WANTRETURN;
+    services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
+
+    // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
+    //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
+
+    // Preserve the RichEdit defaults, but do not let keyboard-layout font binding override
+    // a font explicitly selected in TextParamsWindow.
+    LRESULT langOptions = 0;
+    services_->TxSendMessage(EM_GETLANGOPTIONS, 0, 0, &langOptions);
+    langOptions |= IMF_UIFONTS;
+    langOptions &= ~(IMF_AUTOFONT | IMF_DUALFONT);
+    services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
+
+    BIDIOPTIONS bidiOptions {};
+    bidiOptions.cbSize = sizeof(bidiOptions);
+    bidiOptions.wMask = BOM_UNICODEBIDI;
+    bidiOptions.wEffects = BOE_UNICODEBIDI;
+    services_->TxSendMessage(EM_SETBIDIOPTIONS, 0, (LPARAM)&bidiOptions, nullptr);
+
+    // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
+    //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
+    services_->TxSendMessage(EM_SETZOOM, 0, 0, nullptr);
+  
+    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS, TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
+        TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
 }
 
-void InputBoxControl::setTextColor(Gdiplus::Color color)
-{
-    CHARFORMAT cf;
-    memset(&cf, 0, sizeof(cf));
-    cf.cbSize = sizeof(cf);
-    cf.crTextColor = color.ToCOLORREF();
-    cf.dwMask = CFM_COLOR;
-    //SetSel(0, -1);
-    SendMessage(EM_SETCHARFORMAT, IsWindowVisible() ? SCF_SELECTION : SCF_ALL, (LPARAM) &cf);
-    //SetSel(-1, 0);
+// InputBox
+void InputBoxControl::show(bool show) {
+    if (visible_ == show)
+        return;
+    visible_ = show;
+    if (!show) {
+        if (services_) {
+            services_->TxSendMessage(EM_SETSEL, 0, 0, nullptr);
+        }
+    }
+    // The HWND only hosts text services and timers; pixels are drawn by TextElement.
+    ShowWindow(SW_HIDE);
+    if (services_) {
+        if (show) {
+            if (!inPlaceActive_) {
+                services_->OnTxInPlaceActivate(nullptr);
+                inPlaceActive_ = true;
+            }
+            if (::GetFocus() != m_hWnd) {
+                ::SetFocus(m_hWnd);
+            }
+            if (::GetFocus() != m_hWnd) {
+                // Keep ordinary input working even if Windows refuses to focus the hidden host window.
+                if (!uiActive_) {
+                    services_->OnTxUIActivate();
+                    uiActive_ = true;
+                }
+                services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
+                TxShowCaret(TRUE);
+            }
+        } else {
+            if (::GetFocus() == m_hWnd) {
+                ::SetFocus(GetParent());
+            } else if (uiActive_) {
+                TxShowCaret(FALSE);
+                services_->TxSendMessage(WM_KILLFOCUS, 0, 0, nullptr);
+                services_->OnTxUIDeactivate();
+                uiActive_ = false;
+            }
+            if (inPlaceActive_) {
+                services_->OnTxInPlaceDeactivate();
+                inPlaceActive_ = false;
+            }
+        }
+    }
+    invalidate();
 }
 
-void InputBoxControl::setFont(LOGFONT font,  DWORD changeMask)
-{
-    if ( !IsWindowVisible() ) {
-        CFont f;
-        f.CreateFontIndirect(&font);
-        SetFont(f);
+void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) {
+    grips_ = std::move(grips);
+    canvasOrigin_ = {x, y};
+    POINT scrollOffset { 0, 0 };
+    if (canvas_)
+        scrollOffset = canvas_->GetScrollOffset();
+
+    UINT flags = SWP_NOZORDER | SWP_NOACTIVATE;
+    if (w < 0 || h < 0) {
+        flags |= SWP_NOSIZE;
+    }
+    ::SetWindowPos(m_hWnd, 0, x - scrollOffset.x, y - scrollOffset.y, w, h, flags);
+    ::GetClientRect(m_hWnd, &clientRect_);
+}
+
+bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap) {
+    if (!renderTarget_ || !gdipBitmap || sourceRect.IsEmptyArea()) {
+        return false;
+    }
+
+    // Получаем данные пикселей
+    Gdiplus::BitmapData bitmapData;
+    //Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
+    if (gdipBitmap->LockBits(&sourceRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData) == Gdiplus::Ok) {
+        FLOAT dpiX = 96.0f, dpiY = 96.0f;
+        //renderTarget_->GetDpi(&dpiX, &dpiY);
+
+        // Создаем D2D bitmap
+        D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
+            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+            dpiX, dpiY);
+
+        HRESULT hr = renderTarget_->CreateBitmap(
+            D2D1::SizeU(sourceRect.Width, sourceRect.Height),
+            bitmapData.Scan0,
+            bitmapData.Stride,
+            bitmapProps,
+            d2dBitmap);
+
+        gdipBitmap->UnlockBits(&bitmapData);
+        return SUCCEEDED(hr);
+    }
+
+    return false;
+}
+
+void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) {
+    Gdiplus::Rect rc = canvas_->currentRenderingRect();
+    Gdiplus::Rect rcRelative = rc;
+    rcRelative.Intersect(layoutArea);
+    rcRelative.Offset(-layoutArea.GetLeft(), -layoutArea.GetTop());
+
+    CRect updateRect { rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetBottom() };
+    CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };;
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+
+    if (!d2dMode_ || !InitializeD2D()) {
+        HDC mainHdc = graphics->GetHDC();
+
+        // Создаем memory DC и bitmap
+        CDC memHdc;
+        memHdc.CreateCompatibleDC(mainHdc);
+
+        // Создаем DIB section для лучшего контроля
+        BITMAPINFO bmi = {};
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = layoutArea.Width;
+        bmi.bmiHeader.biHeight = -layoutArea.Height; // Отрицательное значение для top-down bitmap
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = BI_RGB;
+
+        void* bits = nullptr;
+        CBitmap textBitmap;
+        textBitmap.CreateDIBSection(memHdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+        HBITMAP oldBitmap = memHdc.SelectBitmap(textBitmap);
+
+        // Копируем фон с основного graphics
+        if (background) {
+            Gdiplus::Graphics bgGraphics(memHdc);
+            bgGraphics.DrawImage(background,
+                Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height),
+                rcRelative.X, rcRelative.Y, rcRelative.Width, rcRelative.Height,
+                Gdiplus::UnitPixel);
+        } else {
+            // Заливаем нужным цветом
+            RECT fillRect = { 0, 0, layoutArea.Width, layoutArea.Height };
+            CBrush brush;
+            brush.CreateSolidBrush(bgColor.ToCOLORREF()); // Или нужный вам цвет
+            memHdc.FillRect(&fillRect, brush);
+        }
+
+        // Настройки рендеринга
+        memHdc.SetBkMode(TRANSPARENT);
+
+        // Рендерим текст
+        RECTL rc = { 0, 0, static_cast<LONG>(layoutArea.Width), static_cast<LONG>(layoutArea.Height) };
+        services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, memHdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
+        if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
+            const int caretWidth = std::max(1, caretWidth_);
+
+            if (isCaretItalic()) {
+                const int slant = std::max(1, caretHeight_ / 4);
+                POINT points[] = { { caretPos_.x + slant, caretPos_.y },
+                                   { caretPos_.x + slant + caretWidth, caretPos_.y },
+                                   { caretPos_.x + caretWidth, caretPos_.y + caretHeight_ },
+                                   { caretPos_.x, caretPos_.y + caretHeight_ } };
+                CRgn caretRegion;
+                caretRegion.CreatePolygonRgn(points, 4, WINDING);
+                if (caretRegion) {
+                    memHdc.FillRgn(caretRegion, static_cast<HBRUSH>(::GetStockObject(BLACK_BRUSH)));
+                }
+            } else {
+                RECT caretRect = { caretPos_.x, caretPos_.y, caretPos_.x + caretWidth, caretPos_.y + caretHeight_ };
+                memHdc.FillRect(&caretRect, static_cast<HBRUSH>(::GetStockObject(BLACK_BRUSH)));
+            }
+        }
+        graphics->ReleaseHDC(mainHdc);
+        // Конвертируем в GDI+ Bitmap и рисуем
+        Gdiplus::Bitmap gdipBitmap(textBitmap, nullptr);
+        graphics->DrawImage(&gdipBitmap, layoutArea.X, layoutArea.Y);
+
+        // Очистка
+        memHdc.SelectBitmap(oldBitmap);
+        return;
+    }
+
+    if (!services2_) {
+        return;
+    }
+
+    HDC mainHdc = graphics->GetHDC();
+
+    if (!mainHdc) {
+        return;
+    }
+
+    RECT bindRect = { layoutArea.X, layoutArea.Y, layoutArea.GetRight(), layoutArea.GetBottom() };
+    HRESULT hr = renderTarget_->BindDC(mainHdc, &bindRect);
+    if (FAILED(hr)) {
+        graphics->ReleaseHDC(mainHdc);
+        return;
+    }
+
+    renderTarget_->BeginDraw();
+    FLOAT dpiX = 96.0f, dpiY = 96.0f;
+    renderTarget_->GetDpi(&dpiX, &dpiY);
+
+    D2D1_RECT_F bgRect = ScaleRectToLogical(updateRectRelative, dpiX, dpiY);
+    if (background) {
+        CComPtr<ID2D1Bitmap> d2dBackground;
+        rc.Offset(-layoutArea.X, -layoutArea.Y);
+
+        if (CreateD2DBitmapFromGdiplus(background, rcRelative, &d2dBackground)) {
+            //D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
+            renderTarget_->DrawBitmap(d2dBackground, bgRect);
+        }
     } else {
-        CHARFORMAT cf = GuiTools::LogFontToCharFormat(font);
-        cf.dwMask = changeMask;
-        SendMessage(EM_SETCHARFORMAT, IsWindowVisible() ? SCF_SELECTION : SCF_ALL, (LPARAM) &cf);
+        // Заливаем белым фоном
+        CComPtr<ID2D1SolidColorBrush> whiteBrush;
+        renderTarget_->CreateSolidColorBrush(ToD2DColor(bgColor), &whiteBrush);
+        renderTarget_->FillRectangle(bgRect, whiteBrush);
+    }
+
+    // Теперь рендерим текст поверх подготовленного фона
+    RECTL textRect = { 0, 0, layoutArea.Width, layoutArea.Height };
+
+    //updateRect = ScaleRectToLogical(updateRect, dpiX);
+
+    services2_->TxDrawD2D(renderTarget_, &textRect, &updateRectRelative, 0);
+    /*const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
+    const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
+    const FLOAT caretWidth = scaleX * caretWidth_;
+    const FLOAT caretHeight = scaleY * caretHeight_;*/
+
+    if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
+        int caretX = MulDiv(caretPos_.x , USER_DEFAULT_SCREEN_DPI, dpiX);
+        int caretY = MulDiv(caretPos_.y , USER_DEFAULT_SCREEN_DPI, dpiY);
+        int caretWidth = MulDiv(caretWidth_, USER_DEFAULT_SCREEN_DPI, dpiX);
+        int caretHeight = MulDiv(caretHeight_,  USER_DEFAULT_SCREEN_DPI, dpiY);
+
+        CComPtr<ID2D1SolidColorBrush> caretBrush;
+        if (SUCCEEDED(renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &caretBrush))) {
+            if (isCaretItalic()) {
+                const FLOAT slant = static_cast<FLOAT>(std::max(1, caretHeight / 4));
+                renderTarget_->DrawLine(
+                    D2D1::Point2F(static_cast<FLOAT>(caretX) + slant, static_cast<FLOAT>(caretY)),
+                    D2D1::Point2F(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY + caretHeight)),
+                    caretBrush, static_cast<FLOAT>(std::max(1, caretWidth)));
+            } else {
+                const D2D1_RECT_F caretRect
+                    = D2D1::RectF(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY),
+                                  static_cast<FLOAT>(caretX + std::max(1, caretWidth)),
+                                  static_cast<FLOAT>(caretY + caretHeight));
+                renderTarget_->FillRectangle(caretRect, caretBrush);
+            }
+        }
+    }
+
+    renderTarget_->EndDraw();
+    graphics->ReleaseHDC(mainHdc);
+}
+
+bool InputBoxControl::isCaretItalic() {
+    CHARFORMAT2 format { };
+    format.cbSize = sizeof(format);
+    if (services_
+        && SUCCEEDED(
+            services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&format), nullptr))) {
+        return (format.dwMask & CFM_ITALIC) && (format.dwEffects & CFE_ITALIC);
+    }
+    return (charFormat_.dwEffects & CFE_ITALIC) != 0;
+}
+
+LOGFONT InputBoxControl::getSelectionFont() {
+    LOGFONT result = logFont_;
+    if (!services_)
+        return result;
+
+    CHARFORMAT2 format {};
+    format.cbSize = sizeof(format);
+    services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, (LPARAM)&format, nullptr);
+
+    if (format.dwMask & CFM_FACE) {
+        wcsncpy_s(result.lfFaceName, format.szFaceName, _TRUNCATE);
+    }
+    if (format.dwMask & CFM_SIZE) {
+        int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+        result.lfHeight = -MulDiv(format.yHeight, dpi, 72 * 20);
+    }
+    if (format.dwMask & CFM_WEIGHT) {
+        result.lfWeight = format.wWeight;
+    }
+    if (format.dwMask & CFM_BOLD) {
+        result.lfWeight = (format.dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
+    }
+    if (format.dwMask & CFM_ITALIC) {
+        result.lfItalic = (format.dwEffects & CFE_ITALIC) != 0;
+    }
+    if (format.dwMask & CFM_UNDERLINE) {
+        result.lfUnderline = (format.dwEffects & CFE_UNDERLINE) != 0;
+    }
+    if (format.dwMask & CFM_STRIKEOUT) {
+        result.lfStrikeOut = (format.dwEffects & CFE_STRIKEOUT) != 0;
+    }
+    if (format.dwMask & CFM_CHARSET) {
+        result.lfCharSet = format.bCharSet;
+    }
+
+    return result;
+}
+
+bool InputBoxControl::isVisible() { return visible_; }
+
+void InputBoxControl::invalidate() {
+    if (canvas_ && visible_ && clientRect_.right > 0 && clientRect_.bottom > 0) {
+        RECT rect = { canvasOrigin_.x, canvasOrigin_.y, canvasOrigin_.x + clientRect_.right,
+                      canvasOrigin_.y + clientRect_.bottom };
+        canvas_->updateView(rect);
     }
 }
 
-void InputBoxControl::setRawText(const std::string& text)
-{
-    std::stringstream rawRtfText(text);
-    EDITSTREAM es = {0};
-    es.dwCookie = (DWORD_PTR) &rawRtfText;
-    es.pfnCallback = &EditStreamInCallback;
-    SendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es);
+LRESULT InputBoxControl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam) {
+    BOOL handled = TRUE;
+    if (message >= WM_MOUSEFIRST && message <= WM_MOUSELAST)
+        return OnMouse(message, wParam, lParam, handled);
+    if (message >= WM_KEYFIRST && message <= WM_KEYLAST)
+        return OnKey(message, wParam, lParam, handled);
+    if ((message >= WM_IME_STARTCOMPOSITION && message <= WM_IME_ENDCOMPOSITION) || message == WM_IME_CHAR
+        || message == WM_IME_NOTIFY || message == WM_IME_REQUEST)
+        return OnIme(message, wParam, lParam, handled);
+    if (message == WM_CONTEXTMENU)
+        return OnContextMenu(message, wParam, lParam, handled);
+    return 0;
 }
 
-std::string InputBoxControl::getRawText()
-{
-    std::stringstream rawRtfText;
-    EDITSTREAM es = {0};
-    es.dwCookie = (DWORD_PTR) &rawRtfText;
-    es.pfnCallback = &EditStreamOutCallback;
-    /*int bytes = */SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
-    return rawRtfText.str();
+void InputBoxControl::setTextColor(Gdiplus::Color color) {
+    textColor_ = color.ToCOLORREF();
+    charFormat_.crTextColor = textColor_;
+    charFormat_.dwMask |= CFM_COLOR;
+
+    if (services_) {
+        if (visible_ && ::GetFocus() != m_hWnd)
+            ::SetFocus(m_hWnd);
+
+        CHARFORMAT2 format {};
+        format.cbSize = sizeof(format);
+        format.dwMask = CFM_COLOR;
+        format.crTextColor = textColor_;
+        WPARAM flags = visible_ ? SCF_SELECTION : SCF_ALL;
+        LRESULT result = 0;
+        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, reinterpret_cast<LPARAM>(&format), &result);
+        if (FAILED(hr) || !result)
+            LOG(WARNING) << "Failed to set RichEdit text color, hr=" << hr;
+    }
+}
+
+void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
+    logFont_ = font;
+
+    constexpr DWORD DEFAULT_MASK
+        = CFM_FACE | CFM_SIZE | CFM_CHARSET | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
+    CHARFORMAT2 format {};
+    format.cbSize = sizeof(format);
+    format.dwMask = changeMask ? changeMask : DEFAULT_MASK;
+    if (format.dwMask & CFM_FACE)
+        format.dwMask |= CFM_CHARSET;
+
+    if ((format.dwMask & CFM_SIZE) && logFont_.lfHeight != 0) {
+        int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+        int pointSize = MulDiv(-logFont_.lfHeight, 72, dpi);
+        format.yHeight = pointSize * 20;
+        charFormat_.yHeight = format.yHeight;
+    }
+
+    if (format.dwMask & CFM_FACE) {
+        wcsncpy_s(format.szFaceName, logFont_.lfFaceName, _TRUNCATE);
+        wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
+    }
+    if (format.dwMask & CFM_CHARSET) {
+        format.bCharSet = logFont_.lfCharSet;
+        charFormat_.bCharSet = logFont_.lfCharSet;
+    }
+    if (format.dwMask & CFM_WEIGHT) {
+        format.wWeight = static_cast<WORD>(logFont_.lfWeight);
+        charFormat_.wWeight = format.wWeight;
+    }
+    if (format.dwMask & CFM_OFFSET) {
+        format.yOffset = 0;
+        charFormat_.yOffset = 0;
+    }
+
+    auto setEffect = [this, &format](DWORD mask, DWORD effect, bool enabled) {
+        if (!(format.dwMask & mask))
+            return;
+        if (enabled) {
+            format.dwEffects |= effect;
+            charFormat_.dwEffects |= effect;
+        } else {
+            charFormat_.dwEffects &= ~effect;
+        }
+    };
+    setEffect(CFM_BOLD, CFE_BOLD, logFont_.lfWeight >= FW_BOLD);
+    setEffect(CFM_ITALIC, CFE_ITALIC, logFont_.lfItalic != FALSE);
+    setEffect(CFM_UNDERLINE, CFE_UNDERLINE, logFont_.lfUnderline != FALSE);
+    setEffect(CFM_STRIKEOUT, CFE_STRIKEOUT, logFont_.lfStrikeOut != FALSE);
+
+    charFormat_.cbSize = sizeof(charFormat_);
+    charFormat_.dwMask |= format.dwMask;
+
+    if (services_) {
+        if (visible_ && ::GetFocus() != m_hWnd)
+            ::SetFocus(m_hWnd);
+
+        WPARAM flags = visible_ ? SCF_SELECTION : SCF_ALL;
+        LRESULT result = 0;
+        HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
+        if (FAILED(hr) || !result)
+            LOG(WARNING) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
+    }
+}
+
+void InputBoxControl::setRawText(const std::string& text) {
+    if (!services_)
+        return;
+    std::stringstream ss(text);
+    EDITSTREAM es {};
+    es.dwCookie = (DWORD_PTR)&ss;
+    es.pfnCallback = &InputBoxControl::EditStreamInCallback;
+    services_->TxSendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es, nullptr);
+    onTextChanged(L"");
+}
+
+std::string InputBoxControl::getRawText() {
+    if (!services_)
+        return {};
+    std::stringstream ss;
+    EDITSTREAM es {};
+    es.dwCookie = (DWORD_PTR)&ss;
+    es.pfnCallback = &InputBoxControl::EditStreamOutCallback;
+    services_->TxSendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es, nullptr);
+    return ss.str();
 }
 
 bool InputBoxControl::isEmpty() {
-    int length = GetTextLengthEx(GTL_PRECISE, 1200 /* unicode */);
-    return length == 0;
+    if (!services_)
+        return true;
+    LRESULT len {};
+    services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &len);
+    return len == 0;
 }
 
-DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
-{
-    auto* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
-    rtf->write(reinterpret_cast<CHAR*>(pbBuff), cb);
+// Stream callbacks
+DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb) {
+    auto* ss = reinterpret_cast<std::stringstream*>(dwCookie);
+    ss->write((const char*)pbBuff, cb);
     *pcb = cb;
     return 0;
 }
 
-DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
-{
-    auto* rtf = reinterpret_cast<std::stringstream*>(dwCookie);
-    *pcb = static_cast<LONG>(rtf->readsome(reinterpret_cast<CHAR*>(pbBuff), cb));
+DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb) {
+    auto* ss = reinterpret_cast<std::stringstream*>(dwCookie);
+    ss->read((char*)pbBuff, cb);
+    *pcb = static_cast<LONG>(ss->gcount());
     return 0;
 }
 
-LRESULT InputBoxControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled) {
+// WTL handlers
+LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
+    hostWindow_ = m_hWnd;
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    // Базовый шрифт: Segoe UI 11pt
+    wcscpy_s(logFont_.lfFaceName, L"Segoe UI Emoji");
+    logFont_.lfHeight = -MulDiv(11, dpi, 72);
+    logFont_.lfWeight = FW_NORMAL;
+
+    charFormat_.cbSize = sizeof(charFormat_);
+    charFormat_.dwMask = CFM_FACE | CFM_SIZE | CFM_COLOR | CFM_CHARSET /* | CFM_WEIGHT*/;
+    charFormat_.yHeight = 11 * 20;
+    charFormat_.crTextColor = textColor_;
+    charFormat_.bCharSet = DEFAULT_CHARSET;
+    // charFormat_.dwMask |= CFM_BOLD;
+    // charFormat_.dwEffects |= CFE_BOLD;  // для жирного
+    // charFormat_.dwEffects &= ~CFE_BOLD; // для обычного
+    wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
+
+    paraFormat_.cbSize = sizeof(paraFormat_);
+    paraFormat_.dwMask = PFM_ALIGNMENT;
+    paraFormat_.wAlignment = PFA_LEFT;
+
+    bHandled = FALSE; // пусть базовый обработчик выполнится
+    return 0;
+}
+LRESULT InputBoxControl::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
+    Destroy();
+    return 0;
+}
+LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
+    int w = LOWORD(lParam), h = HIWORD(lParam);
+    ::GetClientRect(m_hWnd, &clientRect_);
+    if (services_) {
+        isResizing_ = true;
+        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE,
+                                                  TXTBIT_CLIENTRECTCHANGE);
+        isResizing_ = false;
+        //onSizeChanged(w, h);
+    }
     return 0;
 }
 
-LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    WPARAM vKey = wParam;
-    bHandled = false;
-    if ( vKey == VK_ESCAPE ) {
-        onEditCanceled();
-        bHandled = true;
-    } else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80) {
-        onEditFinished();
-        bHandled = true;
+LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
+    return 0;
+}
+
+LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM, LPARAM, BOOL&) {
+    if (services_) {
+        if (!inPlaceActive_) {
+            services_->OnTxInPlaceActivate(nullptr);
+            inPlaceActive_ = true;
+        }
+        if (!uiActive_) {
+            services_->OnTxUIActivate();
+            uiActive_ = true;
+        }
+        // Windowless RichEdit requires a null opposite-window handle for focus messages.
+        services_->TxSendMessage(WM_SETFOCUS, 0, 0, nullptr);
+    }
+    TxShowCaret(TRUE);
+
+    return 0;
+}
+LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM, LPARAM, BOOL&) {
+    TxShowCaret(FALSE);
+    //charFormat_.dwMask = 0;
+
+    LRESULT result = 0;
+    if (services_) {
+        services_->TxSendMessage(WM_KILLFOCUS, 0, 0, &result);
+        if (uiActive_) {
+            services_->OnTxUIDeactivate();
+            uiActive_ = false;
+        }
     }
 
-    return 0;
-}
-/*
-LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    WPARAM vKey = wParam;
-    return 0;
-}
-*/
-LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
-{
-    onTextChanged(L"");
-    return 0;
+    return result;
 }
 
-LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-{
-    bHandled = true;
-    auto * pReqResize = reinterpret_cast<REQRESIZE*>(pnmh);
-
-    SIZE sz = {pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top};
-    RECT windowRect;
-    GetWindowRect(&windowRect);
-    onResized(/*sz.cx*/windowRect.right - windowRect.left, sz.cy);
-
-    //*SetWindowPos(0, 0,0, pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top);
-    return 0;
+LRESULT InputBoxControl::OnTimer(UINT, WPARAM id, LPARAM lParam, BOOL&) {
+    if (id == CARET_TIMER_ID) {
+        caretBlinkOn_ = !caretBlinkOn_;
+        if (caretVisible_) {
+            invalidate();
+        }
+        return 0;
+    }
+    LRESULT result = 0;
+    if (services_)
+        services_->TxSendMessage(WM_TIMER, id, lParam, &result);
+    return result;
 }
 
-LRESULT InputBoxControl::OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-{
-    auto* selChange = reinterpret_cast<SELCHANGE*>(pnmh);
-    CHARFORMAT cf;
-
-    GetSelectionCharFormat(cf);
-    onSelectionChanged(selChange->chrg.cpMin, selChange->chrg.cpMax, GuiTools::CharFormatToLogFont(cf));
-
-    return 0;
+LRESULT InputBoxControl::OnMouse(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    bHandled = false;
+    LRESULT result = 0;
+    if (services_)
+        services_->TxSendMessage(uMsg, wParam, lParam, &result);
+    return result;
 }
 
-LRESULT InputBoxControl::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
-{
-    int x = GET_X_LPARAM(lParam);
-    int y = GET_Y_LPARAM(lParam);
+LRESULT InputBoxControl::OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (uMsg == WM_KEYDOWN) {
+        if (wParam == VK_ESCAPE) {
+            onEditCanceled();
+            bHandled = TRUE;
+            return 0;
+        }
+        if (wParam == VK_RETURN && (GetKeyState(VK_CONTROL) & 0x8000)) {
+            onEditFinished();
+            bHandled = TRUE;
+            return 0;
+        }
+    }
+
+    LRESULT result = 0;
+    if (services_)
+        services_->TxSendMessage(uMsg, wParam, lParam, &result);
+    return result;
+}
+
+LRESULT InputBoxControl::OnIme(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
+    LRESULT result = 0;
+    if (services_)
+        services_->TxSendMessage(uMsg, wParam, lParam, &result);
+    return result;
+}
+
+LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
+    constexpr UINT ID_TEXT_DIRECTION_LTR = 0xF100;
+    constexpr UINT ID_TEXT_DIRECTION_RTL = 0xF101;
+
+    int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
+
+    if (x == -1 && y == -1) {
+        POINT pt = caretPos_;
+        ClientToScreen(&pt);
+        x = pt.x;
+        y = pt.y;
+    }
+    LRESULT canUndo = 0, canRedo = 0;
+    CHARRANGE selection = { 0 };
+    LRESULT textLength = 0;
+    PARAFORMAT2 paragraphFormat {};
+    paragraphFormat.cbSize = sizeof(paragraphFormat);
+    paragraphFormat.dwMask = PFM_RTLPARA;
+
+    if (services_) {
+        services_->TxSendMessage(EM_CANUNDO, 0, 0, &canUndo);
+        services_->TxSendMessage(EM_CANREDO, 0, 0, &canRedo);
+        services_->TxSendMessage(EM_EXGETSEL, 0, (LPARAM)&selection, nullptr);
+        services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &textLength);
+        services_->TxSendMessage(EM_GETPARAFORMAT, 0, (LPARAM)&paragraphFormat, nullptr);
+    }
+
+    bool hasSelection = (selection.cpMax > selection.cpMin);
+    bool hasText = (textLength > 0);
+    bool canPaste = IsClipboardFormatAvailable(CF_TEXT) || IsClipboardFormatAvailable(CF_UNICODETEXT);
+    bool isRtl = (paragraphFormat.dwMask & PFM_RTLPARA) && (paragraphFormat.wEffects & PFE_RTLPARA);
 
     CMenu contextMenu;
-    POINT pt = {x,y};
-//    ClientToScreen(&pt);
     contextMenu.CreatePopupMenu();
-    contextMenu.AppendMenu(MF_STRING, IDMM_UNDO, TR("Undo"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_REDO, TR("Redo"));
-    contextMenu.AppendMenu(MF_SEPARATOR, 1, _T(""));
-    contextMenu.AppendMenu(MF_STRING, IDMM_CUT, TR("Cut"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_COPY, TR("Copy"));
-    contextMenu.AppendMenu(MF_STRING, IDMM_PASTE, TR("Paste"));
-    contextMenu.EnableMenuItem(IDMM_PASTE, CanPaste()?MF_ENABLED : MF_DISABLED );
-    contextMenu.EnableMenuItem(IDMM_UNDO, CanUndo()?MF_ENABLED : MF_DISABLED  );
-    contextMenu.EnableMenuItem(IDMM_REDO, CanRedo()?MF_ENABLED : MF_DISABLED  );
+    contextMenu.AppendMenu(MF_STRING | (canUndo ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_UNDO, TR("Undo"));
+    contextMenu.AppendMenu(MF_STRING | (canRedo ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_REDO, TR("Redo"));
+
+    contextMenu.AppendMenu(MF_SEPARATOR);
+
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_CUT, TR("Cut") + CString("\tCtrl+X"));
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_COPY, TR("Copy") + CString("\tCtrl+C"));
+    contextMenu.AppendMenu(MF_STRING | (canPaste ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_PASTE, TR("Paste")+ CString("\tCtrl+V"));
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_DELETE, TR("Delete")+ CString("\tDel"));
+
+    contextMenu.AppendMenu(MF_SEPARATOR);
+
+    contextMenu.AppendMenu(MF_STRING | (hasText ? MF_ENABLED : MF_GRAYED),
+        ID_EDIT_SELECT_ALL, TR("Select All")+ CString("\tCtrl+A"));
+
+    contextMenu.AppendMenu(MF_SEPARATOR);
+    CMenu textDirectionMenu;
+    textDirectionMenu.CreatePopupMenu();
+    textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_LTR, TR("Left to right"));
+    textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_RTL, TR("Right to left"));
+    textDirectionMenu.CheckMenuRadioItem(ID_TEXT_DIRECTION_LTR, ID_TEXT_DIRECTION_RTL,
+        isRtl ? ID_TEXT_DIRECTION_RTL : ID_TEXT_DIRECTION_LTR, MF_BYCOMMAND);
+    contextMenu.AppendMenu(MF_POPUP, reinterpret_cast<UINT_PTR>(textDirectionMenu.Detach()), TR("Text direction"));
+
+
     contextMenuOpened_ = true;
-    contextMenu.TrackPopupMenu(TPM_VERTICAL, pt.x, pt.y, m_hWnd);
+    UINT id = contextMenu.TrackPopupMenu(TPM_RETURNCMD | TPM_RIGHTBUTTON, x, y, m_hWnd);
     contextMenuOpened_ = false;
-    return 0;
-}
 
-LRESULT InputBoxControl::OnUndo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SendMessage(EM_UNDO, 0, 0);
-    return 0;
-}
+    switch (id) {
+    case ID_EDIT_UNDO:
+        services_->TxSendMessage(EM_UNDO, 0, 0, nullptr);
+        break;
 
-LRESULT InputBoxControl::OnRedo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SendMessage(EM_REDO, 0, 0);
-    return 0;
-}
+    case ID_EDIT_REDO:
+        services_->TxSendMessage(EM_REDO, 0, 0, nullptr);
+        break;
 
-LRESULT InputBoxControl::OnCut(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SendMessage(WM_CUT, 0, 0);
-    return 0;
-}
+    case ID_EDIT_CUT:
+        services_->TxSendMessage(WM_CUT, 0, 0, nullptr);
+        break;
 
-LRESULT InputBoxControl::OnCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SendMessage(WM_COPY, 0, 0);
-    return 0;
-}
+    case ID_EDIT_COPY:
+        services_->TxSendMessage(WM_COPY, 0, 0, nullptr);
+        break;
 
-LRESULT InputBoxControl::OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SendMessage(WM_PASTE, 0, 0);
-    return 0;
-}
+    case ID_EDIT_PASTE:
+        //SetFocus();
+        services_->TxSendMessage(WM_PASTE, 0, 0, nullptr);
+        break;
 
-LRESULT InputBoxControl::OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
-{
-    bHandled = false;
-    if ( contextMenuOpened_ ) {
-        bHandled = true;
-        HCURSOR m_hArrow = LoadCursor(NULL,IDC_ARROW);
-        ::SetCursor(m_hArrow);
+    case ID_EDIT_DELETE:
+        services_->TxSendMessage(WM_CLEAR, 0, 0, nullptr);
+        break;
+
+    case ID_EDIT_SELECT_ALL:
+        services_->TxSendMessage(EM_SETSEL, 0, -1, nullptr);
+        break;
+
+    case ID_TEXT_DIRECTION_LTR:
+    case ID_TEXT_DIRECTION_RTL: {
+        PARAFORMAT2 format {};
+        format.cbSize = sizeof(format);
+        format.dwMask = PFM_RTLPARA | PFM_ALIGNMENT;
+        format.wEffects = id == ID_TEXT_DIRECTION_RTL ? PFE_RTLPARA : 0;
+        format.wAlignment = id == ID_TEXT_DIRECTION_RTL ? PFA_RIGHT : PFA_LEFT;
+        services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&format, nullptr);
+        break;
+    }
+
+    default:
+        break;
     }
     return 0;
+}
+LRESULT InputBoxControl::OnSetCursor(UINT, WPARAM, LPARAM, BOOL& bHandled) {
+    if (contextMenuOpened_) {
+        bHandled = TRUE;
+        HCURSOR arrow = LoadCursor(nullptr, IDC_ARROW);
+        ::SetCursor(arrow);
+        return TRUE;
+    }
+
+    POINT position {};
+    GetCursorPos(&position);
+    ScreenToClient(&position);
+
+    CClientDC hdc(m_hWnd);
+
+    RECT rect = { 0 };
+    GetClientRect(&rect);
+
+    services_->OnTxSetCursor(
+        DVASPECT_CONTENT,
+        0,
+        nullptr,
+        nullptr,
+        hdc,
+        nullptr,
+        &rect,
+        position.x,
+        position.y);
+
+    return 0;
+}
+
+LRESULT InputBoxControl::OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    return 0;
+    if ((LONG)lParam == UiaRootObjectId) {
+        /*CComQIPtr<IRicheditWindowlessAccessibility> accesibility = services_;
+        /* if (accesibility) {
+            accesibility->CreateProvider()
+        }
+        CComQIPtr<IRawElementProviderSimple> pProvider = services_;
+        if (pProvider) {
+            return UiaReturnRawElementProvider(m_hWnd, wParam, lParam, pProvider);
+        }*/
+        if (richEditUIA_ && richEditUIA_->GetUiaProvider()) {
+            return UiaReturnRawElementProvider(hostWindow_, wParam, lParam,
+                richEditUIA_->GetUiaProvider());
+        }
+    } else if ((LONG)lParam == OBJID_CLIENT) {
+        CComQIPtr<IAccessible> pAcc = services_;
+        if (pAcc) {
+            return LresultFromObject(IID_IAccessible, wParam, pAcc);
+        }
+    }
+    return 0;
+}
+
+LRESULT InputBoxControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    renderTarget_.Release();
+    return 0;
+}
+
+bool InputBoxControl::InitializeD2D() {
+    if (!d2dFactory_) {
+        HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2dFactory_);
+        if (FAILED(hr)) {
+            d2dMode_ = false;
+            return false;
+        }
+    }
+
+    if (!renderTarget_) {
+        int dpi = DPIHelper::GetDpiForWindow(hostWindow_);
+
+        D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+            D2D1_RENDER_TARGET_TYPE_DEFAULT,
+            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
+
+        HRESULT hr = d2dFactory_->CreateDCRenderTarget(&props, &renderTarget_);
+        return SUCCEEDED(hr);
+    }
+    return true;
+}
+
+// IUnknown
+STDMETHODIMP InputBoxControl::QueryInterface(REFIID riid, void** ppv) {
+    if (!ppv) {
+        return E_POINTER;
+    }
+
+    *ppv = nullptr;
+    if (riid == IID_IUnknown || riid == IID_ITextHost) {
+        *ppv = static_cast<ITextHost*>(this); // Windows 7
+        AddRef();
+        return S_OK;
+    }
+
+    // (Windows 8+)
+    if (riid == IID_ITextHost2) {
+        *ppv = static_cast<ITextHost2*>(this);
+        AddRef();
+        return S_OK;
+    }
+
+    return E_NOINTERFACE;
+}
+
+// ITextHost
+HDC InputBoxControl::TxGetDC() {
+    return ::GetDC(m_hWnd);
+}
+
+INT InputBoxControl::TxReleaseDC(HDC hdc) {
+    return ::ReleaseDC(m_hWnd, hdc);
+}
+
+void InputBoxControl::TxInvalidateRect(LPCRECT prc, BOOL) {
+    invalidate();
+}
+
+void InputBoxControl::TxViewChange(BOOL fUpdate) {
+    if (fUpdate)
+        invalidate();
+}
+
+BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
+    if (systemCaretCreated_) {
+        ::DestroyCaret();
+        systemCaretCreated_ = false;
+        systemCaretVisible_ = false;
+    }
+
+    systemCaretCreated_ = ::CreateCaret(m_hWnd, nullptr, std::max(1, xWidth), std::max(1, yHeight));
+    if (systemCaretCreated_) {
+        ::SetCaretPos(systemCaretPos_.x, systemCaretPos_.y);
+        if (caretVisible_) {
+            systemCaretVisible_ = ::ShowCaret(m_hWnd);
+        }
+    }
+
+    caretWidth_ = xWidth;
+    caretHeight_ = yHeight;
+
+    caretCreated_ = true;
+    if (d2dMode_) {
+        if (caretBitmap_ != hbmp) {
+            d2dCaretBitmap_.Release();
+        }
+
+        if (hbmp == reinterpret_cast<HBITMAP>(0x120)) {
+            caretBitmap_ = nullptr;
+
+        } else {
+            caretBitmap_ = hbmp;
+        }
+    }
+    return TRUE;
+}
+
+BOOL InputBoxControl::TxShowCaret(BOOL fShow) {
+    caretVisible_ = fShow;
+    if (fShow) {
+        if (systemCaretCreated_ && !systemCaretVisible_) {
+            systemCaretVisible_ = ::ShowCaret(m_hWnd);
+        }
+        caretBlinkOn_ = true;
+        SetTimer(CARET_TIMER_ID, GetCaretBlinkTime(), nullptr);
+    } else {
+        if (systemCaretVisible_) {
+            ::HideCaret(m_hWnd);
+            systemCaretVisible_ = false;
+        }
+        KillTimer(CARET_TIMER_ID);
+    }
+    invalidate();
+    return TRUE;
+}
+
+BOOL InputBoxControl::TxSetCaretPos(INT x, INT y) {
+    systemCaretPos_ = { x, y };
+    if (systemCaretCreated_) {
+        ::SetCaretPos(x, y);
+    }
+
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+
+    caretPos_ = { x, y };
+    invalidate();
+    return TRUE;
+}
+
+BOOL InputBoxControl::TxSetTimer(UINT idTimer, UINT uTimeout) { return SetTimer(idTimer, uTimeout) != 0; }
+void InputBoxControl::TxKillTimer(UINT idTimer) {
+    if (IsWindow())
+    KillTimer(idTimer);
+}
+
+void InputBoxControl::TxSetCapture(BOOL fCapture) {
+    // CImageEditorView owns capture while forwarding a text selection drag.
+}
+
+void InputBoxControl::TxSetFocus() {
+    ::SetFocus(m_hWnd);
+}
+
+void InputBoxControl::TxSetCursor(HCURSOR hcur, BOOL fText) {
+    cursor_ = hcur;
+    ::SetCursor(hcur ? hcur : ::LoadCursor(nullptr, IDC_ARROW));
+}
+
+HRESULT InputBoxControl::TxGetClientRect(LPRECT prc) {
+    GetClientRect(&clientRect_);
+    *prc = clientRect_;
+    return S_OK;
+}
+
+HRESULT InputBoxControl::TxGetExtent(LPSIZEL lpExtent) {
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    /*lpExtent->cx = MulDiv(clientRect_.right - clientRect_.left, 2540, dpi);
+    lpExtent->cy = MulDiv(clientRect_.bottom - clientRect_.top, 2540, dpi);*/
+
+    //lpExtent->cx = lpExtent->cy = 0;
+    return E_NOTIMPL;
+}
+
+HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
+    if (pCF) {
+        DWORD mask = pCF->dwMask;
+
+        // Цвет текста
+        if (mask & CFM_COLOR) {
+            textColor_ = pCF->crTextColor;
+            charFormat_.crTextColor = pCF->crTextColor;
+            charFormat_.dwMask |= CFM_COLOR;
+        }
+
+        // Имя шрифта
+        if (mask & CFM_FACE) {
+            wcsncpy_s(charFormat_.szFaceName, pCF->szFaceName, _TRUNCATE);
+            wcsncpy_s(logFont_.lfFaceName, pCF->szFaceName, _TRUNCATE);
+            charFormat_.dwMask |= CFM_FACE;
+        }
+
+        // Размер шрифта
+        if (mask & CFM_SIZE) {
+            charFormat_.yHeight = pCF->yHeight;
+            charFormat_.dwMask |= CFM_SIZE;
+
+            // Обновляем LOGFONT
+            int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+            int pointSize = pCF->yHeight / 20; // yHeight в twips (1/20 пункта)
+            logFont_.lfHeight = -MulDiv(pointSize, dpi, 72);
+        }
+
+        // Стили текста (жирный, курсив, подчеркнутый, зачеркнутый)
+        if (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT)) {
+            charFormat_.dwEffects = pCF->dwEffects;
+            charFormat_.dwMask |= (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT));
+
+            // Обновляем LOGFONT
+            logFont_.lfWeight = (pCF->dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
+            logFont_.lfItalic = (pCF->dwEffects & CFE_ITALIC) ? TRUE : FALSE;
+            logFont_.lfUnderline = (pCF->dwEffects & CFE_UNDERLINE) ? TRUE : FALSE;
+            logFont_.lfStrikeOut = (pCF->dwEffects & CFE_STRIKEOUT) ? TRUE : FALSE;
+        }
+
+        // Набор символов
+        if (mask & CFM_CHARSET) {
+            charFormat_.bCharSet = pCF->bCharSet;
+            charFormat_.dwMask |= CFM_CHARSET;
+            logFont_.lfCharSet = pCF->bCharSet;
+        }
+
+        // Защищенный текст
+        if (mask & CFM_PROTECTED) {
+            if (pCF->dwEffects & CFE_PROTECTED) {
+                charFormat_.dwEffects |= CFE_PROTECTED;
+            } else {
+                charFormat_.dwEffects &= ~CFE_PROTECTED;
+            }
+            charFormat_.dwMask |= CFM_PROTECTED;
+        }
+
+        // Ссылка
+        if (mask & CFM_LINK) {
+            if (pCF->dwEffects & CFE_LINK) {
+                charFormat_.dwEffects |= CFE_LINK;
+            } else {
+                charFormat_.dwEffects &= ~CFE_LINK;
+            }
+            charFormat_.dwMask |= CFM_LINK;
+        }
+
+        // Смещение (надстрочный/подстрочный текст)
+        if (mask & CFM_OFFSET) {
+            charFormat_.yOffset = pCF->yOffset;
+            charFormat_.dwMask |= CFM_OFFSET;
+        }
+    }
+    return S_OK;
+}
+HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
+    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG
+        | TXTBIT_CLIENTRECTCHANGE | TXTBIT_SAVESELECTION;
+    if (d2dMode_) {
+        bits |= TXTBIT_D2DDWRITE | TXTBIT_D2DSUBPIXELLINES;
+    }
+
+    *pdwBits = bits & dwMask;
+    return S_OK;
+}
+HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
+    switch (iNotify) {
+    case EN_CHANGE: {
+        /* CComBSTR str;
+        services_->TxGetText(&str);*/
+        onTextChanged(L"");
+        break;
+    }
+    case EN_REQUESTRESIZE:
+        {
+            auto* rr = static_cast<REQRESIZE*>(pv);
+            CRect windowRect;
+            GetClientRect(&windowRect);
+            int w = rr->rc.right - rr->rc.left;
+            int h = rr->rc.bottom - rr->rc.top;
+            SetWindowPos(0, 0, 0, w, h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+            onResized(w, h);
+            break;
+        }
+    case EN_SELCHANGE: {
+        auto* sc = reinterpret_cast<SELCHANGE*>(pv);
+        logFont_ = getSelectionFont();
+        onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_);
+        break;
+    }
+    default:
+        break;
+    }
+    return S_OK;
+}
+
+HRESULT InputBoxControl::TxGetWindow(HWND* phwnd) {
+    *phwnd = m_hWnd;
+    return S_OK;
+}
+
+HRESULT InputBoxControl::TxDestroyCaret() {
+    if (systemCaretCreated_) {
+        ::DestroyCaret();
+        systemCaretCreated_ = false;
+        systemCaretVisible_ = false;
+    }
+    caretBitmap_ = 0;
+    caretCreated_ = false;
+    d2dCaretBitmap_.Release();
+    return S_OK;
+}
+
+HCURSOR InputBoxControl::TxSetCursor2(HCURSOR hcur, BOOL) {
+    HCURSOR res = cursor_;
+    cursor_ = hcur;
+    SetCursor(cursor_);
+    return res;
+}
+
+HRESULT InputBoxControl::TxGetEditStyle(DWORD dwItem, DWORD* pdwData) {
+    if (!pdwData)
+        return E_POINTER;
+    // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
+    *pdwData = ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
+    return S_OK;
+}
+
+HRESULT InputBoxControl::TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) {
+    if (pdwStyle)
+        *pdwStyle = WS_CHILD | WS_TABSTOP | WS_CLIPSIBLINGS;
+    if (pdwExStyle)
+        *pdwExStyle = 0;
+    return S_OK;
+}
+
+void InputBoxControl::setHostWindow(HWND wnd) {
+    hostWindow_ = wnd;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> InputBoxControl::prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) {
+    // Создаем временный bitmap для конвертации
+    auto tempBitmap = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
+    Gdiplus::Graphics tempGraphics(tempBitmap.get());
+    tempGraphics.Clear(Gdiplus::Color::Transparent);
+    // Копируем нужную область
+    tempGraphics.DrawImage(source,
+        Gdiplus::Rect(0, 0, rc.Width, rc.Height),
+        rc.X, rc.Y, rc.Width, rc.Height,
+        Gdiplus::UnitPixel);
+
+    return tempBitmap;
 }
 
 }

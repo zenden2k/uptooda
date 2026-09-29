@@ -41,13 +41,17 @@ class TextElement: public MovableElement{
         bool isEmpty() const override;
         void setFillBackground(bool fill);
         bool getFillBackground() const;
-protected:
+        void setPos(int x, int y) override;
+        bool move(int offsetX, int offsetY, bool checkBounds = true) override;
+        void prepareBackground(Gdiplus::Bitmap* source);
+    protected:
     std::shared_ptr<InputBox> inputBox_;
     LOGFONT font_{};
     bool isEditing_;
     bool firstEdit_;
     bool fillBackground_;
     std::string originalRawText_;
+    std::unique_ptr<Gdiplus::Bitmap> backgroundBitmap_;
     void onTextChanged(LPCTSTR text);
     void onEditCanceled();
     void onEditFinished();
