@@ -130,6 +130,13 @@ POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
     return logicalPoint;
 }
 
+inline D2D1_COLOR_F ToD2DColor(const Gdiplus::Color& c) {
+    return D2D1::ColorF(c.GetR() / 255.0f,
+                        c.GetG() / 255.0f,
+                        c.GetB() / 255.0f,
+                        c.GetA() / 255.0f);
+}
+
 InputBoxControl::InputBoxControl(Canvas* canvas):
     canvas_(canvas)
 {
@@ -352,7 +359,7 @@ bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gd
     return false;
 }
 
-void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
+void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) {
     Gdiplus::Rect rc = canvas_->currentRenderingRect();
     Gdiplus::Rect rcRelative = rc;
     rcRelative.Intersect(layoutArea);
@@ -360,7 +367,7 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
 
     CRect updateRect { rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetBottom() };
     CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };;
-
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     if (!d2dMode_ || !InitializeD2D()) {
         HDC mainHdc = graphics->GetHDC();
@@ -388,13 +395,13 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
             Gdiplus::Graphics bgGraphics(memHdc);
             bgGraphics.DrawImage(background,
                 Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height),
-                layoutArea.X, layoutArea.Y, layoutArea.Width, layoutArea.Height,
+                rcRelative.X, rcRelative.Y, rcRelative.Width, rcRelative.Height,
                 Gdiplus::UnitPixel);
         } else {
             // Заливаем нужным цветом
             RECT fillRect = { 0, 0, layoutArea.Width, layoutArea.Height };
             CBrush brush;
-            brush.CreateSolidBrush(RGB(255, 255, 255)); // Или нужный вам цвет
+            brush.CreateSolidBrush(bgColor.ToCOLORREF()); // Или нужный вам цвет
             memHdc.FillRect(&fillRect, brush);
         }
 
@@ -402,10 +409,11 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
         memHdc.SetBkMode(TRANSPARENT);
 
         // Рендерим текст
-        RECTL rc = { 0, 0, layoutArea.Width, layoutArea.Height };
+        RECTL rc = { 0, 0, static_cast<LONG>(layoutArea.Width), static_cast<LONG>(layoutArea.Height) };
         services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, memHdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
         if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
             const int caretWidth = std::max(1, caretWidth_);
+
             if (isCaretItalic()) {
                 const int slant = std::max(1, caretHeight_ / 4);
                 POINT points[] = { { caretPos_.x + slant, caretPos_.y },
@@ -465,7 +473,7 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     } else {
         // Заливаем белым фоном
         CComPtr<ID2D1SolidColorBrush> whiteBrush;
-        renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush);
+        renderTarget_->CreateSolidColorBrush(ToD2DColor(bgColor), &whiteBrush);
         renderTarget_->FillRectangle(bgRect, whiteBrush);
     }
 
@@ -481,19 +489,24 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     const FLOAT caretHeight = scaleY * caretHeight_;*/
 
     if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
+        int caretX = MulDiv(caretPos_.x , USER_DEFAULT_SCREEN_DPI, dpiX);
+        int caretY = MulDiv(caretPos_.y , USER_DEFAULT_SCREEN_DPI, dpiY);
+        int caretWidth = MulDiv(caretWidth_, USER_DEFAULT_SCREEN_DPI, dpiX);
+        int caretHeight = MulDiv(caretHeight_,  USER_DEFAULT_SCREEN_DPI, dpiY);
+
         CComPtr<ID2D1SolidColorBrush> caretBrush;
         if (SUCCEEDED(renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &caretBrush))) {
             if (isCaretItalic()) {
-                const FLOAT slant = static_cast<FLOAT>(std::max(1, caretHeight_ / 4));
+                const FLOAT slant = static_cast<FLOAT>(std::max(1, caretHeight / 4));
                 renderTarget_->DrawLine(
-                    D2D1::Point2F(static_cast<FLOAT>(caretPos_.x) + slant, static_cast<FLOAT>(caretPos_.y)),
-                    D2D1::Point2F(static_cast<FLOAT>(caretPos_.x), static_cast<FLOAT>(caretPos_.y + caretHeight_)),
-                    caretBrush, static_cast<FLOAT>(std::max(1, caretWidth_)));
+                    D2D1::Point2F(static_cast<FLOAT>(caretX) + slant, static_cast<FLOAT>(caretY)),
+                    D2D1::Point2F(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY + caretHeight)),
+                    caretBrush, static_cast<FLOAT>(std::max(1, caretWidth)));
             } else {
                 const D2D1_RECT_F caretRect
-                    = D2D1::RectF(static_cast<FLOAT>(caretPos_.x), static_cast<FLOAT>(caretPos_.y),
-                                  static_cast<FLOAT>(caretPos_.x + std::max(1, caretWidth_)),
-                                  static_cast<FLOAT>(caretPos_.y + caretHeight_));
+                    = D2D1::RectF(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY),
+                                  static_cast<FLOAT>(caretX + std::max(1, caretWidth)),
+                                  static_cast<FLOAT>(caretY + caretHeight));
                 renderTarget_->FillRectangle(caretRect, caretBrush);
             }
         }
@@ -742,84 +755,16 @@ LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
     int w = LOWORD(lParam), h = HIWORD(lParam);
     ::GetClientRect(m_hWnd, &clientRect_);
     if (services_) {
-        services_->TxSendMessage(WM_SIZE, 0, lParam, nullptr);
+        isResizing_ = true;
+        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE,
+                                                  TXTBIT_CLIENTRECTCHANGE);
+        isResizing_ = false;
         //onSizeChanged(w, h);
     }
     return 0;
 }
 
 LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
-    CPaintDC dc(m_hWnd);
-    RECT clientRect;
-    GetClientRect(&clientRect);
-    RECT rc = { clientRect.left, clientRect.top, clientRect.right, clientRect.bottom };
-    RECTL rcPaint = { dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, dc.m_ps.rcPaint.right, dc.m_ps.rcPaint.bottom };
-
-    if (!d2dMode_ || !InitializeD2D()) {
-        if (!services_ ) {
-            return 0;
-        }
-        HRESULT hr = services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, dc, nullptr, reinterpret_cast<LPCRECTL>(&rc), nullptr, nullptr, nullptr, 0, 0);
-        if (FAILED(hr)) {
-            LOG(ERROR) << _com_error(hr).ErrorMessage();
-        }
-        
-        return 0;
-    }
-   
-    if (!services2_) {
-        return 0;
-    }
-
-    HRESULT hr = renderTarget_->BindDC(dc, &rc);
-    if (FAILED(hr)) {
-        return 0;
-    }
-    FLOAT dpiX = 96, dpiY = 96;
-    renderTarget_->GetDpi(&dpiX, &dpiY);
-    renderTarget_->BeginDraw();
-
-    //rc = ScaleRectToLogical(rc, dpi);
-    POINT caretPos = ScalePointToLogical(caretPos_, dpiX);
-    int caretWidth = MulDiv(caretWidth_, 96, dpiX);
-    int caretHeight = MulDiv(caretHeight_, 96, dpiY);
-
-    hr = services2_->TxDrawD2D(renderTarget_, reinterpret_cast<LPCRECTL>(&rc), nullptr, 0);
-
-    if (caretVisible_ && caretCreated_ && caretBlinkOn_) {
-
-        if (caretBitmap_  && !d2dCaretBitmap_) {
-            d2dCaretBitmap_ = CreateD2DBitmapFromHBITMAP(renderTarget_, caretBitmap_);
-        }
-
-        if (caretBitmap_ && d2dCaretBitmap_) {
-            D2D1_RECT_F destRect = D2D1::RectF(
-                static_cast<FLOAT>(caretPos.x),
-                static_cast<FLOAT>(caretPos.y),
-                static_cast<FLOAT>(caretPos.x + caretWidth),
-                static_cast<FLOAT>(caretPos.y + caretHeight));
-
-            renderTarget_->DrawBitmap(d2dCaretBitmap_, destRect);
-        } else {
-            CComPtr<ID2D1SolidColorBrush> brush;
-            renderTarget_->CreateSolidColorBrush(
-                D2D1::ColorF(D2D1::ColorF::Black), &brush);
-
-            D2D1_RECT_F caretRect = D2D1::RectF(
-                static_cast<FLOAT>(caretPos.x),
-                static_cast<FLOAT>(caretPos.y),
-                static_cast<FLOAT>(caretPos.x + caretWidth_),
-                static_cast<FLOAT>(caretPos.y + caretHeight_));
-
-            renderTarget_->FillRectangle(&caretRect, brush);
-        }
-    }
-    
-    if (FAILED(hr)) {
-        LOG(ERROR) << _com_error(hr).ErrorMessage();
-    }
-    HRESULT endHr = renderTarget_->EndDraw();
-
     return 0;
 }
 
@@ -1158,12 +1103,8 @@ BOOL InputBoxControl::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight) {
         }
     }
 
-    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    caretWidth_ = MulDiv(xWidth, USER_DEFAULT_SCREEN_DPI, dpi);
-    caretHeight_ = MulDiv(yHeight,  USER_DEFAULT_SCREEN_DPI, dpi);
-
-    /*caretWidth_ = xWidth;
-    caretHeight_ = yHeight;*/
+    caretWidth_ = xWidth;
+    caretHeight_ = yHeight;
 
     caretCreated_ = true;
     if (d2dMode_) {
@@ -1207,8 +1148,7 @@ BOOL InputBoxControl::TxSetCaretPos(INT x, INT y) {
     }
 
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    x = MulDiv(x, USER_DEFAULT_SCREEN_DPI, dpi);
-    y = MulDiv(y,  USER_DEFAULT_SCREEN_DPI, dpi);
+
     caretPos_ = { x, y };
     invalidate();
     return TRUE;
@@ -1241,11 +1181,11 @@ HRESULT InputBoxControl::TxGetClientRect(LPRECT prc) {
 
 HRESULT InputBoxControl::TxGetExtent(LPSIZEL lpExtent) {
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    lpExtent->cx = MulDiv(clientRect_.right - clientRect_.left, 2540, dpi);
-    lpExtent->cy = MulDiv(clientRect_.bottom - clientRect_.top, 2540, dpi);
+    /*lpExtent->cx = MulDiv(clientRect_.right - clientRect_.left, 2540, dpi);
+    lpExtent->cy = MulDiv(clientRect_.bottom - clientRect_.top, 2540, dpi);*/
 
     //lpExtent->cx = lpExtent->cy = 0;
-    return S_OK;
+    return E_NOTIMPL;
 }
 
 HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
@@ -1342,17 +1282,17 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
         onTextChanged(L"");
         break;
     }
-    case EN_REQUESTRESIZE: {
-        auto* rr = reinterpret_cast<REQRESIZE*>(pv);
-        CRect windowRect;
-        GetClientRect(&windowRect);
-        int w = rr->rc.right - rr->rc.left;
-        int h = rr->rc.bottom - rr->rc.top;
-        //h = MulDiv(h, 96, DPIHelper::GetDpiForWindow(m_hWnd));
-        SetWindowPos(0, 0, 0, windowRect.Width(), h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
-        onResized(windowRect.Width(), h);
-        break;
-    }
+    case EN_REQUESTRESIZE:
+        {
+            auto* rr = static_cast<REQRESIZE*>(pv);
+            CRect windowRect;
+            GetClientRect(&windowRect);
+            int w = rr->rc.right - rr->rc.left;
+            int h = rr->rc.bottom - rr->rc.top;
+            SetWindowPos(0, 0, 0, w, h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+            onResized(w, h);
+            break;
+        }
     case EN_SELCHANGE: {
         auto* sc = reinterpret_cast<SELCHANGE*>(pv);
         logFont_ = getSelectionFont();

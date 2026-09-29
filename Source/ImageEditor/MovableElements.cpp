@@ -191,7 +191,7 @@ void TextElement::render(Painter* gr) {
         gr->SetSmoothingMode(prevSmoothingMode);
     }
     if (inputBox_) {
-        inputBox_->render(gr, backgroundBitmap_.get(), Rect(getX()+3,getY()+3,getWidth()-6,getHeight()-6));
+        inputBox_->render(gr, fillBackground_ ? nullptr : backgroundBitmap_.get(), backgroundColor_, Rect(getX()+3,getY()+3,getWidth()-6,getHeight()-6));
     }
 }
 

@@ -50,7 +50,7 @@ public:
     void show(bool show) override;
     void resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) override;
     bool CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap);
-    void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) override;
+    void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) override;
     bool isVisible() override;
     void invalidate() override;
     void setTextColor(Gdiplus::Color color) override;
@@ -315,6 +315,7 @@ private:
     CComPtr<ID2D1Bitmap> d2dCaretBitmap_;
     HWND hostWindow_;
     std::unique_ptr<WindowlessRichEditUIA> richEditUIA_;
+    bool isResizing_ {false};
 };
 
 class WindowlessRichEditUIA {
