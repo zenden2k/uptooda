@@ -108,8 +108,6 @@ CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITM
     UINT width, height;
     source->GetSize(&width, &height);
 
-    D2D1_SIZE_U size = { width, height };
-
     target->CreateBitmapFromWicBitmap(source, &props, &d2dBitmap);
 
     return d2dBitmap;
@@ -243,12 +241,12 @@ void InputBoxControl::ApplyDefaults() {
     // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
     //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
 
-    // Preserve the RichEdit defaults, but do not let keyboard-layout font binding override
-    // a font explicitly selected in TextParamsWindow.
+    // Keep font binding for missing glyphs (e.g. emoji), but use document font rules.
+    // IMF_UIFONTS makes binding prefer UI defaults over the font selected for new text.
     LRESULT langOptions = 0;
     services_->TxSendMessage(EM_GETLANGOPTIONS, 0, 0, &langOptions);
-    langOptions |= IMF_UIFONTS;
-    langOptions &= ~(IMF_AUTOFONT | IMF_DUALFONT);
+    langOptions |= IMF_AUTOFONT;
+    langOptions &= ~(IMF_UIFONTS | IMF_DUALFONT);
     services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
 
     BIDIOPTIONS bidiOptions {};
@@ -261,8 +259,8 @@ void InputBoxControl::ApplyDefaults() {
     //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
     services_->TxSendMessage(EM_SETZOOM, 0, 0, nullptr);
   
-    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS, TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
-        TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
+    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS, TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
+        TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
 }
 
 // InputBox
@@ -614,13 +612,13 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
     logFont_ = font;
 
     constexpr DWORD DEFAULT_MASK
-        = CFM_FACE | CFM_SIZE | CFM_CHARSET | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
+        = CFM_FACE |  CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
     CHARFORMAT2 format {};
     format.cbSize = sizeof(format);
     format.dwMask = changeMask ? changeMask : DEFAULT_MASK;
     if (format.dwMask & CFM_FACE)
         format.dwMask |= CFM_CHARSET;
-
+    //format.dwMask&= ~CFM_CHARSET;
     if ((format.dwMask & CFM_SIZE) && logFont_.lfHeight != 0) {
         int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
         int pointSize = MulDiv(-logFont_.lfHeight, 72, dpi);
@@ -730,7 +728,7 @@ LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     logFont_.lfWeight = FW_NORMAL;
 
     charFormat_.cbSize = sizeof(charFormat_);
-    charFormat_.dwMask = CFM_FACE | CFM_SIZE | CFM_COLOR | CFM_CHARSET /* | CFM_WEIGHT*/;
+    charFormat_.dwMask = CFM_FACE | CFM_SIZE | CFM_COLOR  /* | CFM_WEIGHT*/;
     charFormat_.yHeight = 11 * 20;
     charFormat_.crTextColor = textColor_;
     charFormat_.bCharSet = DEFAULT_CHARSET;
@@ -823,6 +821,59 @@ LRESULT InputBoxControl::OnMouse(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 LRESULT InputBoxControl::OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    const bool controlPressed = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    const bool altPressed = (GetKeyState(VK_MENU) & 0x8000) != 0;
+    if (services_ && controlPressed && !altPressed) {
+        // TranslateMessage also generates control characters for these shortcuts.
+        if (uMsg == WM_CHAR && (wParam == 0x02 || wParam == 0x09 || wParam == 0x15)) {
+            bHandled = TRUE;
+            return 0;
+        }
+        if (uMsg == WM_KEYDOWN) {
+            DWORD formatMask = 0;
+            DWORD formatEffect = 0;
+            switch (wParam) {
+            case 'B':
+                formatMask = CFM_BOLD;
+                formatEffect = CFE_BOLD;
+                break;
+            case 'I':
+                formatMask = CFM_ITALIC;
+                formatEffect = CFE_ITALIC;
+                break;
+            case 'U':
+                formatMask = CFM_UNDERLINE;
+                formatEffect = CFE_UNDERLINE;
+                break;
+            }
+            if (formatMask) {
+                bHandled = TRUE;
+                // Holding the shortcut must not repeatedly toggle the effect.
+                if (lParam & (1L << 30)) {
+                    return 0;
+                }
+                CHARFORMAT2 format { };
+                format.cbSize = sizeof(format);
+                if (SUCCEEDED(services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION,
+                                                       reinterpret_cast<LPARAM>(&format), nullptr))) {
+                    const bool enabled = (format.dwMask & formatMask) && (format.dwEffects & formatEffect);
+                    format.dwMask = formatMask;
+                    format.dwEffects = enabled ? 0 : formatEffect;
+                    LRESULT applied = 0;
+                    if (SUCCEEDED(services_->TxSendMessage(EM_SETCHARFORMAT, SCF_SELECTION,
+                                                           reinterpret_cast<LPARAM>(&format), &applied))
+                        && applied) {
+                        CHARRANGE selection { };
+                        services_->TxSendMessage(EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&selection), nullptr);
+                        logFont_ = getSelectionFont();
+                        onSelectionChanged(selection.cpMin, selection.cpMax, logFont_);
+                        invalidate();
+                    }
+                }
+                return 0;
+            }
+        }
+    }
     if (uMsg == WM_KEYDOWN) {
         if (wParam == VK_ESCAPE) {
             onEditCanceled();
