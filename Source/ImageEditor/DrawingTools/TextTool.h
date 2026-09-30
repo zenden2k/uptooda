@@ -11,7 +11,7 @@ class Canvas;
 
 class TextTool : public MoveAndResizeTool {
 public:
-    explicit TextTool(Canvas* canvas);
+    explicit TextTool(Canvas* canvas, ElementType elementType = ElementType::etText);
     void beginDraw(int x, int y) override;
     void continueDraw(int x, int y, DWORD flags) override;
     void endDraw(int x, int y) override;

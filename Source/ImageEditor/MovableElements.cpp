@@ -191,7 +191,7 @@ void TextElement::render(Painter* gr) {
         gr->SetSmoothingMode(prevSmoothingMode);
     }
     if (inputBox_) {
-        inputBox_->render(gr, fillBackground_ ? nullptr : backgroundBitmap_.get(), backgroundColor_, Rect(getX()+3,getY()+3,getWidth()-6,getHeight()-6));
+        inputBox_->render(gr, fillBackground_ ? nullptr : backgroundBitmap_.get(), backgroundColor_, getInputBoxRect());
     }
 }
 
@@ -207,7 +207,8 @@ void TextElement::resize(int width, int height)
 {
     MovableElement::resize(width,height);
     if ( inputBox_ ) {
-        inputBox_->resize(getX()+3, getY()+3, width-6,height-6, grips_);
+        const Gdiplus::Rect inputRect = getInputBoxRect();
+        inputBox_->resize(inputRect.X, inputRect.Y, inputRect.Width, inputRect.Height, grips_);
         inputBox_->invalidate();
         canvas_->updateView();
     }
@@ -231,6 +232,16 @@ void TextElement::setFont(LOGFONT font,  DWORD changeMask)
     if ( inputBox_ ) {
         inputBox_->setFont(font, changeMask);
     }
+}
+
+void TextElement::setTextAlignment(WORD alignment) {
+    if (inputBox_) {
+        inputBox_->setTextAlignment(alignment);
+    }
+}
+
+WORD TextElement::getTextAlignment() const {
+    return inputBox_ ? inputBox_->getTextAlignment() : PFA_LEFT;
 }
 
 LOGFONT TextElement::getFont() const
@@ -269,7 +280,7 @@ void TextElement::onEditFinished()
 void TextElement::onControlResized(int w, int h)
 {
     RECT oldPaintRect = getPaintBoundingRect();
-    MovableElement::resize(w + 6, h + 6);
+    MovableElement::resize(w+6, h+6);
     RECT newPaintRect = getPaintBoundingRect();
     RECT updateRect;
     UnionRect(&updateRect, &oldPaintRect, &newPaintRect);
@@ -294,6 +305,7 @@ void TextElement::onSelectionChanged(int min, int max, LOGFONT font)
 {
     font_ = font;
     canvas_->onFontChanged(font_);
+    canvas_->onTextAlignmentChanged(getTextAlignment());
 }
 
 void TextElement::setColor(Gdiplus::Color color)
@@ -377,20 +389,22 @@ bool TextElement::getFillBackground() const {
 void TextElement::setPos(int x, int y) {
     MovableElement::setPos(x, y);
     if (inputBox_) {
-        inputBox_->resize(x + 3, y + 3, -1, -1, grips_);
+        const Gdiplus::Rect inputRect = getInputBoxRect();
+        inputBox_->resize(inputRect.X, inputRect.Y, inputRect.Width, inputRect.Height, grips_);
     }
 }
 
 bool TextElement::move(int offsetX, int offsetY, bool checkBounds /*= true*/) {
     bool res = MovableElement::move(offsetX, offsetY, checkBounds);
     if (inputBox_) {
-        inputBox_->resize(getX() + 3, getY() + 3, -1, -1, grips_);
+        const Gdiplus::Rect inputRect = getInputBoxRect();
+        inputBox_->resize(inputRect.X, inputRect.Y, inputRect.Width, inputRect.Height, grips_);
     }
     return res;
 }
 
 void TextElement::prepareBackground(Gdiplus::Bitmap* source) {
-    Gdiplus::Rect rc (getX()+3,getY()+3,getWidth()-6,getHeight()-6);
+    Gdiplus::Rect rc = getInputBoxRect();
     // Создаем временный bitmap для конвертации
     backgroundBitmap_ = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
     Gdiplus::Graphics tempGraphics(backgroundBitmap_.get());
@@ -400,6 +414,10 @@ void TextElement::prepareBackground(Gdiplus::Bitmap* source) {
         Gdiplus::Rect(0, 0, rc.Width, rc.Height),
         rc.X, rc.Y, rc.Width, rc.Height,
         Gdiplus::UnitPixel);
+}
+
+Gdiplus::Rect TextElement::getInputBoxRect() {
+    return {getX() + 3, getY() + 3, (std::max)(1, getWidth() - 6), (std::max)(1, getHeight() - 6)};
 }
 
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {

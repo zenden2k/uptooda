@@ -30,6 +30,8 @@ class TextElement: public MovableElement{
         void resize(int width, int height) override;
         void setInputBox(std::shared_ptr<InputBox> inputBox);
         void setFont(LOGFONT font,  DWORD changeMask);
+        void setTextAlignment(WORD alignment);
+        WORD getTextAlignment() const;
         LOGFONT getFont() const;
         std::shared_ptr<InputBox> getInputBox() const;
         ElementType getType() const override;
@@ -44,6 +46,7 @@ class TextElement: public MovableElement{
         void setPos(int x, int y) override;
         bool move(int offsetX, int offsetY, bool checkBounds = true) override;
         void prepareBackground(Gdiplus::Bitmap* source);
+        virtual Gdiplus::Rect getInputBoxRect();
     protected:
     std::shared_ptr<InputBox> inputBox_;
     LOGFONT font_{};
@@ -55,7 +58,7 @@ class TextElement: public MovableElement{
     void onTextChanged(LPCTSTR text);
     void onEditCanceled();
     void onEditFinished();
-    void onControlResized(int w, int h);
+    virtual void onControlResized(int w, int h);
     void setTextColor();
     void onSelectionChanged(int min, int max, LOGFONT font);
     void saveToHistory();

@@ -23,13 +23,10 @@
 #include <sstream>
 #include <ComDef.h>
 #include <strsafe.h>
-//#include <dwrite.h>
-//#include <dcommon.h>
 #include <wincodec.h>
 #include <Windows.ApplicationModel.Appointments.h>
 
 #include "Core/Images/Utils.h"
-#include "Gui/GuiTools.h"
 #include "ImageEditor/Canvas.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/Helpers/DPIHelper.h"
@@ -235,7 +232,10 @@ void InputBoxControl::ApplyDefaults() {
     services_->TxSendMessage(EM_SETEVENTMASK, 0, mask, nullptr);
 
     // Многострочность, автоскролл, не скрывать выделение
-    LONG style = ES_MULTILINE | ES_AUTOVSCROLL  | ES_NOHIDESEL |  ES_WANTRETURN;
+    LONG style = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
+    if (autoVerticalScroll_) {
+        style |= ES_AUTOVSCROLL;
+    }
     services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
 
     // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
@@ -361,10 +361,12 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     Gdiplus::Rect rc = canvas_->currentRenderingRect();
     Gdiplus::Rect rcRelative = rc;
     rcRelative.Intersect(layoutArea);
+    if (rcRelative.Width <= 0 || rcRelative.Height <= 0) {
+        return;
+    }
     rcRelative.Offset(-layoutArea.GetLeft(), -layoutArea.GetTop());
 
-    CRect updateRect { rc.GetLeft(), rc.GetTop(), rc.GetRight(), rc.GetBottom() };
-    CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };;
+    CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     if (!d2dMode_ || !InitializeD2D()) {
@@ -393,7 +395,7 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
             Gdiplus::Graphics bgGraphics(memHdc);
             bgGraphics.DrawImage(background,
                 Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height),
-                rcRelative.X, rcRelative.Y, rcRelative.Width, rcRelative.Height,
+                0, 0, layoutArea.Width, layoutArea.Height,
                 Gdiplus::UnitPixel);
         } else {
             // Заливаем нужным цветом
@@ -448,7 +450,15 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
         return;
     }
 
-    RECT bindRect = { layoutArea.X, layoutArea.Y, layoutArea.GetRight(), layoutArea.GetBottom() };
+    // A DC render target writes the whole area passed to BindDC. Binding the
+    // complete text layout during a partial repaint would replace untouched
+    // pixels with transparent black and leave a dark fringe around glyphs.
+    RECT bindRect = {
+        layoutArea.X + rcRelative.X,
+        layoutArea.Y + rcRelative.Y,
+        layoutArea.X + rcRelative.GetRight(),
+        layoutArea.Y + rcRelative.GetBottom()
+    };
     HRESULT hr = renderTarget_->BindDC(mainHdc, &bindRect);
     if (FAILED(hr)) {
         graphics->ReleaseHDC(mainHdc);
@@ -460,6 +470,8 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     renderTarget_->GetDpi(&dpiX, &dpiY);
 
     D2D1_RECT_F bgRect = ScaleRectToLogical(updateRectRelative, dpiX, dpiY);
+    renderTarget_->SetTransform(
+        D2D1::Matrix3x2F::Translation(-bgRect.left, -bgRect.top));
     if (background) {
         CComPtr<ID2D1Bitmap> d2dBackground;
         rc.Offset(-layoutArea.X, -layoutArea.Y);
@@ -573,6 +585,38 @@ void InputBoxControl::invalidate() {
     }
 }
 
+void InputBoxControl::setWordWrap(bool enabled) {
+    if (wordWrap_ == enabled) {
+        return;
+    }
+    wordWrap_ = enabled;
+    if (services_) {
+        services_->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, wordWrap_ ? TXTBIT_WORDWRAP : 0);
+        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
+    }
+}
+
+void InputBoxControl::setAutoVerticalScroll(bool enabled) {
+    if (autoVerticalScroll_ == enabled) {
+        return;
+    }
+    autoVerticalScroll_ = enabled;
+    if (services_) {
+        LRESULT options = 0;
+        services_->TxSendMessage(EM_GETOPTIONS, 0, 0, &options);
+        if (autoVerticalScroll_) {
+            options |= ES_AUTOVSCROLL;
+        } else {
+            options &= ~ES_AUTOVSCROLL;
+        }
+        services_->TxSendMessage(EM_SETOPTIONS, ECOOP_SET, options, nullptr);
+        if (!autoVerticalScroll_) {
+            POINT scrollPosition {};
+            services_->TxSendMessage(EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&scrollPosition), nullptr);
+        }
+    }
+}
+
 LRESULT InputBoxControl::handleMessage(UINT message, WPARAM wParam, LPARAM lParam) {
     BOOL handled = TRUE;
     if (message >= WM_MOUSEFIRST && message <= WM_MOUSELAST)
@@ -671,6 +715,36 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         if (FAILED(hr) || !result)
             LOG(WARNING) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
     }
+}
+
+void InputBoxControl::setTextAlignment(WORD alignment) {
+    if (alignment != PFA_LEFT && alignment != PFA_CENTER && alignment != PFA_RIGHT) {
+        return;
+    }
+
+    paraFormat_.dwMask |= PFM_ALIGNMENT;
+    paraFormat_.wAlignment = alignment;
+    if (services_) {
+        PARAFORMAT2 format {};
+        format.cbSize = sizeof(format);
+        format.dwMask = PFM_ALIGNMENT;
+        format.wAlignment = alignment;
+        services_->TxSendMessage(EM_SETPARAFORMAT, 0, reinterpret_cast<LPARAM>(&format), nullptr);
+        invalidate();
+    }
+}
+
+WORD InputBoxControl::getTextAlignment() {
+    PARAFORMAT2 format {};
+    format.cbSize = sizeof(format);
+    format.dwMask = PFM_ALIGNMENT;
+    if (services_) {
+        services_->TxSendMessage(EM_GETPARAFORMAT, 0, reinterpret_cast<LPARAM>(&format), nullptr);
+        if (format.dwMask & PFM_ALIGNMENT) {
+            return format.wAlignment;
+        }
+    }
+    return paraFormat_.wAlignment;
 }
 
 void InputBoxControl::setRawText(const std::string& text) {
@@ -1315,8 +1389,11 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
-    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG
-        | TXTBIT_CLIENTRECTCHANGE | TXTBIT_SAVESELECTION;
+    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE
+        | TXTBIT_SAVESELECTION;
+    if (wordWrap_) {
+        bits |= TXTBIT_WORDWRAP;
+    }
     if (d2dMode_) {
         bits |= TXTBIT_D2DDWRITE | TXTBIT_D2DSUBPIXELLINES;
     }
@@ -1330,6 +1407,7 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
         /* CComBSTR str;
         services_->TxGetText(&str);*/
         onTextChanged(L"");
+        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
         break;
     }
     case EN_REQUESTRESIZE:
@@ -1341,6 +1419,10 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
             int h = rr->rc.bottom - rr->rc.top;
             SetWindowPos(0, 0, 0, w, h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
             onResized(w, h);
+            if (!autoVerticalScroll_) {
+                POINT scrollPosition {};
+                services_->TxSendMessage(EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&scrollPosition), nullptr);
+            }
             break;
         }
     case EN_SELCHANGE: {
@@ -1383,7 +1465,10 @@ HRESULT InputBoxControl::TxGetEditStyle(DWORD dwItem, DWORD* pdwData) {
     if (!pdwData)
         return E_POINTER;
     // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
-    *pdwData = ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
+    *pdwData = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
+    if (autoVerticalScroll_) {
+        *pdwData |= ES_AUTOVSCROLL;
+    }
     return S_OK;
 }
 

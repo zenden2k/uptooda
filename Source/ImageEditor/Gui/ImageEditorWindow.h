@@ -61,11 +61,12 @@ public:
         ID_DELETESELECTED, ID_RECORDSCREEN,
         ID_PEN = 1700,
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
-        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
+        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_SPEECHBALOON,
+        ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
     };
 
     enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
-        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G', kStepNumber = 'E'
+        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G', kStepNumber = 'E', kSpeechBaloon = 'S'
         // if you add an item here, do not forget to add it to drawingToolsHotkeys_ map
     };
     struct MenuItem {
@@ -131,6 +132,7 @@ public:
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
         MESSAGE_HANDLER(TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
+        MESSAGE_HANDLER(TextParamsWindow::TPWM_TEXTALIGNCHANGED, OnTextParamWindowAlignmentChanged);
         MESSAGE_HANDLER(WM_DPICHANGED, OnDPICHanged)
 
         COMMAND_ID_HANDLER(IDOK, OnClickedOK)
@@ -288,6 +290,7 @@ public:
         void OnForegroundColorChanged(Gdiplus::Color color);
         void OnBackgroundColorChanged(Gdiplus::Color color);
         void onFontChanged(LOGFONT font);
+        LRESULT OnTextParamWindowAlignmentChanged(UINT, WPARAM, LPARAM lParam, BOOL&);
         bool createTooltip();
         void updatePixelLabels();
         bool onSaveAs(bool closeFlag);

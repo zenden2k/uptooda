@@ -215,6 +215,10 @@
 #define IDI_ICON17                      357
 #define IDB_ICONSEARCHSMALL             358
 #define IDI_ICONSETTINGSBLUE            359
+#define IDB_ICONTOOLSPEECHBALOON        361
+#define IDI_ICONALIGNLEFT               362
+#define IDI_ICONALIGNCENTER             363
+#define IDI_ICONALIGNRIGHT              364
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -924,7 +928,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        361
+#define _APS_NEXT_RESOURCE_VALUE        365
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1382
 #define _APS_NEXT_SYMED_VALUE           128

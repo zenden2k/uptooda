@@ -89,6 +89,7 @@ void ImageEditorWindow::init()
     menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = DrawingToolType::dtFilledRoundedRectangle;
     menuItems_[ID_FILLEDELLIPSE]     = DrawingToolType::dtFilledEllipse;
     menuItems_[ID_TEXT]     = DrawingToolType::dtText;
+    menuItems_[ID_SPEECHBALOON] = DrawingToolType::dtSpeechBaloon;
     menuItems_[ID_STEPNUMBER]     = DrawingToolType::dtStepNumber;
 
     SubMenuItem item;
@@ -137,9 +138,22 @@ void ImageEditorWindow::init()
     item2.hint = TR("Pixelation");
     subMenuItems_[DrawingToolType::dtPixelateRectangle] = item2;
 
+    /*SubMenuItem textItem;
+    textItem.parentCommand = ID_TEXT;
+    textItem.icon = loadToolbarIcon(IDB_ICONTOOLTEXTPNG);
+    textItem.command = ID_TEXT;
+    textItem.hint = TR("Text");
+    subMenuItems_[DrawingToolType::dtText] = textItem;
+
+    textItem.icon = loadToolbarIcon(IDB_ICONTOOLSPEECHBALOON);
+    textItem.command = ID_SPEECHBALOON;
+    textItem.hint = TR("Speech balloon");
+    subMenuItems_[DrawingToolType::dtSpeechBaloon] = textItem;*/
+
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
     selectedSubMenuItems_[ID_BLURRINGRECTANGLE] = ID_BLURRINGRECTANGLE;
+    //selectedSubMenuItems_[ID_TEXT] = ID_TEXT;
 
     drawingToolsHotkeys_[kMoveKey] = ID_MOVE /*DrawingToolType::dtMove*/;
     drawingToolsHotkeys_[kBrushKey] = ID_BRUSH /*DrawingToolType::dtBrush*/;
@@ -153,6 +167,7 @@ void ImageEditorWindow::init()
     drawingToolsHotkeys_[kLineKey] = ID_LINE;
     drawingToolsHotkeys_[kFilledRectangle] = ID_FILLEDRECTANGLE;
     drawingToolsHotkeys_[kStepNumber] = ID_STEPNUMBER;
+    drawingToolsHotkeys_[kSpeechBaloon] = ID_SPEECHBALOON;
 
     dialogResult_ = drCancel;
 }
@@ -522,6 +537,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->onForegroundColorChanged.connect([this](auto && PH1) { OnForegroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
         canvas_->onBackgroundColorChanged.connect([this](auto && PH1) { OnBackgroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
         canvas_->onFontChanged.connect([this](auto && PH1) { onFontChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextAlignmentChanged.connect([this](WORD alignment) { textParamsWindow_.setTextAlignment(alignment); });
         canvas_->onTextEditStarted.connect([this](auto && PH1) { OnTextEditStarted(std::forward<decltype(PH1)>(PH1)); });
         canvas_->onTextEditFinished.connect([this](auto && PH1) { OnTextEditFinished(std::forward<decltype(PH1)>(PH1)); });
         canvas_->onSelectionChanged.connect([this] { OnSelectionChanged(); });
@@ -897,7 +913,19 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
         blurMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
-    } else if ( item->command == ID_SAVE ) {
+    } /*else if (item->command == ID_TEXT || item->command == ID_SPEECHBALOON) {
+        CMenu textMenu;
+        RECT rc = item->rect;
+        verticalToolbar_.ClientToScreen(&rc);
+        textMenu.CreatePopupMenu();
+        textMenu.AppendMenu(MF_STRING, ID_TEXT, TR("Text"));
+        textMenu.AppendMenu(MF_STRING, ID_SPEECHBALOON, TR("Speech balloon"));
+        TPMPARAMS excludeArea;
+        ZeroMemory(&excludeArea, sizeof(excludeArea));
+        excludeArea.cbSize = sizeof(excludeArea);
+        excludeArea.rcExclude = rc;
+        textMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    }*/ else if ( item->command == ID_SAVE ) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
         horizontalToolbar_.ClientToScreen(&rc);
@@ -1092,6 +1120,8 @@ void ImageEditorWindow::createToolbars()
         verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE, TR("Rectangle") + CString(_T(" (")) + (char)kRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
         verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE, TR("Filled rectangle") + CString(_T(" (")) + (char)kFilledRectangle + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
         verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT, TR("Text") + CString(_T(" (")) + (char)kTextKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSPEECHBALOON), ID_SPEECHBALOON, TR("Speech baloon") + CString(_T(" (")) + (char)kSpeechBaloon + CString(_T(")")), Toolbar::itButton, true, 1));
+
         verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER, TR("Step") + CString(_T(" (")) + (char)kStepNumber + CString(_T(")")), Toolbar::itButton, true, 1));
 
         verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE, TR("Blurring rectangle") + CString(_T(" (")) + (char)kBlurringRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
@@ -1248,6 +1278,7 @@ void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement
     if (!control) {
         return;
     }
+    textParamsWindow_.setTextAlignment(textElement->getTextAlignment());
     RECT inputControlRect;
     control->GetWindowRect(&inputControlRect);
     int kOffset = 30;
@@ -1825,6 +1856,11 @@ LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*
 {
     DWORD changeMask = lParam;
     canvas_->setFont(textParamsWindow_.getFont(), changeMask);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnTextParamWindowAlignmentChanged(UINT, WPARAM, LPARAM lParam, BOOL&) {
+    canvas_->setTextAlignment(static_cast<WORD>(lParam));
     return 0;
 }
 

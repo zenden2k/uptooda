@@ -61,6 +61,18 @@ void TextParamsWindow::setFont(LOGFONT logFont)
     textToolbar_.SetButtonInfo(IDC_UNDERLINE, &bi);
 }
 
+void TextParamsWindow::setTextAlignment(WORD alignment) {
+    if (alignment != PFA_LEFT && alignment != PFA_CENTER && alignment != PFA_RIGHT) {
+        alignment = PFA_LEFT;
+    }
+    textAlignment_ = alignment;
+    if (textToolbar_) {
+        textToolbar_.CheckButton(IDC_ALIGNLEFT, textAlignment_ == PFA_LEFT);
+        textToolbar_.CheckButton(IDC_ALIGNCENTER, textAlignment_ == PFA_CENTER);
+        textToolbar_.CheckButton(IDC_ALIGNRIGHT, textAlignment_ == PFA_RIGHT);
+    }
+}
+
 LOGFONT TextParamsWindow::getFont() const
 {
     LOGFONT logFont;
@@ -164,6 +176,22 @@ LRESULT TextParamsWindow::OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, H
     return 0;
 }
 
+LRESULT TextParamsWindow::OnAlignmentClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    switch (wID) {
+    case IDC_ALIGNCENTER:
+        setTextAlignment(PFA_CENTER);
+        break;
+    case IDC_ALIGNRIGHT:
+        setTextAlignment(PFA_RIGHT);
+        break;
+    default:
+        setTextAlignment(PFA_LEFT);
+        break;
+    }
+    NotifyParentAlignment();
+    return 0;
+}
+
 void TextParamsWindow::OnFontEnumerationFinished()
 {
     if (!IsWindow()) {
@@ -192,15 +220,21 @@ void TextParamsWindow::createToolbar() {
         toolbarImageList_.Destroy();
     }
   
-    toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 3, 3);
+    toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 6, 3);
 
-    CIcon iconBold, iconItalic, iconUnderline;
+    CIcon iconBold, iconItalic, iconUnderline, iconAlignLeft, iconAlignCenter, iconAlignRight;
     iconBold = GuiTools::LoadSmallIcon(IDI_ICONBOLD, dpi);
     toolbarImageList_.AddIcon(iconBold);
     iconItalic = GuiTools::LoadSmallIcon(IDI_ICONITALIC, dpi);
     toolbarImageList_.AddIcon(iconItalic);
     iconUnderline = GuiTools::LoadSmallIcon(IDI_ICONUNDERLINE, dpi);
     toolbarImageList_.AddIcon(iconUnderline);
+    iconAlignLeft = GuiTools::LoadSmallIcon(IDI_ICONALIGNLEFT, dpi);
+    toolbarImageList_.AddIcon(iconAlignLeft);
+    iconAlignCenter = GuiTools::LoadSmallIcon(IDI_ICONALIGNCENTER, dpi);
+    toolbarImageList_.AddIcon(iconAlignCenter);
+    iconAlignRight = GuiTools::LoadSmallIcon(IDI_ICONALIGNRIGHT, dpi);
+    toolbarImageList_.AddIcon(iconAlignRight);
 
     TBBUTTONINFO bi {};
     bi.cbSize = sizeof(bi);
@@ -234,11 +268,24 @@ void TextParamsWindow::createToolbar() {
     textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK | BTNS_AUTOSIZE, boldButtonState, 0, nullptr, 0);
     textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK | BTNS_AUTOSIZE, italicButtonState, 1, nullptr, 0);
     textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK | BTNS_AUTOSIZE, underlineButtonState, 2, nullptr, 0);
+    TBBUTTON separator {};
+    separator.fsStyle = BTNS_SEP;
+    textToolbar_.AddButtons(1, &separator);
+    textToolbar_.AddButton(IDC_ALIGNLEFT, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
+        TBSTATE_ENABLED | (textAlignment_ == PFA_LEFT ? TBSTATE_CHECKED : 0), 3, nullptr, 0);
+    textToolbar_.AddButton(IDC_ALIGNCENTER, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
+        TBSTATE_ENABLED | (textAlignment_ == PFA_CENTER ? TBSTATE_CHECKED : 0), 4, nullptr, 0);
+    textToolbar_.AddButton(IDC_ALIGNRIGHT, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
+        TBSTATE_ENABLED | (textAlignment_ == PFA_RIGHT ? TBSTATE_CHECKED : 0), 5, nullptr, 0);
 }
 
 void TextParamsWindow::NotifyParent(DWORD changeMask)
 {
     ::SendMessage(GetParent(), TPWM_FONTCHANGED, (WPARAM)m_hWnd, (LPARAM)changeMask);
+}
+
+void TextParamsWindow::NotifyParentAlignment() {
+    ::SendMessage(GetParent(), TPWM_TEXTALIGNCHANGED, reinterpret_cast<WPARAM>(m_hWnd), textAlignment_);
 }
 
 CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow)

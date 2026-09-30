@@ -137,6 +137,7 @@ set(SRC_LIST
         ../ImageEditor/DrawingTool.cpp
         ../ImageEditor/MovableElement.cpp
         ../ImageEditor/MovableElements.cpp
+        ../ImageEditor/SpeechBaloon.cpp
         ../ImageEditor/Region.cpp
         ../ImageEditor/Gui/ColorsDelegate.cpp
         ../ImageEditor/Gui/ImageEditorView.cpp
@@ -309,6 +310,7 @@ set(HEADER_LIST
         ../ImageEditor/DrawingTool.h
         ../ImageEditor/MovableElement.h
         ../ImageEditor/MovableElements.h
+        ../ImageEditor/SpeechBaloon.h
         ../ImageEditor/Region.h
         ../ImageEditor/Gui/ColorsDelegate.h
         ../ImageEditor/Gui/ImageEditorView.h

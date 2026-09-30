@@ -345,6 +345,8 @@ IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_bru
 
 IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
 
+IDB_ICONTOOLSPEECHBALOON PNG                     "res\\ImageEditor\\icon_tool_speech_baloon.png"
+
 IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
 
 IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
@@ -363,11 +365,11 @@ IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_
 
 IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
 
-IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG          "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
 
 IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
 
-IDB_ICONTOOLFILLEDELLIPSE PNG                   "res\\ImageEditor\\icon_tool_filled_ellipse.png"
+IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
 
 IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
 
@@ -1312,7 +1314,7 @@ BEGIN
     PUSHBUTTON      "#cancel",IDCANCEL,215,69,50,15
 END
 
-IDD_TEXTPARAMSWINDOW DIALOGEX 0, 0, 266, 20
+IDD_TEXTPARAMSWINDOW DIALOGEX 0, 0, 325, 21
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
 CAPTION "#Text params"
@@ -1320,7 +1322,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     COMBOBOX        IDC_FONTCOMBO,5,3,117,147,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_FONTSIZECOMBO,128,3,48,130,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Static",IDC_TOOLBARPLACEHOLDER,183,3,81,16,NOT WS_VISIBLE
+    LTEXT           "Static",IDC_TOOLBARPLACEHOLDER,183,3,138,17,NOT WS_VISIBLE
 END
 
 IDD_CLEARHISTORYDLG DIALOGEX 0, 0, 263, 78
@@ -1781,8 +1783,9 @@ BEGIN
     IDD_TEXTPARAMSWINDOW, DIALOG
     BEGIN
         LEFTMARGIN, 5
+        RIGHTMARGIN, 266
         TOPMARGIN, 3
-        BOTTOMMARGIN, 19
+        BOTTOMMARGIN, 20
     END
 
     IDD_CLEARHISTORYDLG, DIALOG
@@ -2022,6 +2025,11 @@ BEGIN
     0
 END
 
+IDD_TEXTPARAMSWINDOW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2099,6 +2107,12 @@ IDI_ICONBOLD            ICON                    "res\\ImageEditor\\icon_bold.ico
 IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.ico"
 
 IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
+
+IDI_ICONALIGNLEFT       ICON                    "res\\ImageEditor\\icon_align_left.ico"
+
+IDI_ICONALIGNCENTER     ICON                    "res\\ImageEditor\\icon_align_center.ico"
+
+IDI_ICONALIGNRIGHT      ICON                    "res\\ImageEditor\\icon_align_right.ico"
 
 IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
 

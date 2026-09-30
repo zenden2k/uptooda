@@ -15,8 +15,12 @@ class InputBox {
         virtual void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea)=0;
         virtual bool isVisible() = 0;
         virtual void invalidate() = 0;
+        virtual void setWordWrap(bool enabled) = 0;
+        virtual void setAutoVerticalScroll(bool enabled) = 0;
         virtual void setTextColor(Gdiplus::Color color) =0;
         virtual void setFont(LOGFONT font, DWORD changeMask) = 0;
+        virtual void setTextAlignment(WORD alignment) = 0;
+        virtual WORD getTextAlignment() = 0;
         virtual void setRawText(const std::string& text) = 0;
         virtual void setHostWindow(HWND wnd) = 0;
         virtual std::string getRawText() = 0;

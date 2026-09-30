@@ -24,6 +24,7 @@
 #include "../Canvas.h"
 #include "../Document.h"
 #include "../MovableElements.h"
+#include "../SpeechBaloon.h"
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/GdiplusH.h"
 
@@ -321,6 +322,9 @@ void MoveAndResizeTool::createElement() {
         case ElementType::etText:
             currentElement_ = new TextElement(canvas_, 0, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getFillTextBackground());
             break;
+        case ElementType::etSpeechBaloon:
+            currentElement_ = new SpeechBaloon(canvas_, nullptr, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+            break;
         case ElementType::etSelection:
             currentElement_ = new Selection(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
@@ -440,9 +444,12 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 void MoveAndResizeTool::mouseDoubleClick(int x, int y)
 {
     MovableElement* el = canvas_->getElementAtPosition(x,y);
-    if ( el &&  el->getType() == ElementType::etText && elementType_ != ElementType::etText ) {
+    if (el && IsTextElementType(el->getType()) && elementType_ != el->getType()) {
+        const DrawingToolType toolType = el->getType() == ElementType::etSpeechBaloon
+            ? DrawingToolType::dtSpeechBaloon
+            : DrawingToolType::dtText;
         // WARNING!!! After this line "this" is DELETED!!!!
-        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(DrawingToolType::dtText, true);
+        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(toolType, true);
         if ( dtool ) {
             dtool->beginDraw(x,y);
         }

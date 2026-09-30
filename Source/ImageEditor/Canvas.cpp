@@ -44,7 +44,6 @@ Canvas::Canvas(HWND parent) {
     leftMouseDownPoint_.y = -1;
     leftMouseUpPoint_ = {-1, -1};
     //    buffer_               = NULL;
-    inputBox_ = nullptr;
     currentCursor_ = CursorType::ctDefault;
     scrollOffset_.x = 0;
     scrollOffset_.y = 0;
@@ -425,7 +424,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color) {
             uhie.pos = i;
             uhie.movableElement = element;
             element->setColor(color);
-            if (element->getType() != ElementType::etText) {
+            if (!IsTextElementType(element->getType())) {
                 // TextElements saves it's color by itself
                 uhi->elements.push_back(std::move(uhie));
                 updatedElementsCount++;
@@ -503,7 +502,7 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask) {
     /*    UndoHistoryItem uhi;
         uhi.type = uitFontChanged;*/
     for (auto& element : elementsOnCanvas_) {
-        if (element->isSelected() && element->getType() == ElementType::etText) {
+        if (element->isSelected() && IsTextElementType(element->getType())) {
             /*UndoHistoryItemElement uhie;
             uhie.color = elementsOnCanvas_[i]->getColor();
             uhie.pos = i;
@@ -521,6 +520,17 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask) {
         addUndoHistoryItem(uhi);
         updateView();
     }*/
+}
+
+void Canvas::setTextAlignment(WORD alignment) {
+    for (auto& element : elementsOnCanvas_) {
+        if (element->isSelected() && IsTextElementType(element->getType())) {
+            if (auto* textItem = dynamic_cast<TextElement*>(element)) {
+                textItem->setTextAlignment(alignment);
+            }
+        }
+    }
+    updateView();
 }
 
 LOGFONT Canvas::getFont() const {
@@ -557,6 +567,8 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
         currentDrawingTool_ = new ColorPickerTool(this);
     } else if (toolType == DrawingToolType::dtText) {
         currentDrawingTool_ = new TextTool(this);
+    } else if (toolType == DrawingToolType::dtSpeechBaloon) {
+        currentDrawingTool_ = new TextTool(this, ElementType::etSpeechBaloon);
     } else if (toolType == DrawingToolType::dtCrop) {
         currentDrawingTool_ = new CropTool(this);
         showOverlay(true);
@@ -945,13 +957,16 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
             continue;
         }
 
-        if (element->getType() == ElementType::etText) {
+        if (IsTextElementType(element->getType())) {
             bufferedGr_->Flush();
             bufferedGr_.reset();
             dynamic_cast<TextElement*>(element)->prepareBackground(buffer_.get());
             bufferedGr_ = std::make_unique<Gdiplus::Graphics>(buffer_.get());
             bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
             bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
+            if (!fullRender_ && !forExport) {
+                bufferedGr_->SetClip(&reg);
+            }
         }
         element->render(bufferedGr_.get());
     }
@@ -1296,7 +1311,7 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
 }
 
 std::shared_ptr<InputBox> Canvas::getInputBox(const RECT& rect) {
-    inputBox_ = std::make_shared<InputBoxControl>(this);
+    auto inputBox = std::make_shared<InputBoxControl>(this);
     RECT rc = rect;
     rc.left++;
     rc.top++;
@@ -1305,11 +1320,11 @@ std::shared_ptr<InputBox> Canvas::getInputBox(const RECT& rect) {
     rc.left -= scrollOffset_.x;
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? (WS_EX_LAYOUTRTL | WS_EX_RTLREADING) : 0;
     /*HWND wnd =*/
-    inputBox_->Create(parentWindow_, rc, WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN | ES_NOHIDESEL /*| ES_LEFT */, /* WS_EX_TRANSPARENT |*/ rtlStyle);
+    inputBox->Create(parentWindow_, rc, WS_CHILD | ES_MULTILINE | ES_WANTRETURN | ES_NOHIDESEL, rtlStyle);
 
-    inputBox_->setFont(font_, CFM_FACE | CFM_SIZE | CFM_CHARSET
-                       | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
-    return inputBox_;
+    inputBox->setFont(font_, CFM_FACE | CFM_SIZE | CFM_CHARSET
+                      | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
+    return inputBox;
 }
 
 TextElement* Canvas::getCurrentlyEditedTextElement() const {
@@ -1344,7 +1359,11 @@ bool Canvas::unselectElement(MovableElement* element) {
 }
 
 HWND Canvas::getRichEditControl() const {
-    return inputBox_ ? inputBox_->m_hWnd : 0;
+    if (!currentlyEditedTextElement_) {
+        return nullptr;
+    }
+    const auto inputBox = std::dynamic_pointer_cast<InputBoxControl>(currentlyEditedTextElement_->getInputBox());
+    return inputBox ? inputBox->m_hWnd : nullptr;
 }
 
 int Canvas::getNextNumber() {

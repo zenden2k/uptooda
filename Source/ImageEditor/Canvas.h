@@ -26,7 +26,7 @@ class InputBoxControl;
 enum class DrawingToolType {
     dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection,
     dtBlur, dtBlurringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
-    dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
+    dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber, dtSpeechBaloon
 };
 
 class Canvas {
@@ -112,6 +112,7 @@ class Canvas {
         bool isStepColorSet() const;
         void setFont(LOGFONT font, DWORD changeMask = CFM_FACE | CFM_SIZE | CFM_CHARSET 
             | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
+        void setTextAlignment(WORD alignment);
         LOGFONT getFont() const;
         AbstractDrawingTool* setDrawingToolType(DrawingToolType tool, bool notify = false);
 
@@ -207,6 +208,7 @@ class Canvas {
         boost::signals2::signal<void(Gdiplus::Color)> onForegroundColorChanged;
         boost::signals2::signal<void(Gdiplus::Color)> onBackgroundColorChanged;
         boost::signals2::signal<void(LOGFONT)> onFontChanged;
+        boost::signals2::signal<void(WORD)> onTextAlignmentChanged;
         boost::signals2::signal<void(TextElement*)> onTextEditStarted;
         boost::signals2::signal<void(TextElement*)> onTextEditFinished;
         boost::signals2::signal<void()> onSelectionChanged;
@@ -273,7 +275,6 @@ private:
         POINT scrollOffset_;
         
         HWND parentWindow_;
-        std::shared_ptr<InputBoxControl> inputBox_;
         Gdiplus::Rect lastAppliedCrop_;
         bool cropOnExport_;
         float dpiX_;

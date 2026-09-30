@@ -415,9 +415,10 @@ bool CImageEditorView::forwardTextMouse(UINT message, WPARAM wParam, LPARAM lPar
 
     POINT scrollOffset;
     GetScrollOffset(scrollOffset);
-    const int x = GET_X_LPARAM(lParam) + scrollOffset.x - element->getX() - 3;
-    const int y = GET_Y_LPARAM(lParam) + scrollOffset.y - element->getY() - 3;
-    if (!allowOutside && (x < 0 || y < 0 || x >= element->getWidth() - 6 || y >= element->getHeight() - 6))
+    const Gdiplus::Rect inputRect = element->getInputBoxRect();
+    const int x = GET_X_LPARAM(lParam) + scrollOffset.x - inputRect.X;
+    const int y = GET_Y_LPARAM(lParam) + scrollOffset.y - inputRect.Y;
+    if (!allowOutside && (x < 0 || y < 0 || x >= inputRect.Width || y >= inputRect.Height))
         return false;
 
     element->getInputBox()->handleMessage(message, wParam, MAKELPARAM(x, y));

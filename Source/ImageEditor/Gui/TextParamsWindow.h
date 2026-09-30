@@ -52,10 +52,21 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
 {
     typedef CDialogImpl<CCustomDialogIndirectImpl> TBase;
     public:
-        enum { IDD = IDD_TEXTPARAMSWINDOW, TPWM_FONTCHANGED = WM_USER + 123, IDC_BOLD = 1500, IDC_ITALIC, IDC_UNDERLINE};
+        enum {
+            IDD = IDD_TEXTPARAMSWINDOW,
+            TPWM_FONTCHANGED = WM_USER + 123,
+            TPWM_TEXTALIGNCHANGED,
+            IDC_BOLD = 1500,
+            IDC_ITALIC,
+            IDC_UNDERLINE,
+            IDC_ALIGNLEFT,
+            IDC_ALIGNCENTER,
+            IDC_ALIGNRIGHT
+        };
         TextParamsWindow();
         ~TextParamsWindow();
         void setFont(LOGFONT logFont);
+        void setTextAlignment(WORD alignment);
         LOGFONT getFont() const;
         /*HWND Create(HWND parent);*/
     protected:
@@ -69,6 +80,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
             COMMAND_ID_HANDLER(IDC_BOLD, OnBoldClick)
             COMMAND_ID_HANDLER(IDC_ITALIC, OnItalicClick)
             COMMAND_ID_HANDLER(IDC_UNDERLINE, OnUnderlineClick)
+            COMMAND_RANGE_HANDLER(IDC_ALIGNLEFT, IDC_ALIGNRIGHT, OnAlignmentClick)
         END_MSG_MAP()
 
         // Handler prototypes (uncomment arguments if needed):
@@ -85,6 +97,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         LRESULT OnBoldClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnItalicClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnAlignmentClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         CToolBarCtrl textToolbar_;
@@ -98,7 +111,9 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         LOGFONT font_{};
         CImageListManaged toolbarImageList_;
         void NotifyParent(DWORD changeMask);
+        void NotifyParentAlignment();
         std::vector<LOGFONT> fonts_;
+		WORD textAlignment_ { PFA_LEFT };
 		HDC windowDc_;
         friend class CustomEdit;
 };

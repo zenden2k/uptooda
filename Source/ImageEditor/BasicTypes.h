@@ -27,9 +27,13 @@ namespace ImageEditor {
     #ifdef IMAGEEDITOR_GDIPLUS
         typedef Gdiplus::Graphics Painter;
     #endif
-    enum class ElementType { etUnknown, etNone, etCrop , etArrow, etLine, etRectangle,etFilledRectangle, etText, etSelection, etBlurringRectangle, 
+    enum class ElementType { etUnknown, etNone, etCrop , etArrow, etLine, etRectangle,etFilledRectangle, etText, etSpeechBaloon, etSelection, etBlurringRectangle,
         etPixelateRectangle, etRoundedRectangle, etEllipse, etFilledRoundedRectangle, etFilledEllipse, etStepNumber
     };
+
+    inline bool IsTextElementType(ElementType type) {
+        return type == ElementType::etText || type == ElementType::etSpeechBaloon;
+    }
 
     // item order is important!!!!
     enum class BoundaryType { btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight,  btNone};

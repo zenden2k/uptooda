@@ -53,8 +53,12 @@ public:
     void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) override;
     bool isVisible() override;
     void invalidate() override;
+    void setWordWrap(bool enabled) override;
+    void setAutoVerticalScroll(bool enabled) override;
     void setTextColor(Gdiplus::Color color) override;
     void setFont(LOGFONT font, DWORD changeMask) override;
+    void setTextAlignment(WORD alignment) override;
+    WORD getTextAlignment() override;
     void setRawText(const std::string& text) override;
     std::string getRawText() override;
     bool isEmpty() override;
@@ -144,7 +148,7 @@ public:
         return S_OK;
     }
     HRESULT TxGetScrollBars(DWORD* pdwScrollBar) override {
-        *pdwScrollBar = ES_AUTOVSCROLL | ES_MULTILINE;
+        *pdwScrollBar = ES_MULTILINE | (autoVerticalScroll_ ? ES_AUTOVSCROLL : 0);
         return S_OK;
     }
     HRESULT TxGetPasswordChar(TCHAR* pch) override {
@@ -277,7 +281,6 @@ private:
 private:
     // Состояние
     Canvas* canvas_ {};
-    TextElement* textElement_ {};
     CComPtr<ITextServices> services_;
     CComPtr<ITextServices2> services2_;
     CComPtr<IUnknown> servicesUnk_;
@@ -296,6 +299,8 @@ private:
     bool uiActive_ { false };
     LONG refCount_ { 1 };
     bool contextMenuOpened_ { false };
+    bool wordWrap_ { true };
+    bool autoVerticalScroll_ { false };
     std::vector<MovableElement::Grip> grips_;
     HCURSOR cursor_;
     bool InitializeD2D();
