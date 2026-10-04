@@ -357,30 +357,27 @@ bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gd
     return false;
 }
 
-void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) {
+void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor,
+                             Gdiplus::Rect layoutArea) {
     Gdiplus::Rect rc = canvas_->currentRenderingRect();
     Gdiplus::Rect rcRelative = rc;
     rcRelative.Intersect(layoutArea);
     if (rcRelative.Width <= 0 || rcRelative.Height <= 0) {
         return;
     }
-    rcRelative.Offset(-layoutArea.GetLeft(), -layoutArea.GetTop());
-
-    CRect updateRectRelative { rcRelative.GetLeft(), rcRelative.GetTop(), rcRelative.GetRight(), rcRelative.GetBottom() };
-    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     if (!d2dMode_ || !InitializeD2D()) {
         HDC mainHdc = graphics->GetHDC();
 
-        // Создаем memory DC и bitmap
+        // Create a memory DC and bitmap.
         CDC memHdc;
         memHdc.CreateCompatibleDC(mainHdc);
 
-        // Создаем DIB section для лучшего контроля
-        BITMAPINFO bmi = {};
+        // Create a DIB section for direct access to its pixels.
+        BITMAPINFO bmi = { };
         bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
         bmi.bmiHeader.biWidth = layoutArea.Width;
-        bmi.bmiHeader.biHeight = -layoutArea.Height; // Отрицательное значение для top-down bitmap
+        bmi.bmiHeader.biHeight = -layoutArea.Height; // Use a top-down bitmap.
         bmi.bmiHeader.biPlanes = 1;
         bmi.bmiHeader.biBitCount = 32;
         bmi.bmiHeader.biCompression = BI_RGB;
@@ -390,25 +387,21 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
         textBitmap.CreateDIBSection(memHdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
         HBITMAP oldBitmap = memHdc.SelectBitmap(textBitmap);
 
-        // Копируем фон с основного graphics
+        // Copy the background into the temporary bitmap.
         if (background) {
             Gdiplus::Graphics bgGraphics(memHdc);
-            bgGraphics.DrawImage(background,
-                Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height),
-                0, 0, layoutArea.Width, layoutArea.Height,
-                Gdiplus::UnitPixel);
+            bgGraphics.DrawImage(background, Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height), 0, 0,
+                                 layoutArea.Width, layoutArea.Height, Gdiplus::UnitPixel);
         } else {
-            // Заливаем нужным цветом
             RECT fillRect = { 0, 0, layoutArea.Width, layoutArea.Height };
             CBrush brush;
-            brush.CreateSolidBrush(bgColor.ToCOLORREF()); // Или нужный вам цвет
+            brush.CreateSolidBrush(bgColor.ToCOLORREF());
             memHdc.FillRect(&fillRect, brush);
         }
 
-        // Настройки рендеринга
+        // Render the text over the prepared background.
         memHdc.SetBkMode(TRANSPARENT);
 
-        // Рендерим текст
         RECTL rc = { 0, 0, static_cast<LONG>(layoutArea.Width), static_cast<LONG>(layoutArea.Height) };
         services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, memHdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
         if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
@@ -431,11 +424,10 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
             }
         }
         graphics->ReleaseHDC(mainHdc);
-        // Конвертируем в GDI+ Bitmap и рисуем
+        // Composite the temporary bitmap through GDI+ so the canvas clip is preserved.
         Gdiplus::Bitmap gdipBitmap(textBitmap, nullptr);
         graphics->DrawImage(&gdipBitmap, layoutArea.X, layoutArea.Y);
 
-        // Очистка
         memHdc.SelectBitmap(oldBitmap);
         return;
     }
@@ -445,23 +437,34 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     }
 
     HDC mainHdc = graphics->GetHDC();
-
     if (!mainHdc) {
         return;
     }
 
-    // A DC render target writes the whole area passed to BindDC. Binding the
-    // complete text layout during a partial repaint would replace untouched
-    // pixels with transparent black and leave a dark fringe around glyphs.
-    RECT bindRect = {
-        layoutArea.X + rcRelative.X,
-        layoutArea.Y + rcRelative.Y,
-        layoutArea.X + rcRelative.GetRight(),
-        layoutArea.Y + rcRelative.GetBottom()
-    };
-    HRESULT hr = renderTarget_->BindDC(mainHdc, &bindRect);
+    CDC memHdc;
+    memHdc.CreateCompatibleDC(mainHdc);
+
+    BITMAPINFO bitmapInfo { };
+    bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmapInfo.bmiHeader.biWidth = layoutArea.Width;
+    bitmapInfo.bmiHeader.biHeight = -layoutArea.Height;
+    bitmapInfo.bmiHeader.biPlanes = 1;
+    bitmapInfo.bmiHeader.biBitCount = 32;
+    bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    CBitmap textBitmap;
+    textBitmap.CreateDIBSection(memHdc, &bitmapInfo, DIB_RGB_COLORS, &bits, nullptr, 0);
+    HBITMAP oldBitmap = memHdc.SelectBitmap(textBitmap);
+    graphics->ReleaseHDC(mainHdc);
+
+    // Render into an isolated bitmap. Binding Direct2D to the canvas bitmap directly may discard pixels
+    // outside the current update rectangle, so text belonging to later elements disappears depending on
+    // their z-order.
+    RECT bindRect = { 0, 0, layoutArea.Width, layoutArea.Height };
+    HRESULT hr = renderTarget_->BindDC(memHdc, &bindRect);
     if (FAILED(hr)) {
-        graphics->ReleaseHDC(mainHdc);
+        memHdc.SelectBitmap(oldBitmap);
         return;
     }
 
@@ -469,40 +472,28 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
     FLOAT dpiX = 96.0f, dpiY = 96.0f;
     renderTarget_->GetDpi(&dpiX, &dpiY);
 
-    D2D1_RECT_F bgRect = ScaleRectToLogical(updateRectRelative, dpiX, dpiY);
-    renderTarget_->SetTransform(
-        D2D1::Matrix3x2F::Translation(-bgRect.left, -bgRect.top));
+    CRect layoutRect { 0, 0, layoutArea.Width, layoutArea.Height };
+    const D2D1_RECT_F bgRect = ScaleRectToLogical(layoutRect, dpiX, dpiY);
     if (background) {
         CComPtr<ID2D1Bitmap> d2dBackground;
-        rc.Offset(-layoutArea.X, -layoutArea.Y);
-
-        if (CreateD2DBitmapFromGdiplus(background, rcRelative, &d2dBackground)) {
-            //D2D1_RECT_F destRect = D2D1::RectF(bgRect.left, bgRect.top, static_cast<FLOAT>(bgRect.right), static_cast<FLOAT>(bgRect.bottom));
+        const Gdiplus::Rect sourceRect(0, 0, layoutArea.Width, layoutArea.Height);
+        if (CreateD2DBitmapFromGdiplus(background, sourceRect, &d2dBackground)) {
             renderTarget_->DrawBitmap(d2dBackground, bgRect);
         }
     } else {
-        // Заливаем белым фоном
-        CComPtr<ID2D1SolidColorBrush> whiteBrush;
-        renderTarget_->CreateSolidColorBrush(ToD2DColor(bgColor), &whiteBrush);
-        renderTarget_->FillRectangle(bgRect, whiteBrush);
+        CComPtr<ID2D1SolidColorBrush> backgroundBrush;
+        renderTarget_->CreateSolidColorBrush(ToD2DColor(bgColor), &backgroundBrush);
+        renderTarget_->FillRectangle(bgRect, backgroundBrush);
     }
 
-    // Теперь рендерим текст поверх подготовленного фона
     RECTL textRect = { 0, 0, layoutArea.Width, layoutArea.Height };
-
-    //updateRect = ScaleRectToLogical(updateRect, dpiX);
-
-    services2_->TxDrawD2D(renderTarget_, &textRect, &updateRectRelative, 0);
-    /*const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
-    const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
-    const FLOAT caretWidth = scaleX * caretWidth_;
-    const FLOAT caretHeight = scaleY * caretHeight_;*/
+    services2_->TxDrawD2D(renderTarget_, &textRect, &layoutRect, 0);
 
     if (visible_ && caretVisible_ && caretCreated_ && caretBlinkOn_) {
-        int caretX = MulDiv(caretPos_.x , USER_DEFAULT_SCREEN_DPI, dpiX);
-        int caretY = MulDiv(caretPos_.y , USER_DEFAULT_SCREEN_DPI, dpiY);
+        int caretX = MulDiv(caretPos_.x, USER_DEFAULT_SCREEN_DPI, dpiX);
+        int caretY = MulDiv(caretPos_.y, USER_DEFAULT_SCREEN_DPI, dpiY);
         int caretWidth = MulDiv(caretWidth_, USER_DEFAULT_SCREEN_DPI, dpiX);
-        int caretHeight = MulDiv(caretHeight_,  USER_DEFAULT_SCREEN_DPI, dpiY);
+        int caretHeight = MulDiv(caretHeight_, USER_DEFAULT_SCREEN_DPI, dpiY);
 
         CComPtr<ID2D1SolidColorBrush> caretBrush;
         if (SUCCEEDED(renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &caretBrush))) {
@@ -510,20 +501,27 @@ void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* backg
                 const FLOAT slant = static_cast<FLOAT>(std::max(1, caretHeight / 4));
                 renderTarget_->DrawLine(
                     D2D1::Point2F(static_cast<FLOAT>(caretX) + slant, static_cast<FLOAT>(caretY)),
-                    D2D1::Point2F(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY + caretHeight)),
-                    caretBrush, static_cast<FLOAT>(std::max(1, caretWidth)));
+                    D2D1::Point2F(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY + caretHeight)), caretBrush,
+                    static_cast<FLOAT>(std::max(1, caretWidth)));
             } else {
-                const D2D1_RECT_F caretRect
-                    = D2D1::RectF(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY),
-                                  static_cast<FLOAT>(caretX + std::max(1, caretWidth)),
-                                  static_cast<FLOAT>(caretY + caretHeight));
+                const D2D1_RECT_F caretRect = D2D1::RectF(static_cast<FLOAT>(caretX), static_cast<FLOAT>(caretY),
+                                                          static_cast<FLOAT>(caretX + std::max(1, caretWidth)),
+                                                          static_cast<FLOAT>(caretY + caretHeight));
                 renderTarget_->FillRectangle(caretRect, caretBrush);
             }
         }
     }
 
-    renderTarget_->EndDraw();
-    graphics->ReleaseHDC(mainHdc);
+    hr = renderTarget_->EndDraw();
+    if (hr == D2DERR_RECREATE_TARGET) {
+        renderTarget_.Release();
+    }
+
+    if (SUCCEEDED(hr)) {
+        Gdiplus::Bitmap renderedText(textBitmap, nullptr);
+        graphics->DrawImage(&renderedText, layoutArea.X, layoutArea.Y);
+    }
+    memHdc.SelectBitmap(oldBitmap);
 }
 
 bool InputBoxControl::isCaretItalic() {
@@ -1310,6 +1308,21 @@ HRESULT InputBoxControl::TxGetExtent(LPSIZEL lpExtent) {
 
     //lpExtent->cx = lpExtent->cy = 0;
     return E_NOTIMPL;
+}
+
+HRESULT InputBoxControl::TxGetViewInset(LPRECT prc) {
+    if (!prc) {
+        return E_POINTER;
+    }
+
+    constexpr int MIN_HORIZONTAL_PADDING = 4;
+    constexpr int HIMETRIC_UNITS_PER_INCH = 2540;
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const int fontHeight = std::abs(logFont_.lfHeight);
+    const int horizontalPadding = (std::max)(MIN_HORIZONTAL_PADDING, fontHeight / 4);
+    const LONG horizontalInset = MulDiv(horizontalPadding, HIMETRIC_UNITS_PER_INCH, dpi);
+    SetRect(prc, horizontalInset, 0, horizontalInset, 0);
+    return S_OK;
 }
 
 HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {

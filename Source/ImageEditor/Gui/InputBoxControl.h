@@ -126,10 +126,7 @@ public:
     HRESULT TxActivate(LONG*) override { return S_OK; }
     HRESULT TxDeactivate(LONG) override { return S_OK; }
     HRESULT TxGetClientRect(LPRECT prc) override;
-    HRESULT TxGetViewInset(LPRECT prc) override {
-        SetRect(prc, 0, 0, 0, 0);
-        return S_OK;
-    }
+    HRESULT TxGetViewInset(LPRECT prc) override;
     HRESULT TxGetCharFormat(const CHARFORMATW** ppCF) override {
         *ppCF = &charFormat_;
         return S_OK;

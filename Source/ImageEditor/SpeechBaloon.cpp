@@ -29,7 +29,6 @@ namespace ImageEditor {
 
 namespace {
 constexpr int TEXT_PADDING = 10;
-constexpr int CARET_HORIZONTAL_PADDING = 4;
 constexpr int MIN_TAIL_DEPTH = 18;
 constexpr int MAX_TAIL_DEPTH = 32;
 constexpr int TAIL_BASE_HALF_WIDTH = 12;
@@ -99,9 +98,7 @@ Gdiplus::Rect SpeechBaloon::getInputBoxRect() {
     const Gdiplus::Rect bubbleRect = getGeometry().BubbleRect;
     const int availableWidth = (std::max)(1, bubbleRect.Width - TEXT_PADDING * 2);
     const int availableHeight = (std::max)(1, bubbleRect.Height - TEXT_PADDING * 2);
-    const int inputWidth = inputWidth_ > 0
-        ? (std::min)(inputWidth_  * 2, availableWidth)
-        : availableWidth;
+    const int inputWidth = inputWidth_ > 0 ? (std::min)(inputWidth_, availableWidth) : availableWidth;
     const int inputHeight = inputHeight_ > 0 ? (std::min)(inputHeight_, availableHeight) : availableHeight;
     return { bubbleRect.X + (bubbleRect.Width - inputWidth) / 2, bubbleRect.Y + (bubbleRect.Height - inputHeight) / 2,
              inputWidth, inputHeight };
@@ -114,8 +111,7 @@ void SpeechBaloon::onControlResized(int width, int height) {
     const bool horizontalTail = std::abs(endPoint_.x - startPoint_.x) >= std::abs(endPoint_.y - startPoint_.y);
     const int tailDepth
         = (std::min)(MAX_TAIL_DEPTH, (std::max)(MIN_TAIL_DEPTH, (horizontalTail ? getWidth() : getHeight()) / 5));
-    const int desiredWidth
-        = width + TEXT_PADDING * 2 + (horizontalTail ? tailDepth : 0);
+    const int desiredWidth = width + TEXT_PADDING * 2 + 1 + (horizontalTail ? tailDepth : 0);
     const int desiredHeight = height + TEXT_PADDING * 2 + (horizontalTail ? 0 : tailDepth);
 
     int newWidth = (std::max)(desiredWidth, 80);

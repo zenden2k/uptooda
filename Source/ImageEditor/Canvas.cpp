@@ -887,6 +887,21 @@ void Canvas::setCursor(CursorType cursorType) {
 
 void Canvas::renderInBuffer(Gdiplus::Rect rc, bool forExport) {
     using namespace Gdiplus;
+    if (!forExport) {
+        // Windowless RichEdit rendering is composited separately from the element shape. Include every text
+        // element in the dirty region so a repaint of an earlier element cannot leave a later text layer stale.
+        for (auto* element : elementsOnCanvas_) {
+            if (!IsTextElementType(element->getType())) {
+                continue;
+            }
+
+            const RECT paintRect = element->getPaintBoundingRect();
+            const Rect textRect(paintRect.left, paintRect.top, paintRect.right - paintRect.left,
+                                paintRect.bottom - paintRect.top);
+            Rect::Union(rc, rc, textRect);
+        }
+        rc.Intersect(Rect(0, 0, getWidth(), getHeigth()));
+    }
     currentRenderingRect_ = rc;
     Gdiplus::Region reg(rc);
 
