@@ -33,6 +33,7 @@ public:
     enum {
         ID_UNDO = 1000,
         ID_CLOSE,
+        ID_CANCEL,
         ID_ADDTOWIZARD,
         ID_UPLOAD,
         ID_SHARE,
@@ -139,6 +140,7 @@ public:
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
         COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
+        COMMAND_ID_HANDLER( ID_CANCEL, OnCancel )
         COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )
         COMMAND_ID_HANDLER( ID_ADDTOWIZARD, OnClickedAddToWizard )
         COMMAND_ID_HANDLER(ID_CONTINUE, OnClickedContinue)
@@ -231,6 +233,7 @@ public:
         LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -301,7 +304,7 @@ public:
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
-        void updateApplyButtons();
+        void updateApplyButtons(const CString& applyButtonText = {});
 
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible

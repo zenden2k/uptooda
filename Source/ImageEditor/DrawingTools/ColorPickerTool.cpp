@@ -62,7 +62,7 @@ void ColorPickerTool::render(Painter* gr)
 
 }
 
-ImageEditor::CursorType ColorPickerTool::getCursor(int x, int y)
+CursorType ColorPickerTool::getCursor(int x, int y)
 {
     return CursorType::ctColorPicker;
 }

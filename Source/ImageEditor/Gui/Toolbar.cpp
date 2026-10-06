@@ -285,7 +285,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
             setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
             RECT applyButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
-            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply crop"), WS_CHILD | BS_PUSHBUTTON | BS_DEFPUSHBUTTON, 0, ID_APPLYBUTTON);
+            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON | BS_DEFPUSHBUTTON, 0, ID_APPLYBUTTON);
             applyButton_.SetFont(systemFont_);
 
             RECT cancelButtonRect { 0, 0, static_cast<LONG>(160 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
@@ -1344,6 +1344,10 @@ void Toolbar::setMoveParent(bool move) {
 void Toolbar::update() {
     AutoSize();
     Invalidate();
+}
+
+void Toolbar::setApplyButtonText(const CString& text) {
+    applyButton_.SetWindowText(text);
 }
 
 }

@@ -188,7 +188,7 @@ class Canvas {
         Gdiplus::Rect lastCrop() const;
 
         bool applyCurrentOperation();
-        void cancelCurrentOperation();
+        bool cancelCurrentOperation();
 
         bool hasElementOfType(ElementType type) const;
 

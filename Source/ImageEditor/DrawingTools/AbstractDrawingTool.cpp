@@ -85,8 +85,8 @@ bool AbstractDrawingTool::applyOperation() {
     return false;
 }
 
-void AbstractDrawingTool::cancelOperation() {
-
+bool AbstractDrawingTool::cancelOperation() {
+    return false;
 }
 
 }

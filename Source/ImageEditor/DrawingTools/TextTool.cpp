@@ -100,7 +100,7 @@ void TextTool::endDraw(int x, int y) {
 void TextTool::render(Painter* gr) {
 }
 
-ImageEditor::CursorType TextTool::getCursor(int x, int y) {
+CursorType TextTool::getCursor(int x, int y) {
     CursorType ct = MoveAndResizeTool::getCursor(x, y);
     auto* textElement = dynamic_cast<TextElement*>(currentElement_);
     auto inputBox = textElement ? textElement->getInputBox() : nullptr;

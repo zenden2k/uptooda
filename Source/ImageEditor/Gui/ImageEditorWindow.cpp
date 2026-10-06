@@ -478,7 +478,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         accels.clear();
         accels.push_back({ FVIRTKEY, VK_RETURN, ID_CONTINUE });
     }
-    accels.push_back({ FVIRTKEY, VK_ESCAPE, ID_CLOSE });
+    accels.push_back({ FVIRTKEY, VK_ESCAPE, ID_CANCEL });
 
     accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
 
@@ -1253,7 +1253,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
     if (!onlySelectRegion_) {
-        updateApplyButtons();
+        updateApplyButtons(TR("Apply crop"));
     }
 
     OnCropChanged(x,y,w,h);
@@ -1940,7 +1940,8 @@ LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, L
     return 0;
 }
 
-void ImageEditorWindow::updateApplyButtons() {
+void ImageEditorWindow::updateApplyButtons(const CString& applyButtonText) {
+    horizontalToolbar_.setApplyButtonText(applyButtonText.IsEmpty() ? CString(TR("Apply")): applyButtonText);
     horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
 }
 
@@ -2150,6 +2151,16 @@ LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT ImageEditorWindow::OnDrawBorderChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->setDrawBorder(horizontalToolbar_.isDrawBorderChecked());
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnCancel(WORD, WORD, HWND, BOOL&) {
+    if (!wasOpenedAfterScreenshot() && canvas_->cancelCurrentOperation()) {
+        updateApplyButtons();
+        return 0;
+    }
+
+    onClose();
     return 0;
 }
 

@@ -113,6 +113,7 @@ public:
     Orientation orientation() const;
     void setMoveParent(bool move);
     void update();
+    void setApplyButtonText(const CString& text);
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )

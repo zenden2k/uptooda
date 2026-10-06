@@ -97,6 +97,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         { FCONTROL | FSHIFT | FVIRTKEY, static_cast<WORD>(VkKeyScan('c')), MENUITEM_COPYFILEPATH},
         { FALT | FVIRTKEY, VK_RETURN, MENUITEM_PROPERTIES},
         { FVIRTKEY, VK_F2, MENUITEM_RENAME },
+        { FVIRTKEY, VK_F4, MENUITEM_EDIT },
+        {FSHIFT| FVIRTKEY, VK_F4, MENUITEM_EDITINEXTERNALEDITOR },
     };
 
     hotkeys_.CreateAcceleratorTable(accels, std::size(accels));
@@ -210,8 +212,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
 
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDIT, TR("Edit"));
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDITINEXTERNALEDITOR, TR("Open in external editor"));
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDIT, TR("Edit") + CString(_T("\tF4")));
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDITINEXTERNALEDITOR, TR("Open in external editor")+ CString(_T("\tShift+F4")));
             contextMenu.AppendMenu(MF_STRING, MENUITEM_PRINT, TR("Print..."));
         }
 

@@ -1564,8 +1564,8 @@ bool Canvas::applyCurrentOperation() {
     return currentDrawingTool_->applyOperation();
 }
 
-void Canvas::cancelCurrentOperation() {
-    currentDrawingTool_->cancelOperation();
+bool Canvas::cancelCurrentOperation() {
+    return currentDrawingTool_->cancelOperation();
 }
 
 void Canvas::applyCrop(Crop* crop) {

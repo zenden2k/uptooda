@@ -27,4 +27,5 @@ SelectionTool::SelectionTool(Canvas* canvas) : MoveAndResizeTool(canvas, Element
 {
 
 }
+
 }

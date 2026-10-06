@@ -23,7 +23,7 @@ public:
     virtual void setPenSize(int size);
     virtual void setRoundingRadius(int radius);
     virtual bool applyOperation();
-    virtual void cancelOperation();
+    virtual bool cancelOperation();
     void setForegroundColor(Gdiplus::Color color);
     void setBackgroundColor(Gdiplus::Color color);
 

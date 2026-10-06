@@ -53,9 +53,6 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
     int yStart = min( y0, y1 );
     int yEnd   = max( y0, y1 );
 
-
-
-
     Gdiplus::Bitmap * background =  canvas_->currentDocument()->getBitmap();
 
     float len = sqrt(  pow((float)x1-x0, 2) + pow ((float) y1- y0, 2 ) );

@@ -70,7 +70,7 @@ void BrushTool::endDraw(int x, int y) {
 void BrushTool::render(Painter* gr) {
 }
 
-ImageEditor::CursorType BrushTool::getCursor(int x, int y) {
+CursorType BrushTool::getCursor(int x, int y) {
     return CursorType::ctBrush;
 }
 

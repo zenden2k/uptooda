@@ -30,10 +30,8 @@
 namespace ImageEditor {
 using namespace Gdiplus;
 
-
 MarkerTool::MarkerTool(Canvas* canvas) : AbstractDrawingTool(canvas) {
     circleStride_ = 0;
-    circleData_ = 0;
     oldPoint_.x = -1;
     oldPoint_.y = -1;
     createCircle();
@@ -76,7 +74,7 @@ void MarkerTool::endDraw(int x, int y) {
 void MarkerTool::render(Painter* gr) {
 }
 
-ImageEditor::CursorType MarkerTool::getCursor(int x, int y) {
+CursorType MarkerTool::getCursor(int x, int y) {
     return CursorType::ctBrush;
 }
 

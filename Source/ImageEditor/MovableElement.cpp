@@ -53,8 +53,8 @@ void MovableElement::render(Painter* gr)
 
 void MovableElement::renderGrips(Painter* gr)
 {
-    Gdiplus::Pen pen( Color( 0, 0, 0) );
-    //Gdiplus::SolidBrush brush(Color( 255, 255, 255) );
+    Pen pen( Color( 0, 0, 0) );
+
     pen.SetDashStyle(DashStyleDash);
     REAL dashValues[2] = {4, 4};
     pen.SetDashPattern(dashValues, 2);
@@ -77,7 +77,7 @@ void MovableElement::renderGrips(Painter* gr)
         int rectSizeY = gripHeight_;
         int halfSizeX = rectSizeX /2 ;
         int halfSizeY = rectSizeY / 2;
-        Gdiplus::Pen pen2( Color( 255,255, 255) );
+        Pen pen2( Color( 255,255, 255) );
         //pen.SetDashStyle(DashStyleDash);
         /*int x = getX();
         int y = getY();

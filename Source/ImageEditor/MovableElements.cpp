@@ -518,7 +518,7 @@ CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int en
 void CropOverlay::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
+    SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
 
     std::vector<MovableElement*> crops;
     canvas_->getElementsByType(ElementType::etCrop, crops);
@@ -891,7 +891,7 @@ void RoundedRectangle::render(Painter* gr)
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
-ImageEditor::ElementType RoundedRectangle::getType() const
+ElementType RoundedRectangle::getType() const
 {
     return ElementType::etRoundedRectangle;
 }
@@ -902,7 +902,7 @@ FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int s
 
 }
 
-ImageEditor::ElementType FilledRoundedRectangle::getType() const
+ElementType FilledRoundedRectangle::getType() const
 {
     return ElementType::etFilledRoundedRectangle;
 }
@@ -917,7 +917,7 @@ Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */, bool drawBorder)
 void Ellipse::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen( color_, static_cast<REAL>(penSize_) );
+    Pen pen( color_, static_cast<REAL>(penSize_) );
     int x = getX() + penSize_/2 /*- (1-penSize_%2)*/;
     int y = getY() + penSize_/2 /*- (1-penSize_%2)*/;
     int width = getWidth()-penSize_;

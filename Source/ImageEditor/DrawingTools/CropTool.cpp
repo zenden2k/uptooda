@@ -76,14 +76,16 @@ bool CropTool::applyOperation() {
     return false;
 }
 
-void CropTool::cancelOperation() {
+bool CropTool::cancelOperation() {
     std::vector<MovableElement*> elements;
     canvas_->getElementsByType(ElementType::etCrop, elements);
 
     if (!elements.empty()) {
         canvas_->deleteMovableElement(elements[0]);
         canvas_->showOverlay(false);
+        return true;
     }
+    return false;
 }
 
 }
