@@ -1059,7 +1059,6 @@ void StepNumber::render(Painter* gr) {
     gr->DrawString(s, -1, &font, textRect,  &format, &textBrush );
     gr->SetTextRenderingHint(oldTextHint);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
-
 }
 
 RECT StepNumber::getPaintBoundingRect() {

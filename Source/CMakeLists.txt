@@ -142,7 +142,8 @@ if(IU_ENABLE_MEGANZ)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)
-    string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
+	# Win7 is no longer supported since WebView2 1.0.1519.0 SDK
+    string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.1518.46;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
 endif()
 
 

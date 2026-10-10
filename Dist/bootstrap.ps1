@@ -145,7 +145,7 @@ function Get-WindowsPathSuggestions {
     if (-not (Test-MsBuild)) {
         $vswhere = Find-VsWhere
         if ($vswhere) {
-            $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath 2>$null
+            $vsPath = & $vswhere -latest -products * -version "[17.0,18.0)" -requires Microsoft.Component.MSBuild -property installationPath 2>$null
             if ($vsPath) {
                 Add-PathSuggestion $suggestions (Join-Path $vsPath "MSBuild\Current\Bin")
             }
