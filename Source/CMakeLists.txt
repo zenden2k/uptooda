@@ -142,8 +142,10 @@ if(IU_ENABLE_MEGANZ)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)
-	# Win7 is no longer supported since WebView2 1.0.1519.0 SDK
-    string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.1518.46;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
+	# Since 1.0.1108.44 not working on Windows 7 due to EventSetInformation
+	# https://github.com/MicrosoftEdge/WebView2Feedback/issues/2227
+	# WebView2 SDK versions 1.0.1519.0 and higher will no longer support Windows 7 and Windows 8/8.
+    string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.1054.31;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
 endif()
 
 
