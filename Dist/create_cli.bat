@@ -20,6 +20,10 @@ mkdir %temp_dir%\Data\Update
 rem signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem  "..\Build\CLI\win32\release\executable\uptooda.exe"  
 Copy "..\Build\CLI\Release\uptooda-cli.exe" %temp_dir%\uptooda-cli.exe
 if ERRORLEVEL 1 goto CopyFailed
+
+Copy "..\Build\CLI\Release\WebView2Loader.dll" %temp_dir%\
+if ERRORLEVEL 1 goto CopyFailed
+
 Copy "curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\servers.xml" %temp_dir%\Data\

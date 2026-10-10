@@ -58,6 +58,9 @@ rem call signcode.bat
 Copy "..\Build\Gui\Release\uptooda.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 
+Copy "..\Build\Gui\Release\WebView2Loader.dll" %temp_dir%\
+if ERRORLEVEL 1 goto CopyFailed
+
 Copy "..\Build\Gui\Release\sendrpt.exe" %temp_dir%\
 Copy "..\Build\Gui\Release\dbghelp.dll" %temp_dir%\
 Copy "..\Build\Gui\Release\crashrpt.dll" %temp_dir%\
