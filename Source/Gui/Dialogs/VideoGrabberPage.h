@@ -55,8 +55,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_GRAB, BN_CLICKED, OnBnClickedGrab)
             COMMAND_HANDLER(ID_VIDEOSETTINGS, BN_CLICKED, OnBnClickedGrabberparams)
-			COMMAND_HANDLER(IDC_MULTIPLEFILES, BN_CLICKED, OnBnClickedMultiplefiles)
-			COMMAND_HANDLER(IDC_SAVEASONE, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SELECTVIDEO, BN_CLICKED, OnBnClickedBrowseButton)
 			COMMAND_ID_HANDLER(ID_OPENFOLDER, OnOpenFolder)
             COMMAND_ID_HANDLER(ID_DEINTERLACE, OnDeinterlace)
@@ -85,7 +83,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		LRESULT OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
 		LRESULT OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
-		LRESULT OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -98,7 +95,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		bool SetGrabbingStatusText(LPCTSTR String);
 		int ThreadTerminated();
 		bool OnAddImage(Gdiplus::Bitmap *bm, CString title);
-		void SavingMethodChanged(void);
 		int GenPicture(CString& outFileName);
 		static CString GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName);
 		CThumbsView ThumbsView;
@@ -112,7 +108,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 
 //		CImgSavingThread SavingThread;
 		CString ErrorStr;
-		CString snapshotsFolder;
+		CString snapshotsFolder_;
 		bool Terminated;
 		int grabbedFramesCount;
 		int NumOfFrames;
@@ -130,4 +126,4 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
         std::vector<std::string> videoEngines_;
 };
 
-#endif // VIDEOGRABBER_H
+#endif // IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H

@@ -210,6 +210,26 @@ TEST_F(CoreUtilsTest, getFileSize)
     EXPECT_EQ(size, constSizeFileSize);
 }
 
+TEST_F(CoreUtilsTest, FileExistsWithUnicodePath) {
+    const std::string testDataPath = TestHelpers::resolvePath("");
+    const std::string filePath = testDataPath + u8"/\u0440\u0443\u0441\u0441\u043a\u0438\u0439/\u0444\u0430\u0439\u043b.txt";
+    const std::string missingFilePath = testDataPath + u8"/\u0440\u0443\u0441\u0441\u043a\u0438\u0439/\u043d\u0435\u0442_\u0442\u0430\u043a\u043e\u0433\u043e_\u0444\u0430\u0439\u043b\u0430.txt";
+
+    EXPECT_TRUE(IuCoreUtils::FileExists(filePath));
+    EXPECT_FALSE(IuCoreUtils::FileExists(missingFilePath));
+}
+
+TEST_F(CoreUtilsTest, DirectoryExistsWithUnicodePath) {
+    const std::string testDataPath = TestHelpers::resolvePath("");
+    const std::string directoryPath = testDataPath + u8"/\u0440\u0443\u0441\u0441\u043a\u0438\u0439";
+    const std::string filePath = directoryPath + u8"/\u0444\u0430\u0439\u043b.txt";
+    const std::string missingDirectoryPath = testDataPath + u8"/\u043d\u0435\u0442_\u0442\u0430\u043a\u043e\u0433\u043e_\u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430";
+
+    EXPECT_TRUE(IuCoreUtils::DirectoryExists(directoryPath));
+    EXPECT_FALSE(IuCoreUtils::DirectoryExists(filePath));
+    EXPECT_FALSE(IuCoreUtils::DirectoryExists(missingDirectoryPath));
+}
+
 TEST_F(CoreUtilsTest, copyFile)
 {
     std::string destFile = "out_new_file.png";

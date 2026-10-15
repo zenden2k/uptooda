@@ -609,7 +609,7 @@ bool RemoveFile(const std::string& utf8Filename) {
 
 bool DirectoryExists(const std::string& path) {
     std::error_code ec;
-    bool isDir = std::filesystem::is_directory(path, ec);
+    bool isDir = std::filesystem::is_directory(std::filesystem::u8path(path), ec);
     return !ec && isDir;
 }
 

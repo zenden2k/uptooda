@@ -114,7 +114,6 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     ::ShowWindow(GetDlgItem(IDC_STOP), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_HIDE);
-    SavingMethodChanged();
     ThumbsView.SubclassWindow(GetDlgItem(IDC_THUMBLIST));
     ThumbsView.Init();
 
@@ -127,11 +126,9 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     if (!Terminated) {
-
         if(videoGrabber_) {
             videoGrabber_->abort();
         }
-
 
         CanceledByUser = true;
     }
@@ -141,7 +138,10 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    SetGrabbingStatusText(_T(""));
+
     CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
     if ( fileName.IsEmpty() ) {
         return 0;
@@ -182,7 +182,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames*10));
     CanceledByUser = false;
 
-    snapshotsFolder.Empty();
+    snapshotsFolder_.Empty();
 
     GrabBitmaps(fileName);
 
@@ -214,42 +214,42 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 
     CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 
-    if ( snapshotsFolder.IsEmpty() ) {
+    if ( snapshotsFolder_.IsEmpty() ) {
         if ( !settings->VideoSettings.SnapshotsFolder.IsEmpty() ) {
             CString path = settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate;
             CString snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
-            snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
-            std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
+
+            snapshotsFolder_ = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
+            std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder_);
 
             if ( !IuCoreUtils::DirectoryExists(snapshotsFolderUtf8) ) {
                 if ( !IuCoreUtils::CreateDir(snapshotsFolderUtf8) ) {
                     CString logMessage;
                     CString lastError = WinUtils::GetLastErrorAsString();
-                    logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
+                    logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), snapshotsFolder_.GetString(), lastError.GetString());
                     ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage, L"", videoFile);
-                    snapshotsFolder = AppRuntimeInfo::instance()->tempDirectoryW();
+                    snapshotsFolder_ = AppRuntimeInfo::instance()->tempDirectoryW();
                 }
             }
         }
-        if (snapshotsFolder.IsEmpty()) {
-            snapshotsFolder = AppRuntimeInfo::instance()->tempDirectoryW();
+        if (snapshotsFolder_.IsEmpty()) {
+            snapshotsFolder_ = AppRuntimeInfo::instance()->tempDirectoryW();
         }
     }
 
     CString wOutDir;
-    if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
-        wOutDir = snapshotsFolder;
+    if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder_)) ) {
+        wOutDir = snapshotsFolder_;
+    } else {
+        LOG(ERROR) << "Directory '" << snapshotsFolder_ << "' does not exist.";
     }
+
     CString snapshotFileTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(settings->VideoSettings.SnapshotFileTemplate)) );
 
-
     CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
-    /*CString fullOutFileName = Settings.VideoSettings.SnapshotsFolder + "\\" + outFilename;
-    std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
-    CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
 
     try {
-        if (ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, ImageUtils::sifPNG, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL)) {
+        if (ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, ImageUtils::sifPNG, 100, !wOutDir.IsEmpty() ? wOutDir.GetString() : nullptr)) {
             ThumbsView.AddImage(fileNameBuffer, title, false, bm);
             grabbedFramesCount++;
         }
@@ -302,21 +302,9 @@ LRESULT CVideoGrabberPage::OnBnClickedGrabberparams(WORD /*wNotifyCode*/, WORD /
     return 0;
 }
 
-LRESULT CVideoGrabberPage::OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    SavingMethodChanged();
-    return 0;
-}
-
-void CVideoGrabberPage::SavingMethodChanged(void)
-{
-    BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
-    //::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS), !check);
-}
-
 int CVideoGrabberPage::GenPicture(CString& outFileName)
 {
-	CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+	auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
 	TCHAR buf[256] = _T("\0");
 	int n = ThumbsView.GetItemCount();
 	std::vector<ImageGeneratorTask::FileItem> items;
@@ -366,7 +354,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     std::string videoEngine = settings->VideoSettings.Engine;
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
-        videoEngine = settings->IsFFmpegAvailable() ? WtlGuiSettings::VideoEngineFFmpeg : WtlGuiSettings::VideoEngineDirectshow2;
+        videoEngine = WtlGuiSettings::IsFFmpegAvailable() ? WtlGuiSettings::VideoEngineFFmpeg : WtlGuiSettings::VideoEngineDirectshow2;
     }
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
 #ifdef IU_ENABLE_FFMPEG
@@ -386,9 +374,14 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 
     videoGrabber_ = std::make_unique<VideoGrabber>();
     videoGrabber_->setFrameCount(NumOfFrames);
-    using namespace std::placeholders;
-    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
-    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
+
+    videoGrabber_->setOnFrameGrabbed([this](auto && PH1, auto && PH2, auto && PH3){
+        OnFrameGrabbed(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2), std::forward<decltype(PH3)>(PH3));
+    });
+    videoGrabber_->setOnFinished([this](auto && PH1)
+    {
+        OnFrameGrabbingFinished(std::forward<decltype(PH1)>(PH1));
+    });
 
     videoGrabber_->setVideoEngine(engine);
     videoGrabber_->grab(W2U(szFile));
@@ -413,16 +406,17 @@ bool CVideoGrabberPage::OnShow()
     return true;
 }
 
-void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, std::shared_ptr<AbstractImage> img )
-{
+void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, std::shared_ptr<AbstractImage> img) {
     auto image = std::dynamic_pointer_cast<GdiPlusImage>(img);
-    if ( !image ) {
+    if (!image)
+    {
         LOG(ERROR) << "image is null";
         return;
     }
-    Gdiplus::Bitmap *bm = image->getBitmap();
-    if ( bm ) {
-        SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10 );
+    Gdiplus::Bitmap* bm = image->getBitmap();
+    if (bm)
+    {
+        SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10);
         OnAddImage(bm, Utf8ToWCstring(timeStr));
     }
 }
@@ -458,7 +452,7 @@ void CVideoGrabberPage::optionsButtonClicked() {
     popupMenu.AppendMenu(MF_STRING | (deinterlace_ ? MF_CHECKED : MF_UNCHECKED), ID_DEINTERLACE, TR("Deinterlace"));
     popupMenu.AppendMenu(MF_STRING, ID_VIDEOSETTINGS, TR("Additional options..."));
     popupMenu.AppendMenu(MF_SEPARATOR);
-    bool enableOpenFolderMenuItem = IuCoreUtils::DirectoryExists(W2U(snapshotsFolder));
+    bool enableOpenFolderMenuItem = IuCoreUtils::DirectoryExists(W2U(snapshotsFolder_));
     popupMenu.AppendMenu(MF_STRING | (enableOpenFolderMenuItem ? MF_ENABLED : MF_DISABLED), ID_OPENFOLDER, TR("Open containing folder"));
 
     TPMPARAMS excludeArea;
@@ -483,7 +477,7 @@ bool CVideoGrabberPage::OnNext()
     }
 
     WizardDlg->CreatePage(CWizardDlg::wpMainPage);
-    CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
     BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
 
@@ -539,7 +533,7 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     std::uniform_int_distribution<int> dist(0, 100);
 
     CString result = templateStr;
-    time_t t = time(0);
+    time_t t = time(nullptr);
     tm* timeinfo = localtime ( &t );
     CString indexStr;
     CString day, month, year;
@@ -555,7 +549,7 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     result.Replace(_T("%uid%"), uid);
     result.Replace(_T("%cx%"), WinUtils::IntToStr(size.x));
     result.Replace(_T("%cy%"), WinUtils::IntToStr(size.y));
-    year.Format(_T("%04d"), (int)1900 + timeinfo->tm_year);
+    year.Format(_T("%04d"), 1900 + timeinfo->tm_year);
     month.Format(_T("%02d"), timeinfo->tm_mon + 1);
     day.Format(_T("%02d"), timeinfo->tm_mday);
     hours.Format(_T("%02d"), timeinfo->tm_hour);
@@ -574,7 +568,7 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 }
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    WinUtils::ShellOpenFileOrUrl(snapshotsFolder, m_hWnd);
+    WinUtils::ShellOpenFileOrUrl(snapshotsFolder_, m_hWnd);
     return 0;
 }
 
