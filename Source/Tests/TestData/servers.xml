@@ -22,6 +22,10 @@
 					<Format MimeType="video/x-ms-wmv">*.wmv</Format>
 				</FormatGroup>		 
 			</SupportedFormats>
+			<StorageTimeInfo>
+				<StorageTime UserTypes="anon">2</StorageTime>
+				<StorageTime UserTypes="reg">36h</StorageTime>
+			</StorageTimeInfo>
 		</Info>
 		<Actions>
 			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>

@@ -17,6 +17,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/TempImageUploadTask.cpp
     Utils/CoreUtils.cpp
     Utils/CryptoUtils.cpp
+    Utils/Rfc8188.cpp
     Utils/SimpleXml.cpp
     Utils/StringUtils.cpp
     Utils/ConsoleUtils.cpp

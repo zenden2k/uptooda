@@ -28,6 +28,9 @@ TEST_F(UploadEngineListTest, loadFromFile)
     EXPECT_EQ(1, engineData->NeedAuthorization);
     EXPECT_EQ(CUploadEngineData::TypeImageServer, engineData->TypeMask);
     EXPECT_EQ("radikal", engineData->PluginName);
+    ASSERT_EQ(2, engineData->StorageTimeInfo.size());
+    EXPECT_EQ(48, engineData->StorageTimeInfo[0].Time);
+    EXPECT_EQ(36, engineData->StorageTimeInfo[1].Time);
 
     engineData = list.byName("fastpic.ru");
     ASSERT_TRUE(engineData != nullptr);

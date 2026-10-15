@@ -895,6 +895,22 @@
 <!--        </Actions>-->
 <!--        <Result ImageUrlTemplate="$(UploadedUrl)" />-->
 <!--    </Server>-->
+    <Server Name="file.kiwi" Type="file" FileHost="1" Authorize="0" Plugin="file.kiwi" MaxThreads="1"
+        MaxFileSize="1072668082176" WebsiteUrl="https://file.kiwi/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="1072668082176">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">36h</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Actions>
+        </Actions>
+        <Result DownloadUrlTemplate="stub"/>
+    </Server>
     <Server Name="fileditch.com" MaxFileSize="161061273600" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com" MaxThreads="1">
         <Info>
             <SupportedFormats>
@@ -1265,6 +1281,21 @@
                 <StorageTime UserTypes="anon,reg">7</StorageTime>
                 <StorageTime UserTypes="personal">30</StorageTime>
                 <StorageTime UserTypes="pro">30</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Actions>
+        </Actions>
+        <Result DownloadUrlTemplate="stub"/>
+    </Server>
+    <Server Name="fex.net" Type="file" FileHost="1" MaxFileSize="107374182400" Plugin="fex.net" WebsiteUrl="https://fex.net/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="107374182400">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>7</StorageTime>
             </StorageTimeInfo>
         </Info>
         <Actions>

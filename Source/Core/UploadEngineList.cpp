@@ -21,8 +21,10 @@
 #include "UploadEngineList.h"
 
 #include <algorithm>
-#include <vector>
+#include <limits>
 #include <optional>
+#include <stdexcept>
+#include <vector>
 
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
@@ -380,9 +382,28 @@ void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineDa
             }
 
             try {
-                group.Time = std::stoi(groupNode.Text());
-            } catch (const std::exception& ex) {
-                LOG(WARNING) << "loadStorageTimeInfo exception, line no. " << groupNode.GetLineNumber() << ": " << ex.what();
+                std::string storageTime = IuStringUtils::Trim(groupNode.Text());
+                const bool isInHours = !storageTime.empty() && storageTime.back() == 'h';
+                if (isInHours) {
+                    storageTime.pop_back();
+                }
+
+                size_t parsedLength = 0;
+                group.Time = std::stoi(storageTime, &parsedLength);
+                if (parsedLength != storageTime.length() || (group.Time < 0 && group.Time != StorageTime::TIME_INFINITE)
+                    || (isInHours && group.Time == StorageTime::TIME_INFINITE)) {
+                    throw std::invalid_argument("Invalid storage time");
+                }
+                if (!isInHours && group.Time != StorageTime::TIME_INFINITE) {
+                    if (group.Time > std::numeric_limits<int>::max() / 24) {
+                        throw std::out_of_range("Storage time is too large");
+                    }
+                    group.Time *= 24;
+                }
+            }
+            catch (const std::exception& ex) {
+                LOG(WARNING) << "loadStorageTimeInfo exception, line no. " << groupNode.GetLineNumber() << ": "
+                             << ex.what();
             }
             group.AfterLastDownload = groupNode.AttributeBool("AfterLastDownload");
 

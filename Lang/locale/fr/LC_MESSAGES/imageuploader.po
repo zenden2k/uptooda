@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-16 17:46+0300\n"
+"POT-Creation-Date: 2026-10-15 11:31+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/image-uploader/"
@@ -66,21 +66,21 @@ msgid "%1% + %2%"
 msgstr ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:216
-#: ../Source/Gui/Dialogs/MainDlg.cpp:895
+#: ../Source/Gui/Dialogs/MainDlg.cpp:897
 #, c-format
 msgid "%d file"
 msgid_plural "%d files"
 msgstr[0] "%d fichier"
 msgstr[1] "%d fichiers"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:889
+#: ../Source/Gui/Dialogs/MainDlg.cpp:891
 #, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
 msgstr[0] "%d fichier sélectionné"
 msgstr[1] "%d fichiers sélectionnés"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:890
+#: ../Source/Gui/Dialogs/MainDlg.cpp:892
 #, c-format
 msgid "%d file total"
 msgid_plural "%d files total"
@@ -273,7 +273,7 @@ msgstr "Ajouter un compte..."
 msgid "Add an item to the context menu of Windows Explorer"
 msgstr "Ajouter un élément au menu contextuel de l'Explorateur Windows"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:171
+#: ../Source/Gui/Dialogs/MainDlg.cpp:173
 msgid "Add files..."
 msgstr "Ajouter fichiers..."
 
@@ -283,11 +283,11 @@ msgstr "Ajouter fichiers..."
 msgid "Add folder as new server..."
 msgstr "Ajouter un dossier local comme nouveau serveur..."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:172
+#: ../Source/Gui/Dialogs/MainDlg.cpp:174
 msgid "Add folder..."
 msgstr "Ajouter dossier..."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:170
+#: ../Source/Gui/Dialogs/MainDlg.cpp:172
 msgid "Add images..."
 msgstr "Ajouter images..."
 
@@ -330,8 +330,8 @@ msgid "Add to favorites"
 msgstr "Ajouter à la liste"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:535
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1013
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1014
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1041
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1042
 msgid "Add to the list"
 msgstr "Ajouter à la liste"
 
@@ -347,7 +347,7 @@ msgstr "Ajouter un filigrane"
 msgid "Adding directory as server"
 msgstr "Ajouter un répertoire comme serveur"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:459
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:453
 msgid "Additional options..."
 msgstr "Options additionnelles..."
 
@@ -393,13 +393,13 @@ msgstr ""
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:132
 #: ../Source/Gui/Dialogs/LogWindow.cpp:181
-#: ../Source/Gui/Dialogs/MainDlg.cpp:717
+#: ../Source/Gui/Dialogs/MainDlg.cpp:719
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:179
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:111
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:337
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1612
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1643
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -431,7 +431,7 @@ msgstr "Autoriser l'édition d'images en mode plein écran"
 msgid "Always copy captured image to clipboard"
 msgstr "Copiez toujours l'image capturée dans le presse-papiers"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:429
 msgid "An error occured while extracting video frames."
 msgstr "Une erreur est survenue lors de l'extraction des images vidéo."
 
@@ -462,10 +462,12 @@ msgstr "Options d'apparence"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:86
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1944
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
 msgid "Apply"
 msgstr "Appliquer"
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:288
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1256
 #, fuzzy
 #| msgid "Apply"
 msgid "Apply crop"
@@ -500,7 +502,7 @@ msgstr ""
 "Êtes-vous sûr de vouloir supprimer ce compte de la liste interne d'Image "
 "Uploader ?"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1090
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1118
 msgid "Arrow"
 msgstr "Flèche"
 
@@ -608,9 +610,9 @@ msgstr ""
 msgid "Blur radius"
 msgstr "Rayon de flou"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:132
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:893
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1097
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:133
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:909
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1127
 msgid "Blurring rectangle"
 msgstr "Rectangle flou"
 
@@ -640,7 +642,7 @@ msgstr "Amener fenêtre au 1er plan si elle est choisie par la souris"
 msgid "Browse..."
 msgstr "Parcourir…"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1087
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1115
 msgid "Brush"
 msgstr "Brosse"
 
@@ -682,11 +684,11 @@ msgstr ""
 "supporté).\n"
 "Assurez-vous que les codecs requis sont installés sur votre système."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:742
+#: ../Source/Gui/Dialogs/MainDlg.cpp:744
 msgid "Cannot copy file "
 msgstr "Impossible de copier le fichier "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:731
+#: ../Source/Gui/Dialogs/MainDlg.cpp:733
 msgid "Cannot copy file: "
 msgstr "Impossible de copier le fichier : "
 
@@ -874,7 +876,7 @@ msgstr "Choisir le serveur..."
 msgid "Choose servers"
 msgstr "Choisir les serveurs"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:340
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1794
 msgid "Choose video file"
 msgstr "Choisir le fichier vidéo"
@@ -949,7 +951,7 @@ msgstr "Vignettes cliquables"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:260
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1067
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1095
 msgid "Close"
 msgstr "Fermer"
 
@@ -965,7 +967,7 @@ msgstr "Type de code :"
 msgid "Collecting files..."
 msgstr "Collecte de fichiers..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1100
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1130
 msgid "Color chooser"
 msgstr "Sélecteur de couleurs"
 
@@ -1015,8 +1017,8 @@ msgstr "Éléments personnalisés du menu contextuel :"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:205
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1018
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1019
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1046
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
 msgid "Continue"
 msgstr "Continuer"
 
@@ -1041,13 +1043,19 @@ msgstr "Paramètres..."
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:131
-#: ../Source/Gui/Dialogs/MainDlg.cpp:229
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1047
-#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
+#: ../Source/Gui/Dialogs/MainDlg.cpp:231
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1075
 msgid "Copy"
 msgstr "Copier"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:241
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1020
+#, fuzzy
+#| msgid "Copy"
+msgctxt "editor.context_menu.copy"
+msgid "Copy"
+msgstr "Copier"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:243
 msgid "Copy &as"
 msgstr "Copier &sous"
 
@@ -1072,19 +1080,19 @@ msgstr "Copier e-mail"
 msgid "Copy folder's ID"
 msgstr "Copier l'ID du dossier"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:232
+#: ../Source/Gui/Dialogs/MainDlg.cpp:234
 msgid "Copy full path"
 msgstr "Copier le chemin complet"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:229
+#: ../Source/Gui/Dialogs/MainDlg.cpp:231
 msgid "Copy image"
 msgstr "Copier l'Image"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:916
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:944
 msgid "Copy in data:URI format"
 msgstr "Copier dans les données : format URI"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:917
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:945
 msgid "Copy in data:URI format (html)"
 msgstr "Copier dans les données : format URI (html)"
 
@@ -1113,13 +1121,13 @@ msgstr "Copier vers le presse-papiers"
 msgid "Copy to clipboard"
 msgstr "Copier dans le presse-papiers"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1040
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1068
 #, fuzzy, c-format
 #| msgid "Copy to clipboard"
 msgid "Copy to clipboard (%s)"
 msgstr "Copier dans le presse-papiers"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1040
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1068
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr "Copier vers le presse-papiers et fermer (%s)"
@@ -1218,7 +1226,7 @@ msgstr "Créer des vignettes"
 msgid "Creating new thumbnail preset"
 msgstr "Création d'un nouveau préréglage de vignettes"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1086
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1114
 msgid "Crop"
 msgstr "Recadrer"
 
@@ -1234,7 +1242,10 @@ msgstr ""
 "Les modifications du profil actuel n'ont pas été enregistrées. Voulez-vous "
 "continuer ?"
 
-#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:237
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1018
+#, fuzzy
+#| msgid "Cut"
+msgctxt "editor.context_menu.cut"
 msgid "Cut"
 msgstr "Couper"
 
@@ -1262,7 +1273,7 @@ msgstr "Serveur par défaut pour charger des images"
 msgid "Default settings"
 msgstr "Paramètres par défaut"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:458
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:452
 msgid "Deinterlace"
 msgstr "Désentrelacé"
 
@@ -1271,6 +1282,13 @@ msgid "Delay when hiding window:"
 msgstr "Délai lors du masquage de la fenêtre :"
 
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:179
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1024
+#, fuzzy
+#| msgid "Delete"
+msgctxt "editor.context_menu.delete"
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1307,7 +1325,7 @@ msgid "Display video file information on resulting picture"
 msgstr "Afficher les infos du fichier vidéo sur l'image obtenue"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1982
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:341
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:356
 msgid "Do not ask again"
 msgstr "Ne redemandez plus"
 
@@ -1364,7 +1382,7 @@ msgstr "Cadre de dessin"
 msgid "Duration: "
 msgstr "Durée : "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:213
+#: ../Source/Gui/Dialogs/MainDlg.cpp:215
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:368
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
 msgid "Edit"
@@ -1391,8 +1409,8 @@ msgstr "Éditer raccourci..."
 msgid "Edit login credentials..."
 msgstr "Éditer les identifiants de connexion..."
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:108
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:868
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:109
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:884
 msgid "Ellipse"
 msgstr "Ellipse"
 
@@ -1537,7 +1555,7 @@ msgstr "Explicite"
 msgid "Extension"
 msgstr "Extension"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:219
+#: ../Source/Gui/Dialogs/MainDlg.cpp:221
 msgid "Extract frames"
 msgstr "Extraire les cadres"
 
@@ -1549,7 +1567,7 @@ msgstr "Extraction du cadre "
 msgid "Extracting frames from video"
 msgstr "Extraction d'images d'une vidéo"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:429
 msgid "Extracting video frames was finished."
 msgstr "L'extraction des images vidéo est terminée."
 
@@ -1677,7 +1695,7 @@ msgstr "Nom du fichier :"
 msgid "Filename: "
 msgstr "Nom du fichier : "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:716
+#: ../Source/Gui/Dialogs/MainDlg.cpp:718
 msgid "Files"
 msgstr "Fichiers"
 
@@ -1693,14 +1711,14 @@ msgstr "Taille du fichier : "
 msgid "Fill background"
 msgstr "Remplir l'arrière-plan"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:124
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:881
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:125
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:897
 msgid "Filled ellipse"
 msgstr "Ellipse remplie"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:113
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:879
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1093
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:114
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:895
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1121
 msgid "Filled rectangle"
 msgstr "Rectangle rempli"
 
@@ -1733,11 +1751,11 @@ msgstr "Terminé"
 msgid "Fit"
 msgstr "En forme"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1961
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2001
 msgid "Flip horizontal"
 msgstr "Retourner horizontalement"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1962
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2002
 msgid "Flip vertical"
 msgstr "Retourner verticalement"
 
@@ -1873,7 +1891,7 @@ msgid "Good (default)"
 msgstr "Par défaut"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:400
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:393
 msgid "Grab"
 msgstr "Saisir"
 
@@ -1919,7 +1937,7 @@ msgstr "Masquer"
 msgid "Hide blacklisted"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1088
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1116
 msgid "Highlight"
 msgstr "Souligner"
 
@@ -1969,8 +1987,8 @@ msgstr "Images"
 msgid "Image Downloader"
 msgstr "Téléchargeur d'images"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:345
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:630
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:360
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:646
 msgid "Image Editor"
 msgstr "Éditeur d'images"
 
@@ -1979,15 +1997,15 @@ msgctxt "settings.menu"
 msgid "Image Editor"
 msgstr "Éditeur d'images"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1874
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1913
 msgid "Image Editor  (%1%x%2%)"
 msgstr "Éditeur d'images  (%1%x%2%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1880
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1919
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr "Éditeur d'images - %1% (%2%x%3%)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:343
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:358
 msgid ""
 "Image Editor cannot deal with animated images. If you edit this file, "
 "animation will be lost. Do you wish to continue?"
@@ -2069,7 +2087,7 @@ msgid "Info about last video"
 msgstr "Informations sur la dernière vidéo"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:244
-#: ../Source/Gui/Dialogs/MainDlg.cpp:223
+#: ../Source/Gui/Dialogs/MainDlg.cpp:225
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
 msgid "Information about file"
@@ -2161,11 +2179,15 @@ msgstr "Double-clic sur le bouton gauche :"
 msgid "Left button single click:"
 msgstr "Clic simple sur le bouton gauche :"
 
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1034
+msgid "Left to right"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:173
 msgid "Libraries:"
 msgstr "Bibliothèques :"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1089
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1117
 msgid "Line"
 msgstr "Ligne"
 
@@ -2308,7 +2330,7 @@ msgstr "Plus de couleurs..."
 msgid "Mouse clicks handlers"
 msgstr "Gestion des clics de souris"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1083
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1111
 msgid "Move"
 msgstr "Déplacer"
 
@@ -2431,7 +2453,7 @@ msgstr "OK"
 msgid "Older than 30 days"
 msgstr "Vieux de plus de 30 jours"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:462
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:456
 msgid "Open containing folder"
 msgstr "Ouvrir dossier contenant"
 
@@ -2449,12 +2471,12 @@ msgstr "Ouvrir dans le navigateur Web"
 msgid "Open in Wizard"
 msgstr "Ouvrir dans l'assistant"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:214
+#: ../Source/Gui/Dialogs/MainDlg.cpp:216
 msgid "Open in external editor"
 msgstr "Ouvrir dans un éditeur externe"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:222
-#: ../Source/Gui/Dialogs/MainDlg.cpp:226
+#: ../Source/Gui/Dialogs/MainDlg.cpp:228
 msgid "Open in folder"
 msgstr "Ouvrir dans le dossier"
 
@@ -2486,7 +2508,7 @@ msgstr "Ouvrir paramètres de connexion du système"
 msgid "Open the website"
 msgstr "Ouvrir le Site Web"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:210
+#: ../Source/Gui/Dialogs/MainDlg.cpp:212
 msgid "Open with..."
 msgstr "Ouvrir avec..."
 
@@ -2523,8 +2545,14 @@ msgstr "Mot de passe :"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
 #: ../Source/Gui/Dialogs/HotkeySettingsPage.cpp:223
-#: ../Source/Gui/Dialogs/MainDlg.cpp:174
-#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
+#: ../Source/Gui/Dialogs/MainDlg.cpp:176
+msgid "Paste"
+msgstr "Coller"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1022
+#, fuzzy
+#| msgid "Paste"
+msgctxt "editor.context_menu.paste"
 msgid "Paste"
 msgstr "Coller"
 
@@ -2546,8 +2574,8 @@ msgstr "Collez un lien pour le raccourcir :"
 msgid "Pause"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:137
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:894
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:138
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:910
 msgid "Pixelation"
 msgstr "Pixellisation"
 
@@ -2602,11 +2630,11 @@ msgstr "Conserver les métadonnées (par ex. EXIF)"
 msgid "Preset:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Pressing this button while holding Shift will close the window."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1029
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1057
 msgid "Pressing this button while holding Shift will not close the window."
 msgstr ""
 
@@ -2618,8 +2646,8 @@ msgstr "Aperçu"
 msgid "Preview Window"
 msgstr "Aperçu de la fenêtre"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:215
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1065
+#: ../Source/Gui/Dialogs/MainDlg.cpp:217
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1093
 msgid "Print..."
 msgstr "Imprimer..."
 
@@ -2671,7 +2699,7 @@ msgstr "Profil :"
 msgid "Progress:"
 msgstr "Progression :"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:76 ../Source/Gui/Dialogs/MainDlg.cpp:273
+#: ../Source/Gui/Dialogs/MainDlg.cpp:76 ../Source/Gui/Dialogs/MainDlg.cpp:275
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -2713,17 +2741,17 @@ msgstr ""
 msgid "Reason:"
 msgstr "Raison :"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1050
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1078
 msgid "Record"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:98
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:866
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1092
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:882
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1120
 msgid "Rectangle"
 msgstr "Rectangle"
 
-#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:235
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1013
 msgid "Redo"
 msgstr "Rétablir"
 
@@ -2739,7 +2767,7 @@ msgstr "Mémoriser les paramètres du serveur d'images dans l'assistant"
 msgid "Remote directory:"
 msgstr "Répertoire distant :"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:272
+#: ../Source/Gui/Dialogs/MainDlg.cpp:274
 msgid "Remove"
 msgstr "Retirer"
 
@@ -2747,7 +2775,7 @@ msgstr "Retirer"
 msgid "Remove Item"
 msgstr "Retirer l'élément"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:181
+#: ../Source/Gui/Dialogs/MainDlg.cpp:183
 msgid "Remove all"
 msgstr "Retirer tout"
 
@@ -2806,22 +2834,28 @@ msgstr ""
 msgid "Right button click:"
 msgstr "Clic sur le bouton droit :"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1959
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1035
+#, fuzzy
+#| msgid "Right button click:"
+msgid "Right to left"
+msgstr "Clic sur le bouton droit :"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1999
 msgid "Rotate clockwise (90°)"
 msgstr "Rotation dans le sens horaire (90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1960
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2000
 msgid "Rotate counter clockwise (-90°)"
 msgstr "Rotation dans le sens antihoraire (-90°)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1063
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1091
 msgid "Rotate or flip"
 msgstr "Rotation ou retournement"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:103
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:119
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:867
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:880
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:104
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:120
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:883
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:896
 msgid "Rounded rectangle"
 msgstr "Rectangle arrondi"
 
@@ -2839,12 +2873,12 @@ msgstr "SFTP"
 msgid "Same format as image"
 msgstr "Même format que l'image"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:735
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1038
+#: ../Source/Gui/Dialogs/MainDlg.cpp:737
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1066
 msgid "Save"
 msgstr "Enregistrer"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1031
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
 #, fuzzy, c-format
 #| msgid "Save as:"
 msgid "Save (%s)"
@@ -2854,14 +2888,14 @@ msgstr "Enregistrer sous :"
 msgid "Save Profile"
 msgstr "Enregistrer le profil"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1031
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1059
 #, fuzzy, c-format
 #| msgid "Search by image (%s)"
 msgid "Save and close (%s)"
 msgstr "Recherche par image (%s)"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:227
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
+#: ../Source/Gui/Dialogs/MainDlg.cpp:229
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:933
 msgid "Save as..."
 msgstr "Enregistrer sous..."
 
@@ -2869,7 +2903,7 @@ msgstr "Enregistrer sous..."
 msgid "Save as:"
 msgstr "Enregistrer sous :"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1414
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1445
 msgid "Save changes?"
 msgstr "Enregistrer les modifications ?"
 
@@ -3000,30 +3034,30 @@ msgstr "Capture d'écran..."
 msgid "Script: "
 msgstr "Script : "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:269
+#: ../Source/Gui/Dialogs/MainDlg.cpp:271
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:53
 msgid "Search by image"
 msgstr "Recherche par image"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:936
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:964
 #, c-format
 msgid "Search by image (%s)"
 msgstr "Recherche par image (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1082
 #, fuzzy
 #| msgid "Search on %s"
 msgid "Search on %1% (%2%)"
 msgstr "Rechercher sur %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1054
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1082
 #, fuzzy
 #| msgid "Search by image (%s)"
 msgid "Search on %1% and close (%2%)"
 msgstr "Recherche par image (%s)"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1053
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1327
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1081
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1358
 #, c-format
 msgid "Search on %s"
 msgstr "Rechercher sur %s"
@@ -3035,6 +3069,12 @@ msgstr "Recherche de fichiers image..."
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
 msgid "Secured connection:"
 msgstr "Connexion sécurisée :"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1029
+#, fuzzy
+#| msgid "Select all"
+msgid "Select All"
+msgstr "Sélectionner toutes"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:334
 msgid "Select Region..."
@@ -3057,7 +3097,7 @@ msgstr "Sélectionner toutes"
 msgid "Select folder"
 msgstr "Sélectionner dossier"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1585
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1616
 msgid "Select region"
 msgstr "Sélectionné région"
 
@@ -3103,7 +3143,7 @@ msgid "Server for other file types"
 msgstr "Serveur pour d'autres types de fichiers"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:967
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:995
 msgid "Server for quick screenshot uploading"
 msgstr "Serveur pour le chargement rapide de captures d'écran"
 
@@ -3247,7 +3287,7 @@ msgstr "Affichage auto de la fenêtre de journal en cas d'erreur"
 msgid "Show favorites only"
 msgstr "Ajouter à la liste"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:206
+#: ../Source/Gui/Dialogs/MainDlg.cpp:208
 msgid "Show in default viewer"
 msgstr "Afficher dans la visionneuse par défaut"
 
@@ -3310,6 +3350,10 @@ msgstr "Code Source"
 msgid "Specify account..."
 msgstr "Spécifier le compte..."
 
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1123
+msgid "Speech baloon"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:93
 msgid "Start"
 msgstr ""
@@ -3330,7 +3374,7 @@ msgstr "Démarrage du chargement"
 msgid "Status"
 msgstr "Statut"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1095
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1125
 msgid "Step"
 msgstr "Étape"
 
@@ -3351,7 +3395,7 @@ msgid "Stopped"
 msgstr "Stoppé"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:35
-msgid "Storage time (days)"
+msgid "Storage time"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:76
@@ -3401,11 +3445,11 @@ msgid "Test failed"
 msgstr "Échec du test"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1094
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1122
 msgid "Text"
 msgstr "Texte"
 
-#: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:95
+#: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:107
 msgid "Text Options"
 msgstr "Options du texte"
 
@@ -3422,6 +3466,12 @@ msgstr "Couleur du texte :"
 #: ../Source/Gui/Dialogs/InputDialog.cpp:91
 msgid "Text contains forbidden characters!"
 msgstr "Le texte contient des caractères interdits !"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1038
+#, fuzzy
+#| msgid "Text position:"
+msgid "Text direction"
+msgstr "Position du texte :"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:94
 #: ../Source/Gui/Dialogs/LogWindow.cpp:180
@@ -3454,11 +3504,11 @@ msgstr "Merci à :"
 msgid "The field '%s' cannot be empty."
 msgstr "Le champ '%s' ne peut pas être vide."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:852
+#: ../Source/Gui/Dialogs/MainDlg.cpp:854
 msgid "The file name cannot be empty."
 msgstr "Le nom du fichier ne peut être vide."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:856
+#: ../Source/Gui/Dialogs/MainDlg.cpp:858
 msgid "The file name contains forbidden characters."
 msgstr "Le nom du fichier contient des caractères interdits."
 
@@ -3634,8 +3684,8 @@ msgstr "Impossible de raccourcir le lien..."
 msgid "Unable to unpack archive %s"
 msgstr "Impossible de déballer l'archive %s"
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1102
-#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1132
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:1011
 msgid "Undo"
 msgstr "Rétablir"
 
@@ -3706,13 +3756,13 @@ msgid "Upload speed limit per thread:"
 msgstr "Limite de vitesse d'envoi par fil :"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:126
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2023
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2063
 #, c-format
 msgid "Upload to %s"
 msgstr "Charger sur %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2020
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:2060
 msgid "Upload to Web"
 msgstr "Charger sur le Web"
 
@@ -3829,7 +3879,7 @@ msgctxt "settings.menu"
 msgid "Video"
 msgstr "Vidéo"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:457
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:451
 msgid "Video backend"
 msgstr "Backend vidéo"
 
@@ -3840,7 +3890,7 @@ msgstr "Backend vidéo"
 msgid "Video codec:"
 msgstr "Backend vidéo"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:336
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2080
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2109
@@ -3863,7 +3913,7 @@ msgstr "Backend vidéo"
 msgid "Video: "
 msgstr "Video : "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:203
+#: ../Source/Gui/Dialogs/MainDlg.cpp:205
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:265
 msgid "View"
 msgstr "Afficher"
@@ -3996,6 +4046,11 @@ msgstr "une photo de tout l'écran ou de la région sélectionnée"
 msgid "and/or height:"
 msgstr "et/ou hauteur :"
 
+#: ../Source/Gui/Models/ServerListModel.cpp:358
+msgctxt "storage_time.days_suffix"
+msgid "d"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:250
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:173
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:164
@@ -4017,6 +4072,11 @@ msgstr "dossier \"%s\""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:345
 msgid "for easier link sharing"
+msgstr ""
+
+#: ../Source/Gui/Models/ServerListModel.cpp:360
+msgctxt "storage_time.hours_suffix"
+msgid "h"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:18

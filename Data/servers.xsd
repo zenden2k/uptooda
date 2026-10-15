@@ -21,6 +21,11 @@
             <xs:enumeration value="0"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="StorageTimeType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="-1|[0-9]+|[0-9]+h"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="AuthorizeType">
         <xs:restriction base="xs:byte">
             <xs:enumeration value="0" />
@@ -125,7 +130,7 @@
                                                     <xs:element name="StorageTime" maxOccurs="unbounded" minOccurs="1">
                                                         <xs:complexType>
                                                             <xs:simpleContent>
-                                                                <xs:extension base="xs:integer">
+                                                                <xs:extension base="StorageTimeType">
                                                                     <xs:attribute type="Bool" name="AfterLastDownload" use="optional"/>
                                                                     <xs:attribute type="xs:string" name="UserTypes" use="optional"/>
                                                                 </xs:extension>

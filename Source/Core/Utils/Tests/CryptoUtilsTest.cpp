@@ -101,6 +101,30 @@ TEST_F(CryptoUtilsTest, Base64Decode)
     EXPECT_EQ("", Base64Decode(""));
 }
 
+TEST_F(CryptoUtilsTest, CryptographicRandomBytes) {
+    const std::string first = CryptographicRandomBytes(16);
+    const std::string second = CryptographicRandomBytes(16);
+    EXPECT_EQ(16, first.size());
+    EXPECT_EQ(16, second.size());
+    EXPECT_NE(first, second);
+    EXPECT_TRUE(CryptographicRandomBytes(0).empty());
+    EXPECT_THROW(CryptographicRandomBytes(-1), std::invalid_argument);
+}
+
+TEST_F(CryptoUtilsTest, EncryptRfc8188) {
+    const std::string key = "0123456789abcdef";
+    const std::string encrypted = EncryptRfc8188("Hello", key);
+
+    ASSERT_EQ(43, encrypted.size());
+    EXPECT_EQ(0, static_cast<unsigned char>(encrypted[16]));
+    EXPECT_EQ(1, static_cast<unsigned char>(encrypted[17]));
+    EXPECT_EQ(0, static_cast<unsigned char>(encrypted[18]));
+    EXPECT_EQ(0, static_cast<unsigned char>(encrypted[19]));
+    EXPECT_EQ(0, static_cast<unsigned char>(encrypted[20]));
+    EXPECT_NE(encrypted, EncryptRfc8188("Hello", key));
+    EXPECT_THROW(EncryptRfc8188("Hello", "short"), std::invalid_argument);
+}
+
 TEST_F(CryptoUtilsTest, Base64EncodeFile)
 {
     {

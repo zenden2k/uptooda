@@ -704,6 +704,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("XXH64FromFile", XXH64FromFile)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
+        .Func("CryptographicRandomBytes", &CryptoUtils::CryptographicRandomBytes)
+        .Func("EncryptRfc8188", &CryptoUtils::EncryptRfc8188)
         .Func("url_encode", url_encode)
         .Func("UrlEncode", url_encode)
         .Func("DebugMessage", DebugMessage);

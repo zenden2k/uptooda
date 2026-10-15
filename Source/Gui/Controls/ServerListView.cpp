@@ -32,7 +32,7 @@ BOOL CServerListView::SubclassWindow(HWND hWnd) {
 void CServerListView::Init() {
     AddColumn(TR("Server"), ServerListModel::tcServerName);
     AddColumn(TR("Max. file size"), ServerListModel::tcMaxFileSize);
-    AddColumn(TR("Storage time (days)"), ServerListModel::tcStorageTime);
+    AddColumn(TR("Storage time"), ServerListModel::tcStorageTime);
     AddColumn(TR("Account"), ServerListModel::tcAccount, -1, LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM, LVCFMT_CENTER);
     AddColumn(TR("File formats"), ServerListModel::tcFileFormats);
 

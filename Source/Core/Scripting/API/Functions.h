@@ -432,6 +432,17 @@ namespace ScriptAPI {
     std::string Base64Decode(const std::string& data);
 
     /**
+     * Returns the requested number of cryptographically secure random bytes.
+     */
+    std::string CryptographicRandomBytes(int length);
+
+    /**
+     * Encrypts data using RFC 8188 aes128gcm content coding.
+     * The key must contain exactly 16 raw bytes.
+     */
+    std::string EncryptRfc8188(const std::string& data, const std::string& key);
+
+    /**
      * Returns the size of the file in bytes.
      * @since 1.3.0
      */

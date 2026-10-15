@@ -55,6 +55,8 @@ namespace IuCoreUtils::CryptoUtils {
     std::string Base64Decode(const std::string& data);
     bool Base64EncodeFile(const std::string& fileName, std::string& result);
     std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr);
+    std::string CryptographicRandomBytes(int length);
+    std::string EncryptRfc8188(const std::string& data, const std::string& key);
 
     /**
      * @brief

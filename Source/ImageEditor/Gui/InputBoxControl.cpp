@@ -29,6 +29,7 @@
 #include "Core/Images/Utils.h"
 #include "ImageEditor/Canvas.h"
 #include "Core/i18n/Translator.h"
+#include "Func/WinUtils.h"
 #include "Gui/Helpers/DPIHelper.h"
 
 #ifndef TO_DEFAULTCOLOREMOJI
@@ -1014,13 +1015,13 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     contextMenu.AppendMenu(MF_SEPARATOR);
 
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_CUT, TR("Cut") + CString("\tCtrl+X"));
+        ID_EDIT_CUT, Utf8ToWCstring( _c("editor.context_menu.cut", "Cut")) + CString("\tCtrl+X"));
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_COPY, TR("Copy") + CString("\tCtrl+C"));
+        ID_EDIT_COPY, Utf8ToWCstring( _c("editor.context_menu.copy", "Copy")) + CString("\tCtrl+C"));
     contextMenu.AppendMenu(MF_STRING | (canPaste ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_PASTE, TR("Paste")+ CString("\tCtrl+V"));
+        ID_EDIT_PASTE, Utf8ToWCstring(_c("editor.context_menu.paste", "Paste"))+ CString("\tCtrl+V"));
     contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_DELETE, TR("Delete")+ CString("\tDel"));
+        ID_EDIT_DELETE, Utf8ToWCstring( _c("editor.context_menu.delete", "Delete")) + CString("\tDel"));
 
     contextMenu.AppendMenu(MF_SEPARATOR);
 

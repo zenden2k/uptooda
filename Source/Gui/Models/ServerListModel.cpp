@@ -323,7 +323,7 @@ bool ServerData::acceptFilter(const ServerFilter& filter, IFavoriteServers* favo
 
 void ServerData::cacheStorageTime() const {
     if (!storageTimeStr.has_value()) {
-        std::string daysStr;
+        std::string storageTimeText;
 
         std::vector<std::optional<StorageTime>> storageTimes;
         storageTimes.resize(ued->userTypes.size());
@@ -344,34 +344,40 @@ void ServerData::cacheStorageTime() const {
         int i = 0;
         int valueCount = 0;
         for (const auto& item : storageTimes) {
-            if (!daysStr.empty()) {
-                daysStr += "/ ";
+            if (!storageTimeText.empty()) {
+                storageTimeText += "/ ";
             }
             if (item.has_value()) {
                 if (item->Time) {
                     if (!storageTime.has_value() && (i == 0 || i == 1)) {
                         storageTime = item->Time;
                     }
-                    daysStr += item->Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item->Time);
+                    if (item->Time == StorageTime::TIME_INFINITE) {
+                        storageTimeText += u8"\u221E";
+                    } else if (item->Time % 24 == 0) {
+                        storageTimeText += std::to_string(item->Time / 24) + std::string(_c("storage_time.days_suffix", "d"));
+                    } else {
+                        storageTimeText += std::to_string(item->Time) + std::string(_c("storage_time.hours_suffix", "h"));
+                    }
                     if (item->AfterLastDownload) {
-                        daysStr += u8"\u2913";
+                        storageTimeText += u8"\u2913";
                     }
                     valueCount++;
                 } else {
-                    daysStr += "?";
+                    storageTimeText += "?";
                 }
             } else {
-                daysStr += "-";
+                storageTimeText += "-";
             }
 
-            daysStr += " ";
+            storageTimeText += " ";
             i++;
         }
 
         if (!storageTime.has_value()) {
             storageTime = 0;
         }
-       
-        storageTimeStr = valueCount ? daysStr : "";
+
+        storageTimeStr = valueCount ? storageTimeText : "";
     }
 }

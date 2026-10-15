@@ -149,7 +149,7 @@ struct FileFormatGroup {
 
 struct StorageTime {
     inline static constexpr int TIME_INFINITE = -1;
-    int Time = 0; // in days
+    int Time = 0; // in hours
     bool AfterLastDownload = false;
     std::vector<std::string> UserTypes;
     std::set<unsigned int> UserTypeIds;
