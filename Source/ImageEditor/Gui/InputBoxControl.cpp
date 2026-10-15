@@ -1135,7 +1135,7 @@ LRESULT InputBoxControl::OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
                 richEditUIA_->GetUiaProvider());
         }
     } else if ((LONG)lParam == OBJID_CLIENT) {
-        CComQIPtr<IAccessible> pAcc = services_;
+        CComQIPtr<IAccessible> pAcc(services_);
         if (pAcc) {
             return LresultFromObject(IID_IAccessible, wParam, pAcc);
         }

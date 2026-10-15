@@ -250,7 +250,6 @@ public:
     void setHostWindow(HWND wnd) override;
     std::unique_ptr<Gdiplus::Bitmap> prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) override;
 private:
-    HRESULT GetRichEditProvider(IRawElementProviderFragment** ppProvider);
     // Создание движка и дефолтные настройки
     bool CreateTextServices();
     void ApplyDefaults();

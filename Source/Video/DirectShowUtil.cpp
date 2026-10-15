@@ -1,12 +1,13 @@
 #include "DirectShowUtil.h"
 
+#include "Core/3rdpart/dxerr.h"
+#include "Core/Utils/CoreUtils.h"
+
 namespace DirectShowUtil {
 
-HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin** ppPin)
-{
+HRESULT GetPin(IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin** ppPin) {
     IEnumPins* pEnum;
-    //CComPtr<IEnumPins> pEnum;
-    *ppPin = NULL;
+    *ppPin = nullptr;
 
     HRESULT hr = pFilter->EnumPins(&pEnum);
     if (FAILED(hr))
@@ -16,17 +17,14 @@ HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin*
     IPin* pPin;
     hr = E_FAIL;
 
-    while (S_OK == pEnum->Next(1, &pPin, &ulFound))
-    {
-        PIN_DIRECTION pindir = static_cast<PIN_DIRECTION>(3);
+    while (S_OK == pEnum->Next(1, &pPin, &ulFound)) {
+        auto pindir = static_cast<PIN_DIRECTION>(3);
 
         pPin->QueryDirection(&pindir);
-        if (pindir == dirrequired)
-        {
-            if (iNum == 0)
-            {
-                *ppPin = pPin;      // Return the pin's interface
-                hr = S_OK;          // Found requested pin, so clear error
+        if (pindir == dirrequired) {
+            if (iNum == 0) {
+                *ppPin = pPin; // Return the pin's interface
+                hr = S_OK; // Found requested pin, so clear error
                 break;
             }
             iNum--;
@@ -40,30 +38,25 @@ HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin*
     return hr;
 }
 
-CComPtr<IPin> GetInPin( IBaseFilter* pFilter, int nPin )
-{
-    //IPin* pComPin = 0;
+CComPtr<IPin> GetInPin(IBaseFilter* pFilter, int nPin) {
     CComPtr<IPin> pComPin;
     GetPin(pFilter, PINDIR_INPUT, nPin, &pComPin);
     return pComPin;
 }
 
-CComPtr<IPin> GetOutPin( IBaseFilter* pFilter, int nPin )
-{
-    //IPin* pComPin = 0;
+CComPtr<IPin> GetOutPin(IBaseFilter* pFilter, int nPin) {
     CComPtr<IPin> pComPin;
     GetPin(pFilter, PINDIR_OUTPUT, nPin, &pComPin);
     return pComPin;
 }
 
-GUID GuidFromString(const CString& guidStr)
-{
+GUID GuidFromString(const CString& guidStr) {
     GUID res = GUID_NULL;
-    HRESULT hr = ::CLSIDFromString( guidStr, &res );
+    CLSIDFromString(guidStr, &res);
     return res;
 }
 
-CComPtr<IBaseFilter> FindFilterByClassID(CComPtr<IGraphBuilder> graphBuilder, GUID classID) {
+CComPtr<IBaseFilter> FindFilterByClassID(IGraphBuilder* graphBuilder, GUID classID) {
     CComPtr<IBaseFilter> filterFound;
 
     CComPtr<IEnumFilters> ienumFilt;
@@ -83,51 +76,53 @@ CComPtr<IBaseFilter> FindFilterByClassID(CComPtr<IGraphBuilder> graphBuilder, GU
                     return filterFound;
                 }
                 filter->Release();
-                filter = 0;
+                filter = nullptr;
             }
         }
         while (iFetched == 1 && SUCCEEDED(hr));
     }
 
     return filterFound;
-} 
+}
 
-HRESULT SaveGraphFile(IGraphBuilder *pGraph, WCHAR *wszPath) 
-{
-    const WCHAR wszStreamName[] = L"ActiveMovieGraph"; 
+HRESULT SaveGraphFile(IGraphBuilder* pGraph, WCHAR* wszPath) {
+    const WCHAR wszStreamName[] = L"ActiveMovieGraph";
     HRESULT hr;
 
-    IStorage *pStorage = NULL;
+    IStorage* pStorage = nullptr;
     hr = StgCreateDocfile(wszPath, STGM_CREATE | STGM_TRANSACTED | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, &pStorage);
-    if(FAILED(hr)) 
-    {
+    if (FAILED(hr)) {
         return hr;
     }
 
-    IStream *pStream;
+    IStream* pStream;
     hr = pStorage->CreateStream(
         wszStreamName,
         STGM_WRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE,
         0, 0, &pStream);
-    if (FAILED(hr)) 
-    {
-        pStorage->Release();    
+    if (FAILED(hr)) {
+        pStorage->Release();
         return hr;
     }
 
-    IPersistStream *pPersist = NULL;
+    IPersistStream* pPersist = nullptr;
     pGraph->QueryInterface(IID_IPersistStream, reinterpret_cast<void**>(&pPersist));
     hr = pPersist->Save(pStream, TRUE);
     pStream->Release();
     pPersist->Release();
-    if (SUCCEEDED(hr)) 
-    {
+    if (SUCCEEDED(hr)) {
         hr = pStorage->Commit(STGC_DEFAULT);
     }
     pStorage->Release();
     return hr;
 }
 
-
+std::string GetMessageForHresult(HRESULT hr) {
+    CString cs;
+    WCHAR descr[1024] = L"";
+    DXGetErrorDescriptionW(hr, descr, ARRAY_SIZE(descr));
+    cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr);
+    return W2U(cs);
+}
 
 }

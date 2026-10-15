@@ -22,7 +22,7 @@ namespace ServersListTool {
 class ServerData {
 public:
     std::atomic_bool skip;
-    int stars[10] { 0 }; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
+    int stars[10] {}; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
     uint32_t color;
     std::atomic<int> fileToCheck;
     std::atomic<int> filesChecked;
@@ -184,7 +184,7 @@ public:
 
 class ServersCheckerModel {
 public:
-    ServersCheckerModel(CMyEngineList* engineList);
+    explicit ServersCheckerModel(CMyEngineList* engineList);
     std::string getItemText(int row, int column) const;
     uint32_t getItemColor(size_t row) const;
     size_t getCount() const;

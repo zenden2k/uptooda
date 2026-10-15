@@ -30,7 +30,7 @@
 #include <qedit.h>
 #include <comdef.h>
 #include <comip.h>
-#include <Strmif.h>
+#include <strmif.h>
 
 #include "AbstractVideoFrame.h"
 #include "Core/Logging.h"
@@ -39,21 +39,22 @@
 #include "Core/i18n/Translator.h"
 #include "GrabFilter.h"
 #include "NoDirectVobSub.h"
+#include "Core/COMInitializer.h"
 
-class DirectshowVideoFrame2: public AbstractVideoFrame {
+class DirectshowVideoFrame2 : public AbstractVideoFrame {
 public :
-    DirectshowVideoFrame2(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
+    DirectshowVideoFrame2(unsigned char* data, size_t dataSize, int64_t time, int width, int height) {
 
         time_ = time;
 
         BITMAPFILEHEADER bfh;
-        memset( &bfh, 0, sizeof(bfh) );
+        memset(&bfh, 0, sizeof(bfh));
         bfh.bfType = ('M' << 8) | 'B';
         bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
         bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
 
         BITMAPINFOHEADER bih;
-        memset( &bih, 0, sizeof(bih) );
+        memset(&bih, 0, sizeof(bih));
         bih.biSize = sizeof(bih);
         bih.biWidth = width;
         bih.biHeight = height;
@@ -78,16 +79,17 @@ public :
         width_ = width;
         height_ = height;
     }
+
     ~DirectshowVideoFrame2() override {
         delete[] data_;
     }
 
     bool saveToFile(const std::string& fileName) const override {
         std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
-        if ( !image ) {
+        if (!image) {
             return false;
         }
-        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_, nullptr) ) {
+        if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
             return false;
         }
         return image->saveToFile(fileName);
@@ -95,58 +97,26 @@ public :
 
     std::unique_ptr<AbstractImage> toImage() const override {
         std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
-        if ( !image ) {
+        if (!image) {
             return nullptr;
         }
-        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_, nullptr) ) {
+        if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
             image.reset();
         }
         return image;
     }
 
- protected:
-    unsigned char *data_;
+protected:
+    unsigned char* data_;
     size_t dataSize_;
     DISALLOW_COPY_AND_ASSIGN(DirectshowVideoFrame2);
 };
 
-namespace {
-    std::string GetMessageForHresult(HRESULT hr) {
-        //_com_error error(hr);
-        CString cs;
-        WCHAR descr[1024] = L"";
-        DXGetErrorDescriptionW(hr, descr, ARRAY_SIZE(descr));
-        cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr);
-        return IuCoreUtils::WstringToUtf8((LPCTSTR)cs);
-    }
-}
-
-typedef struct tagVIDEOINFOHEADER2
-{
-    RECT rcSource;
-    RECT rcTarget;
-    DWORD dwBitRate;
-    DWORD dwBitErrorRate;
-    REFERENCE_TIME AvgTimePerFrame;
-    DWORD dwInterlaceFlags;
-    DWORD dwCopyProtectFlags;
-    DWORD dwPictAspectRatioX;
-    DWORD dwPictAspectRatioY;
-    union
-    {
-        DWORD dwControlFlags;
-        DWORD dwReserved1;
-    };
-    DWORD dwReserved2;
-    BITMAPINFOHEADER bmiHeader;
-} VIDEOINFOHEADER2;
-
-class DirectshowFrameGrabber2Private: public CGrabCallback {
+class DirectshowFrameGrabber2Private : public CGrabCallback {
 public:
     class Initializer {
     public:
-        Initializer() {
-        }
+        Initializer() {}
 
         ~Initializer() {
             DbgTerminate();
@@ -170,13 +140,13 @@ public:
     CComPtr<IBaseFilter> pSource;
     CComPtr<IGraphBuilder> pGraph;
     CComPtr<IVideoWindow> pVideoWindow;
-    CComQIPtr<IMediaControl, & IID_IMediaControl> pControl;
-    CComQIPtr<IMediaEvent, & IID_IMediaEvent> pEvent;
-    CComQIPtr<IMediaSeeking, & IID_IMediaSeeking> pSeeking;
+    CComQIPtr<IMediaControl, &IID_IMediaControl> pControl;
+    CComQIPtr<IMediaEvent, &IID_IMediaEvent> pEvent;
+    CComQIPtr<IMediaSeeking, &IID_IMediaSeeking> pSeeking;
 
-    CComQIPtr<IVideoWindow, & IID_IVideoWindow> pWindow;
-    CComQIPtr<IBaseFilter, & IID_IBaseFilter> pGrabberBase;
-    CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad;
+    CComQIPtr<IVideoWindow, &IID_IVideoWindow> pWindow;
+    CComQIPtr<IBaseFilter, &IID_IBaseFilter> pGrabberBase;
+    CComQIPtr<IFileSourceFilter, &IID_IFileSourceFilter> pLoad;
     CComPtr<IPin> pSourcePin;
     CComPtr<IPin> pGrabPin;
     CComQIPtr<IObjectWithSite> pObjectWithSite;
@@ -186,36 +156,28 @@ public:
     void OnDumpSample(REFERENCE_TIME SampleTime, BYTE* pBuffer, long BufferSize, BITMAPINFOHEADER* bih) override {
         LONGLONG time = SampleTime / 10000000;
 
-        DirectshowVideoFrame2* frame = new DirectshowVideoFrame2
-            (pBuffer, BufferSize, time, bih->biWidth, bih->biHeight);
+        auto* frame = new DirectshowVideoFrame2(pBuffer, BufferSize, time, bih->biWidth, bih->biHeight);
         setCurrentFrame(frame);
         //Grab = false;
     }
-protected:
-     std::unique_ptr<DirectshowVideoFrame2> currentFrame_;
-};
 
+protected:
+    std::unique_ptr<DirectshowVideoFrame2> currentFrame_;
+};
 
 
 DirectshowFrameGrabber2::DirectshowFrameGrabber2() :
     duration_(0),
-    d_ptr(new DirectshowFrameGrabber2Private())
-
-{
-}
+    d_ptr(std::make_unique<DirectshowFrameGrabber2Private>()) {}
 
 bool DirectshowFrameGrabber2::open(const std::string& fileName) {
-    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    thread_local COMInitializer comInitializer(COM_MULTI_THREADED);
     CString fileNameW = U2W(fileName);
 
     HRESULT hr;
     d_ptr->grab = std::make_unique<CGrab>();
-    //d_ptr->grabFilter.reset(new CGrabFilter(nullptr));
     CGrabFilter* grabFilter = d_ptr->grab->filter();
-    //grabFilter->AddRef();
-
     d_ptr->pGrabberBase = grabFilter;
-
     grabFilter->SetCallback(d_ptr.get());
 
     // Create the file reader
@@ -227,24 +189,20 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
 
     // Create the graph
     //
-    d_ptr->pGraph.CoCreateInstance( CLSID_FilterGraph );
-    if ( !d_ptr->pGraph )
-    {
+    d_ptr->pGraph.CoCreateInstance(CLSID_FilterGraph);
+    if (!d_ptr->pGraph) {
         LOG(ERROR) << "Couldn't create CLSID_FilterGraph instance.";
         return false;
     }
     d_ptr->pObjectWithSite = d_ptr->pGraph;
     d_ptr->pObjectWithSite->SetSite(&d_ptr->graphBuilderCallback);
-    bool Error = false;
-    CComPtr<IGraphBuilder>  pGraph2;
 
     // Put them in the graph
     //
-    hr = d_ptr->pGraph->AddFilter( d_ptr->pSource, L"Source" );
+    hr = d_ptr->pGraph->AddFilter(d_ptr->pSource, L"Source");
 
-    if ( FAILED( hr ) )
-    {
-        LOG(ERROR) << "Couldn't load codec"<<GetMessageForHresult(hr);
+    if (FAILED(hr)) {
+        LOG(ERROR) << "Couldn't load codec" << DirectShowUtil::GetMessageForHresult(hr);
         return false;
     }
 
@@ -257,33 +215,25 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
 
     // Load the source
     d_ptr->pLoad = (d_ptr->pSource);
-    hr = d_ptr->pLoad->Load(fileNameW, NULL);
+    hr = d_ptr->pLoad->Load(fileNameW, nullptr);
 
-    if ( FAILED( hr ) )
-    {
-        LOG(ERROR) << "Failed to load source file '"<< fileName <<"'"<<GetMessageForHresult(hr);
+    if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to load source file '" << fileName << "'" << DirectShowUtil::GetMessageForHresult(hr);
         return false;
     }
 
     // Get the output pin and the input pin
-    //IPin* sourcePin =
     d_ptr->pSourcePin = DirectShowUtil::GetOutPin(d_ptr->pSource, 0);;
-    //sourcePin->Release();
-    //CComPtr<IPin> grabPin
     d_ptr->pGrabPin = DirectShowUtil::GetInPin(d_ptr->pGrabberBase, 0);
-    //grabPin->Release();
 
     // ... and connect them
-    //return false;
-    hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
+    hr = d_ptr->pGraph->Connect(d_ptr->pSourcePin, d_ptr->pGrabPin);
 
-    if ( FAILED( hr ) )
-    {
-        /*d_ptr->pGraph->RemoveFilter(pDumpFilter);
-        d_ptr->pGraph->RemoveFilter(d_ptr->pSource);*/
+    if (FAILED(hr)) {
 
-        LOG(ERROR) << _("Cannot connect filters (format probably is not supported).\nMake sure you have the required codecs installed on your system.")
-            << std::endl << GetMessageForHresult(hr);
+        LOG(ERROR) << _(
+                "Cannot connect filters (format probably is not supported).\nMake sure you have the required codecs installed on your system.")
+            << std::endl << DirectShowUtil::GetMessageForHresult(hr);
 
         return false;
     }
@@ -302,8 +252,7 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     // Find a limited number of frames
     LONGLONG duration;
     d_ptr->pSeeking->GetDuration(&duration);
-    if (duration == 0)
-    {
+    if (duration == 0) {
         LOG(ERROR) << "Cannot determine stream's length.";
         return false;
     }
@@ -326,21 +275,21 @@ bool DirectshowFrameGrabber2::seek(int64_t time) {
     hr = d_ptr->pSeeking->SetPositions(&Start, AM_SEEKING_AbsolutePositioning | AM_SEEKING_SeekToKeyFrame, 0,
                                        AM_SEEKING_NoPositioning);
     if (FAILED(hr)) {
-        LOG(WARNING) << "pSeeking->SetPositions failed." << GetMessageForHresult(hr);
+        LOG(WARNING) << "pSeeking->SetPositions failed." << DirectShowUtil::GetMessageForHresult(hr);
     }
     d_ptr->grab->filter()->SetGrab(true);
     hr = d_ptr->pControl->Run();
     if (FAILED(hr)) {
-        LOG(WARNING) << "pControl->Run() failed." << GetMessageForHresult(hr);
+        LOG(WARNING) << "pControl->Run() failed." << DirectShowUtil::GetMessageForHresult(hr);
     }
     //Sleep(1000);
     hr = d_ptr->pEvent->WaitForCompletion(INFINITE, &EvCode);
     if (FAILED(hr)) {
-        LOG(WARNING) << "pEvent->WaitForCompletion() failed." << GetMessageForHresult(hr);
+        LOG(WARNING) << "pEvent->WaitForCompletion() failed." << DirectShowUtil::GetMessageForHresult(hr);
     }
     d_ptr->pControl->Stop();
     if (FAILED(hr)) {
-        LOG(WARNING) << "pControl->Stop() failed." << GetMessageForHresult(hr);
+        LOG(WARNING) << "pControl->Stop() failed." << DirectShowUtil::GetMessageForHresult(hr);
     }
 
     return true;
@@ -354,14 +303,10 @@ int64_t DirectshowFrameGrabber2::duration() {
     return duration_;
 }
 
-void DirectshowFrameGrabber2::abort() {
-
-}
+void DirectshowFrameGrabber2::abort() {}
 
 DirectshowFrameGrabber2::~DirectshowFrameGrabber2() {
     if (d_ptr->pControl) {
         d_ptr->pControl->Stop();
     }
-
-    ::CoUninitialize();
 }

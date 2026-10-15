@@ -47,8 +47,7 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
             return serverData.strMark();
         } if (serverData.skip) {
             return "<SKIP>";
-        }
-        else {
+        } else {
             return serverData.statusText();
         }
     } else if (column == 3) {

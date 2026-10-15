@@ -10,7 +10,7 @@ class ServersCheckerModel;
 class CServerCheckerListView :
     public CWindowImpl<CServerCheckerListView, CListViewCtrl> {
 public:
-    CServerCheckerListView(ServersCheckerModel* model);
+    explicit CServerCheckerListView(ServersCheckerModel* model);
 
     DECLARE_WND_SUPERCLASS(_T("CServerListView"), CListViewCtrl::GetWndClassName())
 

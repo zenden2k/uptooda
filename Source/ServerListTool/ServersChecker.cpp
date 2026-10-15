@@ -19,6 +19,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     model_(model),
     uploadManager_(uploadManager),
     useAccounts_(true),
+    onlyAccs_(false),
     checkImageServers_(true),
     checkFileServers_(true),
     checkURLShorteners_(true),
@@ -339,7 +340,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     markServer(i);
 }
 
-void ServersChecker::onSessionFinished(UploadSession* session) {
+void ServersChecker::onSessionFinished(UploadSession*) {
     isRunning_ = false;
     LOG(INFO) << "Uploader has finished";
     processFinished();
