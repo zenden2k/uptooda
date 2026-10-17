@@ -19,7 +19,7 @@ class ThreadSync
         explicit ThreadSync(ThreadSyncPrivate* priv);
         virtual ~ThreadSync() = default;
         void setValue(const std::string& name, const std::string& value);
-        std::string getValue(const std::string& name);
+        std::string getValue(const std::string& name) const;
         /*! @cond PRIVATE */
         CurlShare* getCurlShare();
         void incrementThreadCount();

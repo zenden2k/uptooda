@@ -20,7 +20,6 @@ class BaseClassesConan(ConanFile):
     def source(self):
         git = Git(self)
         git.clone(url="https://github.com/zenden2k/base-classes.git")
-        shutil.copyfile("CMakeLists.txt", "base-classes/CMakeLists.txt")
     
     def build(self):
         cmake = CMake(self)

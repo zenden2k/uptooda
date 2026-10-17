@@ -7,8 +7,7 @@
 
 class FileDownloaderTest : public ::testing::Test {
 public:
-    FileDownloaderTest() {
-    }
+    FileDownloaderTest() = default;
 protected:
 };
 

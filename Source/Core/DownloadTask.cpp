@@ -47,12 +47,12 @@ void DownloadTask::run() {
 
         if (file.fileName.empty()) {
             boost::filesystem::path temp = boost::filesystem::unique_path();
-            const auto& tempstr = temp.native();
+            const auto& tempStr = temp.native();
 
 #ifdef _WIN32
-            filePath = IuCoreUtils::WstringToUtf8(tempstr);
+            filePath = IuCoreUtils::WstringToUtf8(tempStr);
 #else
-            filePath = tempstr;
+            filePath = tempStr;
 #endif
             if (!ext.empty()) {
                 filePath += "." + ext;

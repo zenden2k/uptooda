@@ -56,7 +56,7 @@ void CEncodedPassword::DecodeString(const std::string& encodedString, std::strin
     memset(szDestination, 0, sizeof(szDestination));
 
     int i;
-    uint8_t* data = (uint8_t*)szDestination;
+    auto* data = reinterpret_cast<uint8_t*>(szDestination);
     *szDestination = 0;
 
     for (i = 0; i < n; i++) {

@@ -4,7 +4,7 @@
 
 #include "ThreadSyncPrivate.h"
 
-ThreadSync::ThreadSync() : d_ptr(new ThreadSyncPrivate())
+ThreadSync::ThreadSync() : d_ptr(std::make_shared<ThreadSyncPrivate>())
 {
 }
 
@@ -19,8 +19,7 @@ void ThreadSync::setValue(const std::string& name, const std::string& value)
     d_ptr->data_[name] = value;
 }
 
-std::string ThreadSync::getValue(const std::string& name)
-{
+std::string ThreadSync::getValue(const std::string& name) const {
     std::lock_guard<std::mutex> lock(d_ptr->dataMutex_);
     auto it = d_ptr->data_.find(name);
     if (it == d_ptr->data_.end()) {

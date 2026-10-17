@@ -19,7 +19,6 @@
 DefaultProxyProvider::DefaultProxyProvider() {
     hInternet_ = nullptr;  
     configObtained_ = false;
-    memset(&myProxyConfig_, 0, sizeof(myProxyConfig_));
 }
 
 DefaultProxyProvider::~DefaultProxyProvider() {

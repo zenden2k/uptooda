@@ -63,7 +63,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")
         self.requires("zlib/1.3.1")
-        self.requires("minizip/1.3.1@zenden2k/stable")
+        self.requires("minizip/1.3.2")
         self.requires("jsoncpp/1.9.6")
         self.requires("sqlite3/3.49.1")
         self.requires("base64/0.5.2")
@@ -72,7 +72,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("libwebp/1.6.0", force=True)
         self.requires("gtest/1.10.0")
         self.requires("gumbo-parser/0.10.1@zenden2k/stable")
-        self.requires("squirrel/3.0.0")
+        self.requires("squirrel/3.0.0@zenden2k/stable")
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
         self.requires("libidn2/2.3.8", force=True)
@@ -90,7 +90,7 @@ class ImageUploaderRecipe(ConanFile):
             self.requires("xz_utils/5.8.3", force=True)
 
         if self.settings.os == "Windows":
-            self.requires("base-classes/1.0.0")
+            self.requires("base-classes/1.0.0@zenden2k/stable")
             self.requires("libheif/1.13.0@zenden2k/stable") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
 
             #self.requires("qt/5.15.16")

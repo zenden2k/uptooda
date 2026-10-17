@@ -14,7 +14,7 @@ public:
     bool provideProxyForUrl(INetworkClient* client, const std::string& url) override;
 protected:
     HINTERNET hInternet_;
-    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG myProxyConfig_;
+    WINHTTP_CURRENT_USER_IE_PROXY_CONFIG myProxyConfig_{};
     bool configObtained_;
     bool openWinHttpSession();
     void closeWinHttpSession();

@@ -51,9 +51,7 @@ BasicSettings::BasicSettings()
     DeviceId = boost::uuids::to_string(uuid);
 }
 
-BasicSettings::~BasicSettings() {
-
-}
+BasicSettings::~BasicSettings() = default;
 
 void BasicSettings::setEngineList(CUploadEngineListBase* engineList) {
     engineList_ = engineList;
@@ -70,16 +68,15 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         server.GetAttributes(attribs);
         ServerSettingsStruct tempSettings;
 
-        for (size_t j = 0; j < attribs.size(); j++) {
-            std::string attribName = attribs[j];
-
-            if (attribName.empty())
+        for (const auto& attribName : attribs) {
+            if (attribName.empty()) {
                 continue;
+            }
             if (attribName.substr(0, 1) == "_") {
                 std::string value = server.Attribute(attribName);
-                attribName = attribName.substr(1, attribName.size() - 1);
+                std::string attribName2 = attribName.substr(1, attribName.size() - 1);
                 if (!value.empty())
-                    tempSettings.params[attribName] = std::move(value);
+                    tempSettings.params[attribName2] = std::move(value);
             }
         }
         tempSettings.authData.DoAuth = server.AttributeBool("Auth");
@@ -106,20 +103,16 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
 
 bool BasicSettings::SaveAccounts(SimpleXmlNode root)
 {
-    ServerSettingsMap::iterator it1;
-    for (it1 = ServersSettings.begin(); it1 != ServersSettings.end(); ++it1) {
-        std::map <std::string, ServerSettingsStruct>::iterator it;
-        for (it = it1->second.begin(); it != it1->second.end(); ++it) {
+    for (auto it1 = ServersSettings.begin(); it1 != ServersSettings.end(); ++it1) {
+        for (auto it = it1->second.begin(); it != it1->second.end(); ++it) {
             ServerSettingsStruct & sss = it->second;
             if (sss.isEmpty()) {
                 continue;
             }
             SimpleXmlNode serverNode = root.CreateChild("Server");
-
             serverNode.SetAttribute("Name", it1->first);
 
-            std::map <std::string, std::string>::iterator param;
-            for (param = it->second.params.begin(); param != sss.params.end(); ++param) {
+            for (auto param = it->second.params.begin(); param != sss.params.end(); ++param) {
                 if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
                     continue;
                 }
@@ -142,7 +135,6 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
                 serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
                 serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
             }
-
         }
     }
     return true;
@@ -190,7 +182,7 @@ bool BasicSettings::SaveSettings()
     mgr_.saveToXmlNode(xml.getRoot(rootName_).GetChild("Settings"));
     PostSaveSettings(xml);
     SaveAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
-    //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
+
     bool result = true;
     if (!xml.SaveToFile(fileName_)) {
         LOG(ERROR) << "Could not save settings!" << std::endl << "File: " << fileName_;
@@ -227,10 +219,7 @@ void BasicSettings::deleteProfile(const std::string& serverName, const std::stri
 }
 
 void BasicSettings::clearServerSettings() {
-    //auto builtInScripts = CUploadEngineListBase::builtInScripts();
-
     std::vector<std::string> deletedServerProfiles;
-
     {
         std::lock_guard<std::mutex> lock(serverSettingsMutex_);
 

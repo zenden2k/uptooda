@@ -22,10 +22,7 @@ public:
     {
     }
 
-     virtual ~ThreadSyncPrivate()
-    {
-        
-    }
+     virtual ~ThreadSyncPrivate() = default;
 };
 
 #endif
