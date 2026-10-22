@@ -11,12 +11,25 @@ on:
 permissions:
   contents: write
 
+env:
+  CONAN_REMOTE_NAME: zenden2k
+  CONAN_REMOTE_URL: https://conan.svistunov.dev
+  CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
+  CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
+
 jobs:
   submit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: advanced-security/conan-dependency-submission@v1
+      - name: Configure Conan remote
+        run: |
+          conan remote add $env:CONAN_REMOTE_NAME $env:CONAN_REMOTE_URL --index 0 --force
+          if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
+            conan remote login $env:CONAN_REMOTE_NAME $env:CONAN_LOGIN_USERNAME_ZENDEN2K -p $env:CONAN_PASSWORD_ZENDEN2K
+          }
+#      - uses: advanced-security/conan-dependency-submission@v1
+      - uses: zenden2k/conan-dependency-submission@fix-user-channel
         with:
           conanfile: Source/conanfile.py
           conan-version: 2.27.1
