@@ -19,4 +19,4 @@ jobs:
       - uses: advanced-security/conan-dependency-submission@v1
         with:
           conanfile: Source/conanfile.py
-          conan-version: 2.0.27
+          conan-version: 2.27.1
