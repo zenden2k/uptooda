@@ -3,6 +3,9 @@ name: Conan Dependency Submission
 on:
   push:
     branches: [main]
+    paths:
+      - 'Source/conanfile.py'
+      - '.github/workflows/conan-dependency-submission.yml'
   workflow_dispatch:
 
 permissions:
