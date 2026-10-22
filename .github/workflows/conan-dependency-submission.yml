@@ -1,0 +1,19 @@
+name: Conan Dependency Submission
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: advanced-security/conan-dependency-submission@v1
+        with:
+          conanfile: Source/conanfile.py
+          conan-version: 2.0.27
