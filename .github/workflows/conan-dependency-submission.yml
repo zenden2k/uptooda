@@ -27,14 +27,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install Python dependencies
-        working-directory: Dist
-        run: python -m pip install --upgrade pip; python -m pip install conan
+        run: python -m pip install --upgrade pip && python -m pip install conan
       - name: Configure Conan remote
         run: |
-          conan remote add $env:CONAN_REMOTE_NAME $env:CONAN_REMOTE_URL --index 0 --force
-          if ($env:CONAN_LOGIN_USERNAME_ZENDEN2K -and $env:CONAN_PASSWORD_ZENDEN2K) {
-            conan remote login $env:CONAN_REMOTE_NAME $env:CONAN_LOGIN_USERNAME_ZENDEN2K -p $env:CONAN_PASSWORD_ZENDEN2K
-          }
+          conan remote add "$CONAN_REMOTE_NAME" "$CONAN_REMOTE_URL" --index 0 --force
+          if [ -n "$CONAN_LOGIN_USERNAME_ZENDEN2K" ] && [ -n "$CONAN_PASSWORD_ZENDEN2K" ]; then
+            conan remote login "$CONAN_REMOTE_NAME" "$CONAN_LOGIN_USERNAME_ZENDEN2K" -p "$CONAN_PASSWORD_ZENDEN2K"
+          fi
 #      - uses: advanced-security/conan-dependency-submission@v1
       - uses: zenden2k/conan-dependency-submission@fix-user-channel
         with:
