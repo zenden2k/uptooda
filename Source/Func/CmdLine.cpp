@@ -84,7 +84,7 @@ CString CCmdLine::OnlyParams() const
 
 CString CCmdLine::ModuleName() const
 {
-    return params_.empty() ? _T(""): params_[0];
+    return params_.empty() ? CString(_T("")): params_[0];
 }
 
 bool CCmdLine::GetNextFile(CString& FileName, size_t& nIndex) const

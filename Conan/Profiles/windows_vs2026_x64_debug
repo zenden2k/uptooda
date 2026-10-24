@@ -3,7 +3,7 @@ os=Windows
 arch=x86_64
 compiler=msvc
 compiler.version=195
-compiler.cppstd=17
+compiler.cppstd=20
 compiler.runtime=static
 build_type=Debug
 

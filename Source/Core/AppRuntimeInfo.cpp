@@ -12,6 +12,10 @@ constexpr char kPathSeparator =
 
 AppRuntimeInfo::AppRuntimeInfo() {
     isGui_ = true;
+    supportedImageExtensions_ = {
+        "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
+        "wmf"
+    };
 }
 
 void AppRuntimeInfo::setVersionInfo(const AppVersionInfo& info) {

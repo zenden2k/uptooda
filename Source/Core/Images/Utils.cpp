@@ -1186,7 +1186,7 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
     std::string mimeType = IuCoreUtils::GetFileMimeType(fileNameUtf8);
     FILE* f = IuCoreUtils::FopenUtf8(fileNameUtf8.c_str(), "rb");
     if (!f) {
-        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
+        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileNameUtf8 << std::endl << "Reason: " << strerror(errno);
         return false;
     }
     int64_t fileSize = IuCoreUtils::GetFileSize(fileNameUtf8);

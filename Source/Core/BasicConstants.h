@@ -1,6 +1,8 @@
 #pragma once
 
 #define APP_NAME_LITERAL "Uptooda"
+#include <string>
+#include <unordered_set>
 
 inline constexpr auto APP_NAME_A = APP_NAME_LITERAL;
 

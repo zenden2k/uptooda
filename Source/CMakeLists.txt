@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
  
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_SKIP_RPATH 1)   
 project(Uptooda)
@@ -52,6 +52,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+	add_compile_options(/utf-8)
 endif()
 
 if (IU_STATIC_RUNTIME)#AND IU_PROFILE_HOST STREQUAL "" 
@@ -149,7 +150,7 @@ if (IU_ENABLE_WEBVIEW2)
 endif()
 
 
-if (IU_ENABLE_SFTP) 
+if (IU_ENABLE_SFTP)
 	add_definitions(-DIU_ENABLE_SFTP)					
 endif()
 
@@ -300,6 +301,10 @@ if(WIN32)
     add_subdirectory(Gui)
 	add_subdirectory(ScreenCapture)
 endif()
+	add_subdirectory(WebBrowser)
+if(WIN32)
+
+endif ()
 
 add_subdirectory(CLI)
 

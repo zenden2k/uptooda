@@ -27,7 +27,8 @@ class ImageUploaderRecipe(ConanFile):
 		"ffmpeg/*:with_libiconv": False,
 		"ffmpeg/*:with_libx265": False,
 		"ffmpeg/*:with_openh264": False,
-		"libheif/*:with_dav1d": True
+		"libheif/*:with_dav1d": True,
+        "boost/*:without_cobalt": True
     }
 
     def configure(self):
@@ -58,22 +59,23 @@ class ImageUploaderRecipe(ConanFile):
 #            raise ConanInvalidConfiguration("ARM v8 not supported")
 
     def requirements(self):
-        self.requires("boost/1.87.0")
+        self.requires("boost/1.91.0")
         self.requires("libcurl/8.10.1") # cookie sharing between threads is causing crash in newer versions
+        self.requires("libssh2/1.11.1", force=True)
         self.requires("pcre/8.45")
-        self.requires("uriparser/0.9.8")
-        self.requires("zlib/1.3.1")
+        self.requires("uriparser/1.0.2")
+        self.requires("zlib/1.3.2")
         self.requires("minizip/1.3.2")
         self.requires("jsoncpp/1.9.6")
-        self.requires("sqlite3/3.49.1")
+        self.requires("sqlite3/3.54.0")
         self.requires("base64/0.5.2")
         self.requires("glog/0.7.1")
         #self.requires("glog/0.6.0@zenden2k/stable")
         self.requires("libwebp/1.6.0", force=True)
-        self.requires("gtest/1.10.0")
+        self.requires("gtest/1.18.0")
         self.requires("gumbo-parser/0.10.1@zenden2k/stable")
         self.requires("squirrel/3.0.0@zenden2k/stable")
-        self.requires("tinyxml2/10.0.0", force=True)
+        self.requires("tinyxml2/11.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
         self.requires("libidn2/2.3.8", force=True)
 
@@ -91,7 +93,7 @@ class ImageUploaderRecipe(ConanFile):
 
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0@zenden2k/stable")
-            self.requires("libheif/1.13.0@zenden2k/stable") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
+            self.requires("libheif/1.23.4") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
 
             #self.requires("qt/5.15.16")
 

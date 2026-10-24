@@ -96,7 +96,7 @@ set(SRC_LIST
         Dialogs/TransferSettingsPage.cpp
         Dialogs/VideoGrabberPage.cpp
         Dialogs/VideoGrabberSettingsPage.cpp
-        Dialogs/WebViewWindow.cpp
+        ../WebBrowser/WebViewWindow.cpp
         Dialogs/WelcomeDlg.cpp
         Dialogs/WizardDlg.cpp
         Dialogs/ServerProfileGroupSelectDialog.cpp
@@ -113,7 +113,7 @@ set(SRC_LIST
         Controls/MultiServerSelectorControl.cpp
         Controls/TabListBox.cpp
         Controls/ThumbsView.cpp
-        Controls/WTLBrowserView.cpp
+        ../WebBrowser/WTLBrowserView.cpp
         Controls/FileFormatErrorView.cpp
         Controls/ServerListView.cpp
         Helpers/LangHelper.cpp
@@ -265,7 +265,7 @@ set(HEADER_LIST
         Dialogs/TransferSettingsPage.h
         Dialogs/VideoGrabberPage.h
         Dialogs/VideoGrabberSettingsPage.h
-        Dialogs/WebViewWindow.h
+        ../WebBrowser/WebViewWindow.h
         Dialogs/WelcomeDlg.h
         Dialogs/WizardDlg.h
         Dialogs/ServerProfileGroupSelectDialog.h
@@ -282,7 +282,7 @@ set(HEADER_LIST
         Controls/MultiServerSelectorControl.h
         Controls/TabListBox.h
         Controls/ThumbsView.h
-        Controls/WTLBrowserView.h
+        ../WebBrowser/WTLBrowserView.h
         Controls/FileFormatErrorView.h
         Controls/DialogIndirect.h
         Controls/ServerListView.h
@@ -383,6 +383,8 @@ add_executable(GUI WIN32
 )
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
+
+target_compile_options(GUI PRIVATE /permissive)
 
 set(LIBS_LIST
         gdiplus Ws2_32 dwmapi wininet IPHLPAPI

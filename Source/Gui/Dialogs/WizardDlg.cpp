@@ -46,7 +46,7 @@
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include "Gui/Dialogs/ShortenUrlDlg.h"
-#include "Gui/Dialogs/WebViewWindow.h"
+#include "../../WebBrowser/WebViewWindow.h"
 #include "Func/WinUtils.h"
 #include "Func/ClipboardUtils.h"
 #include "Func/IuCommonFunctions.h"

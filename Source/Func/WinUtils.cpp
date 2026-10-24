@@ -14,8 +14,8 @@
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
-#include "Gui/Dialogs/HistoryWindow.h"
 #include "Core/Utils/Win32Exception.h"
+#include "Gui/GuiTools.h"
 
 namespace WinUtils {
 
@@ -687,7 +687,7 @@ CString GetUniqFileName(const CString& filePath)
     CString result;
     for (int i = 2;; i++)
     {
-        result = path + name + WinUtils::IntToStr(i) + (extension.IsEmpty() ? _T("") : _T(".") + extension);
+        result = path + name + WinUtils::IntToStr(i) + (extension.IsEmpty() ? CString(_T("")) : _T(".") + extension);
         if (!WinUtils::FileExists(result))
             break;
     }

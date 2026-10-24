@@ -28,7 +28,7 @@
 #include "MediaInfoDlg.h"
 #endif
 #include "LogWindow.h"
-#include "Gui/Dialogs/WebViewWindow.h"
+#include "../../WebBrowser/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"

@@ -149,7 +149,7 @@ TEST_F(NetworkClientTest, UploadUnicodePath) {
     NetworkClient nc;
     configureNetworkClient(nc);
 
-    std::string fileName = u8"\u0067\u0072\u0061\u0062\u005F\u044E\u043D\u0438\u043A\u043E\u0434\u005F\u4F60\u597D\u002E\u006A\u0070\u0067";
+    std::string fileName = "\u0067\u0072\u0061\u0062\u005F\u044E\u043D\u0438\u043A\u043E\u0434\u005F\u4F60\u597D\u002E\u006A\u0070\u0067";
     {
         Json::Value root;
 

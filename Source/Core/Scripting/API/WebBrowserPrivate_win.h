@@ -24,7 +24,7 @@
 #include "ScriptAPI.h"
 
 #include "WebBrowserPrivateBase.h"
-#include "Gui/Dialogs/WebViewWindow.h"
+#include "../../../WebBrowser/WebViewWindow.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 #include "Core/Scripting/Squirrelnc.h"

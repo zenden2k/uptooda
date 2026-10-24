@@ -38,6 +38,7 @@
 #include "Core/Images/Utils.h"
 #endif
 #include "Core/AppRuntimeInfo.h"
+#include "Func/WinUtils.h"
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT APP_NAME_A
@@ -69,8 +70,10 @@ MyGfxProcessor::MyGfxProcessor() {
 bool MyGfxProcessor::readBitmap(const std::string& path) {
     // path parameter contains utf-16 string
     CString widePath(reinterpret_cast<const wchar_t*>(path.data()), path.size() / 2);
+    CString ext = WinUtils::GetFileExt(widePath);
+    const auto& supportedImageExtensions = AppRuntimeInfo::instance()->supportedImageExtensions();
 
-    if (!IuCommonFunctions::IsImage(widePath)) {
+    if (supportedImageExtensions.find(W2U(ext)) == supportedImageExtensions.cend()) {
         return false;
     }
     std::unique_ptr<GdiPlusImage> img = ImageUtils::LoadImageFromFileExtended(widePath);

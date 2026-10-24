@@ -71,6 +71,7 @@ target_link_libraries(iu_video PRIVATE
 )
 
 if(MSVC)
+    target_compile_options(iu_video PRIVATE /permissive)
 #    target_compile_options(iu_video PRIVATE "/MP")
 endif()
 
