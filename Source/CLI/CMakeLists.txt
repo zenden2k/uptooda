@@ -9,6 +9,7 @@ add_executable(CLI
     ConsoleScriptDialogProvider.cpp 
     ConsoleScriptDialogProvider.h
     ../Core/Settings/CliSettings.cpp
+    ../Func/IuCommonFunctions.cpp
     ConsoleScriptFunctionsImpl.cpp
     ${RESOURCE_LIST}
 )

@@ -11,6 +11,7 @@ public:
 
     void render(Painter* gr) override;
     void resize(int width, int height) override;
+    void setPenSize(int penSize) override;
     ElementType getType() const override;
     Gdiplus::Rect getInputBoxRect() override;
 
@@ -28,6 +29,7 @@ private:
         TailSide Side;
     };
 
+    int getBorderWidth() const;
     Geometry getGeometry(int inset = 0);
     static void addSpeechBaloonPath(Gdiplus::GraphicsPath& path, const Geometry& geometry, int radius);
 

@@ -7,6 +7,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/i18n/Translator.h"
 
 ImageGeneratorTask::ImageGeneratorTask(std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile):
 	files_(std::move(files)),

@@ -5,12 +5,11 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
-#include "Core/Settings/BasicSettings.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include "Func/WebUtils.h"
 #include "Core/3rdpart/Hexdump.hpp"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Utils/IOException.h"
+#include "Core/i18n/Translator.h"
 
 CNetworkDebugDlg::CNetworkDebugDlg()
     : listView_(&model_) {

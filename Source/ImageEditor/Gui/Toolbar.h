@@ -31,7 +31,9 @@ public:
     enum Orientation { orHorizontal, orVertical };
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo, itLabel };
-    enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 360 };
+    static constexpr int kTinyComboDropdownTimer = 42;
+    static constexpr int kSubpanelWidth = 360;
+
     enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
         ID_CANCELOPERATIONBUTTON,
         ID_INVERTSELECTIONCHECKBOX,

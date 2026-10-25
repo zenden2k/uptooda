@@ -6,7 +6,7 @@
 #include "atlheaders.h"
 #include "CommonGuiSettings.h"
 #include "Func/WinUtils.h"
-#include "Gui/Dialogs/HotkeySettingsPage.h"
+#include "Gui/Models/HotkeyList.h"
 #include "Core/SearchByImage.h"
 #include "3rdpart/GdiplusH.h" 
 #include "Core/Images/Utils.h"
@@ -61,7 +61,6 @@ struct ScreenshotSettingsStruct {
     bool CaptureCursor;
     int MonitorMode;
 };
-
 
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());

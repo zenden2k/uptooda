@@ -21,6 +21,7 @@ set(SRC_LIST
    ../CLI/ConsoleScriptFunctionsImpl.cpp
    ../Core/Settings/CliSettings.cpp
    ../Core/Network/Tests/NetworkClientMock.h
+   ../Func/IuCommonFunctions.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 

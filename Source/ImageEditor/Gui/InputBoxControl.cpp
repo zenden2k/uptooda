@@ -208,6 +208,7 @@ bool InputBoxControl::CreateTextServices() {
     hr = punk->QueryInterface(IID_ITextServices2, (void**)&services2_);
 
     ApplyDefaults();
+    lastPlainText_ = getPlainText();
     return true;
 }
 
@@ -217,14 +218,14 @@ void InputBoxControl::ApplyDefaults() {
 
     LRESULT editStyle = 0;
 
-    //services_->TxSendMessage(EM_SETEDITSTYLE, SES_SCROLLONKILLFOCUS, SES_SCROLLONKILLFOCUS, nullptr);
-    
-    if (d2dMode_ ) {
+    // services_->TxSendMessage(EM_SETEDITSTYLE, SES_SCROLLONKILLFOCUS, SES_SCROLLONKILLFOCUS, nullptr);
+
+    if (d2dMode_) {
         services_->TxSendMessage(EM_SETEDITSTYLE, 0, SES_LOGICALCARET, nullptr);
     }
     services_->TxSendMessage(EM_GETEDITSTYLE, 0, 0, &editStyle);
 
-    // Прозрачный фон, шрифт/параграф, событийная маска
+    // Transparent background, font/paragraph, and event mask.
     services_->TxSendMessage(EM_SETBKGNDCOLOR, 0, CLR_NONE, nullptr);
     services_->TxSendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&charFormat_, nullptr);
     services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&paraFormat_, nullptr);
@@ -232,15 +233,15 @@ void InputBoxControl::ApplyDefaults() {
     DWORD mask = ENM_CHANGE | ENM_REQUESTRESIZE | ENM_SELCHANGE;
     services_->TxSendMessage(EM_SETEVENTMASK, 0, mask, nullptr);
 
-    // Многострочность, автоскролл, не скрывать выделение
+    // Enable multiline input and automatic scrolling without hiding the selection.
     LONG style = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
     if (autoVerticalScroll_) {
         style |= ES_AUTOVSCROLL;
     }
     services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
 
-    // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
-    //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
+    // Enable emoji support and improved rendering.
+    // services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // Use RTF instead of plain text.
 
     // Keep font binding for missing glyphs (e.g. emoji), but use document font rules.
     // IMF_UIFONTS makes binding prefer UI defaults over the font selected for new text.
@@ -250,18 +251,43 @@ void InputBoxControl::ApplyDefaults() {
     langOptions &= ~(IMF_UIFONTS | IMF_DUALFONT);
     services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
 
-    BIDIOPTIONS bidiOptions {};
+    BIDIOPTIONS bidiOptions { };
     bidiOptions.cbSize = sizeof(bidiOptions);
     bidiOptions.wMask = BOM_UNICODEBIDI;
     bidiOptions.wEffects = BOE_UNICODEBIDI;
     services_->TxSendMessage(EM_SETBIDIOPTIONS, 0, (LPARAM)&bidiOptions, nullptr);
 
-    // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
-    //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
+    // Remove this if RTF input should be enabled by default.
+    // services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
     services_->TxSendMessage(EM_SETZOOM, 0, 0, nullptr);
-  
-    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS, TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
-        TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
+
+    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS,
+                             TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
+                             TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
+}
+
+void InputBoxControl::requestContentResize() {
+    if (!services_) {
+        return;
+    }
+
+    acceptRequestedResize_ = true;
+    services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
+    acceptRequestedResize_ = false;
+}
+
+std::wstring InputBoxControl::getPlainText() {
+    if (!services_) {
+        return { };
+    }
+
+    LRESULT length = 0;
+    services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &length);
+    std::wstring text(static_cast<size_t>(length) + 1, L'\0');
+    LRESULT copied = 0;
+    services_->TxSendMessage(WM_GETTEXT, text.size(), reinterpret_cast<LPARAM>(text.data()), &copied);
+    text.resize(static_cast<size_t>(copied));
+    return text;
 }
 
 // InputBox
@@ -332,14 +358,14 @@ bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gd
         return false;
     }
 
-    // Получаем данные пикселей
+    // Retrieve the pixel data.
     Gdiplus::BitmapData bitmapData;
     //Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
     if (gdipBitmap->LockBits(&sourceRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData) == Gdiplus::Ok) {
         FLOAT dpiX = 96.0f, dpiY = 96.0f;
         //renderTarget_->GetDpi(&dpiX, &dpiY);
 
-        // Создаем D2D bitmap
+        // Create the D2D bitmap.
         D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
             D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
             dpiX, dpiY);
@@ -591,7 +617,7 @@ void InputBoxControl::setWordWrap(bool enabled) {
     wordWrap_ = enabled;
     if (services_) {
         services_->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, wordWrap_ ? TXTBIT_WORDWRAP : 0);
-        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
+        requestContentResize();
     }
 }
 
@@ -652,16 +678,15 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
 }
 
 void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
+    constexpr DWORD DEFAULT_MASK = CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
     logFont_ = font;
 
-    constexpr DWORD DEFAULT_MASK
-        = CFM_FACE |  CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
-    CHARFORMAT2 format {};
+    CHARFORMAT2 format { };
     format.cbSize = sizeof(format);
     format.dwMask = changeMask ? changeMask : DEFAULT_MASK;
     if (format.dwMask & CFM_FACE)
         format.dwMask |= CFM_CHARSET;
-    //format.dwMask&= ~CFM_CHARSET;
+    // format.dwMask&= ~CFM_CHARSET;
     if ((format.dwMask & CFM_SIZE) && logFont_.lfHeight != 0) {
         int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
         int pointSize = MulDiv(-logFont_.lfHeight, 72, dpi);
@@ -713,6 +738,7 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
         if (FAILED(hr) || !result)
             LOG(WARNING) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
+        requestContentResize();
     }
 }
 
@@ -734,7 +760,7 @@ void InputBoxControl::setTextAlignment(WORD alignment) {
 }
 
 WORD InputBoxControl::getTextAlignment() {
-    PARAFORMAT2 format {};
+    PARAFORMAT2 format { };
     format.cbSize = sizeof(format);
     format.dwMask = PFM_ALIGNMENT;
     if (services_) {
@@ -750,10 +776,15 @@ void InputBoxControl::setRawText(const std::string& text) {
     if (!services_)
         return;
     std::stringstream ss(text);
-    EDITSTREAM es {};
+    EDITSTREAM es { };
     es.dwCookie = (DWORD_PTR)&ss;
     es.pfnCallback = &InputBoxControl::EditStreamInCallback;
     services_->TxSendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es, nullptr);
+    const std::wstring currentText = getPlainText();
+    if (currentText != lastPlainText_) {
+        lastPlainText_ = currentText;
+        requestContentResize();
+    }
     onTextChanged(L"");
 }
 
@@ -795,7 +826,7 @@ DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE 
 LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     hostWindow_ = m_hWnd;
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    // Базовый шрифт: Segoe UI 11pt
+    // Default font: Segoe UI 11 pt.
     wcscpy_s(logFont_.lfFaceName, L"Segoe UI Emoji");
     logFont_.lfHeight = -MulDiv(11, dpi, 72);
     logFont_.lfWeight = FW_NORMAL;
@@ -806,15 +837,15 @@ LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     charFormat_.crTextColor = textColor_;
     charFormat_.bCharSet = DEFAULT_CHARSET;
     // charFormat_.dwMask |= CFM_BOLD;
-    // charFormat_.dwEffects |= CFE_BOLD;  // для жирного
-    // charFormat_.dwEffects &= ~CFE_BOLD; // для обычного
+    // charFormat_.dwEffects |= CFE_BOLD;  // Enable bold.
+    // charFormat_.dwEffects &= ~CFE_BOLD; // Disable bold.
     wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
 
     paraFormat_.cbSize = sizeof(paraFormat_);
     paraFormat_.dwMask = PFM_ALIGNMENT;
     paraFormat_.wAlignment = PFA_LEFT;
 
-    bHandled = FALSE; // пусть базовый обработчик выполнится
+    bHandled = FALSE; // Let the base handler process the message.
     return 0;
 }
 LRESULT InputBoxControl::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
@@ -826,10 +857,9 @@ LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
     ::GetClientRect(m_hWnd, &clientRect_);
     if (services_) {
         isResizing_ = true;
-        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE,
-                                                  TXTBIT_CLIENTRECTCHANGE);
+        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE, TXTBIT_CLIENTRECTCHANGE);
         isResizing_ = false;
-        //onSizeChanged(w, h);
+        // onSizeChanged(w, h);
     }
     return 0;
 }
@@ -1330,51 +1360,51 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     if (pCF) {
         DWORD mask = pCF->dwMask;
 
-        // Цвет текста
+        // Text color.
         if (mask & CFM_COLOR) {
             textColor_ = pCF->crTextColor;
             charFormat_.crTextColor = pCF->crTextColor;
             charFormat_.dwMask |= CFM_COLOR;
         }
 
-        // Имя шрифта
+        // Font name.
         if (mask & CFM_FACE) {
             wcsncpy_s(charFormat_.szFaceName, pCF->szFaceName, _TRUNCATE);
             wcsncpy_s(logFont_.lfFaceName, pCF->szFaceName, _TRUNCATE);
             charFormat_.dwMask |= CFM_FACE;
         }
 
-        // Размер шрифта
+        // Font size.
         if (mask & CFM_SIZE) {
             charFormat_.yHeight = pCF->yHeight;
             charFormat_.dwMask |= CFM_SIZE;
 
-            // Обновляем LOGFONT
+            // Update LOGFONT.
             int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-            int pointSize = pCF->yHeight / 20; // yHeight в twips (1/20 пункта)
+            int pointSize = pCF->yHeight / 20; // yHeight is measured in twips (1/20 of a point).
             logFont_.lfHeight = -MulDiv(pointSize, dpi, 72);
         }
 
-        // Стили текста (жирный, курсив, подчеркнутый, зачеркнутый)
+        // Text styles (bold, italic, underline, and strikethrough).
         if (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT)) {
             charFormat_.dwEffects = pCF->dwEffects;
             charFormat_.dwMask |= (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT));
 
-            // Обновляем LOGFONT
+            // Update LOGFONT.
             logFont_.lfWeight = (pCF->dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
             logFont_.lfItalic = (pCF->dwEffects & CFE_ITALIC) ? TRUE : FALSE;
             logFont_.lfUnderline = (pCF->dwEffects & CFE_UNDERLINE) ? TRUE : FALSE;
             logFont_.lfStrikeOut = (pCF->dwEffects & CFE_STRIKEOUT) ? TRUE : FALSE;
         }
 
-        // Набор символов
+        // Character set.
         if (mask & CFM_CHARSET) {
             charFormat_.bCharSet = pCF->bCharSet;
             charFormat_.dwMask |= CFM_CHARSET;
             logFont_.lfCharSet = pCF->bCharSet;
         }
 
-        // Защищенный текст
+        // Protected text.
         if (mask & CFM_PROTECTED) {
             if (pCF->dwEffects & CFE_PROTECTED) {
                 charFormat_.dwEffects |= CFE_PROTECTED;
@@ -1384,7 +1414,7 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
             charFormat_.dwMask |= CFM_PROTECTED;
         }
 
-        // Ссылка
+        // Link.
         if (mask & CFM_LINK) {
             if (pCF->dwEffects & CFE_LINK) {
                 charFormat_.dwEffects |= CFE_LINK;
@@ -1394,7 +1424,7 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
             charFormat_.dwMask |= CFM_LINK;
         }
 
-        // Смещение (надстрочный/подстрочный текст)
+        // Offset (superscript/subscript text).
         if (mask & CFM_OFFSET) {
             charFormat_.yOffset = pCF->yOffset;
             charFormat_.dwMask |= CFM_OFFSET;
@@ -1403,8 +1433,8 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
-    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE
-        | TXTBIT_SAVESELECTION;
+    DWORD bits
+        = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE | TXTBIT_SAVESELECTION;
     if (wordWrap_) {
         bits |= TXTBIT_WORDWRAP;
     }
@@ -1417,15 +1447,23 @@ HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
 }
 HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
     switch (iNotify) {
-    case EN_CHANGE: {
-        /* CComBSTR str;
-        services_->TxGetText(&str);*/
-        onTextChanged(L"");
-        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
-        break;
-    }
+    case EN_CHANGE:
+        {
+            const std::wstring currentText = getPlainText();
+            const bool textChanged = currentText != lastPlainText_;
+            lastPlainText_ = currentText;
+            onTextChanged(L"");
+            if (textChanged) {
+                requestContentResize();
+            }
+            break;
+        }
     case EN_REQUESTRESIZE:
         {
+            if (!acceptRequestedResize_ || isResizing_) {
+                break;
+            }
+            acceptRequestedResize_ = false;
             auto* rr = static_cast<REQRESIZE*>(pv);
             CRect windowRect;
             GetClientRect(&windowRect);
@@ -1434,17 +1472,18 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
             SetWindowPos(0, 0, 0, w, h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
             onResized(w, h);
             if (!autoVerticalScroll_) {
-                POINT scrollPosition {};
+                POINT scrollPosition { };
                 services_->TxSendMessage(EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&scrollPosition), nullptr);
             }
             break;
         }
-    case EN_SELCHANGE: {
-        auto* sc = reinterpret_cast<SELCHANGE*>(pv);
-        logFont_ = getSelectionFont();
-        onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_);
-        break;
-    }
+    case EN_SELCHANGE:
+        {
+            auto* sc = reinterpret_cast<SELCHANGE*>(pv);
+            logFont_ = getSelectionFont();
+            onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_);
+            break;
+        }
     default:
         break;
     }
@@ -1478,7 +1517,7 @@ HCURSOR InputBoxControl::TxSetCursor2(HCURSOR hcur, BOOL) {
 HRESULT InputBoxControl::TxGetEditStyle(DWORD dwItem, DWORD* pdwData) {
     if (!pdwData)
         return E_POINTER;
-    // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
+    // dwItem: GETESTYLE_* (see TextServ.h). Return the basic flags.
     *pdwData = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
     if (autoVerticalScroll_) {
         *pdwData |= ES_AUTOVSCROLL;
@@ -1499,11 +1538,11 @@ void InputBoxControl::setHostWindow(HWND wnd) {
 }
 
 std::unique_ptr<Gdiplus::Bitmap> InputBoxControl::prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) {
-    // Создаем временный bitmap для конвертации
+    // Create a temporary bitmap for conversion.
     auto tempBitmap = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
     Gdiplus::Graphics tempGraphics(tempBitmap.get());
     tempGraphics.Clear(Gdiplus::Color::Transparent);
-    // Копируем нужную область
+    // Copy the required area.
     tempGraphics.DrawImage(source,
         Gdiplus::Rect(0, 0, rc.Width, rc.Height),
         rc.X, rc.Y, rc.Width, rc.Height,

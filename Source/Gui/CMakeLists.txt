@@ -160,6 +160,7 @@ set(SRC_LIST
         ../ImageEditor/Helpers/FontEnumerator.cpp
         Models/UploadListModel.cpp
         Models/ServerListModel.cpp
+        Models/HotkeyList.cpp
         FileList.cpp
 )
 
@@ -336,6 +337,7 @@ set(HEADER_LIST
         FileList.h
         ../resource.h
         Interfaces/IFavoriteServers.h
+        Models/HotkeyList.h
 )
 
 if (IU_ENABLE_MEDIAINFO)

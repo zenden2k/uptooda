@@ -1,9 +1,7 @@
 #ifndef IU_FUNC_IUCOMMONFUNCTIONS_H
 #define IU_FUNC_IUCOMMONFUNCTIONS_H
 
-#include <unordered_set>
 #include <string>
-
 
 #include "atlheaders.h"
 
@@ -29,8 +27,6 @@ bool IsImage(LPCTSTR szFileName);
 bool IsImage(const std::string& fileName);
 
 CString FindDataFolder();
-
-const std::unordered_set<std::string>& GetSupportedImageExtensions();
 
 CString PrepareFileDialogImageFilter();
 };

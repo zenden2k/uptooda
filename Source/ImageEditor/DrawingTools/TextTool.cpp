@@ -64,18 +64,18 @@ void TextTool::endDraw(int x, int y) {
     int height = currentElement_->getHeight();
     const bool isSpeechBaloon = currentElement_->getType() == ElementType::etSpeechBaloon;
     const int minWidth = isSpeechBaloon ? 180 : 150;
-    const int minHeight = isSpeechBaloon ? 70 : 30;
+    const int minHeight = isSpeechBaloon ? 50 : 30;
     if (elementJustCreated_ && width < minWidth) {
         width = minWidth;
     }
 
-    if (height < minHeight) {
+    if (elementJustCreated_ && height < minHeight) {
         height = minHeight;
     }
     currentElement_->resize(width, height);
     auto* textElement = dynamic_cast<TextElement*>(currentElement_);
     const Gdiplus::Rect textRect = textElement->getInputBoxRect();
-    RECT inputRect = {textRect.X, textRect.Y, textRect.GetRight(), textRect.GetBottom()};
+    RECT inputRect = { textRect.X, textRect.Y, textRect.GetRight(), textRect.GetBottom() };
     std::shared_ptr<InputBox> inputBox = textElement ? textElement->getInputBox() : nullptr;
     if (!inputBox) {
         inputBox = canvas_->getInputBox(inputRect);
@@ -85,7 +85,9 @@ void TextTool::endDraw(int x, int y) {
         canvas_->onTextEditStarted(textElement);
     }
     //    currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
-    textElement->setColor(foregroundColor_);
+    if (elementJustCreated_) {
+        textElement->setColor(foregroundColor_);
+    }
     canvas_->setCurrentlyEditedTextElement(textElement);
     textElement->setSelected(true);
     inputBox->show(true);

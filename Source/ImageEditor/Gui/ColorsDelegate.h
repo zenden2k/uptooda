@@ -10,7 +10,9 @@
 namespace ImageEditor {
     class ColorsDelegate: public Toolbar::ToolbarItemDelegate, public CColorButtonListener {
     public:
-        enum {kOffset = 7, kSquareSize = 16, kPadding = 3};
+        static constexpr int kOffset = 7;
+        static constexpr int kSquareSize = 16;
+        static constexpr int kPadding = 3;
 
         ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas);
         SIZE CalcItemSize(Toolbar::Item& item, int x, int y, float dpiScaleX, float dpiScaleY) override;

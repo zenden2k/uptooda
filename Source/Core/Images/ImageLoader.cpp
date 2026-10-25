@@ -8,6 +8,11 @@
 #include "GdiplusImageReader.h"
 #include "HeifImageReader.h"
 
+std::unordered_set<std::string> ImageLoader::SupportedImageExtensions = {
+    "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
+    "wmf"
+};
+
 std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName) {
     FILE* f = _wfopen(fileName, L"rb");
     if (!f) {

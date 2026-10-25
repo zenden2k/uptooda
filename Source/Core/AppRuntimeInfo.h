@@ -44,7 +44,7 @@ class AppRuntimeInfo: public Singleton<AppRuntimeInfo>
         void setLanguageFile(const std::string& languageFile);
         void setTempDirectory(const std::string& directory);
         std::string tempDirectory() const;
-        const std::unordered_set<std::string>& supportedImageExtensions();
+
 #ifdef _WIN32
         CString tempDirectoryW() const;
 #endif
