@@ -40,7 +40,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
 
     subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
     memset(&buttonsRect_, 0, sizeof(buttonsRect_));
-    textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
+    textRenderingHint_ = Gdiplus::TextRenderingHintSystemDefault;
     oldSelectedBm_ = nullptr;
     itemMargin_ = 0;
     itemHorPadding_ = 0;
@@ -193,13 +193,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
     backBufferDc_.CreateCompatibleDC(hdc);
 
-    LOGFONT logFont;
-    systemFont_.GetLogFont(&logFont);
-    if ( logFont.lfQuality & CLEARTYPE_QUALITY ) {
-        textRenderingHint_ = Gdiplus::TextRenderingHintClearTypeGridFit;
-    } else if ( logFont.lfQuality & ANTIALIASED_QUALITY ) {
-        textRenderingHint_ = Gdiplus::TextRenderingHintAntiAliasGridFit;
-    }
+    updateTextRenderingHint();
 
     tooltip_.Create(m_hWnd, rcDefault, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
     tooltip_.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
@@ -336,6 +330,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     Gdiplus::Graphics gr(dc);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.SetPageUnit(Gdiplus::UnitPixel);
+    gr.SetTextRenderingHint(textRenderingHint_);
 
     Rect rect( 0, 0, clientRect.right, clientRect.bottom);
     SolidBrush br1(transparentColor_);
@@ -998,8 +993,6 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
         StringFormat format;
         format.SetAlignment(StringAlignmentCenter);
         format.SetLineAlignment(StringAlignmentCenter);
-        //gr->SetTextRenderingHint(textRenderingHint_);
-
         int iconWidth = (item.icon ? iconSizeX_/*+ itemHorPadding_*/ : 0);
         int textOffsetX = iconWidth + itemHorPadding_;
         RectF textBounds(textOffsetX + bounds.X + (item.state == isDown ? 1 : 0), bounds.Y + (item.state == isDown ? 1 : 0), bounds.Width - textOffsetX - (item.type == itComboButton ? 16 * dpiScaleX_ : 0), bounds.Height);
@@ -1229,6 +1222,29 @@ LRESULT Toolbar::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
     AutoSize();
     update();
     return 0;
+}
+
+LRESULT Toolbar::OnSettingChange(UINT, WPARAM, LPARAM, BOOL& bHandled) {
+    updateTextRenderingHint();
+    Invalidate();
+    bHandled = FALSE;
+    return 0;
+}
+
+void Toolbar::updateTextRenderingHint() {
+    BOOL fontSmoothingEnabled = FALSE;
+    if (!SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &fontSmoothingEnabled, 0) || !fontSmoothingEnabled) {
+        textRenderingHint_ = Gdiplus::TextRenderingHintSingleBitPerPixelGridFit;
+        return;
+    }
+
+    UINT fontSmoothingType = FE_FONTSMOOTHINGSTANDARD;
+    if (SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &fontSmoothingType, 0)
+        && fontSmoothingType == FE_FONTSMOOTHINGCLEARTYPE) {
+        textRenderingHint_ = Gdiplus::TextRenderingHintClearTypeGridFit;
+    } else {
+        textRenderingHint_ = Gdiplus::TextRenderingHintAntiAliasGridFit;
+    }
 }
 
 void Toolbar::showFillBackgroundCheckbox(bool show) {

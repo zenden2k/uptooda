@@ -15,9 +15,9 @@
 #include "../InputBox.h"
 #include "atlheaders.h"
 
-#include <TextServ.h>
-#include <Richedit.h>
 #include <RichOle.h>
+#include <Richedit.h>
+#include <TextServ.h>
 
 #include <d2d1.h>
 #include <d2d1helper.h>
@@ -51,7 +51,8 @@ public:
     void show(bool show) override;
     void resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) override;
     bool CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap);
-    void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor, Gdiplus::Rect layoutArea) override;
+    void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Color bgColor,
+                Gdiplus::Rect layoutArea) override;
     bool isVisible() override;
     void invalidate() override;
     void setWordWrap(bool enabled) override;
@@ -93,11 +94,8 @@ public:
 
     // IUnknown
     STDMETHOD(QueryInterface)(REFIID riid, void** ppv) override;
-    STDMETHOD_(ULONG, AddRef)() override {
-        return (ULONG)InterlockedIncrement(&refCount_);
-    };
-    STDMETHOD_(ULONG, Release)() override
-    {
+    STDMETHOD_(ULONG, AddRef)() override { return (ULONG)InterlockedIncrement(&refCount_); };
+    STDMETHOD_(ULONG, Release)() override {
         ULONG r = (ULONG)InterlockedDecrement(&refCount_);
         /* if (!r)
             delete this;*/
@@ -200,9 +198,8 @@ public:
         return S_OK;
     }
 
-     // IRawElementProviderWindowlessSite
-    STDMETHOD(GetAdjacentFragment)(NavigateDirection direction,
-        IRawElementProviderFragment** ppParent) override {
+    // IRawElementProviderWindowlessSite
+    STDMETHOD(GetAdjacentFragment)(NavigateDirection direction, IRawElementProviderFragment** ppParent) override {
         if (!ppParent)
             return E_INVALIDARG;
         *ppParent = nullptr;
@@ -212,8 +209,7 @@ public:
             HRESULT hr = UiaHostProviderFromHwnd(hostWindow_, &pHostProvider);
             if (SUCCEEDED(hr) && pHostProvider) {
                 // Try to obtain IRawElementProviderFragment.
-                hr = pHostProvider->QueryInterface(IID_IRawElementProviderFragment,
-                    (void**)ppParent);
+                hr = pHostProvider->QueryInterface(IID_IRawElementProviderFragment, (void**)ppParent);
                 pHostProvider->Release();
                 return hr;
             }
@@ -227,10 +223,7 @@ public:
             return E_INVALIDARG;
 
         // Create a unique runtime ID for the windowless control.
-        LONG runtimeId[2] = {
-            UiaAppendRuntimeId,
-            static_cast<LONG>(reinterpret_cast<ULONG_PTR>(this))
-        };
+        LONG runtimeId[2] = { UiaAppendRuntimeId, static_cast<LONG>(reinterpret_cast<ULONG_PTR>(this)) };
 
         SAFEARRAY* psa = SafeArrayCreateVector(VT_I4, 0, 2);
         if (!psa)
@@ -306,6 +299,7 @@ private:
     bool InitializeD2D();
     bool isCaretItalic();
     LOGFONT getSelectionFont();
+    Gdiplus::Color getSelectionTextColor();
     bool d2dMode_;
     POINT caretPos_ { };
     POINT systemCaretPos_ { };
@@ -336,9 +330,7 @@ private:
     RECT controlBounds_;
 
 public:
-    WindowlessRichEditUIA(InputBoxControl* site)
-        : site_(site) {
-    }
+    WindowlessRichEditUIA(InputBoxControl* site) : site_(site) { }
 
     HRESULT Initialize(ITextServices* services, HWND parent, const RECT& bounds) {
         textServices_ = services;
@@ -348,33 +340,29 @@ public:
 
         // Obtain the accessibility interface.
         if (!accessibility_) {
-            //LOG(WARNING) << "IRichEditWindowlessAccessibility not supported";
+            // LOG(WARNING) << "IRichEditWindowlessAccessibility not supported";
             return S_FALSE;
         }
 
         // Create the UIA provider.
         HRESULT hr = accessibility_->CreateProvider(site_, &uiaProvider_);
         if (FAILED(hr)) {
-            //LOG(WARNING) << "Failed to create UIA provider: " << hr;
+            // LOG(WARNING) << "Failed to create UIA provider: " << hr;
             return hr;
         }
 
-        //LOG(INFO) << "Successfully created UIA provider for windowless RichEdit";
+        // LOG(INFO) << "Successfully created UIA provider for windowless RichEdit";
         return S_OK;
     }
 
-    IRawElementProviderSimple* GetUiaProvider() const {
-        return uiaProvider_;
-    }
+    IRawElementProviderSimple* GetUiaProvider() const { return uiaProvider_; }
 
     void UpdateBounds(const RECT& newBounds) {
         controlBounds_ = newBounds;
 
         // Notify UIA that the location has changed.
         if (uiaProvider_) {
-            UiaRaiseStructureChangedEvent(uiaProvider_,
-                StructureChangeType_ChildrenInvalidated,
-                nullptr, 0);
+            UiaRaiseStructureChangedEvent(uiaProvider_, StructureChangeType_ChildrenInvalidated, nullptr, 0);
         }
     }
 
@@ -384,14 +372,14 @@ public:
             VARIANT oldValue, newValue;
             VariantInit(&oldValue);
             VariantInit(&newValue);
-            
+
             GetCurrentText(&newValue);
-            
+
             // Use the basic properties.
-            UiaRaiseAutomationPropertyChangedEvent(uiaProvider_, 
-                                                 UIA_NamePropertyId,  // This property is always available.
-                                                 oldValue, newValue);
-            
+            UiaRaiseAutomationPropertyChangedEvent(uiaProvider_,
+                                                   UIA_NamePropertyId, // This property is always available.
+                                                   oldValue, newValue);
+
             VariantClear(&oldValue);
             VariantClear(&newValue);
         }
@@ -405,7 +393,7 @@ public:
 
     void NotifyFocusChanged(bool hasFocus) {
         if (uiaProvider_ && hasFocus) {
-             //UiaRaiseAutomationEvent(uiaProvider_, UIA_AutomationFocusChangedEventId);
+            // UiaRaiseAutomationEvent(uiaProvider_, UIA_AutomationFocusChangedEventId);
         }
     }
 
@@ -421,8 +409,7 @@ private:
         if (SUCCEEDED(hr) && textLength > 0) {
             text = SysAllocStringLen(nullptr, static_cast<UINT>(textLength));
             if (text) {
-                hr = textServices_->TxSendMessage(WM_GETTEXT, textLength + 1,
-                    (LPARAM)text, nullptr);
+                hr = textServices_->TxSendMessage(WM_GETTEXT, textLength + 1, (LPARAM)text, nullptr);
             }
         }
 
@@ -434,5 +421,3 @@ private:
 }
 
 #endif // LOGLISTBOX_H
-
-

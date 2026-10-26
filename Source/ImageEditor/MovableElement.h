@@ -15,7 +15,8 @@ class MovableElement: public DrawingElement {
     public:
 
         // This is sizing handle dimension when DPI scale is 100%
-        enum { kGripSize = 6, kSelectRadius = 5};
+        static constexpr int kGripSize = 6;
+        static constexpr int kSelectRadius = 5;
 
         enum class GripPointType {gptNone, gptStartPoint, gptEndPoint};
 

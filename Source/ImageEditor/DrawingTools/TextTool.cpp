@@ -25,8 +25,7 @@
 
 namespace ImageEditor {
 
-TextTool::TextTool(Canvas* canvas, ElementType elementType) : MoveAndResizeTool(canvas, elementType) {
-}
+TextTool::TextTool(Canvas* canvas, ElementType elementType) : MoveAndResizeTool(canvas, elementType) { }
 
 void TextTool::beginDraw(int x, int y) {
     allowCreatingElements_ = true;
@@ -51,9 +50,7 @@ void TextTool::beginDraw(int x, int y) {
     }
 }
 
-void TextTool::continueDraw(int x, int y, DWORD flags) {
-    MoveAndResizeTool::continueDraw(x, y, flags);
-}
+void TextTool::continueDraw(int x, int y, DWORD flags) { MoveAndResizeTool::continueDraw(x, y, flags); }
 
 void TextTool::endDraw(int x, int y) {
     if (!currentElement_) {
@@ -88,32 +85,32 @@ void TextTool::endDraw(int x, int y) {
     if (elementJustCreated_) {
         textElement->setColor(foregroundColor_);
     }
+    textElement->beginEdit();
     canvas_->setCurrentlyEditedTextElement(textElement);
     textElement->setSelected(true);
     inputBox->show(true);
     inputBox->invalidate();
     textElement->setDrawDashedRectangle(false);
-    //currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
-    //canvas_->addMovableElement(currentElement_);
-    //MoveAndResizeTool::endDraw( x, y);
+    // currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
+    // canvas_->addMovableElement(currentElement_);
+    // MoveAndResizeTool::endDraw( x, y);
     canvas_->updateView();
 }
 
-void TextTool::render(Painter* gr) {
-}
+void TextTool::render(Painter* gr) { }
 
 CursorType TextTool::getCursor(int x, int y) {
     CursorType ct = MoveAndResizeTool::getCursor(x, y);
     auto* textElement = dynamic_cast<TextElement*>(currentElement_);
     auto inputBox = textElement ? textElement->getInputBox() : nullptr;
     const Gdiplus::Rect inputRect = textElement ? textElement->getInputBoxRect() : Gdiplus::Rect();
-    if (textElement && inputBox && inputBox->isVisible() && textElement->isSelected() &&
-        x >= inputRect.X && x < inputRect.GetRight() && y >= inputRect.Y && y < inputRect.GetBottom()) {
+    if (textElement && inputBox && inputBox->isVisible() && textElement->isSelected() && x >= inputRect.X
+        && x < inputRect.GetRight() && y >= inputRect.Y && y < inputRect.GetBottom()) {
         return CursorType::ctEdit;
     }
-    if ((ct == CursorType::ctDefault || (ct == CursorType::ctMove && canvas_->getElementAtPosition(x, y) !=
-            currentElement_)) &&
-        (!inputBox || !inputBox->isVisible())) {
+    if ((ct == CursorType::ctDefault
+         || (ct == CursorType::ctMove && canvas_->getElementAtPosition(x, y) != currentElement_))
+        && (!inputBox || !inputBox->isVisible())) {
         ct = CursorType::ctEdit;
     }
     return ct;

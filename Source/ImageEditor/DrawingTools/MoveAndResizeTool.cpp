@@ -18,8 +18,9 @@
 
 #include "MoveAndResizeTool.h"
 
-#include <cmath>
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 
 #include "../Canvas.h"
 #include "../Document.h"
@@ -71,7 +72,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             return;
         }
         MovableElement* el = canvas_->getElementAtPosition(x, y, elementType_== ElementType::etCrop ? ElementType::etCrop : ElementType::etNone );
-        if ( el && ( elementType_ == el->getType() ||  ( elementType_== ElementType::etNone  && el->getType()  != ElementType::etCrop )) ) {
+        if (el && canActivateElement(el)) {
             //currentElement_->setSelected(true);
             canvas_->unselectAllElements();
             el->setSelected(true);
@@ -132,6 +133,57 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
     if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= BoundaryType::btNone ) {
+        if (currentElement_->getType() == ElementType::etSpeechBaloon
+            && draggedBoundary_.gpt == MovableElement::GripPointType::gptNone) {
+            POINT* leftPoint = currentElement_->getMinPoint(axisX);
+            POINT* rightPoint = currentElement_->getMaxPoint(axisX);
+            POINT* topPoint = currentElement_->getMinPoint(axisY);
+            POINT* bottomPoint = currentElement_->getMaxPoint(axisY);
+
+            switch (draggedBoundary_.bt) {
+            case BoundaryType::btBottomRight:
+                rightPoint->x = (std::max)(static_cast<LONG>(x), leftPoint->x);
+                bottomPoint->y = (std::max)(static_cast<LONG>(y), topPoint->y);
+                break;
+            case BoundaryType::btBottom:
+                bottomPoint->y = (std::max)(static_cast<LONG>(y), topPoint->y);
+                break;
+            case BoundaryType::btRight:
+                rightPoint->x = (std::max)(static_cast<LONG>(x), leftPoint->x);
+                break;
+            case BoundaryType::btTopLeft:
+                leftPoint->x = (std::min)(static_cast<LONG>(x), rightPoint->x);
+                topPoint->y = (std::min)(static_cast<LONG>(y), bottomPoint->y);
+                break;
+            case BoundaryType::btLeft:
+                leftPoint->x = (std::min)(static_cast<LONG>(x), rightPoint->x);
+                break;
+            case BoundaryType::btTop:
+                topPoint->y = (std::min)(static_cast<LONG>(y), bottomPoint->y);
+                break;
+            case BoundaryType::btBottomLeft:
+                leftPoint->x = (std::min)(static_cast<LONG>(x), rightPoint->x);
+                bottomPoint->y = (std::max)(static_cast<LONG>(y), topPoint->y);
+                break;
+            case BoundaryType::btTopRight:
+                rightPoint->x = (std::max)(static_cast<LONG>(x), leftPoint->x);
+                topPoint->y = (std::min)(static_cast<LONG>(y), bottomPoint->y);
+                break;
+            default:
+                break;
+            }
+
+            auto* speechBaloon = static_cast<SpeechBaloon*>(currentElement_);
+            speechBaloon->TextElement::resize(speechBaloon->getWidth(), speechBaloon->getHeight());
+
+            const RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
+            RECT updateRect;
+            UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
+            canvas_->updateView(updateRect);
+            prevPaintBoundingRect_ = paintBoundingRect;
+            return;
+        }
+
         POINT* elementBasePoint = 0;
         if ( draggedBoundary_.gpt == MovableElement::GripPointType::gptStartPoint ) {
             elementBasePoint = &currentElement_->startPoint_;
@@ -381,19 +433,29 @@ void MoveAndResizeTool::createElement() {
     }
 }
 
+bool MoveAndResizeTool::canActivateElement(const MovableElement* element) const {
+    const ElementType type = element->getType();
+    return elementType_ == type
+        || (IsTextElementType(elementType_) && IsTextElementType(type))
+        || (elementType_ == ElementType::etNone && type != ElementType::etCrop);
+}
+
 MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableElement** elem)
 {
-    std::vector<MovableElement*> cropElements;
-    canvas_->getElementsByType(elementType_, cropElements);
-    int count = cropElements.size();
+    std::vector<MovableElement*> elements;
+    canvas_->getElementsByType(ElementType::etNone, elements);
+    int count = elements.size();
     for( int i  = count-1; i>= 0; i-- ) {
-        if ( !cropElements[i]->isSelected() && cropElements[i]->getType() != ElementType::etCrop ) {
+        const bool canResizeElement = canActivateElement(elements[i])
+            || (elementType_ == ElementType::etNone && elements[i]->getType() == ElementType::etCrop);
+        if (!canResizeElement
+            || (!elements[i]->isSelected() && elements[i]->getType() != ElementType::etCrop)) {
             continue;
         }
-        MovableElement::Grip grip = checkElementBoundaries(cropElements[i], x , y);
+        MovableElement::Grip grip = checkElementBoundaries(elements[i], x , y);
         if ( grip.bt != BoundaryType::btNone ) {
             if ( elem ) {
-                *elem = cropElements[i];
+                *elem = elements[i];
             }
             return grip;
         }
@@ -444,7 +506,7 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 void MoveAndResizeTool::mouseDoubleClick(int x, int y)
 {
     MovableElement* el = canvas_->getElementAtPosition(x,y);
-    if (el && IsTextElementType(el->getType()) && elementType_ != el->getType()) {
+    if (el && IsTextElementType(el->getType()) && !IsTextElementType(elementType_)) {
         const DrawingToolType toolType = el->getType() == ElementType::etSpeechBaloon
             ? DrawingToolType::dtSpeechBaloon
             : DrawingToolType::dtText;

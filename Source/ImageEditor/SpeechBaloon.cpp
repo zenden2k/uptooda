@@ -47,6 +47,7 @@ int ClampValue(int value, int minValue, int maxValue) {
 SpeechBaloon::SpeechBaloon(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX,
                            int endY) : TextElement(canvas, std::move(inputBox), startX, startY, endX, endY, true) {
     fillBackground_ = true;
+    isColorUsed_ = true;
     isBackgroundColorUsed_ = true;
 }
 
@@ -119,6 +120,9 @@ Gdiplus::Rect SpeechBaloon::getInputBoxRect() {
 }
 
 void SpeechBaloon::onControlResized(int width, int height) {
+    if (restoringHistory_) {
+        return;
+    }
     const RECT oldPaintRect = getPaintBoundingRect();
     inputWidth_ = (std::max)(1, width);
     inputHeight_ = (std::max)(1, height);

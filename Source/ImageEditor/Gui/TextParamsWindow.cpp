@@ -20,44 +20,38 @@
 
 #include "TextParamsWindow.h"
 
-#include <vector>
-#include <thread>
 #include <memory>
+#include <thread>
+#include <vector>
 
-#include "resource.h"
-#include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "ImageEditor/Helpers/FontEnumerator.h"
+#include "Gui/GuiTools.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "ImageEditor/Helpers/FontEnumerator.h"
+#include "resource.h"
 
-TextParamsWindow::TextParamsWindow() :
-    fontSizeComboboxCustomEdit_(this),
-    windowDc_(nullptr)
-{
-}
+TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr) { }
 
-TextParamsWindow::~TextParamsWindow()
-{
-    if ( fontEnumerationThread_.joinable() ) {
+TextParamsWindow::~TextParamsWindow() {
+    if (fontEnumerationThread_.joinable()) {
         fontEnumerationThread_.join();
     }
 }
 
-void TextParamsWindow::setFont(LOGFONT logFont)
-{
+void TextParamsWindow::setFont(LOGFONT logFont) {
     fontName_ = logFont.lfFaceName;
     fontComboBox_.SelectString(-1, fontName_);
     CClientDC dc(m_hWnd);
     SetDlgItemInt(IDC_FONTSIZECOMBO, MulDiv(-logFont.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY)));
     TBBUTTONINFO bi;
-    memset(&bi,0,sizeof(bi));
+    memset(&bi, 0, sizeof(bi));
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_STATE;
-    bi.fsState = TBSTATE_ENABLED | (logFont.lfWeight ==  FW_BOLD ?  TBSTATE_CHECKED: 0);
+    bi.fsState = TBSTATE_ENABLED | (logFont.lfWeight == FW_BOLD ? TBSTATE_CHECKED : 0);
     textToolbar_.SetButtonInfo(IDC_BOLD, &bi);
     bi.fsState = TBSTATE_ENABLED | (logFont.lfItalic ? TBSTATE_CHECKED : 0);
     textToolbar_.SetButtonInfo(IDC_ITALIC, &bi);
-    bi.fsState = TBSTATE_ENABLED | (logFont.lfUnderline  ? TBSTATE_CHECKED : 0);
+    bi.fsState = TBSTATE_ENABLED | (logFont.lfUnderline ? TBSTATE_CHECKED : 0);
     textToolbar_.SetButtonInfo(IDC_UNDERLINE, &bi);
 }
 
@@ -73,64 +67,92 @@ void TextParamsWindow::setTextAlignment(WORD alignment) {
     }
 }
 
-LOGFONT TextParamsWindow::getFont() const
-{
+void TextParamsWindow::setTextColor(Gdiplus::Color color) {
+    textColor_ = color;
+    if (textColorButton_.IsWindow()) {
+        textColorButton_.SetColor(color.ToCOLORREF());
+    }
+    if (toolbarImageList_) {
+        const UINT dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+        const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+        const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+        CIcon icon;
+        icon.Attach(createTextColorIcon(iconWidth, iconHeight));
+        toolbarImageList_.ReplaceIcon(6, icon);
+        textToolbar_.Invalidate();
+    }
+}
+
+LOGFONT TextParamsWindow::getFont() const {
     LOGFONT logFont;
     memset(&logFont, 0, sizeof(logFont));
     logFont.lfCharSet = DEFAULT_CHARSET;
     CClientDC dc(m_hWnd);
 
     int fontSelectedIndex = fontComboBox_.GetCurSel();
-    if ( fontSelectedIndex !=-1 ) {
+    if (fontSelectedIndex != -1) {
         logFont = fonts_[fontSelectedIndex];
         int fontSize = GetDlgItemInt(IDC_FONTSIZECOMBO);
-        logFont.lfHeight =  -MulDiv(fontSize, GetDeviceCaps(dc, LOGPIXELSY), 72);
+        logFont.lfHeight = -MulDiv(fontSize, GetDeviceCaps(dc, LOGPIXELSY), 72);
         TBBUTTONINFO bi;
-        memset(&bi,0,sizeof(bi));
+        memset(&bi, 0, sizeof(bi));
         bi.cbSize = sizeof(bi);
         bi.dwMask = TBIF_STATE;
         textToolbar_.GetButtonInfo(IDC_BOLD, &bi);
-        logFont.lfWeight = bi.fsState&TBSTATE_CHECKED ? FW_BOLD : 0;
+        logFont.lfWeight = bi.fsState & TBSTATE_CHECKED ? FW_BOLD : 0;
         textToolbar_.GetButtonInfo(IDC_ITALIC, &bi);
-        logFont.lfItalic =  bi.fsState&TBSTATE_CHECKED?1:0;
+        logFont.lfItalic = bi.fsState & TBSTATE_CHECKED ? 1 : 0;
         textToolbar_.GetButtonInfo(IDC_UNDERLINE, &bi);
-        logFont.lfUnderline = bi.fsState&TBSTATE_CHECKED?1:0;
+        logFont.lfUnderline = bi.fsState & TBSTATE_CHECKED ? 1 : 0;
 
         /*lf.lfStrikeOut = ( (cf.dwEffects & CFE_STRIKEOUT) == CFE_STRIKEOUT);*/
-
     }
     return logFont;
 }
 
-LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     SetWindowText(TR("Text Options"));
     fontComboBox_.Attach(GetDlgItem(IDC_FONTCOMBO));
     fontSizeComboBox_.Attach(GetDlgItem(IDC_FONTSIZECOMBO));
 
-    fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow( GW_CHILD));
-	windowDc_ = GetDC();
+    fontSizeComboboxCustomEdit_.SubclassWindow(fontSizeComboBox_.GetWindow(GW_CHILD));
+    windowDc_ = GetDC();
     auto enumerator = std::make_shared<FontEnumerator>(windowDc_, fonts_, [this] { OnFontEnumerationFinished(); });
     fontEnumerationThread_ = std::thread(&FontEnumerator::run, enumerator);
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
-        _T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
-    );
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"), _T("11"), _T("12"),
+                               _T("13"), _T("14"), _T("15"), _T("16"), _T("18"), _T("20"), _T("22"), _T("24"), _T("26"),
+                               _T("28"), _T("36"), _T("48"), _T("72"));
 
     createToolbar();
     textToolbar_.ShowWindow(SW_SHOW);
+
+    RECT colorButtonRect { 0, 0, 1, 1 };
+    textColorPickerHost_.Create(textToolbar_.m_hWnd, colorButtonRect, nullptr, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON);
+    textColorPickerFont_ = GuiTools::GetSystemDialogFont();
+    textColorPickerHost_.SetFont(textColorPickerFont_);
+    textColorButton_.SubclassWindow(textColorPickerHost_.m_hWnd);
+    textColorButton_.SetColor(textColor_.ToCOLORREF());
+    textColorButton_.SetCustomText(TR("More colors..."));
+    textColorButton_.SetColorCodeText(TR("Get color's code..."));
+    textColorButton_.setOnSelChangeCallback([this](COLORREF color, BOOL valid) {
+        if (!valid) {
+            return;
+        }
+        setTextColor(Gdiplus::Color(255, GetRValue(color), GetGValue(color), GetBValue(color)));
+        ::SendMessage(GetParent(), TPWM_TEXTCOLORCHANGED, reinterpret_cast<WPARAM>(m_hWnd), color);
+    });
 
     return TRUE;
 }
 
 LRESULT TextParamsWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	if (windowDc_) {
-		ReleaseDC(windowDc_);
-		windowDc_ = nullptr;
-	}
-	return 0;
+    if (windowDc_) {
+        ReleaseDC(windowDc_);
+        windowDc_ = nullptr;
+    }
+    return 0;
 }
-LRESULT TextParamsWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     ShowWindow(SW_HIDE);
     return 0;
 }
@@ -140,17 +162,16 @@ LRESULT TextParamsWindow::OnDpiChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     return 0;
 }
 
-LRESULT TextParamsWindow::OnFontSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnFontSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     NotifyParent(CFM_FACE);
     return 0;
 }
 
-LRESULT TextParamsWindow::OnFontSizeSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnFontSizeSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
+                                              BOOL& /*bHandled*/) {
     int curSel = fontSizeComboBox_.GetCurSel();
-    if ( curSel != -1 ) {
-        TCHAR fontSize[100]=_T("");
+    if (curSel != -1) {
+        TCHAR fontSize[100] = _T("");
         fontSizeComboBox_.GetLBText(curSel, fontSize);
         SetDlgItemInt(IDC_FONTSIZECOMBO, StrToInt(fontSize));
     }
@@ -158,20 +179,17 @@ LRESULT TextParamsWindow::OnFontSizeSelChange(WORD /*wNotifyCode*/, WORD /*wID*/
     return 0;
 }
 
-LRESULT TextParamsWindow::OnBoldClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnBoldClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     NotifyParent(CFM_BOLD);
     return 0;
 }
 
-LRESULT TextParamsWindow::OnItalicClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnItalicClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     NotifyParent(CFM_ITALIC);
     return 0;
 }
 
-LRESULT TextParamsWindow::OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT TextParamsWindow::OnUnderlineClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     NotifyParent(CFM_UNDERLINE);
     return 0;
 }
@@ -192,13 +210,21 @@ LRESULT TextParamsWindow::OnAlignmentClick(WORD /*wNotifyCode*/, WORD wID, HWND 
     return 0;
 }
 
-void TextParamsWindow::OnFontEnumerationFinished()
-{
+LRESULT TextParamsWindow::OnTextColorClick(WORD, WORD, HWND, BOOL&) {
+    RECT buttonRect {};
+    if (textToolbar_.GetRect(IDC_TEXTCOLORBUTTON, &buttonRect)) {
+        textColorPickerHost_.SetWindowPos(nullptr, buttonRect.left, buttonRect.bottom, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER);
+    }
+    textColorButton_.Click();
+    return 0;
+}
+
+void TextParamsWindow::OnFontEnumerationFinished() {
     if (!IsWindow()) {
         return;
     }
     size_t fontCount = fonts_.size();
-    for ( size_t i = 0; i < fontCount; i++ ) {
+    for (size_t i = 0; i < fontCount; i++) {
         fontComboBox_.AddString(fonts_[i].lfFaceName);
     }
     fontComboBox_.SelectString(-1, fontName_);
@@ -219,8 +245,8 @@ void TextParamsWindow::createToolbar() {
         textToolbar_.SetImageList(nullptr);
         toolbarImageList_.Destroy();
     }
-  
-    toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 6, 3);
+
+    toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 7, 3);
 
     CIcon iconBold, iconItalic, iconUnderline, iconAlignLeft, iconAlignCenter, iconAlignRight;
     iconBold = GuiTools::LoadSmallIcon(IDI_ICONBOLD, dpi);
@@ -235,8 +261,11 @@ void TextParamsWindow::createToolbar() {
     toolbarImageList_.AddIcon(iconAlignCenter);
     iconAlignRight = GuiTools::LoadSmallIcon(IDI_ICONALIGNRIGHT, dpi);
     toolbarImageList_.AddIcon(iconAlignRight);
+    CIcon textColorIcon;
+    textColorIcon.Attach(createTextColorIcon(iconWidth, iconHeight));
+    toolbarImageList_.AddIcon(textColorIcon);
 
-    TBBUTTONINFO bi {};
+    TBBUTTONINFO bi { };
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_STATE;
     BYTE boldButtonState = TBSTATE_ENABLED;
@@ -244,10 +273,13 @@ void TextParamsWindow::createToolbar() {
     BYTE underlineButtonState = TBSTATE_ENABLED;
 
     if (!textToolbar_) {
-        textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        textToolbar_.Create(m_hWnd, toolbarRect, _T(""),
+                            WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_BOTTOM | CCS_NODIVIDER
+                                | TBSTYLE_TOOLTIPS | TBSTYLE_AUTOSIZE);
+        textToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
         textToolbar_.SetButtonStructSize();
     } else {
-        TBBUTTONINFO bi = {};
+        TBBUTTONINFO bi = { };
         bi.cbSize = sizeof(bi);
         bi.dwMask = TBIF_STATE;
 
@@ -265,22 +297,53 @@ void TextParamsWindow::createToolbar() {
 
     textToolbar_.SetImageList(toolbarImageList_);
 
-    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK | BTNS_AUTOSIZE, boldButtonState, 0, nullptr, 0);
-    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK | BTNS_AUTOSIZE, italicButtonState, 1, nullptr, 0);
-    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK | BTNS_AUTOSIZE, underlineButtonState, 2, nullptr, 0);
-    TBBUTTON separator {};
+    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK | BTNS_AUTOSIZE, boldButtonState, 0,
+                           TR("Bold") + CString(L" (Ctrl+B)"), 0);
+    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK | BTNS_AUTOSIZE, italicButtonState, 1,
+                           TR("Italic") + CString(L" (Ctrl+I)"), 0);
+    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK | BTNS_AUTOSIZE, underlineButtonState, 2,
+                           TR("Underline") + CString(L" (Ctrl+U)"), 0);
+    TBBUTTON separator { };
     separator.fsStyle = BTNS_SEP;
     textToolbar_.AddButtons(1, &separator);
+    textToolbar_.AddButton(IDC_TEXTCOLORBUTTON, BTNS_AUTOSIZE, TBSTATE_ENABLED, 6, TR("Text color"), 0);
+    textToolbar_.AddButtons(1, &separator);
     textToolbar_.AddButton(IDC_ALIGNLEFT, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
-        TBSTATE_ENABLED | (textAlignment_ == PFA_LEFT ? TBSTATE_CHECKED : 0), 3, nullptr, 0);
+                           TBSTATE_ENABLED | (textAlignment_ == PFA_LEFT ? TBSTATE_CHECKED : 0), 3, TR("Align left"), 0);
     textToolbar_.AddButton(IDC_ALIGNCENTER, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
-        TBSTATE_ENABLED | (textAlignment_ == PFA_CENTER ? TBSTATE_CHECKED : 0), 4, nullptr, 0);
+                           TBSTATE_ENABLED | (textAlignment_ == PFA_CENTER ? TBSTATE_CHECKED : 0), 4,
+                           TR("Align center"), 0);
     textToolbar_.AddButton(IDC_ALIGNRIGHT, TBSTYLE_CHECKGROUP | BTNS_AUTOSIZE,
-        TBSTATE_ENABLED | (textAlignment_ == PFA_RIGHT ? TBSTATE_CHECKED : 0), 5, nullptr, 0);
+                           TBSTATE_ENABLED | (textAlignment_ == PFA_RIGHT ? TBSTATE_CHECKED : 0), 5,
+                           TR("Align right"), 0);
 }
 
-void TextParamsWindow::NotifyParent(DWORD changeMask)
-{
+HICON TextParamsWindow::createTextColorIcon(int width, int height) const {
+    using namespace Gdiplus;
+    Bitmap bitmap(width, height, PixelFormat32bppARGB);
+    Graphics graphics(&bitmap);
+    graphics.Clear(Color(0, 0, 0, 0));
+    graphics.SetTextRenderingHint(TextRenderingHintAntiAliasGridFit);
+
+    FontFamily fontFamily(L"Arial");
+    Font font(&fontFamily, static_cast<REAL>(height - 4), FontStyleBold, UnitPixel);
+    SolidBrush letterBrush(Color(255, 0, 0, 0));
+    StringFormat format;
+    format.SetAlignment(StringAlignmentCenter);
+    format.SetLineAlignment(StringAlignmentNear);
+    graphics.DrawString(L"A", 1, &font, RectF(0.0f, -3.0f, static_cast<REAL>(width), static_cast<REAL>(height)),
+                        &format, &letterBrush);
+
+    const int lineHeight = (std::max)(2, height / 5);
+    SolidBrush colorBrush(textColor_);
+    graphics.FillRectangle(&colorBrush, 1, height - lineHeight, (std::max)(1, width - 2), lineHeight);
+
+    HICON icon = nullptr;
+    bitmap.GetHICON(&icon);
+    return icon;
+}
+
+void TextParamsWindow::NotifyParent(DWORD changeMask) {
     ::SendMessage(GetParent(), TPWM_FONTCHANGED, (WPARAM)m_hWnd, (LPARAM)changeMask);
 }
 
@@ -288,14 +351,10 @@ void TextParamsWindow::NotifyParentAlignment() {
     ::SendMessage(GetParent(), TPWM_TEXTALIGNCHANGED, reinterpret_cast<WPARAM>(m_hWnd), textAlignment_);
 }
 
-CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow)
-{
-    textParamsWindow_ = textParamsWindow;
-}
+CustomEdit::CustomEdit(TextParamsWindow* textParamsWindow) { textParamsWindow_ = textParamsWindow; }
 
-LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( wParam == VK_RETURN ) {
+LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (wParam == VK_RETURN) {
         textParamsWindow_->NotifyParent(CFM_SIZE);
         bHandled = true;
         return 1;
@@ -303,10 +362,9 @@ LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     return 0;
 }
 
-LRESULT CustomEdit::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CustomEdit::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     bHandled = false;
-    if ( wParam == VK_RETURN ) {
+    if (wParam == VK_RETURN) {
         bHandled = true; // stop annoying "ding" sound
         return 1;
     }
