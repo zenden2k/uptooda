@@ -3,10 +3,12 @@ os=Linux
 arch=armv8
 build_type=Release
 compiler=gcc
-compiler.cppstd=gnu14
+compiler.version=11
+compiler.cppstd=gnu20
 compiler.libcxx=libstdc++11
-compiler.version=9
+
+[conf]
+tools.build:compiler_executables={"c": "aarch64-linux-gnu-gcc-11", "cpp": "aarch64-linux-gnu-g++-11"}
+
 [buildenv]
-CC=aarch64-linux-gnu-gcc-9
-CXX=aarch64-linux-gnu-g++-9
 LD=aarch64-linux-gnu-ld

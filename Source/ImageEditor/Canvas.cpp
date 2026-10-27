@@ -104,7 +104,9 @@ void Canvas::setSize(int x, int y) {
     createDoubleBuffer();
 }
 
-Document* Canvas::currentDocument() const { return doc_; }
+Document* Canvas::currentDocument() const {
+    return doc_;
+}
 
 void Canvas::setDocument(Document* doc) {
     doc_ = doc;
@@ -255,7 +257,9 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
     // rect.right - rect.left, rect.bottom - rect.top, UnitPixel );
 }
 
-Gdiplus::Rect Canvas::currentRenderingRect() const { return currentRenderingRect_; }
+Gdiplus::Rect Canvas::currentRenderingRect() const {
+    return currentRenderingRect_;
+}
 
 bool Canvas::isRoundingRectangleSelected() const {
     for (auto el : elementsOnCanvas_) {
@@ -268,14 +272,18 @@ bool Canvas::isRoundingRectangleSelected() const {
     return false;
 }
 
-bool Canvas::isDocumentModified() const { return isDocumentModified_; }
+bool Canvas::isDocumentModified() const {
+    return isDocumentModified_;
+}
 
 void Canvas::setDocumentModified(bool modified) {
     isDocumentModified_ = modified;
     onDocumentModified();
 }
 
-void Canvas::setCallback(Callback* callback) { callback_ = callback; }
+void Canvas::setCallback(Callback* callback) {
+    callback_ = callback;
+}
 
 void Canvas::setPenSize(int size) {
     if (size < 1 || size > kMaxPenSize) {
@@ -296,7 +304,9 @@ void Canvas::setPenSize(int size) {
     }
 }
 
-int Canvas::getPenSize() const { return penSize_; }
+int Canvas::getPenSize() const {
+    return penSize_;
+}
 
 void Canvas::beginPenSizeChanging() {
     if (!originalPenSize_) {
@@ -352,7 +362,9 @@ void Canvas::setRoundingRadius(int radius) {
     }
 }
 
-int Canvas::getRoundingRadius() const { return roundingRadius_; }
+int Canvas::getRoundingRadius() const {
+    return roundingRadius_;
+}
 
 void Canvas::beginRoundingRadiusChanging() {
     if (!originalRoundingRadius_) {
@@ -454,9 +466,13 @@ void Canvas::setBackgroundColor(Gdiplus::Color color) {
     }
 }
 
-Gdiplus::Color Canvas::getForegroundColor() const { return foregroundColor_; }
+Gdiplus::Color Canvas::getForegroundColor() const {
+    return foregroundColor_;
+}
 
-Gdiplus::Color Canvas::getBackgroundColor() const { return backgroundColor_; }
+Gdiplus::Color Canvas::getBackgroundColor() const {
+    return backgroundColor_;
+}
 
 void Canvas::setTextColor(Gdiplus::Color color) {
     textColor_ = color;
@@ -471,11 +487,17 @@ void Canvas::setTextColor(Gdiplus::Color color) {
     updateView();
 }
 
-Gdiplus::Color Canvas::getTextColor() const { return textColor_; }
+Gdiplus::Color Canvas::getTextColor() const {
+    return textColor_;
+}
 
-Gdiplus::Color Canvas::getStepForegroundColor() const { return stepForegroundColor_; }
+Gdiplus::Color Canvas::getStepForegroundColor() const {
+    return stepForegroundColor_;
+}
 
-Gdiplus::Color Canvas::getStepBackgroundColor() const { return stepBackgroundColor_; }
+Gdiplus::Color Canvas::getStepBackgroundColor() const {
+    return stepBackgroundColor_;
+}
 
 void Canvas::setStepColors(Gdiplus::Color fgColor, Gdiplus::Color bgColor) {
     stepForegroundColor_ = fgColor;
@@ -483,7 +505,9 @@ void Canvas::setStepColors(Gdiplus::Color fgColor, Gdiplus::Color bgColor) {
     stepColorsSet_ = true;
 }
 
-bool Canvas::isStepColorSet() const { return stepColorsSet_; }
+bool Canvas::isStepColorSet() const {
+    return stepColorsSet_;
+}
 
 void Canvas::setFont(LOGFONT font, DWORD changeMask) {
     font_ = font;
@@ -524,7 +548,9 @@ void Canvas::setTextAlignment(WORD alignment) {
     updateView();
 }
 
-LOGFONT Canvas::getFont() const { return font_; }
+LOGFONT Canvas::getFont() const {
+    return font_;
+}
 
 AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool notify) {
     if (drawingToolType_ == toolType) {
@@ -641,7 +667,9 @@ void Canvas::setPreviousDrawingTool() {
     }
 }
 
-AbstractDrawingTool* Canvas::getCurrentDrawingTool() const { return currentDrawingTool_; }
+AbstractDrawingTool* Canvas::getCurrentDrawingTool() const {
+    return currentDrawingTool_;
+}
 
 void Canvas::addMovableElement(MovableElement* element) {
     if (element->getType() == ElementType::etSelection) {
@@ -690,11 +718,17 @@ void Canvas::endDocDrawing() {
     addUndoHistoryItem(std::move(historyItem));
 }
 
-void Canvas::beginManipulation() { manipulationStarted_ = true; }
+void Canvas::beginManipulation() {
+    manipulationStarted_ = true;
+}
 
-void Canvas::endManipulation() { manipulationStarted_ = false; }
+void Canvas::endManipulation() {
+    manipulationStarted_ = false;
+}
 
-bool Canvas::manipulationStarted() const { return manipulationStarted_; }
+bool Canvas::manipulationStarted() const {
+    return manipulationStarted_;
+}
 
 int Canvas::deleteSelectedElements() {
     int deletedCount = 0;
@@ -728,9 +762,13 @@ int Canvas::deleteSelectedElements() {
     return deletedCount;
 }
 
-float Canvas::getBlurRadius() const { return blurRadius_; }
+float Canvas::getBlurRadius() const {
+    return blurRadius_;
+}
 
-void Canvas::setBlurRadius(float radius) { blurRadius_ = radius; }
+void Canvas::setBlurRadius(float radius) {
+    blurRadius_ = radius;
+}
 
 void Canvas::beginBlurRadiusChanging() {
     if (originalBlurRadius_ == 0) {
@@ -771,7 +809,9 @@ void Canvas::endBlurRadiusChanging(float radius) {
     originalBlurRadius_ = 0;
 }
 
-bool Canvas::hasBlurRectangles() const { return blurRectanglesCount_ != 0; }
+bool Canvas::hasBlurRectangles() const {
+    return blurRectanglesCount_ != 0;
+}
 
 void Canvas::showOverlay(bool show) {
     if (show && !overlay_) {
@@ -781,7 +821,9 @@ void Canvas::showOverlay(bool show) {
     updateView();
 }
 
-void Canvas::selectionChanged() { onSelectionChanged(); }
+void Canvas::selectionChanged() {
+    onSelectionChanged();
+}
 
 void Canvas::deleteMovableElement(MovableElement* element) {
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
@@ -869,7 +911,9 @@ void Canvas::updateView(RECT boundingRect) {
     }
 }
 
-POINT Canvas::GetScrollOffset() const { return scrollOffset_; }
+POINT Canvas::GetScrollOffset() const {
+    return scrollOffset_;
+}
 
 void Canvas::createDoubleBuffer() {
     //    delete buffer_;
@@ -1011,9 +1055,13 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
     }
 }
 
-void Canvas::setZoomFactor(float zoomFactor) { zoomFactor_ = zoomFactor; }
+void Canvas::setZoomFactor(float zoomFactor) {
+    zoomFactor_ = zoomFactor;
+}
 
-Gdiplus::Bitmap* Canvas::getBufferBitmap() const { return buffer_.get(); }
+Gdiplus::Bitmap* Canvas::getBufferBitmap() const {
+    return buffer_.get();
+}
 
 void Canvas::addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item) {
     undoHistory_.push(std::move(item));
@@ -1075,7 +1123,9 @@ SIZE Canvas::getExportBitmapSize() const {
     return { crop->getWidth(), crop->getHeight() };
 }
 
-float Canvas::getZoomFactor() const { return zoomFactor_; }
+float Canvas::getZoomFactor() const {
+    return zoomFactor_;
+}
 
 MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et) {
     for (auto it = elementsOnCanvas_.rbegin(); it != elementsOnCanvas_.rend(); ++it) {
@@ -1125,11 +1175,17 @@ void Canvas::deleteAllElements() {
     elementsOnCanvas_.clear();
 }
 
-int Canvas::getWidth() const { return canvasWidth_; }
+int Canvas::getWidth() const {
+    return canvasWidth_;
+}
 
-int Canvas::getHeigth() const { return canvasHeight_; }
+int Canvas::getHeigth() const {
+    return canvasHeight_;
+}
 
-CursorType Canvas::getCursor() const { return currentCursor_; }
+CursorType Canvas::getCursor() const {
+    return currentCursor_;
+}
 
 bool Canvas::undo() {
     if (currentlyEditedTextElement_) {
@@ -1337,9 +1393,13 @@ std::shared_ptr<InputBox> Canvas::getInputBox(const RECT& rect) {
     return inputBox;
 }
 
-TextElement* Canvas::getCurrentlyEditedTextElement() const { return currentlyEditedTextElement_; }
+TextElement* Canvas::getCurrentlyEditedTextElement() const {
+    return currentlyEditedTextElement_;
+}
 
-void Canvas::setCurrentlyEditedTextElement(TextElement* textElement) { currentlyEditedTextElement_ = textElement; }
+void Canvas::setCurrentlyEditedTextElement(TextElement* textElement) {
+    currentlyEditedTextElement_ = textElement;
+}
 
 size_t Canvas::unselectAllElements() {
     size_t count = 0;
@@ -1372,7 +1432,9 @@ HWND Canvas::getRichEditControl() const {
     return inputBox ? inputBox->m_hWnd : nullptr;
 }
 
-int Canvas::getNextNumber() { return nextNumber_++; }
+int Canvas::getNextNumber() {
+    return nextNumber_++;
+}
 
 void Canvas::recalcStepNumbers() {
     nextNumber_ = stepInitialValue_;
@@ -1396,9 +1458,13 @@ void Canvas::setStepInitialValue(int value) {
     recalcStepNumbers();
 }
 
-Gdiplus::Graphics* Canvas::getGraphicsDevice() const { return bufferedGr_.get(); }
+Gdiplus::Graphics* Canvas::getGraphicsDevice() const {
+    return bufferedGr_.get();
+}
 
-Gdiplus::Rect Canvas::lastAppliedCrop() const { return lastAppliedCrop_; }
+Gdiplus::Rect Canvas::lastAppliedCrop() const {
+    return lastAppliedCrop_;
+}
 
 Gdiplus::Rect Canvas::lastCrop() const {
     for (const auto& el : elementsOnCanvas_) {
@@ -1425,7 +1491,9 @@ void Canvas::setStepFontSize(int fontSize) {
     updateView();
 }
 
-int Canvas::getStepFontSize() const { return stepFontSize_; }
+int Canvas::getStepFontSize() const {
+    return stepFontSize_;
+}
 
 void Canvas::setFillTextBackground(bool fill) {
     fillTextBackground_ = fill;
@@ -1458,7 +1526,9 @@ void Canvas::setFillTextBackground(bool fill) {
     }
 }
 
-bool Canvas::getFillTextBackground() const { return fillTextBackground_; }
+bool Canvas::getFillTextBackground() const {
+    return fillTextBackground_;
+}
 
 void Canvas::setInvertSelection(bool invert) {
     invertSelection_ = invert;
@@ -1493,7 +1563,9 @@ void Canvas::setInvertSelection(bool invert) {
     }
 }
 
-bool Canvas::getInvertSelection() const { return invertSelection_; }
+bool Canvas::getInvertSelection() const {
+    return invertSelection_;
+}
 
 void Canvas::setDrawBorder(bool enable) {
     drawBorder_ = enable;
@@ -1528,15 +1600,25 @@ void Canvas::setDrawBorder(bool enable) {
     }
 }
 
-bool Canvas::getDrawBorder() const { return drawBorder_; }
+bool Canvas::getDrawBorder() const {
+    return drawBorder_;
+}
 
-void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) { arrowMode_ = arrowMode; }
+void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) {
+    arrowMode_ = arrowMode;
+}
 
-Arrow::ArrowMode Canvas::getArrowMode() const { return arrowMode_; }
+Arrow::ArrowMode Canvas::getArrowMode() const {
+    return arrowMode_;
+}
 
-bool Canvas::applyCurrentOperation() { return currentDrawingTool_->applyOperation(); }
+bool Canvas::applyCurrentOperation() {
+    return currentDrawingTool_->applyOperation();
+}
 
-bool Canvas::cancelCurrentOperation() { return currentDrawingTool_->cancelOperation(); }
+bool Canvas::cancelCurrentOperation() {
+    return currentDrawingTool_->cancelOperation();
+}
 
 void Canvas::applyCrop(Crop* crop) {
     using namespace Gdiplus;
@@ -1581,15 +1663,21 @@ bool Canvas::hasElementOfType(ElementType type) const {
     return false;
 }
 
-void Canvas::setCropOnExport(bool crop) { cropOnExport_ = crop; }
+void Canvas::setCropOnExport(bool crop) {
+    cropOnExport_ = crop;
+}
 
-bool Canvas::getCropOnExport() const { return cropOnExport_; }
+bool Canvas::getCropOnExport() const {
+    return cropOnExport_;
+}
 
 void Canvas::setDpi(float dpiX, float dpiY) {
     dpiX_ = dpiX;
     dpiY_ = dpiY;
 }
 
-std::pair<float, float> Canvas::getDpi() const { return { dpiX_, dpiY_ }; }
+std::pair<float, float> Canvas::getDpi() const {
+    return { dpiX_, dpiY_ };
+}
 
 }

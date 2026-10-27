@@ -68,6 +68,8 @@ public:
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         MESSAGE_HANDLER(WM_HELP, OnHelp)
         COMMAND_ID_HANDLER(IDOK, OnOK)
+        COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+        COMMAND_ID_HANDLER(IDC_CLOSEBUTTON, OnCancel)
         COMMAND_HANDLER(IDC_ALLTYPESRADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_IMAGERADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_FILERADIO, BN_CLICKED, OnServerTypeChanged)
@@ -93,7 +95,9 @@ public:
         DLGRESIZE_CONTROL(IDC_SEARCHQUERYEDIT, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_SEARCHSTATIC, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_HELPBUTTON, DLSZ_MOVE_X)
+        DLGRESIZE_CONTROL(IDC_CLOSEBUTTON, DLSZ_MOVE_X)
         DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_ADDBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
@@ -106,6 +110,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_SEARCHQUERYEDIT, queryEditControl_)
         DDX_CONTROL_HANDLE(IDC_ADDBUTTON, optionsButton_)
         DDX_CONTROL_HANDLE(IDC_HELPBUTTON, helpButton_)
+        DDX_CONTROL_HANDLE(IDC_CLOSEBUTTON, closeButton_)
         DDX_CONTROL(IDC_SEARCHSTATIC, searchIconCtrl_)
     END_DDX_MAP()
 
@@ -121,18 +126,19 @@ public:
     LRESULT OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnListViewDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnServerTypeChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSearchQueryEditChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnClickedAddServerButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnDropdownAddServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
-    LRESULT OnHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
-    LRESULT OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnViewModeReport(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnViewModeIcons(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnShowFavoriteServersOnly(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnHideBlacklisted(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void TranslateUI();
@@ -163,8 +169,8 @@ private:
     CServerListView listView_;
     CButton allTypesRadioButton_, imageTypeRadioButton_, fileTypeRadioButton_, videoTypeRadioButton_;
     CEdit queryEditControl_;
-    CButton optionsButton_, helpButton_;
-    CIcon helpButtonIcon_;
+    CButton optionsButton_, helpButton_, closeButton_;
+    CIcon optionsButtonIcon_, helpButtonIcon_, closeButtonIcon_;
     CToolTipCtrl toolTip_;
     CMyImage searchIconCtrl_;
 

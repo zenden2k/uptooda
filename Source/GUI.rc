@@ -36,6 +36,100 @@ IDB_ICONPLAY            PNG                     "res\\icon_play.png"
 
 IDB_APPNAME             PNG                     "res\\new_app_name.png"
 
+IDR_PNG1                PNG                     "res\\icon_main.png"
+
+IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
+
+IDR_bottomLeftShadow    PNG                     "res\\shadows\\bottomLeftShadow.png"
+
+IDR_bottomRightShadow   PNG                     "res\\shadows\\bottomRightShadow.png"
+
+IDR_bottomShadow        PNG                     "res\\shadows\\bottomShadow.png"
+
+IDR_leftShadow          PNG                     "res\\shadows\\leftShadow.png"
+
+IDR_rightShadow         PNG                     "res\\shadows\\rightShadow.png"
+
+IDR_topLeftShadow       PNG                     "res\\shadows\\topLeftShadow.png"
+
+IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.png"
+
+IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
+
+IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
+
+IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
+
+IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
+
+IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
+
+IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
+
+IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
+
+IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
+
+IDB_ICONTOOLSPEECHBALOON PNG                     "res\\ImageEditor\\icon_tool_speech_baloon.png"
+
+IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
+
+IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
+
+IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
+
+IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
+
+IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
+
+IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
+
+IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
+
+IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
+
+IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
+
+IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+
+IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
+
+IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
+
+IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
+
+IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
+
+IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
+
+IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload_cloud.png"
+
+IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
+
+IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
+
+IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
+
+IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
+
+IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
+
+IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
+
+IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
+
+IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
+
+IDB_ICONRECORD          PNG                     "res\\ImageEditor\\icon_record.png"
+
+IDB_ICONPAUSE           PNG                     "res\\icon_pause.png"
+
+IDB_ICONOK              PNG                     "res\\icon_ok.png"
+
+IDB_ICONCANCEL          PNG                     "res\\icon_cancel.png"
+
+IDB_ICONSEARCHSMALL     PNG                     "res\\icon_search.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -154,7 +248,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,39,246,10
 END
 
-IDD_SERVERLISTPOPUP DIALOGEX 0, 0, 473, 242
+IDD_SERVERLISTPOPUP DIALOGEX 0, 0, 473, 245
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
@@ -163,12 +257,14 @@ BEGIN
     CONTROL         "#image",IDC_IMAGERADIO,"Button",BS_AUTORADIOBUTTON,73,2,75,10
     CONTROL         "#file",IDC_FILERADIO,"Button",BS_AUTORADIOBUTTON,154,2,65,10
     CONTROL         "#video",IDC_VIDEORADIO,"Button",BS_AUTORADIOBUTTON,226,2,75,10
-    CONTROL         "",IDC_SERVERLISTCONTROL,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,6,15,461,206
-    EDITTEXT        IDC_SEARCHQUERYEDIT,6,224,129,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "#ok",IDOK,270,224,89,14
-    PUSHBUTTON      "#add",IDC_ADDBUTTON,365,224,96,14
-    PUSHBUTTON      "?",IDC_HELPBUTTON,451,-1,17,14,BS_ICON
-    ICON            "",IDC_SEARCHSTATIC,138,226,18,16,SS_REALSIZEIMAGE
+    CONTROL         "",IDC_SERVERLISTCONTROL,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,6,16,461,206
+    EDITTEXT        IDC_SEARCHQUERYEDIT,6,227,129,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDC_ADDBUTTON,222,227,28,14,BS_ICON
+    DEFPUSHBUTTON   "#ok",IDOK,270,227,92,14
+    PUSHBUTTON      "#cancel",IDCANCEL,369,227,92,14
+    PUSHBUTTON      "?",IDC_HELPBUTTON,428,-1,17,14,BS_ICON
+    PUSHBUTTON      "",IDC_CLOSEBUTTON,451,-1,17,14,BS_ICON
+    ICON            "",IDC_SEARCHSTATIC,138,229,18,16,SS_REALSIZEIMAGE
 END
 
 IDD_SERVERSELECTORCONTROL DIALOGEX 0, 0, 260, 46
@@ -186,230 +282,6 @@ BEGIN
     LTEXT           "",IDC_FOLDERLABEL,155,30,78,8,SS_ENDELLIPSIS
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER,241,26,16,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_SCREENRECORDINGSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 260
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 322
-    END
-
-    IDD_FFMPEGSETTINGS, DIALOG
-    BEGIN
-        RIGHTMARGIN, 252
-        VERTGUIDE, 123
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 238
-    END
-
-    IDD_DXGISETTINGS, DIALOG
-    BEGIN
-        RIGHTMARGIN, 252
-        VERTGUIDE, 106
-        VERTGUIDE, 210
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 238
-    END
-
-    IDD_SCREENRECODINGDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 260
-        VERTGUIDE, 114
-        BOTTOMMARGIN, 164
-    END
-
-    IDD_IMAGEEDITORSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 10
-        RIGHTMARGIN, 256
-        VERTGUIDE, 10
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 300
-        HORZGUIDE, 11
-    END
-
-    IDD_SERVERLISTPOPUP, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 467
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 238
-    END
-
-    IDD_SERVERSELECTORCONTROL, DIALOG
-    BEGIN
-        BOTTOMMARGIN, 44
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_SCREENRECORDINGSETTINGSPAGE AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_FFMPEGSETTINGS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_DXGISETTINGS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_SCREENRECODINGDLG AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_IMAGEEDITORSETTINGS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_SERVERLISTPOPUP AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_SERVERSELECTORCONTROL AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-#endif    // Neutral (Default) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Russian (Russia) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
-LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
-#pragma code_page(1251)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// PNG
-//
-
-IDR_PNG1                PNG                     "res\\icon_main.png"
-
-IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
-
-IDR_bottomLeftShadow    PNG                     "res\\shadows\\bottomLeftShadow.png"
-
-IDR_bottomRightShadow   PNG                     "res\\shadows\\bottomRightShadow.png"
-
-IDR_bottomShadow        PNG                     "res\\shadows\\bottomShadow.png"
-
-IDR_leftShadow          PNG                     "res\\shadows\\leftShadow.png"
-
-IDR_rightShadow         PNG                     "res\\shadows\\rightShadow.png"
-
-IDR_topLeftShadow       PNG                     "res\\shadows\\topLeftShadow.png"
-
-IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.png"
-
-IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
-
-IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
-
-IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
-
-IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
-
-IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
-
-IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
-
-IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
-
-IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
-
-IDB_ICONTOOLSPEECHBALOON PNG                     "res\\ImageEditor\\icon_tool_speech_baloon.png"
-
-IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
-
-IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
-
-IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
-
-IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
-
-IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
-
-IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
-
-IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
-
-IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
-
-IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
-
-IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
-
-IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
-
-IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
-
-IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
-
-IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
-
-IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
-
-IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload_cloud.png"
-
-IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
-
-IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
-
-IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
-
-IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
-
-IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
-
-IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
-
-IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
-
-IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
-
-IDB_ICONRECORD          PNG                     "res\\ImageEditor\\icon_record.png"
-
-IDB_ICONPAUSE           PNG                     "res\\icon_pause.png"
-
-IDB_ICONOK              PNG                     "res\\icon_ok.png"
-
-IDB_ICONCANCEL          PNG                     "res\\icon_cancel.png"
-
-IDB_ICONSEARCHSMALL     PNG                     "res\\icon_search.png"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
 
 IDD_VIDEOGRABBER DIALOGEX 0, 0, 392, 267
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
@@ -654,7 +526,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,39,180,10
-    CTEXT           "© 2007-2026 Sergey Svistunov",IDC_STATIC,52,72,189,11
+    CTEXT           "(c) 2007-2026 Sergey Svistunov",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,45,18,15,13
     LTEXT           "#app name",IDC_APPNAMELABEL,87,14,148,12
     LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
@@ -1417,419 +1289,60 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_VIDEOGRABBER, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 389
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 266
-    END
-
-    IDD_UPLOADDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 388
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 234
-    END
-
-    IDD_SCREENSHOTDLG, DIALOG
-    BEGIN
-        RIGHTMARGIN, 194
-        BOTTOMMARGIN, 240
-    END
-
-    IDD_VIDEOGRABBERPARARAMS, DIALOG
-    BEGIN
-        LEFTMARGIN, 10
-        RIGHTMARGIN, 256
-        VERTGUIDE, 160
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 282
-    END
-
-    IDD_LOGOSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 277
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 324
-    END
-
-    IDD_WIZARDDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 380
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 290
-    END
-
-    IDD_WELCOMEDLG, DIALOG
-    BEGIN
-        RIGHTMARGIN, 370
-        VERTGUIDE, 125
-        HORZGUIDE, 60
-        HORZGUIDE, 239
-    END
-
-    IDD_UPLOADSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 382
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 231
-    END
-
-    IDD_IMAGEVIEW, DIALOG
+    IDD_SCREENRECORDINGSETTINGSPAGE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
-    END
-
-    IDD_LOGINDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 267
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 172
-    END
-
-    IDD_LANGSELECT, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 205
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 91
-    END
-
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 268
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 301
-    END
-
-    IDD_MAINDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 426
-        VERTGUIDE, 98
-        VERTGUIDE, 107
-        VERTGUIDE, 195
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 265
-    END
-
-    IDD_MEDIAINFODLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 373
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 181
-    END
-
-    IDD_SETTINGSDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 362
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 326
-    END
-
-    IDD_GENERALSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 258
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 243
-    END
-
-    IDD_SIZEEXCEED, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 332
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 165
-    END
-
-    IDD_STATUSDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 221
-        TOPMARGIN, 6
-        BOTTOMMARGIN, 92
-    END
-
-    IDD_CONNECTIONSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 258
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 288
-    END
-
-    IDD_LOGWINDOW, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 302
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 169
-    END
-
-    IDD_RESULTSPANEL, DIALOG
-    BEGIN
-        RIGHTMARGIN, 365
-        BOTTOMMARGIN, 152
-    END
-
-    IDD_TRAYSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
         RIGHTMARGIN, 260
-        VERTGUIDE, 9
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 241
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 322
     END
 
-    IDD_HOTKEYSETTINGSPAGE, DIALOG
+    IDD_FFMPEGSETTINGS, DIALOG
     BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 262
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 292
-    END
-
-    IDD_HOTKEYEDITOR, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
         RIGHTMARGIN, 252
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
+        VERTGUIDE, 123
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 238
     END
 
-    IDD_SERVERFOLDERSELECT, DIALOG
+    IDD_DXGISETTINGS, DIALOG
     BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 216
+        RIGHTMARGIN, 252
+        VERTGUIDE, 106
+        VERTGUIDE, 210
         TOPMARGIN, 7
-        BOTTOMMARGIN, 200
+        BOTTOMMARGIN, 238
     END
 
-    IDD_NEWFOLDERDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 202
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 153
-    END
-
-    IDD_SERVERPARAMSDLG, DIALOG
+    IDD_SCREENRECODINGDLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 294
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 216
+        RIGHTMARGIN, 260
+        VERTGUIDE, 114
+        BOTTOMMARGIN, 164
     END
 
-    IDD_TEXTVIEWDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 269
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 219
-    END
-
-    IDD_UPDATEDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 327
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 246
-    END
-
-    IDD_SCREENSHOTSETTINGSPAGE, DIALOG
+    IDD_IMAGEEDITORSETTINGS, DIALOG
     BEGIN
         LEFTMARGIN, 10
         RIGHTMARGIN, 256
-        VERTGUIDE, 19
+        VERTGUIDE, 10
         TOPMARGIN, 4
         BOTTOMMARGIN, 300
         HORZGUIDE, 11
     END
 
-    IDD_IMAGEDOWNLOADER, DIALOG
-    BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 273
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 167
-    END
-
-    IDD_RESULTSWINDOW, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 383
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 207
-    END
-
-    IDD_CONVERTPRESETDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 278
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 315
-    END
-
-    IDD_THUMBSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 253
-        VERTGUIDE, 8
-        VERTGUIDE, 246
-        TOPMARGIN, 4
-    END
-
-    IDD_HISTORYWINDOW, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 402
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 360
-    END
-
-    IDD_THUMBEDITOR, DIALOG
+    IDD_SERVERLISTPOPUP, DIALOG
     BEGIN
         LEFTMARGIN, 6
-        RIGHTMARGIN, 255
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 169
+        RIGHTMARGIN, 467
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 241
     END
 
-    IDD_INPUTDIALOG, DIALOG
+    IDD_SERVERSELECTORCONTROL, DIALOG
     BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 257
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 148
-    END
-
-    IDD_IMAGEREUPLOADER, DIALOG
-    BEGIN
-        RIGHTMARGIN, 364
-    END
-
-    IDD_SHORTENURL, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 274
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 146
-    END
-
-    IDD_ADDFTPSERVERDIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 222
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 299
-    END
-
-    IDD_ADDDIRECTORYSERVERDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 244
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 121
-    END
-
-    IDD_QUICKSETUPDLG, DIALOG
-    BEGIN
-    END
-
-    IDD_INTEGRATIONSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 258
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 243
-    END
-
-    IDD_DEFAULTSERVERSSETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 3
-        RIGHTMARGIN, 268
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 276
-    END
-
-    IDD_UPLOADPARAMSDLG, DIALOG
-    BEGIN
-        RIGHTMARGIN, 335
-        BOTTOMMARGIN, 244
-    END
-
-    IDD_CONTEXTMENUITEMDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 269
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 84
-    END
-
-    IDD_TEXTPARAMSWINDOW, DIALOG
-    BEGIN
-        LEFTMARGIN, 5
-        RIGHTMARGIN, 266
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 20
-    END
-
-    IDD_CLEARHISTORYDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 257
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 73
-    END
-
-    IDD_SEARCHBYIMAGEDLG, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 221
-        TOPMARGIN, 6
-        BOTTOMMARGIN, 57
-    END
-
-    IDD_COLORCODEDIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 6
-        RIGHTMARGIN, 277
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 68
-    END
-
-    IDD_SERVERPROFILESELECT, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 413
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 259
-    END
-
-    IDD_MULTISERVERSELECTORCONTROL, DIALOG
-    BEGIN
-    END
-
-    IDD_TRANSFERSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 265
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 262
+        BOTTOMMARGIN, 44
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -1839,6 +1352,41 @@ END
 //
 // AFX_DIALOG_LAYOUT
 //
+
+IDD_SCREENRECORDINGSETTINGSPAGE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_FFMPEGSETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DXGISETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SCREENRECODINGDLG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_IMAGEEDITORSETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SERVERLISTPOPUP AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SERVERSELECTORCONTROL AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 IDD_IMAGEREUPLOADER AFX_DIALOG_LAYOUT
 BEGIN
@@ -2152,7 +1700,7 @@ IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.c
 
 IDC_CROSSHAIRCURSOR     CURSOR                  "res\\ImageEditor\\cursor_crosshair.cur"
 
-#endif    // Russian (Russia) resources
+#endif    // Neutral (Default) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -2332,7 +1880,7 @@ BEGIN
             VALUE "FileDescription", "Uptooda"
             VALUE "FileVersion", "1.3.3.0"
             VALUE "InternalName", "UptoodaGUI"
-            VALUE "LegalCopyright", "© 2007-2025 Sergey Svistunov (https://svistunov.dev)"
+            VALUE "LegalCopyright", "(c) 2007-2025 Sergey Svistunov (https://svistunov.dev)"
             VALUE "OriginalFilename", "uptooda.exe"
             VALUE "ProductName", "Uptooda"
             VALUE "ProductVersion", "1.3.3.0"

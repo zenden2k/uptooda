@@ -36,6 +36,23 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
 
+namespace {
+Gdiplus::TextRenderingHint getSystemTextRenderingHint() {
+    BOOL fontSmoothingEnabled = FALSE;
+    if (!SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &fontSmoothingEnabled, 0) || !fontSmoothingEnabled) {
+        return Gdiplus::TextRenderingHintSingleBitPerPixelGridFit;
+    }
+
+    UINT fontSmoothingType = FE_FONTSMOOTHINGSTANDARD;
+    if (SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &fontSmoothingType, 0)
+        && fontSmoothingType == FE_FONTSMOOTHINGCLEARTYPE) {
+        return Gdiplus::TextRenderingHintClearTypeGridFit;
+    }
+
+    return Gdiplus::TextRenderingHintAntiAliasGridFit;
+}
+}
+
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 {
@@ -306,6 +323,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     Graphics gr(&ImgBuffer);
 
     gr.SetPageUnit(UnitPixel);
+    gr.SetTextRenderingHint(getSystemTextRenderingHint());
 
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
