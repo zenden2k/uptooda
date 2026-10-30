@@ -300,11 +300,8 @@ add_subdirectory(History)
 if(WIN32)
     add_subdirectory(Gui)
 	add_subdirectory(ScreenCapture)
-endif()
 	add_subdirectory(WebBrowser)
-if(WIN32)
-
-endif ()
+endif()
 
 add_subdirectory(CLI)
 
