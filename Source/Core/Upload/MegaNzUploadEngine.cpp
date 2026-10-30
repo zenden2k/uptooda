@@ -36,10 +36,10 @@
 #include "Func/IuCommonFunctions.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
-#endif
-#include "Core/AppRuntimeInfo.h"
 #include "Core/Images/ImageLoader.h"
 #include "Func/WinUtils.h"
+#endif
+#include "Core/AppRuntimeInfo.h"
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT APP_NAME_A
