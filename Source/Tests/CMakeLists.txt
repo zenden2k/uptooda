@@ -21,7 +21,6 @@ set(SRC_LIST
    ../CLI/ConsoleScriptFunctionsImpl.cpp
    ../Core/Settings/CliSettings.cpp
    ../Core/Network/Tests/NetworkClientMock.h
-   ../Func/IuCommonFunctions.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 
@@ -37,11 +36,11 @@ if(WIN32)
         ../Core/Images/Thumbnail.cpp
         ../Core/3rdpart/parser.cpp
         ../Func/MyUtils.cpp
+        ../Func/IuCommonFunctions.cpp
         ../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
         ../Video/Tests/VideoGrabberTest.cpp
     )
-   
 endif()
 
 add_executable(Tests ${SRC_LIST})
