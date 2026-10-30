@@ -341,7 +341,8 @@ void FFmpegScreenRecorder::stop() {
                 });
             } else {
                 try {
-                    std::filesystem::rename(std::filesystem::u8path(self->currentOutFilePath_), std::filesystem::u8path(self->outFilePath_));
+                    std::filesystem::rename(IuCoreUtils::Utf8ToPath(self->currentOutFilePath_),
+                        IuCoreUtils::Utf8ToPath(self->outFilePath_));
                 } catch (const std::exception& ex) {
                     LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
                 }
@@ -356,7 +357,7 @@ void FFmpegScreenRecorder::stop() {
             }
 
             const std::string tempFile = tempFileName;
-            std::ofstream f(/*std::filesystem::u8path*/ (tempFile), std::ios::out);
+            std::ofstream f(IuCoreUtils::Utf8ToPath(tempFile), std::ios::out);
 
             if (!f) {
                 LOG(ERROR) << "Failed to create temp file " << tempFile;
@@ -413,7 +414,7 @@ void FFmpegScreenRecorder::cancel() {
     auto cb = [self](int) {
         self->cleanupAfter();
         try {
-            std::filesystem::remove(std::filesystem::u8path(self->outFilePath_));
+            std::filesystem::remove(IuCoreUtils::Utf8ToPath(self->outFilePath_));
         } catch (const std::exception&) {
             //LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());
         }
@@ -445,7 +446,7 @@ void FFmpegScreenRecorder::pause() {
 void FFmpegScreenRecorder::cleanupAfter() {
     for (const auto& item : parts_) {
         try {
-            std::filesystem::remove(std::filesystem::u8path(item));
+            std::filesystem::remove(IuCoreUtils::Utf8ToPath(item));
         }
         catch (const std::exception& ex) {
             LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());

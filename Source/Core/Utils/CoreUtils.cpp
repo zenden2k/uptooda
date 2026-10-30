@@ -85,6 +85,10 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 namespace IuCoreUtils {
 
+std::filesystem::path Utf8ToPath(const std::string& path) {
+    return std::filesystem::path(std::u8string(reinterpret_cast<const char8_t*>(path.data()), path.size()));
+}
+
     FILE * FopenUtf8(const char * filename, const char * mode)
 {
 #ifdef _MSC_VER
@@ -116,7 +120,7 @@ int64_t Ftell64(FILE *a)
 
 bool FileExists(const std::string& fileName) {
     std::error_code ec;
-    bool exists = std::filesystem::exists(std::filesystem::u8path(fileName), ec);
+    bool exists = std::filesystem::exists(Utf8ToPath(fileName), ec);
     return !ec && exists;
 }
 
@@ -275,7 +279,7 @@ std::string IncrementFileName(const std::string& originalFileName, int counter) 
 
 bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
 {
-    std::ifstream file(std::filesystem::u8path(utf8Filename), std::ios::binary);
+    std::ifstream file(Utf8ToPath(utf8Filename), std::ios::binary);
     if (!file) {
         return false;
     }
@@ -403,7 +407,7 @@ bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
 
 void PutFileContents(const std::string& utf8Filename, const std::string& content) {
     try {
-        std::filesystem::path filepath(std::filesystem::u8path(utf8Filename));
+        std::filesystem::path filepath(Utf8ToPath(utf8Filename));
 
         std::ofstream file(filepath, std::ios::binary);
         if (!file) {
@@ -423,7 +427,7 @@ void PutFileContents(const std::string& utf8Filename, const std::string& content
 }
 
 std::string GetFileContents(const std::string& filename) {
-    std::ifstream file(std::filesystem::u8path(filename), std::ios::binary);
+    std::ifstream file(Utf8ToPath(filename), std::ios::binary);
     if (!file) {
         throw IOException("Cannot open file: " + filename);
     }
@@ -456,7 +460,7 @@ std::string GetFileContents(const std::string& filename) {
 std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead) {
     namespace fs = std::filesystem;
 
-    fs::path filepath = fs::u8path(filename);
+    fs::path filepath = Utf8ToPath(filename);
 
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
@@ -512,7 +516,7 @@ int64_t GetFileSize(const std::string& utf8Filename) {
     }
 
     std::error_code ec;
-    auto path = std::filesystem::u8path(utf8Filename);
+    auto path = Utf8ToPath(utf8Filename);
 
     if (!std::filesystem::is_regular_file(path, ec) || ec) {
         return -1;
@@ -581,7 +585,7 @@ void DatePlusDays(struct tm* date, int days){
 bool CopyFileToDest(const std::string& src, const std::string& dest, bool overwrite)
 {
     std::error_code ec;
-    std::filesystem::copy(std::filesystem::u8path(src), std::filesystem::u8path(dest),
+    std::filesystem::copy(Utf8ToPath(src), Utf8ToPath(dest),
             overwrite ? std::filesystem::copy_options::overwrite_existing : std::filesystem::copy_options::none,
             ec
     );
@@ -591,7 +595,7 @@ bool CopyFileToDest(const std::string& src, const std::string& dest, bool overwr
 bool CreateDir(const std::string& path, unsigned int mode) {
     std::error_code ec;
 
-    std::filesystem::create_directories(std::filesystem::u8path(path), ec);
+    std::filesystem::create_directories(Utf8ToPath(path), ec);
     if (ec) {
         return false;
     }
@@ -603,13 +607,13 @@ bool CreateDir(const std::string& path, unsigned int mode) {
 
 bool RemoveFile(const std::string& utf8Filename) {
     std::error_code ec;
-    std::filesystem::remove(std::filesystem::u8path(utf8Filename), ec);
+    std::filesystem::remove(Utf8ToPath(utf8Filename), ec);
     return !ec;
 }
 
 bool DirectoryExists(const std::string& path) {
     std::error_code ec;
-    bool isDir = std::filesystem::is_directory(std::filesystem::u8path(path), ec);
+    bool isDir = std::filesystem::is_directory(Utf8ToPath(path), ec);
     return !ec && isDir;
 }
 

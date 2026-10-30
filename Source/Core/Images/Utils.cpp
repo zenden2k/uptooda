@@ -1392,7 +1392,7 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
         }
         else {
             std::string filenameUtf8 = W2U(fileName);
-            std::ofstream f(std::filesystem::u8path(filenameUtf8), std::ios::out | std::ios::binary);
+            std::ofstream f(IuCoreUtils::Utf8ToPath(filenameUtf8), std::ios::out | std::ios::binary);
 
             if (!f) {
                 throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);

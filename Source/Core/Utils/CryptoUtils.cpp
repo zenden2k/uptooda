@@ -38,6 +38,7 @@
 #include <xxhash.h>
 
 #include "IOException.h"
+#include "CoreUtils.h"
 #include "Core/Upload/CommonTypes.h"
 
 namespace IuCoreUtils::CryptoUtils {
@@ -337,7 +338,7 @@ std::string CalcXXH64HashFromString(const std::string& data) {
 }
 
 std::string CalcXXH64HashFromFile(const std::string& path, int64_t offset, size_t chunkSize) {
-    std::ifstream file(std::filesystem::u8path(path), std::ios::binary);
+    std::ifstream file(IuCoreUtils::Utf8ToPath(path), std::ios::binary);
     if (!file) {
         throw IOException("Could not open file '" + path + "' for reading");
     }

@@ -329,7 +329,7 @@ inline void dotenv::do_init(int flags, const char* filename)
     std::ifstream file;
     std::string line;
 
-    file.open(std::filesystem::u8path(filename));
+    file.open(std::filesystem::path(reinterpret_cast<const char8_t*>(filename)));
 
     if (file)
     {

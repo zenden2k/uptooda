@@ -5,11 +5,11 @@
 
 template<class T> class Singleton {
     public:
-        Singleton<T>() {
+        Singleton() {
 
         }
 
-        virtual ~Singleton<T>() {
+        virtual ~Singleton() {
 
         }
 
@@ -19,8 +19,7 @@ template<class T> class Singleton {
         }
 
     private:
-        DISALLOW_COPY_AND_ASSIGN(Singleton<T>);
+        DISALLOW_COPY_AND_ASSIGN(Singleton);
 };
-
 
 #endif
