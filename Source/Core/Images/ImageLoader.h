@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/GdiPlusImage.h"
@@ -21,7 +22,12 @@ public:
     std::wstring getLastError() const;
     static ImageFormat getImageFormatFromData(uint8_t* data, size_t size);
     static std::unique_ptr<AbstractImageReader> createReaderForFormat(ImageFormat format);
+    static std::unordered_set<std::string> SupportedImageExtensions;
+    static bool IsImage(LPCTSTR szFileName);
+    static bool IsImage(const std::string& fileName);
+
 protected:
     std::wstring lastError_;
+
 };
 #endif

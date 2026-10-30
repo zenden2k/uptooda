@@ -20,30 +20,33 @@
 
 #include "InputBoxControl.h"
 
-#include <sstream>
 #include <ComDef.h>
+#include <Windows.ApplicationModel.Appointments.h>
+#include <sstream>
 #include <strsafe.h>
 #include <wincodec.h>
-#include <Windows.ApplicationModel.Appointments.h>
 
 #include "Core/Images/Utils.h"
-#include "ImageEditor/Canvas.h"
 #include "Core/i18n/Translator.h"
 #include "Func/WinUtils.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "ImageEditor/Canvas.h"
 
 #ifndef TO_DEFAULTCOLOREMOJI
-    #define TO_DEFAULTCOLOREMOJI 0x1000
+#define TO_DEFAULTCOLOREMOJI 0x1000
 #endif
 #ifndef TO_DISPLAYFONTCOLOR
-    #define TO_DISPLAYFONTCOLOR 0x2000
+#define TO_DISPLAYFONTCOLOR 0x2000
 #endif
 
-EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices = { 0x8d33f740, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices
+    = { 0x8d33f740, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
 
-//EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost = { 0xc5bdd8d0, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+// EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost = { 0xc5bdd8d0, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00,
+// 0x6c, 0xad, 0xc5 } };
 
-//EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost2 = { 0xc5bdd8d7, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+// EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextHost2 = { 0xc5bdd8d7, 0xd26e, 0x11ce, { 0xa8, 0x9e, 0x00, 0xaa, 0x00,
+// 0x6c, 0xad, 0xc5 } };
 const GUID IID_ITextHost = {
     0x13E670F4, // Data1
     0x1A5A, // Data2
@@ -51,20 +54,15 @@ const GUID IID_ITextHost = {
     { 0xAB, 0xEB, 0x00, 0xAA, 0x00, 0xB6, 0x5E, 0xA1 } // Data4
 };
 
-const GUID IID_ITextHost2 = {
-    0x13E670F5, // Data1
-    0x1A5A, // Data2
-    0x11CF, // Data3
-    { 0xAB, 0xEB, 0x00, 0xAA, 0x00, 0xB6, 0x5E, 0xA1 } 
-};
-EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices2 = { 0x8d33f741, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
+const GUID IID_ITextHost2 = { 0x13E670F5, // Data1
+                              0x1A5A, // Data2
+                              0x11CF, // Data3
+                              { 0xAB, 0xEB, 0x00, 0xAA, 0x00, 0xB6, 0x5E, 0xA1 } };
+EXTERN_C const GUID DECLSPEC_SELECTANY IID_ITextServices2
+    = { 0x8d33f741, 0xcf58, 0x11ce, { 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5 } };
 
-EXTERN_C const GUID IID_IRicheditWindowlessAccessibility = {
-    0x983E572D, 
-    0x20CD,
-    0x460B, 
-    { 0x91, 0x04, 0x83, 0x11, 0x15, 0x92, 0xDD, 0x10 } 
-};
+EXTERN_C const GUID IID_IRicheditWindowlessAccessibility
+    = { 0x983E572D, 0x20CD, 0x460B, { 0x91, 0x04, 0x83, 0x11, 0x15, 0x92, 0xDD, 0x10 } };
 
 namespace ImageEditor {
 
@@ -74,29 +72,27 @@ CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITM
     if (!hBitmap)
         return nullptr;
 
-    BITMAP bmp {};
+    BITMAP bmp { };
     GetObject(hBitmap, sizeof(BITMAP), &bmp);
 
     if (bmp.bmWidth == 0 || bmp.bmHeight == 0) {
-        return {};
+        return { };
     }
-    D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(
-        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+    D2D1_BITMAP_PROPERTIES props
+        = D2D1::BitmapProperties(D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 
     CComPtr<IWICImagingFactory> wicFactory;
-    CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER,
-        IID_PPV_ARGS(&wicFactory));
+    CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wicFactory));
 
     CComPtr<IWICBitmap> wicBitmap;
-    HRESULT hr = wicFactory->CreateBitmapFromHBITMAP(
-        hBitmap, nullptr, WICBitmapUseAlpha, &wicBitmap);
+    HRESULT hr = wicFactory->CreateBitmapFromHBITMAP(hBitmap, nullptr, WICBitmapUseAlpha, &wicBitmap);
     if (FAILED(hr))
         return nullptr;
 
     CComPtr<IWICFormatConverter> converter;
     wicFactory->CreateFormatConverter(&converter);
-    converter->Initialize(wicBitmap, GUID_WICPixelFormat32bppPBGRA,
-        WICBitmapDitherTypeNone, nullptr, 0.0f, WICBitmapPaletteTypeCustom);
+    converter->Initialize(wicBitmap, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, nullptr, 0.0f,
+                          WICBitmapPaletteTypeCustom);
 
     CComPtr<ID2D1Bitmap> d2dBitmap;
     CComPtr<IWICBitmapSource> source;
@@ -114,8 +110,8 @@ CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITM
 D2D1_RECT_F ScaleRectToLogical(const RECT& physicalRect, FLOAT dpiX, FLOAT dpiY) {
     const FLOAT scaleX = USER_DEFAULT_SCREEN_DPI / dpiX;
     const FLOAT scaleY = USER_DEFAULT_SCREEN_DPI / dpiY;
-    return D2D1::RectF(physicalRect.left * scaleX, physicalRect.top * scaleY,
-        physicalRect.right * scaleX, physicalRect.bottom * scaleY);
+    return D2D1::RectF(physicalRect.left * scaleX, physicalRect.top * scaleY, physicalRect.right * scaleX,
+                       physicalRect.bottom * scaleY);
 }
 
 POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
@@ -127,15 +123,10 @@ POINT ScalePointToLogical(const POINT& physicalPoint, int dpi) {
 }
 
 inline D2D1_COLOR_F ToD2DColor(const Gdiplus::Color& c) {
-    return D2D1::ColorF(c.GetR() / 255.0f,
-                        c.GetG() / 255.0f,
-                        c.GetB() / 255.0f,
-                        c.GetA() / 255.0f);
+    return D2D1::ColorF(c.GetR() / 255.0f, c.GetG() / 255.0f, c.GetB() / 255.0f, c.GetA() / 255.0f);
 }
 
-InputBoxControl::InputBoxControl(Canvas* canvas):
-    canvas_(canvas)
-{
+InputBoxControl::InputBoxControl(Canvas* canvas) : canvas_(canvas) {
     d2dMode_ = false;
     ZeroMemory(&charFormat_, sizeof(charFormat_));
     ZeroMemory(&paraFormat_, sizeof(paraFormat_));
@@ -153,7 +144,7 @@ InputBoxControl::~InputBoxControl() {
 
 HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD exStyle) {
     d2dMode_ = IsWindows8OrGreater();
-    HMODULE h  = ::LoadLibrary(_T("msftedit.dll"));
+    HMODULE h = ::LoadLibrary(_T("msftedit.dll"));
     if (!h) {
         return nullptr;
     }
@@ -161,8 +152,8 @@ HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD ex
     if (!pCreateTextServices)
         return nullptr;
     RECT rcCopy = rc;
-    POINT scrollOffset = canvas_ ? canvas_->GetScrollOffset() : POINT{};
-    canvasOrigin_ = {rc.left + scrollOffset.x, rc.top + scrollOffset.y};
+    POINT scrollOffset = canvas_ ? canvas_->GetScrollOffset() : POINT { };
+    canvasOrigin_ = { rc.left + scrollOffset.x, rc.top + scrollOffset.y };
     CWindowImpl::Create(hParent, rcCopy, L"", style, exStyle);
     ::GetClientRect(m_hWnd, &clientRect_);
     if (!CreateTextServices()) {
@@ -187,7 +178,7 @@ void InputBoxControl::Destroy() {
     services_.Release();
     services2_.Release();
     servicesUnk_.Release();
-    //UiaReturnRawElementProvider(hostWindow_, 0, 0, NULL);
+    // UiaReturnRawElementProvider(hostWindow_, 0, 0, NULL);
     /*if (m_hWnd)
         DestroyWindow();*/
 }
@@ -208,6 +199,7 @@ bool InputBoxControl::CreateTextServices() {
     hr = punk->QueryInterface(IID_ITextServices2, (void**)&services2_);
 
     ApplyDefaults();
+    lastPlainText_ = getPlainText();
     return true;
 }
 
@@ -217,14 +209,14 @@ void InputBoxControl::ApplyDefaults() {
 
     LRESULT editStyle = 0;
 
-    //services_->TxSendMessage(EM_SETEDITSTYLE, SES_SCROLLONKILLFOCUS, SES_SCROLLONKILLFOCUS, nullptr);
-    
-    if (d2dMode_ ) {
+    // services_->TxSendMessage(EM_SETEDITSTYLE, SES_SCROLLONKILLFOCUS, SES_SCROLLONKILLFOCUS, nullptr);
+
+    if (d2dMode_) {
         services_->TxSendMessage(EM_SETEDITSTYLE, 0, SES_LOGICALCARET, nullptr);
     }
     services_->TxSendMessage(EM_GETEDITSTYLE, 0, 0, &editStyle);
 
-    // Прозрачный фон, шрифт/параграф, событийная маска
+    // Transparent background, font/paragraph, and event mask.
     services_->TxSendMessage(EM_SETBKGNDCOLOR, 0, CLR_NONE, nullptr);
     services_->TxSendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&charFormat_, nullptr);
     services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&paraFormat_, nullptr);
@@ -232,15 +224,15 @@ void InputBoxControl::ApplyDefaults() {
     DWORD mask = ENM_CHANGE | ENM_REQUESTRESIZE | ENM_SELCHANGE;
     services_->TxSendMessage(EM_SETEVENTMASK, 0, mask, nullptr);
 
-    // Многострочность, автоскролл, не скрывать выделение
+    // Enable multiline input and automatic scrolling without hiding the selection.
     LONG style = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
     if (autoVerticalScroll_) {
         style |= ES_AUTOVSCROLL;
     }
     services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
 
-    // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
-    //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
+    // Enable emoji support and improved rendering.
+    // services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // Use RTF instead of plain text.
 
     // Keep font binding for missing glyphs (e.g. emoji), but use document font rules.
     // IMF_UIFONTS makes binding prefer UI defaults over the font selected for new text.
@@ -250,18 +242,43 @@ void InputBoxControl::ApplyDefaults() {
     langOptions &= ~(IMF_UIFONTS | IMF_DUALFONT);
     services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
 
-    BIDIOPTIONS bidiOptions {};
+    BIDIOPTIONS bidiOptions { };
     bidiOptions.cbSize = sizeof(bidiOptions);
     bidiOptions.wMask = BOM_UNICODEBIDI;
     bidiOptions.wEffects = BOE_UNICODEBIDI;
     services_->TxSendMessage(EM_SETBIDIOPTIONS, 0, (LPARAM)&bidiOptions, nullptr);
 
-    // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
-    //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
+    // Remove this if RTF input should be enabled by default.
+    // services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
     services_->TxSendMessage(EM_SETZOOM, 0, 0, nullptr);
-  
-    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS, TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
-        TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
+
+    services_->TxSendMessage(EM_SETTYPOGRAPHYOPTIONS,
+                             TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR,
+                             TO_ADVANCEDTYPOGRAPHY | TO_DEFAULTCOLOREMOJI | TO_DISPLAYFONTCOLOR, nullptr);
+}
+
+void InputBoxControl::requestContentResize() {
+    if (!services_) {
+        return;
+    }
+
+    acceptRequestedResize_ = true;
+    services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
+    acceptRequestedResize_ = false;
+}
+
+std::wstring InputBoxControl::getPlainText() {
+    if (!services_) {
+        return { };
+    }
+
+    LRESULT length = 0;
+    services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &length);
+    std::wstring text(static_cast<size_t>(length) + 1, L'\0');
+    LRESULT copied = 0;
+    services_->TxSendMessage(WM_GETTEXT, text.size(), reinterpret_cast<LPARAM>(text.data()), &copied);
+    text.resize(static_cast<size_t>(copied));
+    return text;
 }
 
 // InputBox
@@ -314,7 +331,7 @@ void InputBoxControl::show(bool show) {
 
 void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) {
     grips_ = std::move(grips);
-    canvasOrigin_ = {x, y};
+    canvasOrigin_ = { x, y };
     POINT scrollOffset { 0, 0 };
     if (canvas_)
         scrollOffset = canvas_->GetScrollOffset();
@@ -327,29 +344,26 @@ void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElem
     ::GetClientRect(m_hWnd, &clientRect_);
 }
 
-bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap) {
+bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect,
+                                                 ID2D1Bitmap** d2dBitmap) {
     if (!renderTarget_ || !gdipBitmap || sourceRect.IsEmptyArea()) {
         return false;
     }
 
-    // Получаем данные пикселей
+    // Retrieve the pixel data.
     Gdiplus::BitmapData bitmapData;
-    //Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
-    if (gdipBitmap->LockBits(&sourceRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData) == Gdiplus::Ok) {
+    // Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
+    if (gdipBitmap->LockBits(&sourceRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData)
+        == Gdiplus::Ok) {
         FLOAT dpiX = 96.0f, dpiY = 96.0f;
-        //renderTarget_->GetDpi(&dpiX, &dpiY);
+        // renderTarget_->GetDpi(&dpiX, &dpiY);
 
-        // Создаем D2D bitmap
+        // Create the D2D bitmap.
         D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
-            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-            dpiX, dpiY);
+            D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED), dpiX, dpiY);
 
-        HRESULT hr = renderTarget_->CreateBitmap(
-            D2D1::SizeU(sourceRect.Width, sourceRect.Height),
-            bitmapData.Scan0,
-            bitmapData.Stride,
-            bitmapProps,
-            d2dBitmap);
+        HRESULT hr = renderTarget_->CreateBitmap(D2D1::SizeU(sourceRect.Width, sourceRect.Height), bitmapData.Scan0,
+                                                 bitmapData.Stride, bitmapProps, d2dBitmap);
 
         gdipBitmap->UnlockBits(&bitmapData);
         return SUCCEEDED(hr);
@@ -541,7 +555,7 @@ LOGFONT InputBoxControl::getSelectionFont() {
     if (!services_)
         return result;
 
-    CHARFORMAT2 format {};
+    CHARFORMAT2 format { };
     format.cbSize = sizeof(format);
     services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, (LPARAM)&format, nullptr);
 
@@ -574,6 +588,20 @@ LOGFONT InputBoxControl::getSelectionFont() {
     return result;
 }
 
+Gdiplus::Color InputBoxControl::getSelectionTextColor() {
+    COLORREF color = textColor_;
+    if (services_) {
+        CHARFORMAT2 format { };
+        format.cbSize = sizeof(format);
+        if (SUCCEEDED(
+                services_->TxSendMessage(EM_GETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&format), nullptr))
+            && (format.dwMask & CFM_COLOR)) {
+            color = format.crTextColor;
+        }
+    }
+    return Gdiplus::Color(255, GetRValue(color), GetGValue(color), GetBValue(color));
+}
+
 bool InputBoxControl::isVisible() { return visible_; }
 
 void InputBoxControl::invalidate() {
@@ -591,7 +619,7 @@ void InputBoxControl::setWordWrap(bool enabled) {
     wordWrap_ = enabled;
     if (services_) {
         services_->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, wordWrap_ ? TXTBIT_WORDWRAP : 0);
-        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
+        requestContentResize();
     }
 }
 
@@ -610,7 +638,7 @@ void InputBoxControl::setAutoVerticalScroll(bool enabled) {
         }
         services_->TxSendMessage(EM_SETOPTIONS, ECOOP_SET, options, nullptr);
         if (!autoVerticalScroll_) {
-            POINT scrollPosition {};
+            POINT scrollPosition { };
             services_->TxSendMessage(EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&scrollPosition), nullptr);
         }
     }
@@ -639,7 +667,7 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
         if (visible_ && ::GetFocus() != m_hWnd)
             ::SetFocus(m_hWnd);
 
-        CHARFORMAT2 format {};
+        CHARFORMAT2 format { };
         format.cbSize = sizeof(format);
         format.dwMask = CFM_COLOR;
         format.crTextColor = textColor_;
@@ -652,16 +680,15 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
 }
 
 void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
+    constexpr DWORD DEFAULT_MASK = CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
     logFont_ = font;
 
-    constexpr DWORD DEFAULT_MASK
-        = CFM_FACE |  CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
-    CHARFORMAT2 format {};
+    CHARFORMAT2 format { };
     format.cbSize = sizeof(format);
     format.dwMask = changeMask ? changeMask : DEFAULT_MASK;
     if (format.dwMask & CFM_FACE)
         format.dwMask |= CFM_CHARSET;
-    //format.dwMask&= ~CFM_CHARSET;
+    // format.dwMask&= ~CFM_CHARSET;
     if ((format.dwMask & CFM_SIZE) && logFont_.lfHeight != 0) {
         int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
         int pointSize = MulDiv(-logFont_.lfHeight, 72, dpi);
@@ -713,6 +740,7 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         HRESULT hr = services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&format, &result);
         if (FAILED(hr) || !result)
             LOG(WARNING) << "Failed to set RichEdit font, hr=" << hr << ", mask=" << std::hex << format.dwMask;
+        requestContentResize();
     }
 }
 
@@ -724,7 +752,7 @@ void InputBoxControl::setTextAlignment(WORD alignment) {
     paraFormat_.dwMask |= PFM_ALIGNMENT;
     paraFormat_.wAlignment = alignment;
     if (services_) {
-        PARAFORMAT2 format {};
+        PARAFORMAT2 format { };
         format.cbSize = sizeof(format);
         format.dwMask = PFM_ALIGNMENT;
         format.wAlignment = alignment;
@@ -734,7 +762,7 @@ void InputBoxControl::setTextAlignment(WORD alignment) {
 }
 
 WORD InputBoxControl::getTextAlignment() {
-    PARAFORMAT2 format {};
+    PARAFORMAT2 format { };
     format.cbSize = sizeof(format);
     format.dwMask = PFM_ALIGNMENT;
     if (services_) {
@@ -750,18 +778,23 @@ void InputBoxControl::setRawText(const std::string& text) {
     if (!services_)
         return;
     std::stringstream ss(text);
-    EDITSTREAM es {};
+    EDITSTREAM es { };
     es.dwCookie = (DWORD_PTR)&ss;
     es.pfnCallback = &InputBoxControl::EditStreamInCallback;
     services_->TxSendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es, nullptr);
+    const std::wstring currentText = getPlainText();
+    if (currentText != lastPlainText_) {
+        lastPlainText_ = currentText;
+        requestContentResize();
+    }
     onTextChanged(L"");
 }
 
 std::string InputBoxControl::getRawText() {
     if (!services_)
-        return {};
+        return { };
     std::stringstream ss;
-    EDITSTREAM es {};
+    EDITSTREAM es { };
     es.dwCookie = (DWORD_PTR)&ss;
     es.pfnCallback = &InputBoxControl::EditStreamOutCallback;
     services_->TxSendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es, nullptr);
@@ -771,7 +804,7 @@ std::string InputBoxControl::getRawText() {
 bool InputBoxControl::isEmpty() {
     if (!services_)
         return true;
-    LRESULT len {};
+    LRESULT len { };
     services_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &len);
     return len == 0;
 }
@@ -795,26 +828,26 @@ DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE 
 LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     hostWindow_ = m_hWnd;
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    // Базовый шрифт: Segoe UI 11pt
+    // Default font: Segoe UI 11 pt.
     wcscpy_s(logFont_.lfFaceName, L"Segoe UI Emoji");
     logFont_.lfHeight = -MulDiv(11, dpi, 72);
     logFont_.lfWeight = FW_NORMAL;
 
     charFormat_.cbSize = sizeof(charFormat_);
-    charFormat_.dwMask = CFM_FACE | CFM_SIZE | CFM_COLOR  /* | CFM_WEIGHT*/;
+    charFormat_.dwMask = CFM_FACE | CFM_SIZE | CFM_COLOR /* | CFM_WEIGHT*/;
     charFormat_.yHeight = 11 * 20;
     charFormat_.crTextColor = textColor_;
     charFormat_.bCharSet = DEFAULT_CHARSET;
     // charFormat_.dwMask |= CFM_BOLD;
-    // charFormat_.dwEffects |= CFE_BOLD;  // для жирного
-    // charFormat_.dwEffects &= ~CFE_BOLD; // для обычного
+    // charFormat_.dwEffects |= CFE_BOLD;  // Enable bold.
+    // charFormat_.dwEffects &= ~CFE_BOLD; // Disable bold.
     wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
 
     paraFormat_.cbSize = sizeof(paraFormat_);
     paraFormat_.dwMask = PFM_ALIGNMENT;
     paraFormat_.wAlignment = PFA_LEFT;
 
-    bHandled = FALSE; // пусть базовый обработчик выполнится
+    bHandled = FALSE; // Let the base handler process the message.
     return 0;
 }
 LRESULT InputBoxControl::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
@@ -826,17 +859,14 @@ LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
     ::GetClientRect(m_hWnd, &clientRect_);
     if (services_) {
         isResizing_ = true;
-        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE,
-                                                  TXTBIT_CLIENTRECTCHANGE);
+        services_->OnTxPropertyBitsChange(TXTBIT_CLIENTRECTCHANGE, TXTBIT_CLIENTRECTCHANGE);
         isResizing_ = false;
-        //onSizeChanged(w, h);
+        // onSizeChanged(w, h);
     }
     return 0;
 }
 
-LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
-    return 0;
-}
+LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) { return 0; }
 
 LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM, LPARAM, BOOL&) {
     if (services_) {
@@ -857,7 +887,7 @@ LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM, LPARAM, BOOL&) {
 }
 LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM, LPARAM, BOOL&) {
     TxShowCaret(FALSE);
-    //charFormat_.dwMask = 0;
+    // charFormat_.dwMask = 0;
 
     LRESULT result = 0;
     if (services_) {
@@ -898,11 +928,20 @@ LRESULT InputBoxControl::OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     const bool altPressed = (GetKeyState(VK_MENU) & 0x8000) != 0;
     if (services_ && controlPressed && !altPressed) {
         // TranslateMessage also generates control characters for these shortcuts.
-        if (uMsg == WM_CHAR && (wParam == 0x02 || wParam == 0x09 || wParam == 0x15)) {
+        if (uMsg == WM_CHAR && (wParam == 0x02 || wParam == 0x09 || wParam == 0x15 || wParam == 0x1a)) {
             bHandled = TRUE;
             return 0;
         }
         if (uMsg == WM_KEYDOWN) {
+            if (wParam == 'Z') {
+                bHandled = TRUE;
+                LRESULT result = 0;
+                services_->TxSendMessage(EM_UNDO, 0, 0, &result);
+                requestContentResize();
+                invalidate();
+                return result;
+            }
+
             DWORD formatMask = 0;
             DWORD formatEffect = 0;
             switch (wParam) {
@@ -939,7 +978,7 @@ LRESULT InputBoxControl::OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
                         CHARRANGE selection { };
                         services_->TxSendMessage(EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&selection), nullptr);
                         logFont_ = getSelectionFont();
-                        onSelectionChanged(selection.cpMin, selection.cpMax, logFont_);
+                        onSelectionChanged(selection.cpMin, selection.cpMax, logFont_, getSelectionTextColor());
                         invalidate();
                     }
                 }
@@ -988,7 +1027,7 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     LRESULT canUndo = 0, canRedo = 0;
     CHARRANGE selection = { 0 };
     LRESULT textLength = 0;
-    PARAFORMAT2 paragraphFormat {};
+    PARAFORMAT2 paragraphFormat { };
     paragraphFormat.cbSize = sizeof(paragraphFormat);
     paragraphFormat.dwMask = PFM_RTLPARA;
 
@@ -1007,26 +1046,24 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
 
     CMenu contextMenu;
     contextMenu.CreatePopupMenu();
-    contextMenu.AppendMenu(MF_STRING | (canUndo ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_UNDO, TR("Undo"));
-    contextMenu.AppendMenu(MF_STRING | (canRedo ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_REDO, TR("Redo"));
+    contextMenu.AppendMenu(MF_STRING | (canUndo ? MF_ENABLED : MF_GRAYED), ID_EDIT_UNDO, TR("Undo"));
+    contextMenu.AppendMenu(MF_STRING | (canRedo ? MF_ENABLED : MF_GRAYED), ID_EDIT_REDO, TR("Redo"));
 
     contextMenu.AppendMenu(MF_SEPARATOR);
 
-    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_CUT, Utf8ToWCstring( _c("editor.context_menu.cut", "Cut")) + CString("\tCtrl+X"));
-    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_COPY, Utf8ToWCstring( _c("editor.context_menu.copy", "Copy")) + CString("\tCtrl+C"));
-    contextMenu.AppendMenu(MF_STRING | (canPaste ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_PASTE, Utf8ToWCstring(_c("editor.context_menu.paste", "Paste"))+ CString("\tCtrl+V"));
-    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_DELETE, Utf8ToWCstring( _c("editor.context_menu.delete", "Delete")) + CString("\tDel"));
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED), ID_EDIT_CUT,
+                           Utf8ToWCstring(_c("editor.context_menu.cut", "Cut")) + CString("\tCtrl+X"));
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED), ID_EDIT_COPY,
+                           Utf8ToWCstring(_c("editor.context_menu.copy", "Copy")) + CString("\tCtrl+C"));
+    contextMenu.AppendMenu(MF_STRING | (canPaste ? MF_ENABLED : MF_GRAYED), ID_EDIT_PASTE,
+                           Utf8ToWCstring(_c("editor.context_menu.paste", "Paste")) + CString("\tCtrl+V"));
+    contextMenu.AppendMenu(MF_STRING | (hasSelection ? MF_ENABLED : MF_GRAYED), ID_EDIT_DELETE,
+                           Utf8ToWCstring(_c("editor.context_menu.delete", "Delete")) + CString("\tDel"));
 
     contextMenu.AppendMenu(MF_SEPARATOR);
 
-    contextMenu.AppendMenu(MF_STRING | (hasText ? MF_ENABLED : MF_GRAYED),
-        ID_EDIT_SELECT_ALL, TR("Select All")+ CString("\tCtrl+A"));
+    contextMenu.AppendMenu(MF_STRING | (hasText ? MF_ENABLED : MF_GRAYED), ID_EDIT_SELECT_ALL,
+                           TR("Select All") + CString("\tCtrl+A"));
 
     contextMenu.AppendMenu(MF_SEPARATOR);
     CMenu textDirectionMenu;
@@ -1034,7 +1071,7 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_LTR, TR("Left to right"));
     textDirectionMenu.AppendMenu(MF_STRING, ID_TEXT_DIRECTION_RTL, TR("Right to left"));
     textDirectionMenu.CheckMenuRadioItem(ID_TEXT_DIRECTION_LTR, ID_TEXT_DIRECTION_RTL,
-        isRtl ? ID_TEXT_DIRECTION_RTL : ID_TEXT_DIRECTION_LTR, MF_BYCOMMAND);
+                                         isRtl ? ID_TEXT_DIRECTION_RTL : ID_TEXT_DIRECTION_LTR, MF_BYCOMMAND);
     contextMenu.AppendMenu(MF_POPUP, reinterpret_cast<UINT_PTR>(textDirectionMenu.Detach()), TR("Text direction"));
 
 
@@ -1045,10 +1082,14 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
     switch (id) {
     case ID_EDIT_UNDO:
         services_->TxSendMessage(EM_UNDO, 0, 0, nullptr);
+        requestContentResize();
+        invalidate();
         break;
 
     case ID_EDIT_REDO:
         services_->TxSendMessage(EM_REDO, 0, 0, nullptr);
+        requestContentResize();
+        invalidate();
         break;
 
     case ID_EDIT_CUT:
@@ -1060,7 +1101,7 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
         break;
 
     case ID_EDIT_PASTE:
-        //SetFocus();
+        // SetFocus();
         services_->TxSendMessage(WM_PASTE, 0, 0, nullptr);
         break;
 
@@ -1073,15 +1114,16 @@ LRESULT InputBoxControl::OnContextMenu(UINT, WPARAM, LPARAM lParam, BOOL&) {
         break;
 
     case ID_TEXT_DIRECTION_LTR:
-    case ID_TEXT_DIRECTION_RTL: {
-        PARAFORMAT2 format {};
-        format.cbSize = sizeof(format);
-        format.dwMask = PFM_RTLPARA | PFM_ALIGNMENT;
-        format.wEffects = id == ID_TEXT_DIRECTION_RTL ? PFE_RTLPARA : 0;
-        format.wAlignment = id == ID_TEXT_DIRECTION_RTL ? PFA_RIGHT : PFA_LEFT;
-        services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&format, nullptr);
-        break;
-    }
+    case ID_TEXT_DIRECTION_RTL:
+        {
+            PARAFORMAT2 format { };
+            format.cbSize = sizeof(format);
+            format.dwMask = PFM_RTLPARA | PFM_ALIGNMENT;
+            format.wEffects = id == ID_TEXT_DIRECTION_RTL ? PFE_RTLPARA : 0;
+            format.wAlignment = id == ID_TEXT_DIRECTION_RTL ? PFA_RIGHT : PFA_LEFT;
+            services_->TxSendMessage(EM_SETPARAFORMAT, 0, (LPARAM)&format, nullptr);
+            break;
+        }
 
     default:
         break;
@@ -1096,7 +1138,7 @@ LRESULT InputBoxControl::OnSetCursor(UINT, WPARAM, LPARAM, BOOL& bHandled) {
         return TRUE;
     }
 
-    POINT position {};
+    POINT position { };
     GetCursorPos(&position);
     ScreenToClient(&position);
 
@@ -1105,16 +1147,7 @@ LRESULT InputBoxControl::OnSetCursor(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     RECT rect = { 0 };
     GetClientRect(&rect);
 
-    services_->OnTxSetCursor(
-        DVASPECT_CONTENT,
-        0,
-        nullptr,
-        nullptr,
-        hdc,
-        nullptr,
-        &rect,
-        position.x,
-        position.y);
+    services_->OnTxSetCursor(DVASPECT_CONTENT, 0, nullptr, nullptr, hdc, nullptr, &rect, position.x, position.y);
 
     return 0;
 }
@@ -1131,8 +1164,7 @@ LRESULT InputBoxControl::OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             return UiaReturnRawElementProvider(m_hWnd, wParam, lParam, pProvider);
         }*/
         if (richEditUIA_ && richEditUIA_->GetUiaProvider()) {
-            return UiaReturnRawElementProvider(hostWindow_, wParam, lParam,
-                richEditUIA_->GetUiaProvider());
+            return UiaReturnRawElementProvider(hostWindow_, wParam, lParam, richEditUIA_->GetUiaProvider());
         }
     } else if ((LONG)lParam == OBJID_CLIENT) {
         CComQIPtr<IAccessible> pAcc(services_);
@@ -1194,17 +1226,11 @@ STDMETHODIMP InputBoxControl::QueryInterface(REFIID riid, void** ppv) {
 }
 
 // ITextHost
-HDC InputBoxControl::TxGetDC() {
-    return ::GetDC(m_hWnd);
-}
+HDC InputBoxControl::TxGetDC() { return ::GetDC(m_hWnd); }
 
-INT InputBoxControl::TxReleaseDC(HDC hdc) {
-    return ::ReleaseDC(m_hWnd, hdc);
-}
+INT InputBoxControl::TxReleaseDC(HDC hdc) { return ::ReleaseDC(m_hWnd, hdc); }
 
-void InputBoxControl::TxInvalidateRect(LPCRECT prc, BOOL) {
-    invalidate();
-}
+void InputBoxControl::TxInvalidateRect(LPCRECT prc, BOOL) { invalidate(); }
 
 void InputBoxControl::TxViewChange(BOOL fUpdate) {
     if (fUpdate)
@@ -1280,16 +1306,14 @@ BOOL InputBoxControl::TxSetCaretPos(INT x, INT y) {
 BOOL InputBoxControl::TxSetTimer(UINT idTimer, UINT uTimeout) { return SetTimer(idTimer, uTimeout) != 0; }
 void InputBoxControl::TxKillTimer(UINT idTimer) {
     if (IsWindow())
-    KillTimer(idTimer);
+        KillTimer(idTimer);
 }
 
 void InputBoxControl::TxSetCapture(BOOL fCapture) {
     // CImageEditorView owns capture while forwarding a text selection drag.
 }
 
-void InputBoxControl::TxSetFocus() {
-    ::SetFocus(m_hWnd);
-}
+void InputBoxControl::TxSetFocus() { ::SetFocus(m_hWnd); }
 
 void InputBoxControl::TxSetCursor(HCURSOR hcur, BOOL fText) {
     cursor_ = hcur;
@@ -1307,7 +1331,7 @@ HRESULT InputBoxControl::TxGetExtent(LPSIZEL lpExtent) {
     /*lpExtent->cx = MulDiv(clientRect_.right - clientRect_.left, 2540, dpi);
     lpExtent->cy = MulDiv(clientRect_.bottom - clientRect_.top, 2540, dpi);*/
 
-    //lpExtent->cx = lpExtent->cy = 0;
+    // lpExtent->cx = lpExtent->cy = 0;
     return E_NOTIMPL;
 }
 
@@ -1330,51 +1354,51 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     if (pCF) {
         DWORD mask = pCF->dwMask;
 
-        // Цвет текста
+        // Text color.
         if (mask & CFM_COLOR) {
             textColor_ = pCF->crTextColor;
             charFormat_.crTextColor = pCF->crTextColor;
             charFormat_.dwMask |= CFM_COLOR;
         }
 
-        // Имя шрифта
+        // Font name.
         if (mask & CFM_FACE) {
             wcsncpy_s(charFormat_.szFaceName, pCF->szFaceName, _TRUNCATE);
             wcsncpy_s(logFont_.lfFaceName, pCF->szFaceName, _TRUNCATE);
             charFormat_.dwMask |= CFM_FACE;
         }
 
-        // Размер шрифта
+        // Font size.
         if (mask & CFM_SIZE) {
             charFormat_.yHeight = pCF->yHeight;
             charFormat_.dwMask |= CFM_SIZE;
 
-            // Обновляем LOGFONT
+            // Update LOGFONT.
             int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-            int pointSize = pCF->yHeight / 20; // yHeight в twips (1/20 пункта)
+            int pointSize = pCF->yHeight / 20; // yHeight is measured in twips (1/20 of a point).
             logFont_.lfHeight = -MulDiv(pointSize, dpi, 72);
         }
 
-        // Стили текста (жирный, курсив, подчеркнутый, зачеркнутый)
+        // Text styles (bold, italic, underline, and strikethrough).
         if (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT)) {
             charFormat_.dwEffects = pCF->dwEffects;
             charFormat_.dwMask |= (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT));
 
-            // Обновляем LOGFONT
+            // Update LOGFONT.
             logFont_.lfWeight = (pCF->dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
             logFont_.lfItalic = (pCF->dwEffects & CFE_ITALIC) ? TRUE : FALSE;
             logFont_.lfUnderline = (pCF->dwEffects & CFE_UNDERLINE) ? TRUE : FALSE;
             logFont_.lfStrikeOut = (pCF->dwEffects & CFE_STRIKEOUT) ? TRUE : FALSE;
         }
 
-        // Набор символов
+        // Character set.
         if (mask & CFM_CHARSET) {
             charFormat_.bCharSet = pCF->bCharSet;
             charFormat_.dwMask |= CFM_CHARSET;
             logFont_.lfCharSet = pCF->bCharSet;
         }
 
-        // Защищенный текст
+        // Protected text.
         if (mask & CFM_PROTECTED) {
             if (pCF->dwEffects & CFE_PROTECTED) {
                 charFormat_.dwEffects |= CFE_PROTECTED;
@@ -1384,7 +1408,7 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
             charFormat_.dwMask |= CFM_PROTECTED;
         }
 
-        // Ссылка
+        // Link.
         if (mask & CFM_LINK) {
             if (pCF->dwEffects & CFE_LINK) {
                 charFormat_.dwEffects |= CFE_LINK;
@@ -1394,7 +1418,7 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
             charFormat_.dwMask |= CFM_LINK;
         }
 
-        // Смещение (надстрочный/подстрочный текст)
+        // Offset (superscript/subscript text).
         if (mask & CFM_OFFSET) {
             charFormat_.yOffset = pCF->yOffset;
             charFormat_.dwMask |= CFM_OFFSET;
@@ -1403,8 +1427,8 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
-    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE
-        | TXTBIT_SAVESELECTION;
+    DWORD bits
+        = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE | TXTBIT_SAVESELECTION;
     if (wordWrap_) {
         bits |= TXTBIT_WORDWRAP;
     }
@@ -1417,15 +1441,23 @@ HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
 }
 HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
     switch (iNotify) {
-    case EN_CHANGE: {
-        /* CComBSTR str;
-        services_->TxGetText(&str);*/
-        onTextChanged(L"");
-        services_->TxSendMessage(EM_REQUESTRESIZE, 0, 0, nullptr);
-        break;
-    }
+    case EN_CHANGE:
+        {
+            const std::wstring currentText = getPlainText();
+            const bool textChanged = currentText != lastPlainText_;
+            lastPlainText_ = currentText;
+            onTextChanged(L"");
+            if (textChanged) {
+                requestContentResize();
+            }
+            break;
+        }
     case EN_REQUESTRESIZE:
         {
+            if (!acceptRequestedResize_ || isResizing_) {
+                break;
+            }
+            acceptRequestedResize_ = false;
             auto* rr = static_cast<REQRESIZE*>(pv);
             CRect windowRect;
             GetClientRect(&windowRect);
@@ -1434,17 +1466,18 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
             SetWindowPos(0, 0, 0, w, h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
             onResized(w, h);
             if (!autoVerticalScroll_) {
-                POINT scrollPosition {};
+                POINT scrollPosition { };
                 services_->TxSendMessage(EM_SETSCROLLPOS, 0, reinterpret_cast<LPARAM>(&scrollPosition), nullptr);
             }
             break;
         }
-    case EN_SELCHANGE: {
-        auto* sc = reinterpret_cast<SELCHANGE*>(pv);
-        logFont_ = getSelectionFont();
-        onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_);
-        break;
-    }
+    case EN_SELCHANGE:
+        {
+            auto* sc = reinterpret_cast<SELCHANGE*>(pv);
+            logFont_ = getSelectionFont();
+            onSelectionChanged(sc->chrg.cpMin, sc->chrg.cpMax, logFont_, getSelectionTextColor());
+            break;
+        }
     default:
         break;
     }
@@ -1478,7 +1511,7 @@ HCURSOR InputBoxControl::TxSetCursor2(HCURSOR hcur, BOOL) {
 HRESULT InputBoxControl::TxGetEditStyle(DWORD dwItem, DWORD* pdwData) {
     if (!pdwData)
         return E_POINTER;
-    // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
+    // dwItem: GETESTYLE_* (see TextServ.h). Return the basic flags.
     *pdwData = ES_MULTILINE | ES_NOHIDESEL | ES_WANTRETURN;
     if (autoVerticalScroll_) {
         *pdwData |= ES_AUTOVSCROLL;
@@ -1494,20 +1527,16 @@ HRESULT InputBoxControl::TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) {
     return S_OK;
 }
 
-void InputBoxControl::setHostWindow(HWND wnd) {
-    hostWindow_ = wnd;
-}
+void InputBoxControl::setHostWindow(HWND wnd) { hostWindow_ = wnd; }
 
 std::unique_ptr<Gdiplus::Bitmap> InputBoxControl::prepareBackground(Gdiplus::Bitmap* source, const Gdiplus::Rect& rc) {
-    // Создаем временный bitmap для конвертации
+    // Create a temporary bitmap for conversion.
     auto tempBitmap = std::make_unique<Gdiplus::Bitmap>(rc.Width, rc.Height, PixelFormat32bppPARGB);
     Gdiplus::Graphics tempGraphics(tempBitmap.get());
     tempGraphics.Clear(Gdiplus::Color::Transparent);
-    // Копируем нужную область
-    tempGraphics.DrawImage(source,
-        Gdiplus::Rect(0, 0, rc.Width, rc.Height),
-        rc.X, rc.Y, rc.Width, rc.Height,
-        Gdiplus::UnitPixel);
+    // Copy the required area.
+    tempGraphics.DrawImage(source, Gdiplus::Rect(0, 0, rc.Width, rc.Height), rc.X, rc.Y, rc.Width, rc.Height,
+                           Gdiplus::UnitPixel);
 
     return tempBitmap;
 }

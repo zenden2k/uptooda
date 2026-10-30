@@ -1,10 +1,11 @@
 #include "ImageConverterFilter.h"
 
-#include "Func/IuCommonFunctions.h"
+#include "Core/AppRuntimeInfo.h"
 #include "Core/Logging.h"
 #include "Core/Images/ImageConverter.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/CommonDefs.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -18,7 +19,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     {
         return true;
     }
-    if (!IuCommonFunctions::IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
+    if (!ImageLoader::IsImage(IuCoreUtils::Utf8ToWstring(fileTask->getFileName()).c_str()))
     {
         return true;
     }
@@ -29,7 +30,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     if (templateName.IsEmpty()) {
         templateName = _T("default");
     }
-    CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + templateName +
+    CString thumbTemplateFileName = U2W(AppRuntimeInfo::instance()->dataDirectory()) + _T("\\Thumbnails\\") + templateName +
         _T(".xml");
 
     if (!thumb.loadFromFile(W2U(thumbTemplateFileName)))

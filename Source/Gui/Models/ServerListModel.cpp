@@ -250,7 +250,7 @@ std::string ServerData::getMaxFileSizeString() const {
                 result += "/ ";
             }
             if (fileSize.has_value()) {
-                result += fileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(*fileSize);
+                result += fileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? "\u221E" : IuCoreUtils::FileSizeToString(*fileSize);
                 valueCount++;
             } else {
                 result += "-";
@@ -259,7 +259,7 @@ std::string ServerData::getMaxFileSizeString() const {
         }
 
         if (result.empty() && ued->MaxFileSize != 0) {
-            result += ued->MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+            result += ued->MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? "\u221E" : IuCoreUtils::FileSizeToString(ued->MaxFileSize);
             valueCount++;
         }
         maxFileSizeString = valueCount ? result : "";
@@ -353,14 +353,14 @@ void ServerData::cacheStorageTime() const {
                         storageTime = item->Time;
                     }
                     if (item->Time == StorageTime::TIME_INFINITE) {
-                        storageTimeText += u8"\u221E";
+                        storageTimeText += "\u221E";
                     } else if (item->Time % 24 == 0) {
                         storageTimeText += std::to_string(item->Time / 24) + std::string(_c("storage_time.days_suffix", "d"));
                     } else {
                         storageTimeText += std::to_string(item->Time) + std::string(_c("storage_time.hours_suffix", "h"));
                     }
                     if (item->AfterLastDownload) {
-                        storageTimeText += u8"\u2913";
+                        storageTimeText += "\u2913";
                     }
                     valueCount++;
                 } else {

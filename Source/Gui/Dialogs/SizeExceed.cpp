@@ -20,6 +20,7 @@
 
 #include "SizeExceed.h"
 
+#include "Core/Images/ImageLoader.h"
 #include "Func/Common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
@@ -53,7 +54,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     RECT rc = {12, 30, 162, 144};
     img.Create(m_hWnd, rc);
-    bool isImage = fileTask_->isImage() && IuCommonFunctions::IsImage(m_szFileName);
+    bool isImage = fileTask_->isImage() && ImageLoader::IsImage(m_szFileName);
     if (isImage) {
         img.loadImage(m_szFileName);
     }

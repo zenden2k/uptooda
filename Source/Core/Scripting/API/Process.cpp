@@ -5,10 +5,14 @@
 #include <optional>
 
 #include <boost/current_function.hpp>
-#include <boost/process/v2.hpp>
+#include <boost/process/v2/process.hpp>
 #ifdef _WIN32
 #include <boost/process/v2/windows/default_launcher.hpp>
 #endif
+#include <boost/asio/readable_pipe.hpp>
+#include <boost/process/v2/environment.hpp>
+#include <boost/process/v2/stdio.hpp>
+
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
 #include "ScriptAPI.h"

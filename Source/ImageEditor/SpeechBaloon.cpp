@@ -33,6 +33,8 @@ constexpr int MIN_TAIL_DEPTH = 18;
 constexpr int MAX_TAIL_DEPTH = 32;
 constexpr int TAIL_BASE_HALF_WIDTH = 12;
 constexpr int CORNER_RADIUS = 14;
+constexpr int DEFAULT_INPUT_HEIGHT = 20;
+constexpr int TEXT_LINE_VERTICAL_MARGIN = 4;
 
 int ClampValue(int value, int minValue, int maxValue) {
     if (maxValue < minValue) {
@@ -45,6 +47,7 @@ int ClampValue(int value, int minValue, int maxValue) {
 SpeechBaloon::SpeechBaloon(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX,
                            int endY) : TextElement(canvas, std::move(inputBox), startX, startY, endX, endY, true) {
     fillBackground_ = true;
+    isColorUsed_ = true;
     isBackgroundColorUsed_ = true;
 }
 
@@ -55,8 +58,7 @@ void SpeechBaloon::render(Painter* gr) {
     }
 
     drawDashedRectangle_ = isSelected() || !inputBox_;
-    const int maxBorderWidth = (std::max)(1, (std::min)(getWidth() - 1, getHeight() - 1));
-    const int borderWidth = (std::min)((std::max)(1, penSize_), maxBorderWidth);
+    const int borderWidth = getBorderWidth();
     const int borderInset = (borderWidth + 1) / 2;
     const Geometry geometry = getGeometry(borderInset);
     const int radius = (std::min)(CORNER_RADIUS, (std::min)(geometry.BubbleRect.Width, geometry.BubbleRect.Height) / 3);
@@ -92,27 +94,44 @@ void SpeechBaloon::resize(int width, int height) {
     }
 }
 
+void SpeechBaloon::setPenSize(int penSize) {
+    DrawingElement::setPenSize(penSize);
+    if (inputBox_) {
+        const Gdiplus::Rect inputRect = getInputBoxRect();
+        inputBox_->resize(inputRect.X, inputRect.Y, inputRect.Width, inputRect.Height, grips_);
+        inputBox_->invalidate();
+    }
+}
+
 ElementType SpeechBaloon::getType() const { return ElementType::etSpeechBaloon; }
 
 Gdiplus::Rect SpeechBaloon::getInputBoxRect() {
+    const int borderWidth = getBorderWidth();
+    const int contentInset = (std::max)(TEXT_PADDING, borderWidth);
     const Gdiplus::Rect bubbleRect = getGeometry().BubbleRect;
-    const int availableWidth = (std::max)(1, bubbleRect.Width - TEXT_PADDING * 2);
-    const int availableHeight = (std::max)(1, bubbleRect.Height - TEXT_PADDING * 2);
+    const int availableWidth = (std::max)(1, bubbleRect.Width - contentInset * 2);
+    const int availableHeight = (std::max)(1, bubbleRect.Height - contentInset * 2);
     const int inputWidth = inputWidth_ > 0 ? (std::min)(inputWidth_, availableWidth) : availableWidth;
-    const int inputHeight = inputHeight_ > 0 ? (std::min)(inputHeight_, availableHeight) : availableHeight;
+    const int fontHeight = std::abs(canvas_->getFont().lfHeight);
+    const int initialInputHeight = fontHeight > 0 ? fontHeight + TEXT_LINE_VERTICAL_MARGIN : DEFAULT_INPUT_HEIGHT;
+    const int inputHeight = (std::min)(inputHeight_ > 0 ? inputHeight_ : initialInputHeight, availableHeight);
     return { bubbleRect.X + (bubbleRect.Width - inputWidth) / 2, bubbleRect.Y + (bubbleRect.Height - inputHeight) / 2,
              inputWidth, inputHeight };
 }
 
 void SpeechBaloon::onControlResized(int width, int height) {
+    if (restoringHistory_) {
+        return;
+    }
     const RECT oldPaintRect = getPaintBoundingRect();
     inputWidth_ = (std::max)(1, width);
     inputHeight_ = (std::max)(1, height);
+    const int contentInset = (std::max)(TEXT_PADDING, getBorderWidth());
     const bool horizontalTail = std::abs(endPoint_.x - startPoint_.x) >= std::abs(endPoint_.y - startPoint_.y);
     const int tailDepth
         = (std::min)(MAX_TAIL_DEPTH, (std::max)(MIN_TAIL_DEPTH, (horizontalTail ? getWidth() : getHeight()) / 5));
-    const int desiredWidth = width + TEXT_PADDING * 2 + 1 + (horizontalTail ? tailDepth : 0);
-    const int desiredHeight = height + TEXT_PADDING * 2 + (horizontalTail ? 0 : tailDepth);
+    const int desiredWidth = width + contentInset * 2 + 1 + (horizontalTail ? tailDepth : 0);
+    const int desiredHeight = height + contentInset * 2 + (horizontalTail ? 0 : tailDepth);
 
     int newWidth = (std::max)(desiredWidth, 80);
     int newHeight = (std::max)(desiredHeight, 50);
@@ -123,6 +142,11 @@ void SpeechBaloon::onControlResized(int width, int height) {
     RECT updateRect;
     UnionRect(&updateRect, &oldPaintRect, &newPaintRect);
     canvas_->updateView(updateRect);
+}
+
+int SpeechBaloon::getBorderWidth() const {
+    const int maxBorderWidth = (std::max)(1, (std::min)(getWidth() - 1, getHeight() - 1));
+    return (std::min)((std::max)(1, penSize_), maxBorderWidth);
 }
 
 SpeechBaloon::Geometry SpeechBaloon::getGeometry(int inset) {

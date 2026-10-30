@@ -368,8 +368,9 @@ namespace SimpleWeb {
       accept();
 
       if(internal_io_service) {
-        if(io_service->stopped())
-          //io_service->reset();
+        if(io_service->stopped()) {
+            //io_service->reset();
+        }
 
         // If thread_pool_size>1, start m_io_service.run() in (thread_pool_size-1) threads for thread-pooling
         threads.clear();

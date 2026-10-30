@@ -25,6 +25,8 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/i18n/Translator.h"
+#include "Gui/GuiTools.h"
 
 bool IULaunchCopy(CString additionalParams)
 {

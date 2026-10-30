@@ -3,6 +3,6 @@ os=Windows
 arch=armv8
 compiler=msvc
 compiler.version=194
-compiler.cppstd=17
+compiler.cppstd=20
 compiler.runtime=static
 build_type=Release

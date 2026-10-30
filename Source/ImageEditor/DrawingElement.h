@@ -30,7 +30,7 @@ class DrawingElement {
 
         void setCanvas( Canvas* canvas );
         virtual void getAffectedSegments( AffectedSegments* segments );
-        void setPenSize( int penSize );
+        virtual void setPenSize(int penSize);
         void setRoundingRadius(int radius);
         int getWidth() const;
         int getHeight() const;

@@ -24,31 +24,50 @@ limitations under the License.
 
 #include <Shlobj.h>
 
-#include "Core/SettingsManager.h"
-#include "Func/MyUtils.h"
-#include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
-#include "Core/Video/VideoUtils.h"
-#include "Func/WinUtils.h"
 #include "Core/AppRuntimeInfo.h"
-#include "Core/Utils/StringUtils.h"
-#include "Gui/Dialogs/FloatingWindow.h"
-#include "Core/i18n/Translator.h"
-#include "Core/ServiceLocator.h"
 #include "Core/SearchByImage.h"
+#include "Core/ServiceLocator.h"
+#include "Core/SettingsManager.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/Video/VideoUtils.h"
+#include "Core/i18n/Translator.h"
+#include "Func/CmdLine.h"
 #include "Func/Common.h"
-#include "StringConvert.h"
+#include "Func/MyUtils.h"
+#include "Func/WinUtils.h"
+#include "Gui/Dialogs/FloatingWindow.h"
 #include "Gui/Win7JumpList.h"
+#include "StringConvert.h"
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
 namespace {
 // Do not edit this array
-std::string MouseClickCommandIndexToString[] = { "", "contextmenu", "addimages", "addimages", "addfolder",
-        "importvideo", "screenshotdlg", "regionscreenshot", "fullscreenshot",
-        "windowscreenshot", "windowhandlescreenshot", "freeformscreenshot", "showmainwindow",
-        "open_screenshot_folder", "settings", "paste", "downloadimages", "mediainfo", "mediainfo",
-        "shortenurl", "shortenurlclipboard", "reuploadimages", "uploadfromclipboard", "lastregionscreenshot" };
+std::string MouseClickCommandIndexToString[] = { "",
+                                                 "contextmenu",
+                                                 "addimages",
+                                                 "addimages",
+                                                 "addfolder",
+                                                 "importvideo",
+                                                 "screenshotdlg",
+                                                 "regionscreenshot",
+                                                 "fullscreenshot",
+                                                 "windowscreenshot",
+                                                 "windowhandlescreenshot",
+                                                 "freeformscreenshot",
+                                                 "showmainwindow",
+                                                 "open_screenshot_folder",
+                                                 "settings",
+                                                 "paste",
+                                                 "downloadimages",
+                                                 "mediainfo",
+                                                 "mediainfo",
+                                                 "shortenurl",
+                                                 "shortenurlclipboard",
+                                                 "reuploadimages",
+                                                 "uploadfromclipboard",
+                                                 "lastregionscreenshot" };
 
 void RunIuElevated(const CString& params) {
     SHELLEXECUTEINFO TempInfo = { 0 };
@@ -96,8 +115,7 @@ void ApplyRegistrySettings() {
 
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
-bool RegisterClsId()
-{
+bool RegisterClsId() {
     TCHAR Buffer[MAX_PATH + 1] = _T("CLSID\\");
     HKEY Key = 0;
 
@@ -124,9 +142,9 @@ bool RegisterClsId()
     RegCloseKey(Key);
 
     Key = 0;
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-        _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"), 0, KEY_WRITE,
-        &Key) == ERROR_SUCCESS) {
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"),
+                     0, KEY_WRITE, &Key)
+        == ERROR_SUCCESS) {
         lstrcpy(Buffer, _T("ImageUploader ContextMenuHandler"));
         RegSetValueEx(Key, MY_CLSID, 0, REG_SZ, (LPBYTE)Buffer, (lstrlen(Buffer) + 1) * sizeof(TCHAR));
         RegCloseKey(Key);
@@ -168,13 +186,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
     if (!lstrlen(Buffer))
         return false;
     wsprintf(Buffer, _T("%s\\shell\\iuploader"), (LPCTSTR)ClassName);
-    DWORD res = RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &ExtKey,
-        NULL);
+    DWORD res = RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &ExtKey, NULL);
 
     if (res != ERROR_SUCCESS) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"),
-            CString(TR("Cannot create registry key for extension: ")) +
-            Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
+                                                    CString(TR("Cannot create registry key for extension: "))
+                                                        + Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
         return 0;
     }
 
@@ -182,13 +199,12 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
     HKEY CommandKey;
 
-    if (RegCreateKeyEx(ExtKey, _T("command"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &CommandKey,
-        NULL) != ERROR_SUCCESS) {
-    }
+    if (RegCreateKeyEx(ExtKey, _T("command"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &CommandKey, NULL)
+        != ERROR_SUCCESS) { }
     HKEY DropTargetKey;
     if (DropTarget) {
-        if (RegCreateKeyEx(ExtKey, _T("DropTarget"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &DropTargetKey,
-            NULL) != ERROR_SUCCESS) {
+        if (RegCreateKeyEx(ExtKey, _T("DropTarget"), 0, 0, REG_OPTION_NON_VOLATILE, KEY_WRITE, 0, &DropTargetKey, NULL)
+            != ERROR_SUCCESS) {
             return 0;
         }
     }
@@ -208,16 +224,14 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
 }
 
-WtlGuiSettings::~WtlGuiSettings() {
-}
+WtlGuiSettings::~WtlGuiSettings() { }
 
-void WtlGuiSettings::setFloatWnd(CFloatingWindow* floatWnd) {
-    floatWnd_ = floatWnd;
-}
+void WtlGuiSettings::setFloatWnd(CFloatingWindow* floatWnd) { floatWnd_ = floatWnd; }
 
 
 CString WtlGuiSettings::getShellExtensionFileName() {
-    return WinUtils::GetAppFolder() + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
+    return WinUtils::GetAppFolder()
+        + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
 }
 
 void WtlGuiSettings::RegisterShellExtension(bool Register) {
@@ -234,7 +248,8 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
     if (Reg.SetKey("Software\\Uptooda", canCreateRegistryKey)) {
         Reg.WriteBool("ExplorerContextMenu", Register);
         CRegistry Reg2;
-        Reg2.SetWOW64Flag(KEY_WOW64_64KEY); // Indicates that an application on 64-bit Windows should operate on the 64-bit registry view.
+        Reg2.SetWOW64Flag(KEY_WOW64_64KEY); // Indicates that an application on 64-bit Windows should operate on the
+                                            // 64-bit registry view.
         Reg2.SetRootKey(HKEY_LOCAL_MACHINE);
         Reg2.SetKey("Software\\Uptooda\\Strings", true);
         Reg2.WriteString(_T("UploadImages"), TR("Upload images"));
@@ -275,8 +290,7 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
 Determine where data folder is situated
 and store it's path into DataFolder member
 */
-void WtlGuiSettings::FindDataFolder()
-{
+void WtlGuiSettings::FindDataFolder() {
     AppRuntimeInfo* params = AppRuntimeInfo::instance();
     if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
@@ -290,7 +304,8 @@ void WtlGuiSettings::FindDataFolder()
         return;
     }
 
-    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Uptooda\\")));
+    SettingsFolder
+        = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Uptooda\\")));
 
     params->setSettingsDirectory(SettingsFolder);
     {
@@ -336,7 +351,7 @@ void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
 
-    const CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
+    const CUploadEngineData* defaultImageUED = engineList_->byName(defaultImageServer);
     if (!defaultImageUED) {
         defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
         if (!defaultImageUED) {
@@ -345,7 +360,7 @@ void WtlGuiSettings::fixInvalidServers() {
             defaultImageServer = defaultImageUED->Name;
         }
     }
-    const CUploadEngineData* ue = {};
+    const CUploadEngineData* ue = { };
 
     auto& imageServerItem = imageServer.getByIndex(0);
     ue = imageServerItem.uploadEngineData();
@@ -395,8 +410,8 @@ void WtlGuiSettings::fixInvalidServers() {
 
     ue = urlShorteningServer.uploadEngineData();
     if (!ue) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(
-            CUploadEngineData::TypeUrlShorteningServer);
+        std::string defaultServerName
+            = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
         const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             urlShorteningServer.setServerName(defaultServerName);
@@ -414,7 +429,8 @@ void WtlGuiSettings::fixInvalidServers() {
 
     ue = imageSearchServer.uploadEngineData();
     if (!ue) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
+        std::string defaultServerName
+            = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
         const CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
 
         if (uploadEngineData) {
@@ -432,10 +448,7 @@ void WtlGuiSettings::fixInvalidServers() {
     }
 }
 
-WtlGuiSettings::WtlGuiSettings() :
-    CommonGuiSettings(),
-    floatWnd_(nullptr)
-{
+WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings(), floatWnd_(nullptr) {
     IsPortable = false;
     FindDataFolder();
     if (!WinUtils::IsDirectory(DataFolder)) {
@@ -523,9 +536,9 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.OpenInEditor = true;
     ScreenshotSettings.UseOldRegionScreenshotMethod = false;
     ScreenshotSettings.CaptureCursor = false;
-    ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
+    ScreenshotSettings.MonitorMode = -1 /*kAllMonitors*/;
 
-    //ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
+    // ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
 
     CString dir = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
     CString capturesDir = dir + _T("Captures\\");
@@ -541,6 +554,7 @@ WtlGuiSettings::WtlGuiSettings() :
 
     ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.ForegroundColor = Gdiplus::Color(255, 0, 0);
+    ImageEditorSettings.TextColor = Gdiplus::Color(255, 0, 0, 0);
 
     ImageEditorSettings.StepBackgroundColor = Gdiplus::Color(0, 255, 138);
     ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
@@ -561,11 +575,11 @@ WtlGuiSettings::WtlGuiSettings() :
     BindToManager();
 }
 
-bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
+bool WtlGuiSettings::PostLoadSettings(SimpleXml& xml) {
     CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
-    if (Language == L"T\u00FCrk\u00E7e") {  //fixes
+    if (Language == L"T\u00FCrk\u00E7e") { // fixes
         Language = _T("Turkish");
     } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
         Language = _T("Ukrainian");
@@ -587,7 +601,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         if (TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD) {
             TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
         }
-
     }
 
     // Migrating from 1.3.2 to 1.3.3
@@ -595,10 +608,10 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     if (!settingsNode["TrayIcon"].IsNull()) {
         SimpleXmlNode trayIconNode = settingsNode["TrayIcon"];
         std::pair<std::string, CString*> mapToValues[] = {
-            {"LeftClickCommand", &TrayIconSettings.LeftClickCommandStr},
-            {"LeftDoubleClickCommand", &TrayIconSettings.LeftDoubleClickCommandStr},
-            {"MiddleClickCommand", &TrayIconSettings.MiddleClickCommandStr},
-            {"RightClickCommand", &TrayIconSettings.RightClickCommandStr},
+            { "LeftClickCommand", &TrayIconSettings.LeftClickCommandStr },
+            { "LeftDoubleClickCommand", &TrayIconSettings.LeftDoubleClickCommandStr },
+            { "MiddleClickCommand", &TrayIconSettings.MiddleClickCommandStr },
+            { "RightClickCommand", &TrayIconSettings.RightClickCommandStr },
         };
 
         for (const auto& pr : mapToValues) {
@@ -607,8 +620,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
                 std::string text = commandNode.Text();
                 if (!text.empty()) {
                     int CommandIndex = atoi(text.c_str());
-                    if (CommandIndex >= 0 && CommandIndex < ARRAY_SIZE(MouseClickCommandIndexToString)
-                        ) {
+                    if (CommandIndex >= 0 && CommandIndex < ARRAY_SIZE(MouseClickCommandIndexToString)) {
                         *pr.second = MouseClickCommandIndexToString[CommandIndex].c_str();
                     }
                 }
@@ -661,9 +673,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 }
 
 
-
-bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
-{
+bool WtlGuiSettings::PostSaveSettings(SimpleXml& xml) {
     CommonGuiSettings::PostSaveSettings(xml);
 
     SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
@@ -672,7 +682,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);*/
 
 
-    //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
+    // std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
     CRegistry Reg;
     Reg.SetRootKey(HKEY_CURRENT_USER);
     // if(ExplorerContextMenu)
@@ -754,7 +764,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(SendToContextMenu);
     general.n_bind(ParseSubDirs);
     general.n_bind(ImageEditorPath);
-    //general.n_bind(AutoStartup);
+    // general.n_bind(AutoStartup);
     general.n_bind(ShowTrayIcon);
     general.n_bind(AutoCopyToClipboard);
     general.n_bind(EnableToastNotifications);
@@ -788,6 +798,7 @@ void WtlGuiSettings::BindToManager() {
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
     imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
+    imageEditor.nm_bind(ImageEditorSettings, TextColor);
     imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, PenSize);
@@ -802,7 +813,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     imageEditor.nm_bind(ImageEditorSettings, CloseWindowAfterActionInFullScreen);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
-    //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
+    // screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
 
@@ -908,8 +919,7 @@ void WtlGuiSettings::disableWindowsPrintScreenKeyInterception() {
 }
 
 // The following code should  be deleted in next releases
-void WtlGuiSettings::ApplyRegSettingsRightNow()
-{
+void WtlGuiSettings::ApplyRegSettingsRightNow() {
     // Applying Startup settings
     // EnableAutostartup(AutoStartup);
     RegisterShellExtension(ExplorerContextMenu);
@@ -922,54 +932,50 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
             if (WinUtils::FileExists(ShortcutName))
                 DeleteFile(ShortcutName);
 
-            WinUtils::CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(), _T(
-                " /fromcontextmenu /upload"), 0, SW_SHOW, CmdLine.ModuleName(), 0);
+            WinUtils::CreateShortCut(ShortcutName, CmdLine.ModuleName(), WinUtils::GetAppFolder(),
+                                     _T(
+                " /fromcontextmenu /upload"), 0, SW_SHOW,
+                                     CmdLine.ModuleName(), 0);
         } else {
             DeleteFile(ShortcutName);
         }
     }
 
     // if(ExplorerImagesContextMenu_changed || ExplorerVideoContextMenu_changed)
+    {
+        TCHAR szFileName[MAX_PATH + 8] = _T("\"");
+
+        GetModuleFileName(0, szFileName + 1, MAX_PATH);
+        lstrcat(szFileName, _T("\" \"%1\""));
+
+        LPTSTR szList = _T("jpg\0jpeg\0png\0bmp\0gif");
+        int Res;
+
+        UnRegisterClsId();
+
+        // if(ExplorerContextMenu_changed)
         {
-            TCHAR szFileName[MAX_PATH + 8] = _T("\"");
-
-            GetModuleFileName(0, szFileName + 1, MAX_PATH);
-            lstrcat(szFileName, _T("\" \"%1\""));
-
-            LPTSTR szList = _T("jpg\0jpeg\0png\0bmp\0gif");
-            int Res;
-
-            UnRegisterClsId();
-
-            // if(ExplorerContextMenu_changed)
-            {
-                while ((*szList) != 0) {
-                    Res =
-                        AddToExplorerContextMenu(szList, (/*ExplorerImagesContextMenu?TR("Upload images"):*/ 0),
-                        szFileName,
-                        true);
-                    szList += lstrlen(szList) + 1;
-                }
-            }
-
-            // if( ExplorerVideoContextMenu_changed)
-            {
-                szList = VIDEO_FORMATS;
-                while ((*szList) != 0) {
-                    Res =
-                        AddToExplorerContextMenu(szList, (/*ExplorerVideoContextMenu?TR("Open by Image Uploader"):*/ 0),
-                        szFileName,
-                        false);
-                    szList += lstrlen(szList) + 1;
-                }
+            while ((*szList) != 0) {
+                Res = AddToExplorerContextMenu(szList, (/*ExplorerImagesContextMenu?TR("Upload images"):*/ 0),
+                                               szFileName, true);
+                szList += lstrlen(szList) + 1;
             }
         }
+
+        // if( ExplorerVideoContextMenu_changed)
+        {
+            szList = VIDEO_FORMATS;
+            while ((*szList) != 0) {
+                Res = AddToExplorerContextMenu(szList, (/*ExplorerVideoContextMenu?TR("Open by Image Uploader"):*/ 0),
+                                               szFileName, false);
+                szList += lstrlen(szList) + 1;
+            }
+        }
+    }
 }
 
 
-
-bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root)
-{
+bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root) {
     std::vector<SimpleXmlNode> profiles;
     root.GetChilds("Profile", profiles);
 
@@ -979,8 +985,7 @@ bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root)
     return true;
 }
 
-bool WtlGuiSettings::LoadConvertProfile(const CString& name, SimpleXmlNode profileNode)
-{
+bool WtlGuiSettings::LoadConvertProfile(const CString& name, SimpleXmlNode profileNode) {
     SettingsManager mgr;
     ImageConvertingParams params;
     std::string saveTo = profileNode.Attribute("Name");
@@ -993,8 +998,7 @@ bool WtlGuiSettings::LoadConvertProfile(const CString& name, SimpleXmlNode profi
     return true;
 }
 
-bool WtlGuiSettings::SaveConvertProfiles(SimpleXmlNode root)
-{
+bool WtlGuiSettings::SaveConvertProfiles(SimpleXmlNode root) {
     std::map<CString, ImageConvertingParams>::iterator it;
     for (it = ConvertProfiles.begin(); it != ConvertProfiles.end(); ++it) {
         SimpleXmlNode profile = root.CreateChild("Profile");
@@ -1008,8 +1012,7 @@ bool WtlGuiSettings::SaveConvertProfiles(SimpleXmlNode root)
     return true;
 }
 
-void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingParams& params)
-{
+void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingParams& params) {
     image.nm_bind(params, Quality);
     image.nm_bind(params, Format);
     image["NewWidth"].bind(params.strNewWidth);
@@ -1087,18 +1090,18 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
         HKEY hKey;
         CString StartupCommand = _T("\"") + CmdLine.ModuleName() + _T("\" /tray");
         LONG lRet, lRetOpen;
-        lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
-            0, KEY_WRITE, &hKey);
+        lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
+                            &hKey);
         if (!lRet) {
             lRetOpen = RegSetValueEx(hKey, _T("ImageUploader"), NULL, REG_SZ, (BYTE*)(LPCTSTR)StartupCommand,
-                (StartupCommand.GetLength() + 1) * sizeof(TCHAR));
+                                     (StartupCommand.GetLength() + 1) * sizeof(TCHAR));
         }
         RegCloseKey(hKey);
     } else {
         // deleting from Startup (autorun)
         HKEY hKey;
-        LONG lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
-            &hKey);
+        LONG lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0,
+                                 KEY_WRITE, &hKey);
         RegDeleteValue(hKey, _T("ImageUploader"));
         RegCloseKey(hKey);
     }
@@ -1112,35 +1115,27 @@ void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
         if (th.ResizeMode == ThumbCreatingParams::trByWidth) {
             th.Width = th.Size;
             th.Size = 0;
-        }
-        else if (th.ResizeMode == ThumbCreatingParams::trByHeight) {
+        } else if (th.ResizeMode == ThumbCreatingParams::trByHeight) {
             th.Height = th.Size;
             th.Size = 0;
         }
     }
 }
 
-CString WtlGuiSettings::getServerName()  {
-    return imageServer.isEmpty()? _T("") : Utf8ToWCstring(imageServer.getByIndex(0).serverName());
+CString WtlGuiSettings::getServerName() {
+    return imageServer.isEmpty() ? _T("") : Utf8ToWCstring(imageServer.getByIndex(0).serverName());
 }
-CString WtlGuiSettings::getQuickServerName()  {
+CString WtlGuiSettings::getQuickServerName() {
     return contextMenuServer.isEmpty() ? _T("") : Utf8ToWCstring(contextMenuServer.getByIndex(0).serverName());
 }
-CString WtlGuiSettings::getFileServerName()  {
+CString WtlGuiSettings::getFileServerName() {
     return fileServer.isEmpty() ? _T("") : Utf8ToWCstring(fileServer.getByIndex(0).serverName());
 }
 
-CString WtlGuiSettings::getSettingsFileName() const
-{
-    return U2WC(fileName_);
-}
+CString WtlGuiSettings::getSettingsFileName() const { return U2WC(fileName_); }
 
-ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name)
-{
-    return ServersSettings[W2U(name)].begin()->second;
-}
+ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name) { return ServersSettings[W2U(name)].begin()->second; }
 
-ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
-{
+ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name) {
     return ServersSettings[name].begin()->second;
 }

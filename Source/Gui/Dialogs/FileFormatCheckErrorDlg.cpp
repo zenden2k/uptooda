@@ -5,9 +5,8 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
-#include "Core/Settings/BasicSettings.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include "Func/WebUtils.h"
+#include "Core/i18n/Translator.h"
 
 CFileFormatCheckErrorDlg::CFileFormatCheckErrorDlg(IFileList* items, const std::vector<BadFileFormat>& errors)
     : model_(items, errors)

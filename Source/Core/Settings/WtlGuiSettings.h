@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "atlheaders.h"
+#include "3rdpart/GdiplusH.h"
 #include "CommonGuiSettings.h"
-#include "Func/WinUtils.h"
-#include "Gui/Dialogs/HotkeySettingsPage.h"
-#include "Core/SearchByImage.h"
-#include "3rdpart/GdiplusH.h" 
 #include "Core/Images/Utils.h"
+#include "Core/SearchByImage.h"
+#include "Func/WinUtils.h"
+#include "Gui/Models/HotkeyList.h"
+#include "atlheaders.h"
 
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
@@ -24,7 +24,7 @@ struct ImageReuploaderSettingsStruct {
 };
 
 struct ImageEditorSettingsStruct {
-    Gdiplus::Color ForegroundColor, BackgroundColor, StepForegroundColor, StepBackgroundColor;
+    Gdiplus::Color ForegroundColor, BackgroundColor, TextColor, StepForegroundColor, StepBackgroundColor;
     int PenSize;
     int RoundingRadius;
     float BlurRadius;
@@ -62,7 +62,6 @@ struct ScreenshotSettingsStruct {
     int MonitorMode;
 };
 
-
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
@@ -85,17 +84,14 @@ inline void myFromString(const std::string& text, LOGFONT& value) {
     value = font;
 }
 
-inline std::string myToString(const Gdiplus::Color& value)
-{
+inline std::string myToString(const Gdiplus::Color& value) {
     char buffer[30];
-    sprintf(buffer, "rgba(%d,%d,%d,%1.4f)", (int)value.GetR(), (int)value.GetG(), (int)value.GetB(), (float)(value.GetA() / 255.0));
+    sprintf(buffer, "rgba(%d,%d,%d,%1.4f)", (int)value.GetR(), (int)value.GetG(), (int)value.GetB(),
+            (float)(value.GetA() / 255.0));
     return buffer;
 }
 
-inline void myFromString(const std::string& text, Gdiplus::Color& value)
-{
-    value = ImageUtils::StringToColor(text);
-}
+inline void myFromString(const std::string& text, Gdiplus::Color& value) { value = ImageUtils::StringToColor(text); }
 
 class WtlGuiSettings : public CommonGuiSettings {
 public:
@@ -111,7 +107,7 @@ public:
     ImageReuploaderSettingsStruct ImageReuploaderSettings;
     TrayIconSettingsStruct TrayIconSettings;
     CString ImageEditorPath;
-    
+
     bool ExplorerContextMenu;
     bool ExplorerContextMenu_changed;
     bool ExplorerVideoContextMenu;
@@ -119,9 +115,7 @@ public:
     bool ConfirmOnExit;
     bool AutomaticallyCheckUpdates;
     bool EnableToastNotifications;
-    enum TrayResult {
-        trJustURL, trLastCodeType
-    };
+    enum TrayResult { trJustURL, trLastCodeType };
     int TrayResult;
     bool AutoCopyToClipboard;
     bool WatchClipboard;
@@ -156,22 +150,24 @@ public:
     ServerSettingsStruct& ServerByName(CString name);
     ServerSettingsStruct& ServerByUtf8Name(const std::string& name);
     void FindDataFolder();
-	void fixInvalidServers();
+    void fixInvalidServers();
+
 protected:
     void EnableAutostartup(bool enable);
     bool LoadConvertProfiles(SimpleXmlNode root);
     bool LoadConvertProfile(const CString& name, SimpleXmlNode profileNode);
     bool SaveConvertProfiles(SimpleXmlNode root);
-    void BindConvertProfile(SettingsNode& mgr, ImageConvertingParams &params);
+    void BindConvertProfile(SettingsNode& mgr, ImageConvertingParams& params);
 
-    bool PostLoadSettings(SimpleXml &xml) override;
-    bool PostSaveSettings(SimpleXml &xml) override;
+    bool PostLoadSettings(SimpleXml& xml) override;
+    bool PostSaveSettings(SimpleXml& xml) override;
     void RegisterShellExtension(bool Register);
 
     void PostLoadServerProfile(ServerProfile& profile) override;
 
     void BindToManager();
     void disableWindowsPrintScreenKeyInterception();
+
 private:
     TCHAR m_Directory[MAX_PATH];
     CFloatingWindow* floatWnd_;

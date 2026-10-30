@@ -36,6 +36,7 @@
 #endif
 #include "Func/IuCommonFunctions.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Models/UploadListModel.h"
@@ -145,7 +146,7 @@ bool CUploadDlg::startUpload() {
         std::string fileNameUtf8 = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
-        bool isImage = IuCommonFunctions::IsImage(FileName);
+        bool isImage = ImageLoader::IsImage(FileName);
         bool isVideo = !isImage && IuCoreUtils::GetFileMimeType(fileNameUtf8).find("video/") != std::string::npos;
 
         ServerProfileGroup& serverProfileGroup = isImage ? sessionImageServer_ : sessionFileServer_;
@@ -234,9 +235,9 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if (nCurItem >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
         if (item) {
-            isImage = IuCommonFunctions::IsImage(item->fileName());
+            isImage = ImageLoader::IsImage(item->fileName());
             if (!uploadSession_->isRunning()) {
-                isImage = IuCommonFunctions::IsImage(item->fileName());
+                isImage = ImageLoader::IsImage(item->fileName());
                 auto task = uploadSession_->getTask(nCurItem);
                 if (task) {
                     auto status = task->status();
@@ -539,7 +540,7 @@ LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHa
 void CUploadDlg::viewImage(int itemIndex) {
     if (itemIndex >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(itemIndex);
-        if (item && IuCommonFunctions::IsImage(item->fileName())) {
+        if (item && ImageLoader::IsImage(item->fileName())) {
             CImageViewItem imgViewItem;
             imgViewItem.index = 0;
             imgViewItem.fileName = item->fileName();

@@ -2,50 +2,50 @@
 
 #include <boost/format.hpp>
 
-#include "ImageEditorView.h"
-#include "ImageEditor/Gui/Toolbar.h"
 #include "ColorsDelegate.h"
-#include "Core/Logging.h"
+#include "Core/AbstractServerIconCache.h"
 #include "Core/Images/Utils.h"
-#include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
+#include "Core/Logging.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Func/ClipboardUtils.h"
 #include "Func/IuCommonFunctions.h"
-#include "ImageEditor/MovableElements.h"
-#include "Gui/Dialogs/SearchByImageDlg.h"
+#include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
-#include "ScreenCapture/MonitorEnumerator.h"
-#include "Core/AbstractServerIconCache.h"
-#include "Core/Settings/WtlGuiSettings.h"
-#include "Gui/Helpers/DPIHelper.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Gui/Dialogs/SearchByImageDlg.h"
+#include "Gui/GuiTools.h"
+#include "Gui/Helpers/DPIHelper.h"
+#include "ImageEditor/Gui/Toolbar.h"
+#include "ImageEditor/MovableElements.h"
+#include "ImageEditorView.h"
+#include "ScreenCapture/MonitorEnumerator.h"
 
 namespace ImageEditor {
 
 const auto UPLOAD_BUTTON_MAX_LENGTH = 35;
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider,
-    UploadEngineManager* uploadEngineManager, bool onlySelectRegion)
-    : horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion)
-    , verticalToolbar_(Toolbar::orVertical),
+ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels,
+                                     ConfigurationProvider* configurationProvider,
+                                     UploadEngineManager* uploadEngineManager, bool onlySelectRegion) :
+    horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion), verticalToolbar_(Toolbar::orVertical),
     uploadEngineManager_(uploadEngineManager) {
-    currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
+    currentDoc_ = std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
     onlySelectRegion_ = onlySelectRegion;
 
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(settings->quickScreenshotServer.getByIndex(0).uploadEngineData());
+    serverDisplayName_
+        = CUploadEngineListBase::getServerDisplayName(settings->quickScreenshotServer.getByIndex(0).uploadEngineData());
 
     init();
 }
 
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
-ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):
-    horizontalToolbar_(Toolbar::orHorizontal), verticalToolbar_(Toolbar::orVertical)
-    , uploadEngineManager_(nullptr) {
+ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider) :
+    horizontalToolbar_(Toolbar::orHorizontal), verticalToolbar_(Toolbar::orVertical), uploadEngineManager_(nullptr) {
     currentDoc_ = std::make_unique<ImageEditor::Document>(imageFileName);
 
     sourceFileName_ = imageFileName;
@@ -55,10 +55,9 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     init();
 }
 
-void ImageEditorWindow::init()
-{
+void ImageEditorWindow::init() {
     richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
-//    resultingBitmap_ = 0;
+    //    resultingBitmap_ = 0;
     cropToolTip_ = 0;
     showUploadButton_ = true;
     showAddToWizardButton_ = true;
@@ -70,27 +69,27 @@ void ImageEditorWindow::init()
     initialDrawingTool_ = DrawingToolType::dtBrush;
     displayMode_ = wdmAuto;
     accelerators_ = nullptr;
-    menuItems_[ID_PEN]             = DrawingToolType::dtPen;
-    menuItems_[ID_LINE]            = DrawingToolType::dtLine;
-    menuItems_[ID_BRUSH]           = DrawingToolType::dtBrush;
-    menuItems_[ID_MARKER]          = DrawingToolType::dtMarker;
-    menuItems_[ID_RECTANGLE]       = DrawingToolType::dtRectangle;
+    menuItems_[ID_PEN] = DrawingToolType::dtPen;
+    menuItems_[ID_LINE] = DrawingToolType::dtLine;
+    menuItems_[ID_BRUSH] = DrawingToolType::dtBrush;
+    menuItems_[ID_MARKER] = DrawingToolType::dtMarker;
+    menuItems_[ID_RECTANGLE] = DrawingToolType::dtRectangle;
     menuItems_[ID_FILLEDRECTANGLE] = DrawingToolType::dtFilledRectangle;
-    menuItems_[ID_CROP]            = DrawingToolType::dtCrop;
-    menuItems_[ID_MOVE]            = DrawingToolType::dtMove;
-    menuItems_[ID_ARROW]           = DrawingToolType::dtArrow;
-    menuItems_[ID_SELECTION]       = DrawingToolType::dtSelection;
-    menuItems_[ID_BLUR]            = DrawingToolType::dtBlur;
-    menuItems_[ID_BLURRINGRECTANGLE]   = DrawingToolType::dtBlurringRectangle;
-    menuItems_[ID_PIXELATERECTANGLE]   = DrawingToolType::dtPixelateRectangle;
-    menuItems_[ID_COLORPICKER]     = DrawingToolType::dtColorPicker;
-    menuItems_[ID_ROUNDEDRECTANGLE]     = DrawingToolType::dtRoundedRectangle;
-    menuItems_[ID_ELLIPSE]     = DrawingToolType::dtEllipse;
-    menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = DrawingToolType::dtFilledRoundedRectangle;
-    menuItems_[ID_FILLEDELLIPSE]     = DrawingToolType::dtFilledEllipse;
-    menuItems_[ID_TEXT]     = DrawingToolType::dtText;
+    menuItems_[ID_CROP] = DrawingToolType::dtCrop;
+    menuItems_[ID_MOVE] = DrawingToolType::dtMove;
+    menuItems_[ID_ARROW] = DrawingToolType::dtArrow;
+    menuItems_[ID_SELECTION] = DrawingToolType::dtSelection;
+    menuItems_[ID_BLUR] = DrawingToolType::dtBlur;
+    menuItems_[ID_BLURRINGRECTANGLE] = DrawingToolType::dtBlurringRectangle;
+    menuItems_[ID_PIXELATERECTANGLE] = DrawingToolType::dtPixelateRectangle;
+    menuItems_[ID_COLORPICKER] = DrawingToolType::dtColorPicker;
+    menuItems_[ID_ROUNDEDRECTANGLE] = DrawingToolType::dtRoundedRectangle;
+    menuItems_[ID_ELLIPSE] = DrawingToolType::dtEllipse;
+    menuItems_[ID_FILLEDROUNDEDRECTANGLE] = DrawingToolType::dtFilledRoundedRectangle;
+    menuItems_[ID_FILLEDELLIPSE] = DrawingToolType::dtFilledEllipse;
+    menuItems_[ID_TEXT] = DrawingToolType::dtText;
     menuItems_[ID_SPEECHBALOON] = DrawingToolType::dtSpeechBaloon;
-    menuItems_[ID_STEPNUMBER]     = DrawingToolType::dtStepNumber;
+    menuItems_[ID_STEPNUMBER] = DrawingToolType::dtStepNumber;
 
     SubMenuItem item;
     item.parentCommand = ID_RECTANGLE;
@@ -122,7 +121,7 @@ void ImageEditorWindow::init()
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDELLIPSE);
     item.command = ID_FILLEDELLIPSE;
-    item.hint =  TR("Filled ellipse");
+    item.hint = TR("Filled ellipse");
     subMenuItems_[DrawingToolType::dtFilledEllipse] = item;
 
     SubMenuItem item2;
@@ -153,7 +152,7 @@ void ImageEditorWindow::init()
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
     selectedSubMenuItems_[ID_BLURRINGRECTANGLE] = ID_BLURRINGRECTANGLE;
-    //selectedSubMenuItems_[ID_TEXT] = ID_TEXT;
+    // selectedSubMenuItems_[ID_TEXT] = ID_TEXT;
 
     drawingToolsHotkeys_[kMoveKey] = ID_MOVE /*DrawingToolType::dtMove*/;
     drawingToolsHotkeys_[kBrushKey] = ID_BRUSH /*DrawingToolType::dtBrush*/;
@@ -172,22 +171,23 @@ void ImageEditorWindow::init()
     dialogResult_ = drCancel;
 }
 
-bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveAs)
-{
+bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveAs) {
     resultingBitmap_ = canvas_->getBitmapForExport();
-	if (!saveAs) {
+    if (!saveAs) {
         canvas_->setDocumentModified(false);
-	}
+    }
 
-    if ( !resultingBitmap_ ) {
+    if (!resultingBitmap_) {
         LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
         return false;
     }
     if (clipboardFormat == ClipboardFormat::None) {
-        if ( !outFileName_.IsEmpty() ) {
+        if (!outFileName_.IsEmpty()) {
             try {
-                ImageUtils::SaveImageToFile(resultingBitmap_.get(), outFileName_, nullptr, ImageUtils::sifDetectByExtension, imageQuality_);
-            } catch (const std::exception& ex) {
+                ImageUtils::SaveImageToFile(resultingBitmap_.get(), outFileName_, nullptr,
+                                            ImageUtils::sifDetectByExtension, imageQuality_);
+            }
+            catch (const std::exception& ex) {
                 ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
             }
             canvas_->updateView();
@@ -195,23 +195,27 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
         } else {
             CString outFileName;
             try {
-                if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, ImageUtils::sifJPEG, 95)) {
+                if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName,
+                                            ImageUtils::sifJPEG, 95)) {
                     outFileName_ = outFileName;
                     canvas_->updateView();
                     return true;
                 }
-            } catch (const std::exception& ex) {
+            }
+            catch (const std::exception& ex) {
                 ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
             }
             return false;
         }
-    } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
+    } else if (clipboardFormat == ClipboardFormat::Bitmap) {
         ClipboardUtils::CopyBitmapToClipboard(resultingBitmap_.get(), m_hWnd, true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
         try {
-            ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), ImageUtils::sifPNG, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
-        } catch (const std::exception& ex) {
+            ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), ImageUtils::sifPNG, 85,
+                                                             clipboardFormat == ClipboardFormat::DataUriHtml);
+        }
+        catch (const std::exception& ex) {
             ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
         }
         return true;
@@ -226,15 +230,15 @@ CString ImageEditorWindow::saveToTempFile() {
         if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, ImageUtils::sifPNG, 95)) {
             return result;
         }
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-    return {};
+    return { };
 }
 
-void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
-{
-    if ( currentDrawingTool_ == dt ) {
+void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt) {
+    if (currentDrawingTool_ == dt) {
         return;
     }
 
@@ -243,11 +247,12 @@ void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
     updateFontSizeControls();
 
     const auto submenuIter = subMenuItems_.find(dt);
-    if ( submenuIter != subMenuItems_.end() ) {
-        const int buttonIndex = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
-        if ( buttonIndex != -1 ) {
+    if (submenuIter != subMenuItems_.end()) {
+        const int buttonIndex
+            = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
+        if (buttonIndex != -1) {
             Toolbar::Item* item = verticalToolbar_.getItem(buttonIndex);
-            if ( item ) {
+            if (item) {
                 item->icon = submenuIter->second.icon;
                 item->command = submenuIter->second.command;
                 item->hint = submenuIter->second.hint;
@@ -260,90 +265,61 @@ void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
         }
     }
 
-    //std::map<int, Canvas::DrawingToolType>::iterator it = std::find(menuItems_.begin(), menuItems_.end(), dt);
+    // std::map<int, Canvas::DrawingToolType>::iterator it = std::find(menuItems_.begin(), menuItems_.end(), dt);
     std::map<int, DrawingToolType>::iterator it;
-    for( it = menuItems_.begin(); it != menuItems_.end(); ++it ) {
-        if ( it->second == dt ) {
+    for (it = menuItems_.begin(); it != menuItems_.end(); ++it) {
+        if (it->second == dt) {
             int buttonIndex = verticalToolbar_.getItemIndexByCommand(it->first);
-            if ( buttonIndex != -1 ) {
+            if (buttonIndex != -1) {
                 verticalToolbar_.clickButton(buttonIndex);
                 break;
             }
         }
     }
-    if ( dt == DrawingToolType::dtCrop ) {
+    if (dt == DrawingToolType::dtCrop) {
         createTooltip();
-    } else if ( cropToolTip_ ) {
+    } else if (cropToolTip_) {
         ::DestroyWindow(cropToolTip_);
         cropToolTip_ = nullptr;
     }
 }
 
-void ImageEditorWindow::OnForegroundColorChanged(Gdiplus::Color color)
-{
+void ImageEditorWindow::OnForegroundColorChanged(Gdiplus::Color color) {
     colorsDelegate_->setForegroundColor(color);
     verticalToolbar_.repaintItem(colorsDelegate_->itemIndex());
 }
 
-void ImageEditorWindow::OnBackgroundColorChanged(Gdiplus::Color color)
-{
+void ImageEditorWindow::OnBackgroundColorChanged(Gdiplus::Color color) {
     colorsDelegate_->setBackgroundColor(color);
     verticalToolbar_.repaintItem(colorsDelegate_->itemIndex());
 }
 
-void ImageEditorWindow::onFontChanged(LOGFONT font)
-{
-    textParamsWindow_.setFont(font);
-}
+void ImageEditorWindow::onFontChanged(LOGFONT font) { textParamsWindow_.setFont(font); }
 
-ImageEditorWindow::~ImageEditorWindow()
-{
-    FreeLibrary(richeditLib_);
-}
+ImageEditorWindow::~ImageEditorWindow() { FreeLibrary(richeditLib_); }
 
-void ImageEditorWindow::setInitialDrawingTool(DrawingToolType dt)
-{
-    initialDrawingTool_ = dt;
-}
+void ImageEditorWindow::setInitialDrawingTool(DrawingToolType dt) { initialDrawingTool_ = dt; }
 
-void ImageEditorWindow::showUploadButton(bool show)
-{
-    showUploadButton_ = show;
-}
+void ImageEditorWindow::showUploadButton(bool show) { showUploadButton_ = show; }
 
-void ImageEditorWindow::showAddToWizardButton(bool show)
-{
-    showAddToWizardButton_ = show;
-}
+void ImageEditorWindow::showAddToWizardButton(bool show) { showAddToWizardButton_ = show; }
 
-void ImageEditorWindow::setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData)
-{
+void ImageEditorWindow::setScreenshotData(const IuCommonFunctions::ScreenshotData& screenshotData) {
     screenshotData_ = screenshotData;
 }
 
-std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
-{
-    return resultingBitmap_;
-}
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const { return resultingBitmap_; }
 
-Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
-    return canvas_ ? canvas_->lastCrop() : Gdiplus::Rect();
-}
+Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const { return canvas_ ? canvas_->lastCrop() : Gdiplus::Rect(); }
 
-CRect ImageEditorWindow::getSelectedRect() const {
-    return selectedRect_;
-}
+CRect ImageEditorWindow::getSelectedRect() const { return selectedRect_; }
 
-void ImageEditorWindow::setAskBeforeClose(bool ask)
-{
-    askBeforeClose_ = ask;
-}
+void ImageEditorWindow::setAskBeforeClose(bool ask) { askBeforeClose_ = ask; }
 
-CString ImageEditorWindow::outFileName() const {
-    return outFileName_;
-}
+CString ImageEditorWindow::outFileName() const { return outFileName_; }
 
-ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode, bool forceShowParent) {
+ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor,
+                                                           WindowDisplayMode mode, bool forceShowParent) {
     if (currentDoc_->isNull()) {
         GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APP_NAME, MB_ICONERROR);
         return drCancel;
@@ -355,7 +331,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         CTaskDialog dlg;
         CString verText = TR("Do not ask again");
         dlg.SetVerificationText(verText);
-        CString contentText = TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?");
+        CString contentText = TR("Image Editor cannot deal with animated images. If you edit this file, animation will "
+                                 "be lost. Do you wish to continue?");
         dlg.SetContentText(contentText);
         CString windowTitle = TR("Image Editor");
         dlg.SetWindowTitle(windowTitle);
@@ -372,9 +349,9 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
             return drCancel;
         }
     }
-    //int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    //int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    //    displayMode_ = wdmWindowed;
+    // int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    // int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    //     displayMode_ = wdmWindowed;
 
     CRect displayBounds;
     GuiTools::GetScreenBounds(displayBounds);
@@ -384,10 +361,13 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     int scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
     int scrollbarHeight = GetSystemMetrics(SM_CYVSCROLL);
-    int desiredClientWidth = currentDoc_->getWidth() + static_cast<int>(40 * dpiScaleX) + kCanvasMargin + scrollbarWidth; // with toolbars
-    int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(60 * dpiScaleY) + kCanvasMargin + scrollbarHeight;
+    int desiredClientWidth
+        = currentDoc_->getWidth() + static_cast<int>(40 * dpiScaleX) + kCanvasMargin + scrollbarWidth; // with toolbars
+    int desiredClientHeight
+        = currentDoc_->getHeight() + static_cast<int>(60 * dpiScaleY) + kCanvasMargin + scrollbarHeight;
     CRect rc(rcDefault);
-    DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | WS_MINIMIZEBOX  | WS_CLIPCHILDREN;
+    DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX
+        | WS_MINIMIZEBOX | WS_CLIPCHILDREN;
     // Parent window should be null here!
     if (Create(nullptr, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
         LOG(ERROR) << "Main window creation failed!\n";
@@ -395,7 +375,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
 
     CRect workArea;
-    MONITORINFO mi{};
+    MONITORINFO mi { };
     mi.cbSize = sizeof(mi);
     ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
     workArea = mi.rcWork;
@@ -420,7 +400,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
             << " currentDoc = " << currentDoc_->getWidth() << "x" << currentDoc_->getHeight();*/
 
         // newClientRect.Width() >= workArea.Width()  || newClientRect.Height()  >= workArea.Height()
-        if ( currentDoc_->getWidth() == displayBounds.Width() &&  currentDoc_->getHeight() == displayBounds.Height()) {
+        if (currentDoc_->getWidth() == displayBounds.Width() && currentDoc_->getHeight() == displayBounds.Height()) {
             mode = wdmFullscreen;
         } else {
             mode = wdmWindowed;
@@ -429,20 +409,23 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     displayMode_ = mode;
 
     if (displayMode_ == wdmFullscreen) {
-        //windowStyle = GetStyle();
+        // windowStyle = GetStyle();
         DWORD windowStyle = WS_POPUP | WS_CLIPCHILDREN;
         SetWindowLong(GWL_STYLE, windowStyle);
         HWND insertAfter = nullptr;
-//#ifndef _DEBUG
+        // #ifndef _DEBUG
         if (!allowAltTab_) {
             SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_TOPMOST);
         }
         insertAfter = HWND_TOPMOST;
-//#endif
+        // #endif
         if (screenshotsMonitor) {
-            SetWindowPos(insertAfter, screenshotMonitorBounds.left, screenshotMonitorBounds.top, screenshotMonitorBounds.right - screenshotMonitorBounds.left, screenshotMonitorBounds.bottom - screenshotMonitorBounds.top, 0);
+            SetWindowPos(insertAfter, screenshotMonitorBounds.left, screenshotMonitorBounds.top,
+                         screenshotMonitorBounds.right - screenshotMonitorBounds.left,
+                         screenshotMonitorBounds.bottom - screenshotMonitorBounds.top, 0);
         } else {
-            SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left, displayBounds.bottom - displayBounds.top, 0);
+            SetWindowPos(insertAfter, displayBounds.left, displayBounds.top, displayBounds.right - displayBounds.left,
+                         displayBounds.bottom - displayBounds.top, 0);
         }
     }
 
@@ -468,10 +451,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         accels.push_back({ FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN });
     }
 
-    for(const auto& [k,v]: drawingToolsHotkeys_) {
-        accels.push_back(
-            { FVIRTKEY, static_cast<WORD>(k), static_cast<WORD>(v) }
-        );
+    for (const auto& [k, v] : drawingToolsHotkeys_) {
+        accels.push_back({ FVIRTKEY, static_cast<WORD>(k), static_cast<WORD>(v) });
     }
 
     if (onlySelectRegion_) {
@@ -482,9 +463,10 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
 
-    //RECT rc;
+    // RECT rc;
     GetClientRect(&rc);
-    /*HWND m_hWndClient = */ m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
+    /*HWND m_hWndClient = */ m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"),
+                                           WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
 
     canvas_ = std::make_unique<ImageEditor::Canvas>(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
@@ -499,16 +481,19 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setPenSize(configurationProvider_->penSize());
         canvas_->setForegroundColor(configurationProvider_->foregroundColor());
         canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
+        canvas_->setTextColor(configurationProvider_->textColor());
         canvas_->setFont(configurationProvider_->font());
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
         canvas_->setBlurRadius(configurationProvider_->blurRadius());
         canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
         canvas_->setInvertSelection(configurationProvider_->invertSelection());
-        canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
+        canvas_->setStepColors(configurationProvider_->stepForegroundColor(),
+                               configurationProvider_->stepBackgroundColor());
         canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(configurationProvider_->getArrowMode()));
         canvas_->setDrawBorder(configurationProvider_->getDrawBorder());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
+        textParamsWindow_.setTextColor(configurationProvider_->textColor());
         searchEngine_ = configurationProvider_->searchEngine();
     }
     m_view.setCanvas(canvas_.get());
@@ -533,28 +518,30 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     using namespace std::placeholders;
 
     if (!onlySelectRegion_) {
-        canvas_->onDrawingToolChanged.connect([this](auto && PH1) { OnDrawingToolChanged(std::forward<decltype(PH1)>(PH1)); });
-        canvas_->onForegroundColorChanged.connect([this](auto && PH1) { OnForegroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
-        canvas_->onBackgroundColorChanged.connect([this](auto && PH1) { OnBackgroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
-        canvas_->onFontChanged.connect([this](auto && PH1) { onFontChanged(std::forward<decltype(PH1)>(PH1)); });
-        canvas_->onTextAlignmentChanged.connect([this](WORD alignment) { textParamsWindow_.setTextAlignment(alignment); });
-        canvas_->onTextEditStarted.connect([this](auto && PH1) { OnTextEditStarted(std::forward<decltype(PH1)>(PH1)); });
-        canvas_->onTextEditFinished.connect([this](auto && PH1) { OnTextEditFinished(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onDrawingToolChanged.connect(
+            [this](auto&& PH1) { OnDrawingToolChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onForegroundColorChanged.connect(
+            [this](auto&& PH1) { OnForegroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onBackgroundColorChanged.connect(
+            [this](auto&& PH1) { OnBackgroundColorChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextColorChanged.connect([this](Gdiplus::Color color) { textParamsWindow_.setTextColor(color); });
+        canvas_->onFontChanged.connect([this](auto&& PH1) { onFontChanged(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextAlignmentChanged.connect(
+            [this](WORD alignment) { textParamsWindow_.setTextAlignment(alignment); });
+        canvas_->onTextEditStarted.connect([this](auto&& PH1) { OnTextEditStarted(std::forward<decltype(PH1)>(PH1)); });
+        canvas_->onTextEditFinished.connect(
+            [this](auto&& PH1) { OnTextEditFinished(std::forward<decltype(PH1)>(PH1)); });
         canvas_->onSelectionChanged.connect([this] { OnSelectionChanged(); });
     }
-    canvas_->onCropChanged.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
-        OnCropChanged(
-            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
-            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
-        );
+    canvas_->onCropChanged.connect([this](auto&& PH1, auto&& PH2, auto&& PH3, auto&& PH4) {
+        OnCropChanged(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+                      std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4));
     });
-    canvas_->onCropFinished.connect([this](auto && PH1, auto && PH2, auto && PH3, auto && PH4) {
-        OnCropFinished(
-            std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
-            std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4)
-        );
+    canvas_->onCropFinished.connect([this](auto&& PH1, auto&& PH2, auto&& PH3, auto&& PH4) {
+        OnCropFinished(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2),
+                       std::forward<decltype(PH3)>(PH3), std::forward<decltype(PH4)>(PH4));
     });
-    canvas_->onDocumentModified.connect([this] { updateWindowTitle();  });
+    canvas_->onDocumentModified.connect([this] { updateWindowTitle(); });
 
     if (initialDrawingTool_ != DrawingToolType::dtCrop) {
         verticalToolbar_.ShowWindow(SW_SHOW);
@@ -568,7 +555,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         updateToolbarDrawingTool(initialDrawingTool_);
     }
     if (displayMode_ == wdmWindowed) {
-        MONITORINFO mi{};
+        MONITORINFO mi { };
         mi.cbSize = sizeof(mi);
         ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
         workArea = mi.rcWork;
@@ -576,22 +563,22 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         AdjustWindowRect(newClientRect, GetStyle(), false);
         int newWidth = std::max(static_cast<LONG>(500 * dpiScaleX), newClientRect.right - newClientRect.left);
         int newHeight = std::max(static_cast<LONG>(500 * dpiScaleY), newClientRect.bottom - newClientRect.top);
-        newWidth = std::min(newWidth, workArea.Width()-4);
-        newHeight= std::min(newHeight, workArea.Height()-4);
+        newWidth = std::min(newWidth, workArea.Width() - 4);
+        newHeight = std::min(newHeight, workArea.Height() - 4);
 
         SetWindowPos(0, 0, 0, newWidth, newHeight, SWP_NOMOVE | SWP_NOZORDER);
-        //ResizeClient(newWidth, newHeight);
+        // ResizeClient(newWidth, newHeight);
         CenterWindow(parent);
     }
     canvas_->updateView();
     m_view.SetFocus();
-    //displayMode_ = wdmWindowed;
+    // displayMode_ = wdmWindowed;
     ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);
-    //BringWindowToTop();
-    //m_view.Invalidate(false);
+    // BringWindowToTop();
+    // m_view.Invalidate(false);
 
-    if ( parent ) {
+    if (parent) {
         ::EnableWindow(parent, false);
     }
 
@@ -599,7 +586,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     loop.AddMessageFilter(this);
     loop.Run();
     saveSettings();
-    if ( parent ) {
+    if (parent) {
         ::EnableWindow(parent, true);
         if (forceShowParent) {
             ::ShowWindow(parent, SW_SHOWNORMAL);
@@ -611,7 +598,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     if (parent) {
         ::SetForegroundWindow(parent);
-        ::SetFocus(parent); 
+        ::SetFocus(parent);
     }
     loop.RemoveMessageFilter(this);
 
@@ -628,9 +615,9 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     DestroyWindow();
     DestroyAcceleratorTable(accelerators_);
     accelerators_ = nullptr;
-    if ( dialogResult_ == drCancel  ) {
-//        delete resultingBitmap_;
-        //resultingBitmap_ = 0;
+    if (dialogResult_ == drCancel) {
+        //        delete resultingBitmap_;
+        // resultingBitmap_ = 0;
     }
 
     return dialogResult_;
@@ -641,28 +628,24 @@ LRESULT ImageEditorWindow::OnNcCreate(UINT, WPARAM, LPARAM, BOOL&) {
     return TRUE;
 }
 
-LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     SetWindowText(TR("Image Editor"));
     createIcons();
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
+LRESULT ImageEditorWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
     bHandled = FALSE;
     return 1;
 }
 
-LRESULT ImageEditorWindow::OnClose(UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    OnClickedClose(ID_CLOSE,0,0, bHandled);
+LRESULT ImageEditorWindow::OnClose(UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+    OnClickedClose(ID_CLOSE, 0, 0, bHandled);
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    if ( horizontalToolbar_.m_hWnd ) { // It is possible that toolbars are not created yet
+LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+    if (horizontalToolbar_.m_hWnd) { // It is possible that toolbars are not created yet
         RECT rc;
         GetClientRect(&rc);
         RECT horToolbarRect;
@@ -675,25 +658,24 @@ LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
         m_view.SetWindowPos(0, &rc, SWP_NOZORDER);
 
-        //rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
-        //rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
+        // rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
+        // rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
 
         m_view.SetWindowPos(0, &rc, SWP_NOZORDER);
-        //m_view.Invalidate(TRUE);
+        // m_view.Invalidate(TRUE);
     }
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
+LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
     return 0;
     CPaintDC dc(m_hWnd);
-    if ( displayMode_ == wdmWindowed ) {
+    if (displayMode_ == wdmWindowed) {
 
         CRect clientRect;
         GetClientRect(&clientRect);
         CRgn rgn;
-        rgn.CreateRectRgn(clientRect.left,clientRect.top, clientRect.right, clientRect.bottom);
+        rgn.CreateRectRgn(clientRect.left, clientRect.top, clientRect.right, clientRect.bottom);
 
         RECT horToolbarRect;
         RECT vertToolbarRect;
@@ -712,7 +694,8 @@ LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         CRgn vertToolRgn;
         CRgn viewRgn;
         horToolRgn.CreateRectRgn(horToolbarRect.left, horToolbarRect.top, horToolbarRect.right, horToolbarRect.bottom);
-        vertToolRgn.CreateRectRgn(vertToolbarRect.left, vertToolbarRect.top, vertToolbarRect.right, vertToolbarRect.bottom);
+        vertToolRgn.CreateRectRgn(vertToolbarRect.left, vertToolbarRect.top, vertToolbarRect.right,
+                                  vertToolbarRect.bottom);
         viewRgn.CreateRectRgn(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
         rgn.CombineRgn(horToolRgn, RGN_DIFF);
         rgn.CombineRgn(vertToolRgn, RGN_DIFF);
@@ -734,15 +717,13 @@ LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
+LRESULT ImageEditorWindow::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
     bHandled = true;
     return TRUE;
 }
 
-LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
-{
-    if ( !horizontalToolbar_.m_hWnd ) {
+LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+    if (!horizontalToolbar_.m_hWnd) {
         return 0;
     }
     auto* mmi = reinterpret_cast<MINMAXINFO*>(lParam);
@@ -753,10 +734,10 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
     RECT windowRect;
     GetClientRect(&clientRect);
     GetWindowRect(&windowRect);
-    int paddingX = windowRect.right -  windowRect.left - clientRect.right;
-    int paddingY = windowRect.bottom -  windowRect.top - clientRect.bottom;
+    int paddingX = windowRect.right - windowRect.left - clientRect.right;
+    int paddingY = windowRect.bottom - windowRect.top - clientRect.bottom;
 
-    mmi->ptMinTrackSize.y = paddingY + kToolbarOffset+ horRc.bottom + vertRc.bottom;
+    mmi->ptMinTrackSize.y = paddingY + kToolbarOffset + horRc.bottom + vertRc.bottom;
     mmi->ptMinTrackSize.x = paddingX + kToolbarOffset + horRc.right + vertRc.right;
     return 0;
 }
@@ -766,7 +747,7 @@ LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         updateApplyButtons();
         return 0;
     }
-    if (showUploadButton_ || showAddToWizardButton_ ) {
+    if (showUploadButton_ || showAddToWizardButton_) {
         if (!sourceFileName_.IsEmpty()) {
             outFileName_ = sourceFileName_;
         }
@@ -778,8 +759,7 @@ LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{   
+LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if (onlySelectRegion_) {
         return 0;
     }
@@ -793,14 +773,14 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     switch (wParam) {
     case VK_OEM_6:
         canvas_->beginPenSizeChanging();
-        canvas_->setPenSize(canvas_->getPenSize()+1);
+        canvas_->setPenSize(canvas_->getPenSize() + 1);
         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
         updatePixelLabels();
         m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
         break;
     case VK_OEM_4:
         canvas_->beginPenSizeChanging();
-        canvas_->setPenSize(canvas_->getPenSize()-1);
+        canvas_->setPenSize(canvas_->getPenSize() - 1);
         horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
         updatePixelLabels();
         m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
@@ -821,20 +801,19 @@ LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     if (allowAltTab_ && displayMode_ == wdmFullscreen) {
-        if ( !wParam ) { // if the window is being deactivated
+        if (!wParam) { // if the window is being deactivated
             LONG exStyle = GetWindowLong(GWL_EXSTYLE);
             SetWindowLong(GWL_EXSTYLE, exStyle & ~(WS_EX_TOPMOST));
-            SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
-            SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+            SetWindowPos(HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+            SetWindowPos(HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             HWND foregroundWindow = GetForegroundWindow();
-            if ( foregroundWindow != m_hWnd ) {
-                ::SetWindowPos(foregroundWindow, m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+            if (foregroundWindow != m_hWnd) {
+                ::SetWindowPos(foregroundWindow, m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             }
         } else {
-            SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+            SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             LONG exStyle = GetWindowLong(GWL_EXSTYLE);
             SetWindowLong(GWL_EXSTYLE, exStyle | WS_EX_TOPMOST);
         }
@@ -857,7 +836,7 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
         RECT vertToolbarRect;
         horizontalToolbar_.GetClientRect(&horToolbarRect);
         verticalToolbar_.GetClientRect(&vertToolbarRect);
-        RECT rc {};
+        RECT rc { };
         rc.left = displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
         rc.top = displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin : 0;
 
@@ -870,11 +849,10 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
-    if ( item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
+    if (item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
         verticalToolbar_.ClientToScreen(&rc);
@@ -886,8 +864,10 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,&excludeArea);
-    } else if ( item->command == ID_FILLEDRECTANGLE || item->command ==ID_FILLEDROUNDEDRECTANGLE || item->command ==ID_FILLEDELLIPSE) {
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                       &excludeArea);
+    } else if (item->command == ID_FILLEDRECTANGLE || item->command == ID_FILLEDROUNDEDRECTANGLE
+               || item->command == ID_FILLEDELLIPSE) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
         verticalToolbar_.ClientToScreen(&rc);
@@ -899,9 +879,9 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
-    }
-    else if (item->command == ID_BLURRINGRECTANGLE || item->command == ID_PIXELATERECTANGLE) {
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                       &excludeArea);
+    } else if (item->command == ID_BLURRINGRECTANGLE || item->command == ID_PIXELATERECTANGLE) {
         CMenu blurMenu;
         RECT rc = item->rect;
         verticalToolbar_.ClientToScreen(&rc);
@@ -912,7 +892,8 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        blurMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+        blurMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                  &excludeArea);
     } /*else if (item->command == ID_TEXT || item->command == ID_SPEECHBALOON) {
         CMenu textMenu;
         RECT rc = item->rect;
@@ -924,8 +905,10 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        textMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
-    }*/ else if ( item->command == ID_SAVE ) {
+        textMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+    &excludeArea);
+    }*/
+    else if (item->command == ID_SAVE) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
         horizontalToolbar_.ClientToScreen(&rc);
@@ -935,7 +918,8 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                       &excludeArea);
     } else if (item->command == ID_COPYBITMAPTOCLIBOARD) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
@@ -947,9 +931,9 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
-    }
-    else if (item->command == ID_SEARCHBYIMAGE) {
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                       &excludeArea);
+    } else if (item->command == ID_SEARCHBYIMAGE) {
         auto* engineList = ServiceLocator::instance()->engineList();
         CMenu rectangleMenu;
         RECT rc = item->rect;
@@ -984,7 +968,8 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
-        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+        rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                       &excludeArea);
     } else if (item->command == ID_MOREACTIONS) {
         showMoreActionsDropdownMenu(item);
     } else if (item->command == ID_UPLOAD) {
@@ -998,7 +983,8 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
         horizontalToolbar_.ClientToScreen(&rc);
         serverSelectorControl.showPopup(m_hWnd, rc, true);
         settings->quickScreenshotServer.getByIndex(0) = serverSelectorControl.serverProfile();
-        serverDisplayName_ = CUploadEngineListBase::getServerDisplayName(serverSelectorControl.serverProfile().uploadEngineData());
+        serverDisplayName_
+            = CUploadEngineListBase::getServerDisplayName(serverSelectorControl.serverProfile().uploadEngineData());
         item->title = U2WC(getUploadButtonText());
         item->hint = WinUtils::TrimStringEnd(item->title, UPLOAD_BUTTON_MAX_LENGTH);
         horizontalToolbar_.update();
@@ -1009,22 +995,21 @@ LRESULT ImageEditorWindow::OnDropDownMouseDown(UINT /*uMsg*/, WPARAM wParam, LPA
 
 LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
-    
+
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     PostMessage(WM_CLOSE);
     return 0;
 }
 
-void ImageEditorWindow::createToolbars()
-{
+void ImageEditorWindow::createToolbars() {
     CRect rc;
     GetClientRect(&rc);
     bool child = displayMode_ == wdmWindowed;
-    if ( !horizontalToolbar_.Create(m_hWnd, !allowAltTab_, child, child ? GetSysColor(COLOR_APPWORKSPACE): RGB(255, 50, 56)) ) {
+    if (!horizontalToolbar_.Create(m_hWnd, !allowAltTab_, child,
+                                   child ? GetSysColor(COLOR_APPWORKSPACE) : RGB(255, 50, 56))) {
         LOG(ERROR) << "Failed to create horizontal toolbar";
         return;
     }
@@ -1034,27 +1019,32 @@ void ImageEditorWindow::createToolbars()
         dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     }
 
-    if (displayMode_ ==  wdmFullscreen && rc.Width() < MulDiv(800, dpiX, USER_DEFAULT_SCREEN_DPI)) {
+    if (displayMode_ == wdmFullscreen && rc.Width() < MulDiv(800, dpiX, USER_DEFAULT_SCREEN_DPI)) {
         horizontalToolbar_.setShowButtonText(false);
     }
     if (showAddToWizardButton_ && !onlySelectRegion_) {
-        CString buttonHint= CString(TR("Add to the list")) + (showUploadButton_ ? _T("") : _T(" (Enter)"));
-        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
+        CString buttonHint = CString(TR("Add to the list")) + (showUploadButton_ ? _T("") : _T(" (Enter)"));
+        horizontalToolbar_.addButton(
+            Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG), ID_ADDTOWIZARD, buttonHint));
     }
 
     if (onlySelectRegion_) {
         CString buttonHint = CString(TR("Continue")) + _T(" (Enter)");
-        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONOK), ID_CONTINUE, buttonHint));
+        horizontalToolbar_.addButton(
+            Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONOK), ID_CONTINUE, buttonHint));
     } else {
         if (showUploadButton_) {
             CString fullUploadButtonText = U2WC(getUploadButtonText());
             CString uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, UPLOAD_BUTTON_MAX_LENGTH);
-            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itComboButton));
+            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD,
+                                                       fullUploadButtonText + _T(" (Enter)"), Toolbar::itComboButton));
         }
 
         bool doClose = checkCloseWindowAfterAction();
 
-        const std::string secondLine = doClose ? _("Pressing this button while holding Shift will not close the window.") : _("Pressing this button while holding Shift will close the window.");
+        const std::string secondLine = doClose
+            ? _("Pressing this button while holding Shift will not close the window.")
+            : _("Pressing this button while holding Shift will close the window.");
 
         std::string saveFormatStr = doClose ? _("Save and close (%s)") : _("Save (%s)");
         if (canCloseAfterAction()) {
@@ -1063,7 +1053,8 @@ void ImageEditorWindow::createToolbars()
         }
 
         const std::string saveButtonHint = str(IuStringUtils::FormatNoExcept(saveFormatStr) % "Ctrl+S");
-        horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, U2W(saveButtonHint), Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE,
+                                                   U2W(saveButtonHint), Toolbar::itComboButton));
 
         std::string copyFormatStr = doClose ? _("Copy to clipboard and close (%s)") : _("Copy to clipboard (%s)");
         if (canCloseAfterAction()) {
@@ -1072,66 +1063,112 @@ void ImageEditorWindow::createToolbars()
         }
 
         const std::string copyButtonHint = str(IuStringUtils::FormatNoExcept(copyFormatStr) % "Ctrl+C");
-        horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, U2W(copyButtonHint), Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG),
+                                                   ID_COPYBITMAPTOCLIBOARD, U2W(copyButtonHint),
+                                                   Toolbar::itComboButton));
 
         if (displayMode_ == wdmFullscreen) {
-            horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONRECORD), ID_RECORDSCREEN, TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
+            horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONRECORD), ID_RECORDSCREEN,
+                                                       TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
         }
 
-        const std::string searchButtonText = str(IuStringUtils::FormatNoExcept(_("Search on %s")) % searchEngine_.serverName());
-        std::string searchFormatStr = doClose  ? _("Search on %1% and close (%2%)") : _("Search on %1% (%2%)");
+        const std::string searchButtonText
+            = str(IuStringUtils::FormatNoExcept(_("Search on %s")) % searchEngine_.serverName());
+        std::string searchFormatStr = doClose ? _("Search on %1% and close (%2%)") : _("Search on %1% (%2%)");
         if (canCloseAfterAction()) {
             searchFormatStr += "\r\n\r\n";
             searchFormatStr += secondLine;
         }
 
-        const std::string searchButtonHint = str(IuStringUtils::FormatNoExcept(searchFormatStr) % searchEngine_.serverName() % "Ctrl+F");
+        const std::string searchButtonHint
+            = str(IuStringUtils::FormatNoExcept(searchFormatStr) % searchEngine_.serverName() % "Ctrl+F");
 
-        horizontalToolbar_.addButton(Toolbar::Item(U2W(searchButtonText), loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, U2W(searchButtonHint), Toolbar::itComboButton));
-        horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item(U2W(searchButtonText), loadToolbarIcon(IDB_ICONSEARCH),
+                                                   ID_SEARCHBYIMAGE, U2W(searchButtonHint), Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item({ }, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS,
+                                                   TR("Rotate or flip"), Toolbar::itComboButton));
 
-        horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
+        horizontalToolbar_.addButton(Toolbar::Item({ }, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE,
+                                                   TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
     }
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"), std::shared_ptr<Gdiplus::Bitmap>(), ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
+    horizontalToolbar_.addButton(
+        Toolbar::Item(TR("Close"), std::shared_ptr<Gdiplus::Bitmap>(), ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
     horizontalToolbar_.AutoSize();
 
-    if ( displayMode_ != wdmFullscreen ) {
+    if (displayMode_ != wdmFullscreen) {
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
 
-    if ( !verticalToolbar_.Create(m_hWnd, !allowAltTab_, child, child ? GetSysColor(COLOR_APPWORKSPACE) : RGB(255, 50, 56)) ) {
+    if (!verticalToolbar_.Create(m_hWnd, !allowAltTab_, child,
+                                 child ? GetSysColor(COLOR_APPWORKSPACE) : RGB(255, 50, 56))) {
         LOG(ERROR) << "Failed to create vertical toolbar";
     }
 
     if (!onlySelectRegion_) {
-        /* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
-        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L'
+        /* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey
+        = 'I', kCropKey = 'C', // photoshop keys kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A',
+        kLineKey = 'L'
         };
         */
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLMOVEICONPNG), ID_MOVE, TR("Move") + CString(_T(" (")) + (char)kMoveKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLMOVEICONPNG), ID_MOVE,
+                                                 TR("Move") + CString(_T(" (")) + (char)kMoveKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
+        // verticalToolbar_.addButton(Toolbar::Item(CString(),
+        // loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
 
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP, TR("Crop") + CString(_T(" (")) + (char)kCropKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH, TR("Brush") + CString(_T(" (")) + (char)kBrushKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER, TR("Highlight") + CString(_T(" (")) + (char)kMarkerKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE, TR("Line") + CString(_T(" (")) + (char)kLineKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW, TR("Arrow") + CString(_T(" (")) + (char)kArrowKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,
+                                                 TR("Crop") + CString(_T(" (")) + (char)kCropKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,
+                                                 TR("Brush") + CString(_T(" (")) + (char)kBrushKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(
+            CString(), loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,
+            TR("Highlight") + CString(_T(" (")) + (char)kMarkerKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,
+                                                 TR("Line") + CString(_T(" (")) + (char)kLineKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,
+                                                 TR("Arrow") + CString(_T(" (")) + (char)kArrowKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
 
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE, TR("Rectangle") + CString(_T(" (")) + (char)kRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE, TR("Filled rectangle") + CString(_T(" (")) + (char)kFilledRectangle + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT, TR("Text") + CString(_T(" (")) + (char)kTextKey + CString(_T(")")), Toolbar::itButton, true, 1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSPEECHBALOON), ID_SPEECHBALOON, TR("Speech baloon") + CString(_T(" (")) + (char)kSpeechBaloon + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(
+            Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,
+                          TR("Rectangle") + CString(_T(" (")) + (char)kRectangleKey + CString(_T(")")),
+                          Toolbar::itTinyCombo, true, 1));
+        verticalToolbar_.addButton(
+            Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,
+                          TR("Filled rectangle") + CString(_T(" (")) + (char)kFilledRectangle + CString(_T(")")),
+                          Toolbar::itTinyCombo, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,
+                                                 TR("Text") + CString(_T(" (")) + (char)kTextKey + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(
+            Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSPEECHBALOON), ID_SPEECHBALOON,
+                          TR("Speech baloon") + CString(_T(" (")) + (char)kSpeechBaloon + CString(_T(")")),
+                          Toolbar::itButton, true, 1));
 
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER, TR("Step") + CString(_T(" (")) + (char)kStepNumber + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER,
+                                                 TR("Step") + CString(_T(" (")) + (char)kStepNumber + CString(_T(")")),
+                                                 Toolbar::itButton, true, 1));
 
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE, TR("Blurring rectangle") + CString(_T(" (")) + (char)kBlurringRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
+        verticalToolbar_.addButton(
+            Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,
+                          TR("Blurring rectangle") + CString(_T(" (")) + (char)kBlurringRectangleKey + CString(_T(")")),
+                          Toolbar::itTinyCombo, true, 1));
 
-        //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
-        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER, TR("Color chooser") + CString(_T(" (")) + (char)kColorPickerKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        // verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG),
+        // ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
+        verticalToolbar_.addButton(
+            Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,
+                          TR("Color chooser") + CString(_T(" (")) + (char)kColorPickerKey + CString(_T(")")),
+                          Toolbar::itButton, true, 1));
 
-        int index = verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
+        int index
+            = verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,
+                                                       TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
-        Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
+        Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, { }, Toolbar::itButton, false);
         colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index + 1, canvas_.get());
         colorsButton.itemDelegate = colorsDelegate_.get();
         colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
@@ -1155,14 +1192,13 @@ void ImageEditorWindow::createToolbars()
 }
 
 
-void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
-{
-    if ( cropToolTip_ ) {
+void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h) {
+    if (cropToolTip_) {
         ::DestroyWindow(cropToolTip_);
         cropToolTip_ = 0;
     }
 
-    if ( displayMode_ != wdmFullscreen ) {
+    if (displayMode_ != wdmFullscreen) {
         return;
     }
     enum ToolbarPosition { pBottomRight, pBottomLeft, pTopRight, pTopLeft, pBottomRightInner };
@@ -1177,108 +1213,122 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
     horizontalToolbar_.GetClientRect(&horRc);
     verticalToolbar_.GetClientRect(&vertRc);
 
-    ToolbarPosition pos = pBottomRight ;
-    if ( y + h + horRc.bottom <= canvas_->getHeigth()  && x + w + vertRc.right <= clientRect.right  ) {
-        pos = pBottomRight ;
-    } else if ( y >= horRc.bottom && x >= vertRc.right )  {
-         pos = pTopLeft;
-    } else if ( y >= horRc.bottom && x + w + vertRc.right <= clientRect.right ) {
+    ToolbarPosition pos = pBottomRight;
+    if (y + h + horRc.bottom <= canvas_->getHeigth() && x + w + vertRc.right <= clientRect.right) {
+        pos = pBottomRight;
+    } else if (y >= horRc.bottom && x >= vertRc.right) {
+        pos = pTopLeft;
+    } else if (y >= horRc.bottom && x + w + vertRc.right <= clientRect.right) {
         pos = pTopRight;
-    } else if ( x >= vertRc.right && y +h+horRc.bottom  <= clientRect.bottom) {
+    } else if (x >= vertRc.right && y + h + horRc.bottom <= clientRect.bottom) {
         pos = pBottomLeft;
     }
-    POINT horToolbarPos = {0, 0};
-    POINT vertToolbarPos = {0, 0};
+    POINT horToolbarPos = { 0, 0 };
+    POINT vertToolbarPos = { 0, 0 };
 
-    if ( pos == pBottomRight ) {
+    if (pos == pBottomRight) {
         horToolbarPos.x = x + w - horRc.right;
-        horToolbarPos.y =  y + h + kToolbarOffset;
-
-        vertToolbarPos.x = x + w + kToolbarOffset ;
-        vertToolbarPos.y = y + h - vertRc.bottom;
-
-        horToolbarPos.x = std::min(std::max<LONG>( horToolbarPos.x, 0),clientRect.right - vertRc.right - horRc.right);
-        horToolbarPos.y = std::min( std::max( horToolbarPos.y, vertRc.bottom + kToolbarOffset ) , clientRect.bottom - horRc.bottom - kToolbarOffset);
-        vertToolbarPos.x = std::min(std::max( vertToolbarPos.x, horRc.right + kToolbarOffset ), clientRect.right - vertRc.right);
-        vertToolbarPos.y = std::min(std::max<LONG>( vertToolbarPos.y, 0), clientRect.bottom - horRc.bottom - kToolbarOffset - vertRc.bottom);
-
-    } else if ( pos == pTopLeft ) {
-        horToolbarPos.x = x;
-        horToolbarPos.y =  y - horRc.bottom - kToolbarOffset;
-
-        vertToolbarPos.x = x - vertRc.right - kToolbarOffset;
-        vertToolbarPos.y = y ;
-
-        horToolbarPos.x = std::min(std::max(horToolbarPos.x, vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
-        horToolbarPos.y = std::min(std::max<LONG>(horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom - horRc.bottom - kToolbarOffset);
-        vertToolbarPos.x = std::min(std::max<LONG>(vertToolbarPos.x, 0), clientRect.right - horRc.right - vertRc.right - kToolbarOffset);
-        vertToolbarPos.y = std::min(std::max(vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
-    } else if ( pos == pTopRight ) {
-        horToolbarPos.x = x + w - horRc.right - kToolbarOffset;
-        horToolbarPos.y =  y - horRc.bottom - kToolbarOffset;
+        horToolbarPos.y = y + h + kToolbarOffset;
 
         vertToolbarPos.x = x + w + kToolbarOffset;
-        vertToolbarPos.y = y ;
+        vertToolbarPos.y = y + h - vertRc.bottom;
 
-        horToolbarPos.x = /*min*(*/std::max<LONG>(horToolbarPos.x, 0)/*, clientRect.right - horRc.right - kToolbarOffset)*/;
-        horToolbarPos.y = std::min(std::max<LONG>(horToolbarPos.y, 0), clientRect.bottom - vertRc.bottom - horRc.bottom - kToolbarOffset);
-        vertToolbarPos.x = /*min(*/std::max(vertToolbarPos.x, horRc.right + kToolbarOffset)/*, clientRect.right - horRc.right- vertRc.right - kToolbarOffset)*/;
-        vertToolbarPos.y = std::min(std::max(vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
-    } else if ( pos == pBottomLeft ) {
+        horToolbarPos.x = std::min(std::max<LONG>(horToolbarPos.x, 0), clientRect.right - vertRc.right - horRc.right);
+        horToolbarPos.y = std::min(std::max(horToolbarPos.y, vertRc.bottom + kToolbarOffset),
+                                   clientRect.bottom - horRc.bottom - kToolbarOffset);
+        vertToolbarPos.x
+            = std::min(std::max(vertToolbarPos.x, horRc.right + kToolbarOffset), clientRect.right - vertRc.right);
+        vertToolbarPos.y = std::min(std::max<LONG>(vertToolbarPos.y, 0),
+                                    clientRect.bottom - horRc.bottom - kToolbarOffset - vertRc.bottom);
+
+    } else if (pos == pTopLeft) {
         horToolbarPos.x = x;
-        horToolbarPos.y =  y + h + kToolbarOffset;
+        horToolbarPos.y = y - horRc.bottom - kToolbarOffset;
+
+        vertToolbarPos.x = x - vertRc.right - kToolbarOffset;
+        vertToolbarPos.y = y;
+
+        horToolbarPos.x
+            = std::min(std::max(horToolbarPos.x, vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
+        horToolbarPos.y = std::min(std::max<LONG>(horToolbarPos.y, 0),
+                                   clientRect.bottom - vertRc.bottom - horRc.bottom - kToolbarOffset);
+        vertToolbarPos.x = std::min(std::max<LONG>(vertToolbarPos.x, 0),
+                                    clientRect.right - horRc.right - vertRc.right - kToolbarOffset);
+        vertToolbarPos.y
+            = std::min(std::max(vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
+    } else if (pos == pTopRight) {
+        horToolbarPos.x = x + w - horRc.right - kToolbarOffset;
+        horToolbarPos.y = y - horRc.bottom - kToolbarOffset;
+
+        vertToolbarPos.x = x + w + kToolbarOffset;
+        vertToolbarPos.y = y;
+
+        horToolbarPos.x
+            = /*min*(*/ std::max<LONG>(horToolbarPos.x, 0) /*, clientRect.right - horRc.right - kToolbarOffset)*/;
+        horToolbarPos.y = std::min(std::max<LONG>(horToolbarPos.y, 0),
+                                   clientRect.bottom - vertRc.bottom - horRc.bottom - kToolbarOffset);
+        vertToolbarPos.x = /*min(*/ std::max(
+            vertToolbarPos.x,
+            horRc.right + kToolbarOffset) /*, clientRect.right - horRc.right- vertRc.right - kToolbarOffset)*/;
+        vertToolbarPos.y
+            = std::min(std::max(vertToolbarPos.y, horRc.bottom), clientRect.bottom - vertRc.bottom - kToolbarOffset);
+    } else if (pos == pBottomLeft) {
+        horToolbarPos.x = x;
+        horToolbarPos.y = y + h + kToolbarOffset;
 
         vertToolbarPos.x = x - vertRc.right - kToolbarOffset;
         vertToolbarPos.y = y + h - vertRc.bottom;
 
-        horToolbarPos.x = std::min(std::max(horToolbarPos.x, vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
+        horToolbarPos.x
+            = std::min(std::max(horToolbarPos.x, vertRc.right), clientRect.right - horRc.right - kToolbarOffset);
 
-        vertToolbarPos.x = std::min(std::max<LONG>(vertToolbarPos.x, 0), clientRect.right - horRc.right - vertRc.right - kToolbarOffset);
+        vertToolbarPos.x = std::min(std::max<LONG>(vertToolbarPos.x, 0),
+                                    clientRect.right - horRc.right - vertRc.right - kToolbarOffset);
 
-        //horToolbarPos.y = max( horToolbarPos.y, vertRc.bottom + kToolbarOffset );
+        // horToolbarPos.y = max( horToolbarPos.y, vertRc.bottom + kToolbarOffset );
         horToolbarPos.y = std::max(horToolbarPos.y, vertRc.bottom + kToolbarOffset);
         vertToolbarPos.y = std::max<LONG>(vertToolbarPos.y, 0);
     }
-    //SIZE toolbarRect = {  horRc.right + vertRc.right, vertRc.bottom + horRc.bottom}
+    // SIZE toolbarRect = {  horRc.right + vertRc.right, vertRc.bottom + horRc.bottom}
 
     ClientToScreen(&horToolbarPos);
     ClientToScreen(&vertToolbarPos);
 
-    horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
-    //horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
-    verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
+    horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0,
+                                    SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    // horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
+    verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0,
+                                  SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     SetActiveWindow();
 }
 
-void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
-{
+void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h) {
     if (!onlySelectRegion_) {
         updateApplyButtons(TR("Apply crop"));
     }
 
-    OnCropChanged(x,y,w,h);
+    OnCropChanged(x, y, w, h);
     if (displayMode_ != wdmFullscreen) {
         return;
     }
-    if ( !horizontalToolbar_.IsWindowVisible() || !verticalToolbar_.IsWindowVisible() ) {
+    if (!horizontalToolbar_.IsWindowVisible() || !verticalToolbar_.IsWindowVisible()) {
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
 }
 
-void ImageEditorWindow::OnDrawingToolChanged(DrawingToolType drawingTool)
-{
+void ImageEditorWindow::OnDrawingToolChanged(DrawingToolType drawingTool) {
     updateToolbarDrawingTool(drawingTool);
-    SendMessage(WM_SETCURSOR,0,0);
+    SendMessage(WM_SETCURSOR, 0, 0);
 }
 
-void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement)
-{
+void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement* textElement) {
     auto control = std::dynamic_pointer_cast<InputBoxControl>(textElement->getInputBox());
     if (!control) {
         return;
     }
     textParamsWindow_.setTextAlignment(textElement->getTextAlignment());
+    textParamsWindow_.setTextColor(textElement->getTextColor());
     RECT inputControlRect;
     control->GetWindowRect(&inputControlRect);
     int kOffset = 30;
@@ -1288,41 +1338,38 @@ void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement
     m_view.GetWindowRect(&viewRect);
     int x = inputControlRect.left;
     int y = 0;
-    if ( inputControlRect.top > viewRect.top + (textParamsWindowRect.bottom - textParamsWindowRect.top) + kOffset ) {
+    if (inputControlRect.top > viewRect.top + (textParamsWindowRect.bottom - textParamsWindowRect.top) + kOffset) {
         y = inputControlRect.top - (textParamsWindowRect.bottom - textParamsWindowRect.top) - kOffset;
     } else {
         y = inputControlRect.bottom + kOffset;
     }
-    textParamsWindow_.SetWindowPos(0,x,y, 0,0, SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOZORDER);
+    textParamsWindow_.SetWindowPos(0, x, y, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOZORDER);
 
     textParamsWindow_.ShowWindow(SW_SHOW);
     m_view.SetFocus();
 }
 
-void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement * textElement)
-{
+void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement* textElement) {
     textParamsWindow_.ShowWindow(SW_HIDE);
 }
 
-void ImageEditorWindow::OnSelectionChanged()
-{
+void ImageEditorWindow::OnSelectionChanged() {
     updateRoundingRadiusSlider();
     updateFontSizeControls();
 }
 
-void ImageEditorWindow::updateRoundingRadiusSlider()
-{
-    bool showLineWidth = ( currentDrawingTool_ != DrawingToolType::dtStepNumber
-        && currentDrawingTool_ != DrawingToolType::dtText
-        && currentDrawingTool_ != DrawingToolType::dtCrop
-        && currentDrawingTool_ != DrawingToolType::dtBlurringRectangle
-        && currentDrawingTool_ != DrawingToolType::dtPixelateRectangle
-    );
+void ImageEditorWindow::updateRoundingRadiusSlider() {
+    bool showLineWidth
+        = (currentDrawingTool_ != DrawingToolType::dtStepNumber && currentDrawingTool_ != DrawingToolType::dtText
+           && currentDrawingTool_ != DrawingToolType::dtCrop
+           && currentDrawingTool_ != DrawingToolType::dtBlurringRectangle
+           && currentDrawingTool_ != DrawingToolType::dtPixelateRectangle);
     horizontalToolbar_.showPenSize(showLineWidth);
 
-    bool showRoundingRadiusSlider = currentDrawingTool_ == DrawingToolType::dtRoundedRectangle || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
-    horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
-    horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
+    bool showRoundingRadiusSlider = currentDrawingTool_ == DrawingToolType::dtRoundedRectangle
+        || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
+    horizontalToolbar_.roundRadiusLabel_.ShowWindow(showRoundingRadiusSlider ? SW_SHOW : SW_HIDE);
+    horizontalToolbar_.roundRadiusSlider_.ShowWindow(showRoundingRadiusSlider ? SW_SHOW : SW_HIDE);
 
     bool showBlurRadiusSlider = currentDrawingTool_ == DrawingToolType::dtBlurringRectangle
         || currentDrawingTool_ == DrawingToolType::dtPixelateRectangle;
@@ -1357,15 +1404,15 @@ void ImageEditorWindow::updateSearchButton() {
         CString searchEngineName = U2W(searchEngine_.serverName());
         item->title.Format(TR("Search on %s"), searchEngineName.GetString());
         horizontalToolbar_.AutoSize();
-        //horizontalToolbar_.Invalidate(FALSE);
+        // horizontalToolbar_.Invalidate(FALSE);
     }
 }
 
-std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource, bool resize)
-{
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource, bool resize) {
     using namespace Gdiplus;
 
-    std::shared_ptr<Bitmap> bm(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
+    std::shared_ptr<Bitmap> bm(
+        ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
     if (!resize) {
         return bm;
     }
@@ -1387,7 +1434,8 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource
 std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadMenuIcon(int resource, bool resize /*= false*/) {
     using namespace Gdiplus;
 
-    std::shared_ptr<Bitmap> bm(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
+    std::shared_ptr<Bitmap> bm(
+        ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
     if (!resize) {
         return bm;
     }
@@ -1404,19 +1452,17 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadMenuIcon(int resource, b
     return newBm;
 }
 
-void ImageEditorWindow::EndDialog(DialogResult dr)
-{
+void ImageEditorWindow::EndDialog(DialogResult dr) {
     allowAltTab_ = false;
     dialogResult_ = dr;
     PostQuitMessage(0);
 }
 
 LRESULT ImageEditorWindow::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    if (GetFocus() != m_view.m_hWnd)
-    {
+    if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
-    DrawingToolType toolId =  static_cast<DrawingToolType>(menuItems_[wID]);
+    DrawingToolType toolId = static_cast<DrawingToolType>(menuItems_[wID]);
     canvas_->setDrawingToolType(toolId);
     updateToolbarDrawingTool(toolId);
     return 0;
@@ -1433,8 +1479,7 @@ LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
-{
+LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
     onClose();
     return 0;
 }
@@ -1442,22 +1487,22 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 void ImageEditorWindow::onClose() {
     DialogResult dr = drCancel;
     if (askBeforeClose_ && !onlySelectRegion_ && canvas_->isDocumentModified()) {
-        int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APP_NAME, MB_YESNOCANCEL | MB_ICONQUESTION);
+        int msgBoxResult
+            = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APP_NAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if (msgBoxResult == IDYES) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
-            if(!onSave(false)) {
+            if (!onSave(false)) {
                 return;
             }
-        }
-        else if (msgBoxResult == IDCANCEL) {
+        } else if (msgBoxResult == IDCANCEL) {
             return;
         }
     }
     EndDialog(dr);
 }
 
-LRESULT ImageEditorWindow::OnClickedAddToWizard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedAddToWizard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
+                                                BOOL& /*bHandled*/) {
     resultingBitmap_ = canvas_->getBitmapForExport();
     canvas_->setDocumentModified(false);
 
@@ -1471,8 +1516,7 @@ LRESULT ImageEditorWindow::OnClickedAddToWizard(WORD /*wNotifyCode*/, WORD /*wID
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     resultingBitmap_ = canvas_->getBitmapForExport();
     canvas_->setDocumentModified(false);
 
@@ -1485,30 +1529,26 @@ LRESULT ImageEditorWindow::OnClickedUpload(WORD /*wNotifyCode*/, WORD /*wID*/, H
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedShare(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     if (saveDocument()) {
         EndDialog(drShare);
     }
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedSave(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedSave(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     bool closeFlag = wID == ID_SAVE_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     onSave(closeFlag);
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedSaveAs(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedSaveAs(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     bool closeFlag = wID == ID_SAVEAS_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     onSaveAs(closeFlag);
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARD_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     copyBitmapToClipboard(ClipboardFormat::Bitmap, closeFlag);
 
@@ -1516,13 +1556,15 @@ LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD wNotifyCode, WORD wID, 
 }
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD wNotifyCode, WORD wID, HWND, BOOL&) {
-    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    bool closeFlag
+        = wID == ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     copyBitmapToClipboard(ClipboardFormat::DataUri, wID == ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT);
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD wNotifyCode, WORD wID, HWND, BOOL&) {
-    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARDASDATAURIHTML_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARDASDATAURIHTML_ALT
+        || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     copyBitmapToClipboard(ClipboardFormat::DataUriHtml, closeFlag);
     return 0;
 }
@@ -1603,56 +1645,49 @@ LRESULT ImageEditorWindow::OnFontSizeChanged(UINT, WPARAM, LPARAM, BOOL&) {
 
 bool ImageEditorWindow::createTooltip() {
     // Create a tooltip.
-    cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
-        WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        m_view.m_hWnd, NULL, _Module.GetModuleInstance(),NULL);
+    cropToolTip_ = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+                                    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_view.m_hWnd, NULL,
+                                    _Module.GetModuleInstance(), NULL);
 
-    ::SetWindowPos(cropToolTip_, HWND_TOPMOST, 0, 0, 0, 0,
-        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    ::SetWindowPos(cropToolTip_, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
     // Set up "tool" information. In this case, the "tool" is the entire parent window.
-    TOOLINFO ti = {};
+    TOOLINFO ti = { };
     CString title = TR("Select region");
-    ti.cbSize   = sizeof(TOOLINFO);
-    ti.uFlags   = TTF_SUBCLASS;
-    ti.hwnd     = m_view.m_hWnd;
-    ti.hinst    = _Module.GetModuleInstance();
+    ti.cbSize = sizeof(TOOLINFO);
+    ti.uFlags = TTF_SUBCLASS;
+    ti.hwnd = m_view.m_hWnd;
+    ti.hinst = _Module.GetModuleInstance();
     ti.lpszText = const_cast<LPWSTR>(title.GetString());
     m_view.GetClientRect(&ti.rect);
 
     // Associate the tooltip with the "tool" window.
-    SendMessage(cropToolTip_, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
+    SendMessage(cropToolTip_, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
     return true;
 }
 
-void ImageEditorWindow::updatePixelLabels()
-{
+void ImageEditorWindow::updatePixelLabels() {
     horizontalToolbar_.pixelLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getPenSize()) + L" px");
     horizontalToolbar_.roundRadiusLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getRoundingRadius()) + L" px");
     std::string s = str(boost::format("%0.2f") % canvas_->getBlurRadius());
     horizontalToolbar_.blurRadiusLabel_.SetWindowText(IuCoreUtils::Utf8ToWstring(s).c_str());
 }
 
-bool ImageEditorWindow::onSaveAs(bool closeFlag)
-{
-    IMyFileDialog::FileFilterArray filters = {
-        { _T("PNG"), CString(_T("*.png")) },
-        { _T("JPEG"), CString(_T("*.jpg;*.jpeg")) },
-        { _T("WEBP"), CString(_T("*.webp")) },
-        { TR("All files"), _T("*.*") }
-    };
+bool ImageEditorWindow::onSaveAs(bool closeFlag) {
+    IMyFileDialog::FileFilterArray filters = { { _T("PNG"), CString(_T("*.png")) },
+                                               { _T("JPEG"), CString(_T("*.jpg;*.jpeg")) },
+                                               { _T("WEBP"), CString(_T("*.webp")) },
+                                               { TR("All files"), _T("*.*") } };
 
     CString fileName = makeFileName();
-    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetFilePath(fileName), CString(), filters, false, false);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetFilePath(fileName), CString(), filters, false,
+                                                     false);
     dlg->setFileName(WinUtils::DoExtractFileName(fileName));
     CString ext = WinUtils::GetFileExt(fileName);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
 
-    auto it = std::find_if(filters.begin(), filters.end(), [ext] (auto&& s) {
-        return s.first.CompareNoCase(ext) == 0;
-    });
+    auto it = std::find_if(filters.begin(), filters.end(), [ext](auto&& s) { return s.first.CompareNoCase(ext) == 0; });
 
     if (it != filters.end()) {
         size_t index = it - filters.begin() + 1; // This is a one-based index, not zero-based.
@@ -1668,8 +1703,9 @@ bool ImageEditorWindow::onSaveAs(bool closeFlag)
 
     if (saveDocument(ClipboardFormat::None, true)) {
         auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-        /*setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
-            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));*/
+        /*setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate,
+           ++IuCommonFunctions::screenshotIndex, CPoint(canvas_->currentDocument()->getWidth(),
+           canvas_->currentDocument()->getHeight())));*/
         if (canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
             EndDialog(drSave);
         }
@@ -1677,12 +1713,12 @@ bool ImageEditorWindow::onSaveAs(bool closeFlag)
     return true;
 }
 
-void ImageEditorWindow::saveSettings()
-{
-    if ( configurationProvider_ ) {
+void ImageEditorWindow::saveSettings() {
+    if (configurationProvider_) {
         configurationProvider_->setPenSize(canvas_->getPenSize());
         configurationProvider_->setForegroundColor(canvas_->getForegroundColor());
         configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
+        configurationProvider_->setTextColor(canvas_->getTextColor());
         configurationProvider_->setFont(canvas_->getFont());
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
         configurationProvider_->setBlurRadius(canvas_->getBlurRadius());
@@ -1723,7 +1759,7 @@ BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
             }
 
             if (parent == horizontalToolbar_.m_hWnd || parent == verticalToolbar_.m_hWnd) {
-                TCHAR className[MAX_PATH]{};
+                TCHAR className[MAX_PATH] { };
                 if (GetClassName(pMsg->hwnd, className, MAX_PATH) && !lstrcmp(className, _T("Edit"))) {
                     return FALSE;
                 }
@@ -1765,12 +1801,11 @@ bool ImageEditorWindow::onSave(bool closeFlag) {
     return res;
 }
 
-LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     HWND hwndSender = reinterpret_cast<HWND>(lParam);
-    if ( hwndSender == horizontalToolbar_.penSizeSlider_.m_hWnd  ) {
+    if (hwndSender == horizontalToolbar_.penSizeSlider_.m_hWnd) {
         int penSize = HIWORD(wParam);
-        switch( LOWORD(wParam ) ) {
+        switch (LOWORD(wParam)) {
         case TB_ENDTRACK:
             penSize = horizontalToolbar_.penSizeSlider_.GetPos();
         case TB_THUMBPOSITION:
@@ -1786,7 +1821,7 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         case TB_BOTTOM:
             penSize = horizontalToolbar_.penSizeSlider_.GetPos();
         case TB_THUMBTRACK:
-            if ( !prevPenSize_ ) {
+            if (!prevPenSize_) {
                 prevPenSize_ = canvas_->getPenSize();
                 canvas_->beginPenSizeChanging();
             }
@@ -1794,9 +1829,9 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             updatePixelLabels();
             break;
         }
-    } else if ( hwndSender == horizontalToolbar_.roundRadiusSlider_.m_hWnd ) {
+    } else if (hwndSender == horizontalToolbar_.roundRadiusSlider_.m_hWnd) {
         int roundingRadius = HIWORD(wParam);
-        switch( LOWORD(wParam ) ) {
+        switch (LOWORD(wParam)) {
         case TB_ENDTRACK:
             roundingRadius = horizontalToolbar_.roundRadiusSlider_.GetPos();
         case TB_THUMBPOSITION:
@@ -1812,7 +1847,7 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         case TB_BOTTOM:
             roundingRadius = horizontalToolbar_.roundRadiusSlider_.GetPos();
         case TB_THUMBTRACK:
-            if ( !prevRoundingRadius_ ) {
+            if (!prevRoundingRadius_) {
                 prevRoundingRadius_ = canvas_->getRoundingRadius();
                 canvas_->beginRoundingRadiusChanging();
             }
@@ -1820,12 +1855,11 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             updatePixelLabels();
             break;
         }
-    }
-    else if (hwndSender == horizontalToolbar_.blurRadiusSlider_.m_hWnd) {
-        float blurRadius = HIWORD(wParam)/ BLUR_RADIUS_PRECISION;
+    } else if (hwndSender == horizontalToolbar_.blurRadiusSlider_.m_hWnd) {
+        float blurRadius = HIWORD(wParam) / BLUR_RADIUS_PRECISION;
         switch (LOWORD(wParam)) {
         case TB_ENDTRACK:
-            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos()/ BLUR_RADIUS_PRECISION;
+            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos() / BLUR_RADIUS_PRECISION;
         case TB_THUMBPOSITION:
             canvas_->endBlurRadiusChanging(blurRadius);
             updatePixelLabels();
@@ -1837,7 +1871,7 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         case TB_LINEDOWN:
         case TB_LINEUP:
         case TB_BOTTOM:
-            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos()/ BLUR_RADIUS_PRECISION;
+            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos() / BLUR_RADIUS_PRECISION;
         case TB_THUMBTRACK:
             if (!prevRoundingRadius_) {
                 prevBlurRadius_ = canvas_->getBlurRadius();
@@ -1852,8 +1886,8 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnTextParamWindowFontChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
+                                                        BOOL& /*bHandled*/) {
     DWORD changeMask = lParam;
     canvas_->setFont(textParamsWindow_.getFont(), changeMask);
     return 0;
@@ -1864,13 +1898,20 @@ LRESULT ImageEditorWindow::OnTextParamWindowAlignmentChanged(UINT, WPARAM, LPARA
     return 0;
 }
 
+LRESULT ImageEditorWindow::OnTextParamWindowTextColorChanged(UINT, WPARAM, LPARAM lParam, BOOL&) {
+    const COLORREF color = static_cast<COLORREF>(lParam);
+    canvas_->setTextColor(Gdiplus::Color(255, GetRValue(color), GetGValue(color), GetBValue(color)));
+    return 0;
+}
+
 LRESULT ImageEditorWindow::OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     canvas_->unselectAllElements();
     canvas_->updateView();
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
+                                                    BOOL& /*bHandled*/) {
     int stepInitialValue = horizontalToolbar_.getStepInitialValue();
     if (!stepInitialValue) {
         stepInitialValue = 1;
@@ -1880,12 +1921,14 @@ LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wPar
 }
 
 
-LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
+                                                  BOOL& /*bHandled*/) {
     canvas_->setFillTextBackground(horizontalToolbar_.isFillBackgroundChecked());
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnInvertSelectionChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT ImageEditorWindow::OnInvertSelectionChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
+                                                   BOOL& /*bHandled*/) {
     canvas_->setInvertSelection(horizontalToolbar_.isInvertSelectionChecked());
     return 0;
 }
@@ -1910,18 +1953,19 @@ LRESULT ImageEditorWindow::OnEnable(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 void ImageEditorWindow::updateWindowTitle() {
     std::wstring windowTitle;
     if (sourceFileName_.IsEmpty()) {
-        windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
-    }
-    else {
+        windowTitle
+            = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
+    } else {
         CString fileNameStr = WinUtils::TrimString(WinUtils::DoExtractFileName(sourceFileName_), 60);
-        std::wstring fileNameWstring{ fileNameStr };
+        std::wstring fileNameWstring { fileNameStr };
 
-        windowTitle = str(boost::wformat(TR("Image Editor - %1% (%2%x%3%)")) % fileNameWstring % currentDoc_->getWidth() % currentDoc_->getHeight());
+        windowTitle = str(boost::wformat(TR("Image Editor - %1% (%2%x%3%)")) % fileNameWstring % currentDoc_->getWidth()
+                          % currentDoc_->getHeight());
     }
 
-	if (canvas_->isDocumentModified()) {
+    if (canvas_->isDocumentModified()) {
         windowTitle = L"* " + windowTitle;
-	}
+    }
     if (windowTitle != windowTitle_) {
         windowTitle_ = windowTitle;
         SetWindowText(windowTitle.c_str());
@@ -1941,15 +1985,16 @@ LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, L
 }
 
 void ImageEditorWindow::updateApplyButtons(const CString& applyButtonText) {
-    horizontalToolbar_.setApplyButtonText(applyButtonText.IsEmpty() ? CString(TR("Apply")): applyButtonText);
-    horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
+    horizontalToolbar_.setApplyButtonText(applyButtonText.IsEmpty() ? CString(TR("Apply")) : applyButtonText);
+    horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed
+                                        && canvas_->hasElementOfType(ElementType::etCrop));
 }
 
 void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect) {
     if (displayMode_ != wdmFullscreen) {
         return;
     }
-    MONITORINFO mi = {};
+    MONITORINFO mi = { };
     mi.cbSize = sizeof(mi);
     ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
     CRect workArea = mi.rcMonitor;
@@ -1994,10 +2039,11 @@ void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
 
 
     std::shared_ptr<Gdiplus::Bitmap> icon2 = loadMenuIcon(IDB_ICONFLIPVERTICAL, true);
-    icon2->GetHBITMAP({}, &bmIconFlipVertical_.m_hBitmap);
-    
+    icon2->GetHBITMAP({ }, &bmIconFlipVertical_.m_hBitmap);
+
     GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECLOCKWISE, TR("Rotate clockwise (90°)"), bmIconRotateCW_);
-    GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECOUNTERCLOCKWISE, TR("Rotate counter clockwise (-90°)"), bmIconRotate_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECOUNTERCLOCKWISE, TR("Rotate counter clockwise (-90°)"),
+                         bmIconRotate_);
     GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPHORIZONTAL, TR("Flip horizontal"), bmIconFlipHorizontal_);
     GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPVERTICAL, TR("Flip vertical"), bmIconFlipVertical_);
 
@@ -2005,7 +2051,8 @@ void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
     ZeroMemory(&excludeArea, sizeof(excludeArea));
     excludeArea.cbSize = sizeof(excludeArea);
     excludeArea.rcExclude = rc;
-    rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd,
+                                   &excludeArea);
 }
 
 void ImageEditorWindow::createIcons() {
@@ -2026,21 +2073,21 @@ void ImageEditorWindow::createIcons() {
         bmIconRotateCW_.DeleteObject();
     }
     std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadMenuIcon(IDB_ICONROTATECW, true);
-    iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
+    iconRotateCW->GetHBITMAP({ }, &bmIconRotateCW_.m_hBitmap);
 
     if (bmIconRotate_) {
         bmIconRotate_.DeleteObject();
     }
 
     std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadMenuIcon(IDB_ICONROTATE, true);
-    iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
+    iconRotate->GetHBITMAP({ }, &bmIconRotate_.m_hBitmap);
 
     if (bmIconFlipHorizontal_) {
         bmIconFlipHorizontal_.DeleteObject();
     }
 
     std::shared_ptr<Gdiplus::Bitmap> icon = loadMenuIcon(IDB_ICONFLIPHORIZONTAL, true);
-    icon->GetHBITMAP({}, &bmIconFlipHorizontal_.m_hBitmap);
+    icon->GetHBITMAP({ }, &bmIconFlipHorizontal_.m_hBitmap);
 
     if (bmIconFlipVertical_) {
         bmIconFlipVertical_.DeleteObject();
@@ -2048,24 +2095,21 @@ void ImageEditorWindow::createIcons() {
 }
 
 bool ImageEditorWindow::checkCloseWindowAfterAction() const {
-    return wasOpenedAfterScreenshot() && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
+    return wasOpenedAfterScreenshot() && configurationProvider_->getCloseWindowAfterActionInFullScreen()
+        && sourceFileName_.IsEmpty();
 }
 
-bool ImageEditorWindow::canCloseAfterAction() const {
-    return wasOpenedAfterScreenshot() && sourceFileName_.IsEmpty();
-}
+bool ImageEditorWindow::canCloseAfterAction() const { return wasOpenedAfterScreenshot() && sourceFileName_.IsEmpty(); }
 
 std::string ImageEditorWindow::getUploadButtonText() const {
     if (serverDisplayName_.empty()) {
         return _("Upload to Web");
-    } 
+    }
 
-    return str(IuStringUtils::FormatNoExcept(_("Upload to %s")) % serverDisplayName_);   
+    return str(IuStringUtils::FormatNoExcept(_("Upload to %s")) % serverDisplayName_);
 }
 
-bool ImageEditorWindow::wasOpenedAfterScreenshot() const {
-    return displayMode_ == wdmFullscreen;
-}
+bool ImageEditorWindow::wasOpenedAfterScreenshot() const { return displayMode_ == wdmFullscreen; }
 
 CString ImageEditorWindow::makeFileName() const {
     const auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -2090,7 +2134,7 @@ CString ImageEditorWindow::makeFileName() const {
     CString fileExt = suggestingFileName.Mid(dotPos + 1);
     fileExt.MakeLower();
 
-    std::wstring_view imgTypes[] = {_T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
+    std::wstring_view imgTypes[] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp") };
     int format = screenshotSettings.Format;
     if (format >= 0 && format < std::size(imgTypes)) {
         fileExt = imgTypes[format].data();
@@ -2113,7 +2157,8 @@ LRESULT ImageEditorWindow::OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/,
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT ImageEditorWindow::OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
+                                                    BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::Rotate270FlipNone);
     return 0;
 }
@@ -2128,7 +2173,8 @@ LRESULT ImageEditorWindow::OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
+                                                BOOL& /*bHandled*/) {
     int itemIndex = horizontalToolbar_.getItemIndexByCommand(ID_MOREACTIONS);
     if (itemIndex != -1) {
         showMoreActionsDropdownMenu(horizontalToolbar_.getItem(itemIndex));
@@ -2143,7 +2189,7 @@ LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     // This ensures lastCrop is stored
-    //resultingBitmap_ = canvas_->getBitmapForExport();
+    // resultingBitmap_ = canvas_->getBitmapForExport();
 
     EndDialog(drContinue);
     return 0;

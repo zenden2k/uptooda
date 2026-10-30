@@ -456,7 +456,7 @@ std::unique_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
             if (type == "fillrect")
             {
                 std::unique_ptr<Gdiplus::Brush> fillBr = CreateBrushFromString(data->drawing_operations_[i].brush, rc);
-                gr->FillRectangle(fillBr.get(), rc.left, rc.top, rc.right, rc.bottom);
+                gr->FillRectangle(fillBr.get(), static_cast<INT>(rc.left), static_cast<INT>(rc.top), static_cast<INT>(rc.right), static_cast<INT>(rc.bottom));
             }
             else
                 if (type == "drawrect")
@@ -476,7 +476,7 @@ std::unique_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             rc.bottom--;
                         }
                         p.SetAlignment(PenAlignmentInset);
-                        gr->DrawRectangle(&p, rc.left, rc.top, rc.right, rc.bottom);
+                        gr->DrawRectangle(&p, static_cast<INT>(rc.left), static_cast<INT>(rc.top), static_cast<INT>(rc.right), static_cast<INT>(rc.bottom));
                     }
                 }
                 else

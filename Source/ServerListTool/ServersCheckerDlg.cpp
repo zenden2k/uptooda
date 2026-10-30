@@ -12,6 +12,7 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/WebUtils.h"
+#include "Gui/Dialogs/SettingsPage.h"
 
 namespace ServersListTool
 {

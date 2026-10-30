@@ -20,6 +20,7 @@
 
 #include "RegionSelect.h"
 
+#include "Core/ServiceLocator.h"
 #include "ScreenCapture/ScreenshotHelper.h"
 #include "Gui/GuiTools.h"
 #include "Core/Settings/WtlGuiSettings.h"

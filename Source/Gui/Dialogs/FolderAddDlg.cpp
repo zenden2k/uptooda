@@ -6,7 +6,7 @@
 #include "Core/ServiceLocator.h"
 #include "WizardDlg.h"
 #include "MainDlg.h"
-#include "Func/IuCommonFunctions.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
 CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): 
@@ -58,7 +58,7 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
         if (s_Dir.name[0] != '.' && (s_Dir.attrib & _A_SUBDIR) && bRecursive == true) {
             ProcessDir(currentDir + '\\' + s_Dir.name, bRecursive);
         } else if (s_Dir.name[0] != '.') {
-            if (!m_bImagesOnly || IuCommonFunctions::IsImage(s_Dir.name)) {
+            if (!m_bImagesOnly || ImageLoader::IsImage(s_Dir.name)) {
                 CWizardDlg::AddImageStruct ais;
                 ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 CString name = CString(currentDir) + CString(_T("\\")) + CString(s_Dir.name);
@@ -94,7 +94,7 @@ DWORD CFolderAdd::Run()
         if (WinUtils::IsDirectory(CurPath))
             ProcessDir(CurPath, m_bSubDirs);
         else
-            if (!m_bImagesOnly || IuCommonFunctions::IsImage(CurPath)) {
+            if (!m_bImagesOnly || ImageLoader::IsImage(CurPath)) {
                 CWizardDlg::AddImageStruct ais;
                 ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 //CString name = CurPath;

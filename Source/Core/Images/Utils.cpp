@@ -524,7 +524,7 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
 
     CString szNameBuffer, buffer2;
 
-    if (IuCommonFunctions::IsImage(szFilename)) {
+    if (ImageLoader::IsImage(szFilename)) {
         szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
     } else {
         szNameBuffer = szFilename;
@@ -1186,7 +1186,7 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
     std::string mimeType = IuCoreUtils::GetFileMimeType(fileNameUtf8);
     FILE* f = IuCoreUtils::FopenUtf8(fileNameUtf8.c_str(), "rb");
     if (!f) {
-        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
+        LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileNameUtf8 << std::endl << "Reason: " << strerror(errno);
         return false;
     }
     int64_t fileSize = IuCoreUtils::GetFileSize(fileNameUtf8);
@@ -1392,7 +1392,7 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
         }
         else {
             std::string filenameUtf8 = W2U(fileName);
-            std::ofstream f(std::filesystem::u8path(filenameUtf8), std::ios::out | std::ios::binary);
+            std::ofstream f(IuCoreUtils::Utf8ToPath(filenameUtf8), std::ios::out | std::ios::binary);
 
             if (!f) {
                 throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);

@@ -36,6 +36,8 @@
 #include "Func/IuCommonFunctions.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
+#include "Core/Images/ImageLoader.h"
+#include "Func/WinUtils.h"
 #endif
 #include "Core/AppRuntimeInfo.h"
 
@@ -69,8 +71,9 @@ MyGfxProcessor::MyGfxProcessor() {
 bool MyGfxProcessor::readBitmap(const std::string& path) {
     // path parameter contains utf-16 string
     CString widePath(reinterpret_cast<const wchar_t*>(path.data()), path.size() / 2);
+    CString ext = WinUtils::GetFileExt(widePath);
 
-    if (!IuCommonFunctions::IsImage(widePath)) {
+    if (ImageLoader::SupportedImageExtensions.find(W2U(ext)) == ImageLoader::SupportedImageExtensions.cend()) {
         return false;
     }
     std::unique_ptr<GdiPlusImage> img = ImageUtils::LoadImageFromFileExtended(widePath);

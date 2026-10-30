@@ -24,6 +24,7 @@ protected:
     ElementType elementType_;
     MovableElement::Grip draggedBoundary_;
     void createElement();
+    bool canActivateElement(const MovableElement* element) const;
     MovableElement::Grip checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
     MovableElement::Grip checkElementBoundaries(MovableElement*, int x, int y);
     static void cleanUp();

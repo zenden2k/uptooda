@@ -7,6 +7,8 @@
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/AppRuntimeInfo.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Utils/StringUtils.h"
 
@@ -215,43 +217,9 @@ CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size) 
     return suggestingFileName;
 }
 
-const std::unordered_set<std::string> supportedImageExtensions = {
-    "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
-    "wmf"
-};
-
-bool IsImage(LPCTSTR szFileName) {
-    if (!szFileName) {
-        return false;
-    }
-    LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
-    if (!lstrlen(szExt)) {
-        return false;
-    }
-    CString find = szExt;
-    find.MakeLower();
-    return supportedImageExtensions.find(W2U(find)) != supportedImageExtensions.end();
-}
-
-bool IsImage(const std::string& fileName) {
-    if (fileName.empty()) {
-        return false;
-    }
-    std::string ext = IuCoreUtils::ExtractFileExt(fileName);
-    if (ext.empty()) {
-        return false;
-    }
-    ext = IuStringUtils::ToLower(ext);
-    return supportedImageExtensions.find(ext) != supportedImageExtensions.end();
-}
-
-const std::unordered_set<std::string>& GetSupportedImageExtensions() {
-    return supportedImageExtensions;
-}
-
 CString PrepareFileDialogImageFilter() {
     CString result;
-    for (const auto& item : GetSupportedImageExtensions()) {
+    for (const auto& item : ImageLoader::SupportedImageExtensions) {
         result += _T("*.");
         result += U2W(item);
         result += _T(";");

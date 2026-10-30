@@ -38,6 +38,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Core/AppRuntimeInfo.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -354,7 +355,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
             } else {
                 url = reg[1];
             }
-            auto& supportedExtensions = IuCommonFunctions::GetSupportedImageExtensions();
+            auto& supportedExtensions = ImageLoader::SupportedImageExtensions;
             std::string fileExt = IuStringUtils::ToLower( IuCoreUtils::ExtractFileExt(url) );
             if (supportedExtensions.find(fileExt) != supportedExtensions.end()) {
                 Match match;

@@ -20,6 +20,11 @@
 
 #include "ServerListPopup.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <vector>
+
 #include <strsafe.h>
 #include <dwmapi.h>
 
@@ -38,20 +43,86 @@
 
 namespace {
 
-constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
+double DistanceToLineSegment(double x, double y, double x1, double y1, double x2, double y2) {
+    const double dx = x2 - x1;
+    const double dy = y2 - y1;
+    const double lengthSquared = dx * dx + dy * dy;
+    const double projection = std::clamp(((x - x1) * dx + (y - y1) * dy) / lengthSquared, 0.0, 1.0);
+    const double nearestX = x1 + projection * dx;
+    const double nearestY = y1 + projection * dy;
+    return std::hypot(x - nearestX, y - nearestY);
+}
+
+HICON CreateCloseButtonIcon(int width, int height) {
+    BITMAPINFO bitmapInfo = {};
+    bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmapInfo.bmiHeader.biWidth = width;
+    bitmapInfo.bmiHeader.biHeight = -height;
+    bitmapInfo.bmiHeader.biPlanes = 1;
+    bitmapInfo.bmiHeader.biBitCount = 32;
+    bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+    void* bitmapBits = nullptr;
+    HBITMAP colorBitmap = CreateDIBSection(nullptr, &bitmapInfo, DIB_RGB_COLORS, &bitmapBits, nullptr, 0);
+    if (!colorBitmap || !bitmapBits) {
+        DeleteObject(colorBitmap);
+        return nullptr;
+    }
+
+    const double iconSize = static_cast<double>(std::min(width, height));
+    const double left = (width - iconSize) / 2.0 + iconSize * 0.27;
+    const double top = (height - iconSize) / 2.0 + iconSize * 0.27;
+    const double right = (width + iconSize) / 2.0 - iconSize * 0.27;
+    const double bottom = (height + iconSize) / 2.0 - iconSize * 0.27;
+    const double halfStrokeWidth = std::max(0.75, iconSize * 0.06);
+    constexpr std::uint8_t CROSS_COLOR = 72;
+
+    auto* pixels = static_cast<std::uint32_t*>(bitmapBits);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const double pixelX = x + 0.5;
+            const double pixelY = y + 0.5;
+            const double distance = std::min(DistanceToLineSegment(pixelX, pixelY, left, top, right, bottom),
+                                             DistanceToLineSegment(pixelX, pixelY, right, top, left, bottom));
+            const double coverage = std::clamp(halfStrokeWidth + 0.5 - distance, 0.0, 1.0);
+            const auto alpha = static_cast<std::uint8_t>(coverage * 255.0 + 0.5);
+            const auto color = static_cast<std::uint8_t>(CROSS_COLOR * alpha / 255);
+            pixels[y * width + x] = static_cast<std::uint32_t>(alpha) << 24 | static_cast<std::uint32_t>(color) << 16
+                | static_cast<std::uint32_t>(color) << 8 | color;
+        }
+    }
+
+    const int maskStride = ((width + 15) / 16) * 2;
+    std::vector<std::uint8_t> maskBits(maskStride * height, 0);
+    HBITMAP maskBitmap = CreateBitmap(width, height, 1, 1, maskBits.data());
+    if (!maskBitmap) {
+        DeleteObject(colorBitmap);
+        return nullptr;
+    }
+
+    ICONINFO iconInfo = {};
+    iconInfo.fIcon = TRUE;
+    iconInfo.hbmColor = colorBitmap;
+    iconInfo.hbmMask = maskBitmap;
+    HICON icon = CreateIconIndirect(&iconInfo);
+
+    DeleteObject(maskBitmap);
+    DeleteObject(colorBitmap);
+    return icon;
+}
 
 }
 
 // CServerListPopup
-CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType, int serverIndex, bool isChildWindow)
-    : engineList_(engineList)
+CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask,
+                                   int selectedServerType, int serverIndex, bool isChildWindow) :
+    engineList_(engineList)
     , settings_(ServiceLocator::instance()->settings<WtlGuiSettings>())
     , serverListModel_(std::make_unique<ServerListModel>(engineList, &settings_->ServerListSettings))
     , listView_(serverListModel_.get(), serverIconCache)
     , serversMask_(serverMask)
     , selectedServerType_(selectedServerType)
-    , serverIndex_(serverIndex)
-{
+    , serverIndex_(serverIndex) {
 
     auto ued = engineList->byIndex(serverIndex);
     if (ued && ((selectedServerType & ued->TypeMask) == 0)) {
@@ -64,8 +135,7 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
     isPopingUp_ = false;
 }
 
-CServerListPopup::~CServerListPopup()
-{
+CServerListPopup::~CServerListPopup() {
     if (hMyDlgTemplate_) {
         GlobalFree(hMyDlgTemplate_);
     }
@@ -78,21 +148,21 @@ void CServerListPopup::TranslateUI() {
     TRCC(IDC_FILERADIO, "serverlist.servertype", "File");
     TRCC(IDC_VIDEORADIO, "serverlist.servertype", "Video");
     TRC(IDOK, "OK");
-    TRC(IDC_ADDBUTTON, "Options");
+    TRC(IDCANCEL, "Cancel");
 }
 
-LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     DWMNCRENDERINGPOLICY policy = DWMNCRP_DISABLED;
     DwmSetWindowAttribute(m_hWnd, DWMWA_NCRENDERING_POLICY, &policy, sizeof(policy));
 
     DlgResize_Init(true, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
-   
+
     TranslateUI();
     optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
 
-    listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+    listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER,
+                                       LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
     listView_.SetView(settings_->ServerListSettings.ViewMode);
 
     // Creating tooltip control. We will use subclassing of controls to intercept their messages
@@ -100,6 +170,12 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     CString tipText = TR("Help");
     CToolInfo tip(TTF_SUBCLASS, helpButton_, 0, 0, const_cast<LPWSTR>(tipText.GetString()));
     toolTip_.AddTool(tip);
+    CString optionsTipText = TR("Options");
+    CToolInfo optionsTip(TTF_SUBCLASS, optionsButton_, 0, 0, const_cast<LPWSTR>(optionsTipText.GetString()));
+    toolTip_.AddTool(optionsTip);
+    CString closeTipText = TR("Close");
+    CToolInfo closeTip(TTF_SUBCLASS, closeButton_, 0, 0, const_cast<LPWSTR>(closeTipText.GetString()));
+    toolTip_.AddTool(closeTip);
 
     if (selectedServerType_ == CUploadEngineData::TypeImageServer) {
         imageTypeRadioButton_.SetCheck(BST_CHECKED);
@@ -117,13 +193,6 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     createResources();
 
-
-    /*ACCEL accels[] = {
-        { FVIRTKEY, VK_F1, IDC_HELPBUTTON },
-    };
-    
-    hotkeys_.CreateAcceleratorTable(accels, std::size(accels));*/
-
     updateServerList();
 
     applyFilter(false);
@@ -133,14 +202,13 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     if (ued) {
         selectServerByName(U2W(ued->Name));
     }
-    
+
     listView_.SetFocus();
 
     return FALSE;
 }
 
-LRESULT CServerListPopup::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CServerListPopup::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     return 0;
 }
 
@@ -167,26 +235,21 @@ void CServerListPopup::setServersMask(int mask) {
 }
 
 
-void CServerListPopup::notifyChange()
-{
-    if (onChangeCallback_)
-    {
+void CServerListPopup::notifyChange() {
+    if (onChangeCallback_) {
         onChangeCallback_(this);
     }
 }
 
-void CServerListPopup::notifyServerListChanged()
-{
+void CServerListPopup::notifyServerListChanged() {
 }
 
-void CServerListPopup::updateServerList()
-{
+void CServerListPopup::updateServerList() {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     //auto iconCache = ServiceLocator::instance()->serverIconCache();
 }
 
-LRESULT CServerListPopup::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CServerListPopup::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     return MA_NOACTIVATE;
 }
 
@@ -198,9 +261,19 @@ void CServerListPopup::createResources() {
     if (helpButtonIcon_) {
         helpButtonIcon_.DestroyIcon();
     }
+    if (optionsButtonIcon_) {
+        optionsButtonIcon_.DestroyIcon();
+    }
+    if (closeButtonIcon_) {
+        closeButtonIcon_.DestroyIcon();
+    }
 
     helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
     helpButton_.SetIcon(helpButtonIcon_);
+    optionsButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGSGEAR), iconWidth, iconHeight);
+    optionsButton_.SetIcon(optionsButtonIcon_);
+    closeButtonIcon_.Attach(CreateCloseButtonIcon(iconWidth, iconHeight));
+    closeButton_.SetIcon(closeButtonIcon_);
 
     searchIconCtrl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
     searchIconCtrl_.loadImage(0, 0, IDB_ICONSEARCHSMALL, false, GetSysColor(COLOR_BTNFACE));
@@ -226,7 +299,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     GetWindowRect(windowRect);
     int popupWidth = windowRect.Width();
     int popupHeight = windowRect.Height();
-    
+
     int x = anchorRect.left;
     int y = anchorRect.bottom + 2;
 
@@ -288,7 +361,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     }
 
     SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
-    ULONGLONG startTime = GetTickCount64(); 
+    ULONGLONG startTime = GetTickCount64();
     ShowWindow(SW_SHOW);
 
     //BOOL bMenuDestroyed(FALSE);
@@ -302,20 +375,18 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     // Go into a message loop that filters all the messages it receives
     // and route the interesting ones to the color picker window.
     MSG msg;
-    POINT pt {};
-    while (GetMessage(&msg, NULL, 0, 0))
-    {
+    POINT pt{};
+    while (GetMessage(&msg, NULL, 0, 0)) {
         // If our owner stopped being the active window (e.g. the user
         // Alt+Tab'd to another window in the meantime), then stop.
         HWND hwndActive = GetActiveWindow();
         if (hwndActive != hwndPopup && hwndActive != hwndOwner && !::IsChild(hwndActive, hwndOwner) /*||
-            GetCapture() != hwndOwner*/)
-        {
+            GetCapture() != hwndOwner*/) {
             break;
         }
 
 
-        bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd)!=FALSE;
+        bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd) != FALSE;
         bool breakLoop = false;
         // At this point, we get to snoop at all input messages before
         // they get dispatched.  This allows us to route all input to our
@@ -325,18 +396,17 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         // menu. If the mouse message arrives as client coordinates, then
         // we have to convert it from the client coordinates of the original
         // target to the client coordinates of the new target.
-        switch (msg.message)
-        {
-            // These mouse messages arrive in client coordinates, so in
-            // addition to stealing the message, we also need to convert the
-            // coordinates.
+        switch (msg.message) {
+        // These mouse messages arrive in client coordinates, so in
+        // addition to stealing the message, we also need to convert the
+        // coordinates.
 
         case WM_LBUTTONUP:
         case WM_RBUTTONUP:
         case WM_MBUTTONUP:
             if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)) && GetTickCount64() - startTime > 400) {
                 breakLoop = true;
-               
+
             }
             break;
         case WM_LBUTTONDOWN:
@@ -345,8 +415,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         case WM_RBUTTONDBLCLK:
         case WM_MBUTTONDOWN:
         case WM_MBUTTONDBLCLK:
-            if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)))
-            {
+            if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))) {
                 breakLoop = true;
                 break;
             }
@@ -360,8 +429,8 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             }
             break;
 
-            // These mouse messages arrive in screen coordinates, so we just
-            // need to steal the message.
+        // These mouse messages arrive in screen coordinates, so we just
+        // need to steal the message.
 
         case WM_NCLBUTTONDOWN:
         case WM_NCLBUTTONUP:
@@ -373,8 +442,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         case WM_NCMBUTTONUP:
         case WM_NCMBUTTONDBLCLK:
         case WM_SETCURSOR:
-            if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))
-            {
+            if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)) {
                 breakLoop = true;
                 break;
             }
@@ -384,16 +452,16 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             }
             break;
 
-            // We need to steal all keyboard messages, too.
+        // We need to steal all keyboard messages, too.
 
         case WM_CHAR:
-            if (msg.hwnd == listView_ || msg.hwnd ==  allTypesRadioButton_ || msg.hwnd == imageTypeRadioButton_
+            if (msg.hwnd == listView_ || msg.hwnd == allTypesRadioButton_ || msg.hwnd == imageTypeRadioButton_
                 || msg.hwnd == fileTypeRadioButton_ || msg.hwnd == videoTypeRadioButton_) {
                 msg.hwnd = queryEditControl_;
                 queryEditControl_.SetFocus();
             }
             break;
-            
+
         case WM_KEYDOWN:
         case WM_KEYUP:
             if (msg.hwnd == queryEditControl_ && (msg.wParam == VK_UP || msg.wParam == VK_DOWN)) {
@@ -407,23 +475,20 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         case WM_SYSKEYUP:
         case WM_SYSCHAR:
         case WM_SYSDEADCHAR:
-            if (!isChildMessage)
-            {
+            if (!isChildMessage) {
                 msg.hwnd = hwndPopup;
             }
-            if (msg.wParam == VK_ESCAPE && (msg.hwnd == hwndPopup || ::IsChild(hwndPopup, msg.hwnd)))
-            {
+            if (msg.wParam == VK_ESCAPE && (msg.hwnd == hwndPopup || ::IsChild(hwndPopup, msg.hwnd))) {
                 breakLoop = true;
                 break;
             }
             break;
         }
-        if (breakLoop)
-        {
+        if (breakLoop) {
             break;
         }
-        if (!::IsDialogMessage(hwndPopup, &msg) && (!hotkeys_ || !WinUtils::TranslateAcceleratorForWindow(hwndPopup, hotkeys_, &msg)))
-        {
+        if (!::IsDialogMessage(hwndPopup, &msg) && (!hotkeys_ || !WinUtils::TranslateAcceleratorForWindow(
+            hwndPopup, hotkeys_, &msg))) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
@@ -433,8 +498,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         // Alt+Tab'd to another window in the meantime), then stop.
         hwndActive = GetActiveWindow();
         if (hwndActive != hwndPopup && hwndActive != hwndOwner && !::IsChild(hwndActive, hwndOwner)/* ||
-            GetCapture() != hwndOwner*/)
-        {
+            GetCapture() != hwndOwner*/) {
             break;
         }
     }
@@ -457,8 +521,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     return ret_;
 }
 
-bool CServerListPopup::exitPopup(int nCommandId)
-{
+bool CServerListPopup::exitPopup(int nCommandId) {
     ret_ = nCommandId;
     PostQuitMessage(0);
     //BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
@@ -466,8 +529,7 @@ bool CServerListPopup::exitPopup(int nCommandId)
     return true;
 }
 
-DLGTEMPLATE* CServerListPopup::GetTemplate()
-{
+DLGTEMPLATE* CServerListPopup::GetTemplate() {
     HINSTANCE hInst = GetModuleHandle(nullptr);
     HRSRC res = FindResource(hInst, MAKEINTRESOURCE(IDD), RT_DIALOG);
     assert(res);
@@ -483,20 +545,18 @@ DLGTEMPLATE* CServerListPopup::GetTemplate()
     }
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
-    if (isChildWindow_)
-    {
+    if (isChildWindow_) {
         //pMyDlgTemplate->style = pMyDlgTemplate->style & ~ WS_POPUP;
         pMyDlgTemplate->style = pMyDlgTemplate->style | WS_CHILD;
-    }
-    else
-    {
+    } else {
         pMyDlgTemplate->style -= WS_CHILD;
         pMyDlgTemplate->style -= DS_CONTROL;
         pMyDlgTemplate->exStyle |= WS_EX_NOACTIVATE |
-            WS_EX_TOOLWINDOW |      // So it doesn't show up in taskbar
-            WS_EX_DLGMODALFRAME |   // Get the edges right
+            WS_EX_TOOLWINDOW | // So it doesn't show up in taskbar
+            WS_EX_DLGMODALFRAME | // Get the edges right
             WS_EX_WINDOWEDGE /*|
-            WS_EX_TOPMOST*/; // with this style window is overlapping modal dialogs (server params dialog, add ftp server, etc...)
+            WS_EX_TOPMOST*/;
+        // with this style window is overlapping modal dialogs (server params dialog, add ftp server, etc...)
 
         pMyDlgTemplate->style = pMyDlgTemplate->style | WS_POPUP | WS_BORDER/* | WS_CAPTION*/ ;
     }
@@ -509,7 +569,7 @@ DLGTEMPLATE* CServerListPopup::GetTemplate()
 LRESULT CServerListPopup::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if (!isChildWindow_) {
         // Disable wizard window when a modal window is shown
-        ::EnableWindow(GetParent(), wParam);
+        GetParent().EnableWindow(wParam);
     }
 
     return 0;
@@ -535,6 +595,11 @@ LRESULT CServerListPopup::OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
         serverIndex_ = data->uedIndex;
         exitPopup(IDOK);
     }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    exitPopup(IDCANCEL);
     return 0;
 }
 
@@ -614,7 +679,7 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
 
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
-    std::wstring itemTitle = str(IuStringUtils::FormatWideNoExcept(TR("Add %s server...")) % L"FTP/SFTP/WebDAV");
+    std::wstring itemTitle = str(IuStringUtils::FormatWideNoExcept(TR("Add server...")));
     popupMenu.AppendMenu(MF_STRING, IDM_ADD_FTP_SERVER, itemTitle.c_str());
     popupMenu.AppendMenu(MF_STRING, IDM_ADD_DIRECTORY_AS_SERVER, TR("Add folder as new server..."));
     popupMenu.AppendMenu(MF_STRING, IDM_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
@@ -623,11 +688,15 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
 
     CMenu subMenu;
     subMenu.CreatePopupMenu();
-    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_DETAILS ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_REPORT, TR("Table"));
-    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_ICON ? MF_CHECKED : MF_UNCHECKED), IDM_VIEW_MODE_ICONS, TR("Icons"));
+    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_DETAILS ? MF_CHECKED : MF_UNCHECKED),
+                       IDM_VIEW_MODE_REPORT, TR("Table"));
+    subMenu.AppendMenu(MF_STRING | (listView_.GetView() == LV_VIEW_ICON ? MF_CHECKED : MF_UNCHECKED),
+                       IDM_VIEW_MODE_ICONS, TR("Icons"));
     popupMenu.AppendMenu(MF_STRING, subMenu, TR("View Mode"));
-    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.ShowFavoritesOnly ? MF_CHECKED : MF_UNCHECKED), IDM_SHOW_FAVORITE_ONLY, TR("Show favorites only"));
-    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.HideBlackListed ? MF_CHECKED : MF_UNCHECKED), IDM_HIDE_BLACKLISTED, TR("Hide blacklisted"));
+    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.ShowFavoritesOnly ? MF_CHECKED : MF_UNCHECKED),
+                         IDM_SHOW_FAVORITE_ONLY, TR("Show favorites only"));
+    popupMenu.AppendMenu(MF_STRING | (settings_->ServerListSettings.HideBlackListed ? MF_CHECKED : MF_UNCHECKED),
+                         IDM_HIDE_BLACKLISTED, TR("Hide blacklisted"));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -674,7 +743,8 @@ LRESULT CServerListPopup::OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND h
     const std::wstring folder = IuCoreUtils::Utf8ToWstring(settings->SettingsFolder + "Servers\\");
     try {
         WinUtils::ShellOpenFileOrUrl(folder.c_str(), m_hWnd, {}, true);
-    } catch (const Win32Exception& ex) {
+    }
+    catch (const Win32Exception& ex) {
         const std::wstring msg = str(
             IuStringUtils::FormatWideNoExcept(TR("Cannot open folder '%1%'.\n%2%"))
             % folder
@@ -742,47 +812,50 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
             contextMenu.AppendMenu(MF_STRING, ID_ADDTOBLACKLIST, TR("Add to blacklist"));
         }
 
-        contextMenu.AppendMenu(MF_STRING | (data->ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
-        contextMenu.AppendMenu(MF_STRING | (data->ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENREGISTERURL, TR("Go to signup page"));
+        contextMenu.AppendMenu(MF_STRING | (data->ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE,
+                               TR("Open the website"));
+        contextMenu.AppendMenu(MF_STRING | (data->ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED),
+                               ID_OPENREGISTERURL, TR("Go to signup page"));
 
-        BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+        BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x,
+                                              ScreenPoint.y, m_hWnd);
         std::optional<size_t> index;
         switch (res) {
-            case ID_OPENWEBSITE:
-                WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->WebsiteUrl), m_hWnd);
-                break;
-            case ID_OPENREGISTERURL:
-                WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->RegistrationUrl), m_hWnd);
-                break;
-            case ID_ADDTOFAVORITES:
-                settings->ServerListSettings.addServerToFavorites(data->ued->Name);
-                serverListModel_->updateEngineList();
-                applyFilter(false);
+        case ID_OPENWEBSITE:
+            WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->WebsiteUrl), m_hWnd);
+            break;
+        case ID_OPENREGISTERURL:
+            WinUtils::ShellOpenFileOrUrl(U2WC(data->ued->RegistrationUrl), m_hWnd);
+            break;
+        case ID_ADDTOFAVORITES:
+            settings->ServerListSettings.addServerToFavorites(data->ued->Name);
+            serverListModel_->updateEngineList();
+            applyFilter(false);
+            index = serverListModel_->getIndexByServerName(data->ued->Name);
+            if (index.has_value()) {
+                listView_.SelectItem(static_cast<int>(*index));
+            }
+            break;
+        case ID_REMOVEFROMFAVORITES:
+            settings->ServerListSettings.removeServerFromFavorites(data->ued->Name);
+            serverListModel_->updateEngineList();
+            applyFilter(false);
+            break;
+        case ID_ADDTOBLACKLIST:
+            settings->ServerListSettings.addServerToBlacklist(data->ued->Name);
+            serverListModel_->updateEngineList();
+            applyFilter(settings_->ServerListSettings.HideBlackListed);
+            if (!settings_->ServerListSettings.HideBlackListed) {
                 index = serverListModel_->getIndexByServerName(data->ued->Name);
                 if (index.has_value()) {
-                    listView_.SelectItem(*index);
+                    listView_.SelectItem(static_cast<int>(*index));
                 }
-                break;
-            case ID_REMOVEFROMFAVORITES:
-                settings->ServerListSettings.removeServerFromFavorites(data->ued->Name);
-                serverListModel_->updateEngineList();
-                applyFilter(false);
-                break;
-            case ID_ADDTOBLACKLIST:
-                settings->ServerListSettings.addServerToBlacklist(data->ued->Name);
-                serverListModel_->updateEngineList();
-                applyFilter(settings_->ServerListSettings.HideBlackListed);
-                if (!settings_->ServerListSettings.HideBlackListed) {
-                    index = serverListModel_->getIndexByServerName(data->ued->Name);
-                    if (index.has_value()) {
-                        listView_.SelectItem(*index);
-                    }
-                }
+            }
             break;
-            case ID_REMOVEFROMBLACKLIST:
-                settings->ServerListSettings.removeServerFromBlacklist(data->ued->Name);
-                serverListModel_->updateEngineList();
-                applyFilter(false);
+        case ID_REMOVEFROMBLACKLIST:
+            settings->ServerListSettings.removeServerFromBlacklist(data->ued->Name);
+            serverListModel_->updateEngineList();
+            applyFilter(false);
             break;
         }
     }

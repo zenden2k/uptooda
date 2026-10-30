@@ -22,37 +22,14 @@
 
 #pragma once
 
-#include <vector>
-
 #include "atlheaders.h"
 #include <resource.h>       // main symbols
 #include "SettingsPage.h"
-#include "HotkeyEditor.h"
+#include "../Models/HotkeyList.h"
 #include "Gui/Constants.h"
 
 #define IDM_CLEARHOTKEY 10000
 #define IDM_CLEARALLHOTKEYS (IDM_CLEARHOTKEY + 1)
-
-
-class CHotkeyItem;
-class CHotkeyList: public std::vector<CHotkeyItem>
-{
-    public:
-        CHotkeyList();
-        CHotkeyList(const CHotkeyList&) = delete;
-        bool changed() const;
-        CHotkeyItem& getByFunc(const CString &func);
-        void add(CString name, CString func, DWORD commandId, bool setForegroundWindow = true, WORD Code = 0, WORD modif = 0, int groupId = 0);
-        CHotkeyList& operator=(const CHotkeyList& );
-        bool operator==( const CHotkeyList& ) const;
-        bool operator!=( const CHotkeyList& ) const;
-        CString toString() const;
-        bool deserialize(const CString &data);
-        int getFuncIndex(const CString &func) const;
-        int findByKey(WORD keyCode, WORD keyModifier);
-    private:
-        bool m_bChanged;
-};
 
 class CHotkeySettingsPage :
     public CDialogImpl<CHotkeySettingsPage>, public CSettingsPage

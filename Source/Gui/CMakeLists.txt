@@ -96,7 +96,7 @@ set(SRC_LIST
         Dialogs/TransferSettingsPage.cpp
         Dialogs/VideoGrabberPage.cpp
         Dialogs/VideoGrabberSettingsPage.cpp
-        Dialogs/WebViewWindow.cpp
+        ../WebBrowser/WebViewWindow.cpp
         Dialogs/WelcomeDlg.cpp
         Dialogs/WizardDlg.cpp
         Dialogs/ServerProfileGroupSelectDialog.cpp
@@ -113,7 +113,7 @@ set(SRC_LIST
         Controls/MultiServerSelectorControl.cpp
         Controls/TabListBox.cpp
         Controls/ThumbsView.cpp
-        Controls/WTLBrowserView.cpp
+        ../WebBrowser/WTLBrowserView.cpp
         Controls/FileFormatErrorView.cpp
         Controls/ServerListView.cpp
         Helpers/LangHelper.cpp
@@ -131,6 +131,7 @@ set(SRC_LIST
         ../Func/MyUtils.cpp
         ../Func/ClipboardUtils.cpp
         ../Func/WebUtils.cpp
+        ../Func/UpdatePackage.cpp
         ../ImageEditor/Canvas.cpp
         ../ImageEditor/Document.cpp
         ../ImageEditor/DrawingElement.cpp
@@ -160,6 +161,7 @@ set(SRC_LIST
         ../ImageEditor/Helpers/FontEnumerator.cpp
         Models/UploadListModel.cpp
         Models/ServerListModel.cpp
+        Models/HotkeyList.cpp
         FileList.cpp
 )
 
@@ -265,7 +267,7 @@ set(HEADER_LIST
         Dialogs/TransferSettingsPage.h
         Dialogs/VideoGrabberPage.h
         Dialogs/VideoGrabberSettingsPage.h
-        Dialogs/WebViewWindow.h
+        ../WebBrowser/WebViewWindow.h
         Dialogs/WelcomeDlg.h
         Dialogs/WizardDlg.h
         Dialogs/ServerProfileGroupSelectDialog.h
@@ -282,7 +284,7 @@ set(HEADER_LIST
         Controls/MultiServerSelectorControl.h
         Controls/TabListBox.h
         Controls/ThumbsView.h
-        Controls/WTLBrowserView.h
+        ../WebBrowser/WTLBrowserView.h
         Controls/FileFormatErrorView.h
         Controls/DialogIndirect.h
         Controls/ServerListView.h
@@ -304,6 +306,7 @@ set(HEADER_LIST
         ../Func/MyUtils.h
         ../Func/ClipboardUtils.h
         ../Func/WebUtils.h
+        ../Func/UpdatePackage.h
         ../ImageEditor/Canvas.h
         ../ImageEditor/Document.h
         ../ImageEditor/DrawingElement.h
@@ -336,6 +339,7 @@ set(HEADER_LIST
         FileList.h
         ../resource.h
         Interfaces/IFavoriteServers.h
+        Models/HotkeyList.h
 )
 
 if (IU_ENABLE_MEDIAINFO)
@@ -383,6 +387,8 @@ add_executable(GUI WIN32
 )
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
+
+target_compile_options(GUI PRIVATE /permissive)
 
 set(LIBS_LIST
         gdiplus Ws2_32 dwmapi wininet IPHLPAPI

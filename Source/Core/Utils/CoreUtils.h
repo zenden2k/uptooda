@@ -24,6 +24,7 @@
 #pragma once
 
 #include <cstdio>
+#include <filesystem>
 #include <string>
 #include <thread>
 #include <utility>
@@ -106,6 +107,8 @@ struct std::hash<std::pair<S, T>> {
 
 namespace IuCoreUtils
 {
+    std::filesystem::path Utf8ToPath(const std::string& path);
+
     // A version of fopen() function which supports utf8 file names
     FILE * FopenUtf8(const char * filename, const char * mode);
     int Fseek64(FILE *stream, int64_t offset, int origin);

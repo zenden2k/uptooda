@@ -4,14 +4,14 @@
 
 #include <strsafe.h>
 
-#include "IuCommonFunctions.h"
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
+#include "Core/Images/ImageLoader.h"
 
 namespace ClipboardUtils {
 
 bool CopyFileAndImageToClipboard(LPCTSTR fileName, HWND hwnd) {
-    if (IuCommonFunctions::IsImage(fileName)) {
+    if (ImageLoader::IsImage(fileName)) {
         CopyImageToClipboard(fileName, hwnd);
     }
     std::vector<CString> fileNames;

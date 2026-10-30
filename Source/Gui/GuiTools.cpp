@@ -133,57 +133,56 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
 }
 
 void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF finish, bool Horizontal) {
-        RECT rectFill;
-        float fStep;            //The size of each band in pixels
-        HBRUSH hBrush;
-        int i;  // Loop index
+    RECT rectFill;
+    float fStep; //The size of each band in pixels
+    HBRUSH hBrush;
+    int i; // Loop index
 
-        float r, g, b;
-        int n = 256;
-        //FillRect.bottom--;
-        COLORREF c;
+    float r, g, b;
+    int n = 256;
+    //FillRect.bottom--;
+    COLORREF c;
 
-        if(!Horizontal)
-            fStep = (FillRect.bottom - FillRect.top) / 256.0f;
+    if (!Horizontal)
+        fStep = (FillRect.bottom - FillRect.top) / 256.0f;
+    else
+        fStep = (FillRect.right - FillRect.left) / 256.0f;
+
+    if (fStep < 1) {
+        fStep = 1;
+        if (!Horizontal)
+            n = FillRect.bottom - FillRect.top;
         else
-            fStep = (FillRect.right - FillRect.left) / 256.0f;
+            n = (FillRect.right - FillRect.left);
+    }
 
-        if( fStep < 1)
-        {
-            fStep = 1;
-            if(!Horizontal)
-                n = FillRect.bottom - FillRect.top;
-            else
-                n = (FillRect.right - FillRect.left);
-        }
+    r = static_cast<float>(GetRValue(finish) - GetRValue(start)) / (n - 1);
 
-        r = static_cast<float>(GetRValue(finish)-GetRValue(start))/(n-1);
+    g = static_cast<float>(GetGValue(finish) - GetGValue(start)) / (n - 1);
 
-        g = static_cast<float>(GetGValue(finish)-GetGValue(start))/(n-1);
+    b = static_cast<float>(GetBValue(finish) - GetBValue(start)) / (n - 1);
 
-        b = static_cast<float>(GetBValue(finish)-GetBValue(start))/(n-1);
+    //Begin paint
+    for (i = 0; i < n; i++) {
+        // Horizontal or vertical gradient
+        if (!Horizontal)
+            SetRect(&rectFill, FillRect.left, int((i * fStep) + FillRect.top),
+                    FillRect.right + 1, int(FillRect.top + (i + 1) * fStep));
+        else
+            SetRect(&rectFill, static_cast<int>(FillRect.left + (i * fStep)), FillRect.top,
+                    int(FillRect.left + ((i + 1) * fStep)), FillRect.bottom + 1);
+        if (i == n - 1)
+            c = finish;
+        else
+            c = RGB((int)GetRValue(start)+(r*i/**zR*/), (int)GetGValue(start)+(g*i/*zG*/),
+                    (int)GetBValue(start)+(b*i/**zB*/));
 
-        //Begin paint
-        for (i = 0; i < n; i++)
-        {
-            // Horizontal or vertical gradient
-            if(!Horizontal)
-                SetRect(&rectFill, FillRect.left, int((i * fStep)+FillRect.top),
-                FillRect.right+1, int(FillRect.top+(i+1) * fStep));
-            else
-                SetRect(&rectFill, static_cast<int>(FillRect.left+(i * fStep)), FillRect.top,
-                int(FillRect.left+((i+1) * fStep)), FillRect.bottom+1);
-            if(i == n-1)
-                c = finish;
-            else
-                c = RGB((int)GetRValue(start)+(r*i/**zR*/),(int)GetGValue(start)+(g*i/*zG*/),(int)GetBValue(start)+(b*i/**zB*/));
+        hBrush = CreateSolidBrush(c);
 
-            hBrush=CreateSolidBrush(c);
+        ::FillRect(hdc, &rectFill, hBrush);
 
-            ::FillRect(hdc, &rectFill, hBrush);
-
-            DeleteObject(hBrush);
-        }
+        DeleteObject(hBrush);
+    }
 }
 /*
 * Fails on armv8
@@ -860,7 +859,7 @@ HICON GetMenuArrowIcon() {
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
 
-    CWindowDC dcScreen(nullptr);
+    CClientDC dcScreen(nullptr);
     CDC dcMem;
     dcMem.CreateCompatibleDC(dcScreen);
 
@@ -933,19 +932,19 @@ HBITMAP GetAssociatedIconAsBitmap(LPCWSTR filePath, HWND hwnd, int iconSize, SII
     HRESULT hr = SHCreateItemFromParsingName(filePath, nullptr,
         IID_IShellItem, reinterpret_cast<void**>(&pShellItem));
     if (FAILED(hr)) {
-        return { };
+        return {};
     }
 
     CComPtr<IShellItemImageFactory> pImageFactory;
     hr = pShellItem.QueryInterface(&pImageFactory);
     if (FAILED(hr)) {
-        return { };
+        return {};
     }
 
     HBITMAP hBitmap {};
     hr = pImageFactory->GetImage({ iconSize, iconSize }, flags, &hBitmap);
     if (FAILED(hr)) {
-        return {  };
+        return {};
     }
 
     return hBitmap;

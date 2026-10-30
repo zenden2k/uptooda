@@ -44,6 +44,7 @@ class AppRuntimeInfo: public Singleton<AppRuntimeInfo>
         void setLanguageFile(const std::string& languageFile);
         void setTempDirectory(const std::string& directory);
         std::string tempDirectory() const;
+
 #ifdef _WIN32
         CString tempDirectoryW() const;
 #endif
@@ -56,6 +57,7 @@ class AppRuntimeInfo: public Singleton<AppRuntimeInfo>
         std::string settingsDirectory_;
         std::string languageFile_;
         std::string tempDirectory_;
+
         AppVersionInfo versionInfo_;
         bool isGui_;
 };

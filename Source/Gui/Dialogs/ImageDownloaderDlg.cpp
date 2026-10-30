@@ -28,7 +28,6 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Func/WebUtils.h"
-#include "Func/IuCommonFunctions.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppRuntimeInfo.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -291,7 +290,7 @@ size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
         uriparser::Uri uri(bufferU8);
         if (uri.isValid() && !uri.scheme().empty()) {
             std::string ext = IuCoreUtils::ExtractFileExt(uri.path());
-            if (ext.empty() || IuCommonFunctions::IsImage(uri.path())) {
+            if (ext.empty() || ImageLoader::IsImage(uri.path())) {
                 if (!text.empty() && text.back() != '\n') {
                     text += "\r\n";
                 }
@@ -307,7 +306,7 @@ size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
     for(size_t i=0; i<links.size(); i++)
     {
         std::string fileName = IuCoreUtils::ExtractFileName(links[i]);
-        if (((!OnlyImages && IuCoreUtils::ExtractFileExt(fileName).empty()) || IuCommonFunctions::IsImage(fileName)) && text.find(links[i]) == std::string::npos ) {
+        if (((!OnlyImages && IuCoreUtils::ExtractFileExt(fileName).empty()) || ImageLoader::IsImage(fileName)) && text.find(links[i]) == std::string::npos ) {
             if (!text.empty() && text.back() != '\n') {
                 text += "\r\n";
             }

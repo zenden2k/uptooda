@@ -11,6 +11,7 @@
 
 #include "Core/ServiceLocator.h"
 #include "Core/Network/NetworkDebugger.h"
+#include "Core/Utils/CoreUtils.h"
 #include "Func/MyEngineList.h"
 #include "Core/Utils/IOException.h"
 
@@ -248,7 +249,7 @@ void NetworkDebugModel::applyFilter(const std::vector<std::string>& fields) {
 }
 
 void NetworkDebugModel::saveToFile(const std::string& fileName) {
-    std::ofstream out(std::filesystem::u8path(fileName));
+    std::ofstream out(IuCoreUtils::Utf8ToPath(fileName));
     if (!out) {
         throw IOException("Failed to save debug log to file", fileName);
     }

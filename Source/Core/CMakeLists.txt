@@ -231,14 +231,10 @@ if(WIN32)
         Scripting/API/HtmlElementPrivate_win.cpp
         Scripting/API/WebBrowser.cpp
         Scripting/API/WebBrowserPrivate_win.cpp
-        ../Func/UpdatePackage.cpp
-        ../Func/IuCommonFunctions.cpp
         ../3rdpart/Registry.cpp
         ../3rdpart/Unzipper.cpp
         ../3rdpart/MemberFunctionCallback.cpp
         3rdpart/xdgmime/ports/fnmatch.cpp
-        ../Gui/Dialogs/WebViewWindow.cpp
-        ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
         ../Gui/GuiTools.cpp
         ../Gui/Helpers/DPIHelper.cpp
@@ -254,7 +250,7 @@ if(WIN32)
     )
     
     if (IU_ENABLE_WEBVIEW2)
-        list(APPEND SRC_LIST  ../Gui/Controls/Webview2BrowserView.cpp)
+        list(APPEND SRC_LIST ../WebBrowser/Webview2BrowserView.cpp)
     endif()
 
     list(APPEND HEADER_LIST
@@ -269,13 +265,9 @@ if(WIN32)
         Scripting/API/HtmlElementPrivate_win.h
         Scripting/API/WebBrowser.h
         Scripting/API/WebBrowserPrivate_win.h
-        ../Func/UpdatePackage.h
-        ../Func/IuCommonFunctions.h
         ../3rdpart/Registry.h
         ../3rdpart/Unzipper.h
         ../3rdpart/MemberFunctionCallback.h
-        ../Gui/Dialogs/WebViewWindow.h
-        ../Gui/Controls/WTLBrowserView.h
         ../Func/WinUtils.h
         ../Gui/GuiTools.h
         ../Gui/Helpers/DPIHelper.cpp
@@ -347,12 +339,10 @@ if (IU_ENABLE_SFTP)
 endif()
 
 if (WIN32)
-    target_link_libraries(iu_core PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
+    target_link_libraries(iu_core PUBLIC iu_webbrowser minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
 	configure_webview2_target(iu_core)
 	configure_nuget_packages(iu_core)
 endif()
-
-
 
 #if(MSVC)
 #    target_compile_options(iu_core PRIVATE "/MP")

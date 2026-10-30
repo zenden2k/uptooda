@@ -1,5 +1,6 @@
 #include "FileList.h"
 
+#include "Core/Images/ImageLoader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/IuCommonFunctions.h"
 
@@ -20,7 +21,7 @@ void CFileListItem::setMimeType(const std::string& mimeType)
 
 bool CFileListItem::isImage() const
 {
-    return IuCommonFunctions::IsImage(FileName);
+    return ImageLoader::IsImage(FileName);
 }
 
 void CFileListItem::setSkipped(bool enable) {
