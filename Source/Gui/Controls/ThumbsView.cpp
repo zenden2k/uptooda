@@ -27,6 +27,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Images/Utils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/CommonDefines.h"
@@ -263,7 +264,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     int thumbwidth = thumbnailWidth_;
     int  thumbheight = thumbnailHeight_;
     std::shared_ptr<GdiPlusImage> grabbedFrame;
-    bool isImage = img || IuCommonFunctions::IsImage(filename);
+    bool isImage = img || ImageLoader::IsImage(filename);
     bool isVideo = settings->ShowPreviewForVideoFiles && IsVideoFile(filename);
     std::optional<AbstractFrameGrabber::StreamInfo> videoInfo;
 
@@ -350,11 +351,11 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
             br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
             LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/);
 
-        if(IuCommonFunctions::IsImage(filename))
+        if(ImageLoader::IsImage(filename))
             gr.FillRectangle(&br,1, 1, width-1,height-1);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
-        if(itemId>=0 && !img && !IuCommonFunctions::IsImage(filename))
+        if(itemId>=0 && !img && !ImageLoader::IsImage(filename))
         {
             WORD id;
             int size = MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI);
@@ -395,7 +396,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(filename)));
                 CString buf2 = Utf8ToWCstring(fileSizeStr);
 
-                if (IuCommonFunctions::IsImage(filename) && bm) {
+                if (ImageLoader::IsImage(filename) && bm) {
                     Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, buf2.GetString());
                 } else if (isVideo) {
                     if (videoInfo) {
@@ -490,7 +491,7 @@ bool CThumbsView::ViewSelectedImage()
         return false;
     }
 
-    if (IuCommonFunctions::IsImage(FileName)) {
+    if (ImageLoader::IsImage(FileName)) {
         CImageViewItem imgViewItem;
         imgViewItem.index = nCurItem;
         imgViewItem.fileName = FileName;
@@ -612,7 +613,7 @@ CImageViewItem CThumbsView::getNextImgViewItem(const CImageViewItem& currentItem
     int index;
     for (index = currentItem.index + 1; index < GetItemCount(); index++) {
         LPCTSTR FileName = GetFileName(index);
-        if (FileName && IuCommonFunctions::IsImage(FileName)){
+        if (FileName && ImageLoader::IsImage(FileName)){
             result.index = index;
             result.fileName = FileName;
             return result;
@@ -621,7 +622,7 @@ CImageViewItem CThumbsView::getNextImgViewItem(const CImageViewItem& currentItem
 
     for (index = 0; index <= currentItem.index && index < GetItemCount(); index++) {
         LPCTSTR FileName = GetFileName(index);
-        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+        if (FileName && ImageLoader::IsImage(FileName)) {
             result.index = index;
             result.fileName = FileName;
             return result;
@@ -637,7 +638,7 @@ CImageViewItem CThumbsView::getPrevImgViewItem(const CImageViewItem& currentItem
     int index;
     for (index = currentItem.index - 1; index >=0; index--) {
         LPCTSTR FileName = GetFileName(index);
-        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+        if (FileName && ImageLoader::IsImage(FileName)) {
             result.index = index;
             result.fileName = FileName;
             return result;
@@ -646,7 +647,7 @@ CImageViewItem CThumbsView::getPrevImgViewItem(const CImageViewItem& currentItem
 
     for (index = GetItemCount() - 1; index >= currentItem.index && index >= 0; index--) {
         LPCTSTR FileName = GetFileName(index);
-        if (FileName && IuCommonFunctions::IsImage(FileName)) {
+        if (FileName && ImageLoader::IsImage(FileName)) {
             result.index = index;
             result.fileName = FileName;
             return result;
@@ -792,7 +793,7 @@ LRESULT CThumbsView::OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     if (!FileName) {
         return 0;
     }
-    if (IuCommonFunctions::IsImage(FileName)) {
+    if (ImageLoader::IsImage(FileName)) {
         ViewSelectedImage();
     } else if (IsVideoFile(FileName)) {
         ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CMainDlg::MENUITEM_OPENINDEFAULTVIEWER, 0), 0);

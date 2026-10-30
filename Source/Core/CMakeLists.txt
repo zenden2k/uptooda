@@ -231,7 +231,6 @@ if(WIN32)
         Scripting/API/HtmlElementPrivate_win.cpp
         Scripting/API/WebBrowser.cpp
         Scripting/API/WebBrowserPrivate_win.cpp
-        ../Func/UpdatePackage.cpp
         ../3rdpart/Registry.cpp
         ../3rdpart/Unzipper.cpp
         ../3rdpart/MemberFunctionCallback.cpp
@@ -266,7 +265,6 @@ if(WIN32)
         Scripting/API/HtmlElementPrivate_win.h
         Scripting/API/WebBrowser.h
         Scripting/API/WebBrowserPrivate_win.h
-        ../Func/UpdatePackage.h
         ../3rdpart/Registry.h
         ../3rdpart/Unzipper.h
         ../3rdpart/MemberFunctionCallback.h

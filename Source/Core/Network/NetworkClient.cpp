@@ -335,7 +335,6 @@ NetworkClient::NetworkClient()
 
 NetworkClient::~NetworkClient()
 {
-    curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, nullptr);
     curl_easy_cleanup(curl_handle);
     proxyProvider_ = nullptr;
 }

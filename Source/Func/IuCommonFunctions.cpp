@@ -217,31 +217,6 @@ CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size) 
     return suggestingFileName;
 }
 
-bool IsImage(LPCTSTR szFileName) {
-    if (!szFileName) {
-        return false;
-    }
-    LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
-    if (!lstrlen(szExt)) {
-        return false;
-    }
-    CString find = szExt;
-    find.MakeLower();
-    return ImageLoader::SupportedImageExtensions.find(W2U(find)) != ImageLoader::SupportedImageExtensions.end();
-}
-
-bool IsImage(const std::string& fileName) {
-    if (fileName.empty()) {
-        return false;
-    }
-    std::string ext = IuCoreUtils::ExtractFileExt(fileName);
-    if (ext.empty()) {
-        return false;
-    }
-    ext = IuStringUtils::ToLower(ext);
-    return ImageLoader::SupportedImageExtensions.find(ext) != ImageLoader::SupportedImageExtensions.end();
-}
-
 CString PrepareFileDialogImageFilter() {
     CString result;
     for (const auto& item : ImageLoader::SupportedImageExtensions) {

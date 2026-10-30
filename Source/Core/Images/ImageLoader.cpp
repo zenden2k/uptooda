@@ -7,11 +7,38 @@
 #include "WebpImageReader.h"
 #include "GdiplusImageReader.h"
 #include "HeifImageReader.h"
+#include "Core/Utils/StringUtils.h"
+#include "Func/WinUtils.h"
 
 std::unordered_set<std::string> ImageLoader::SupportedImageExtensions = {
     "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
     "wmf"
 };
+
+bool ImageLoader::IsImage(LPCTSTR szFileName) {
+    if (!szFileName) {
+        return false;
+    }
+    LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
+    if (!lstrlen(szExt)) {
+        return false;
+    }
+    CString find = szExt;
+    find.MakeLower();
+    return ImageLoader::SupportedImageExtensions.find(W2U(find)) != ImageLoader::SupportedImageExtensions.end();
+}
+
+bool ImageLoader::IsImage(const std::string& fileName) {
+    if (fileName.empty()) {
+        return false;
+    }
+    std::string ext = IuCoreUtils::ExtractFileExt(fileName);
+    if (ext.empty()) {
+        return false;
+    }
+    ext = IuStringUtils::ToLower(ext);
+    return ImageLoader::SupportedImageExtensions.find(ext) != ImageLoader::SupportedImageExtensions.end();
+}
 
 std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName) {
     FILE* f = _wfopen(fileName, L"rb");

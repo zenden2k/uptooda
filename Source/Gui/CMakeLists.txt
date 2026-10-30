@@ -131,6 +131,7 @@ set(SRC_LIST
         ../Func/MyUtils.cpp
         ../Func/ClipboardUtils.cpp
         ../Func/WebUtils.cpp
+        ../Func/UpdatePackage.cpp
         ../ImageEditor/Canvas.cpp
         ../ImageEditor/Document.cpp
         ../ImageEditor/DrawingElement.cpp
@@ -305,6 +306,7 @@ set(HEADER_LIST
         ../Func/MyUtils.h
         ../Func/ClipboardUtils.h
         ../Func/WebUtils.h
+        ../Func/UpdatePackage.h
         ../ImageEditor/Canvas.h
         ../ImageEditor/Document.h
         ../ImageEditor/DrawingElement.h

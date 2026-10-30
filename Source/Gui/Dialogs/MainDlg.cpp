@@ -44,6 +44,7 @@
 #ifdef IU_ENABLE_MEDIAINFO
     #include "MediaInfoDlg.h"
 #endif
+#include "Core/Images/ImageLoader.h"
 #include "Gui/Helpers/DPIHelper.h"
 
 CMainDlg::CMainDlg(WinServerIconCache* iconCache):
@@ -192,10 +193,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         bool isImage = false;
         if ( ThumbsView.GetSelectedCount() == 1 ) {
             singleSelectedItem = getSelectedFileName();
-            isImage = IuCommonFunctions::IsImage(singleSelectedItem);
+            isImage = ImageLoader::IsImage(singleSelectedItem);
         }
         CString fileName = FileList[hti.iItem].FileName;
-        bool isImageFile = IuCommonFunctions::IsImage(fileName);
+        bool isImageFile = ImageLoader::IsImage(fileName);
         bool isVideoFile = IsVideoFile(fileName);
         bool isAudioFile = IsAudioFile(fileName);
 
@@ -907,7 +908,7 @@ LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
     std::vector<CString> selectedFiles;
     if (getSelectedFiles(selectedFiles)) {
         CString fileName = selectedFiles[0];
-        bool isImageFile = IuCommonFunctions::IsImage(fileName);
+        bool isImageFile = ImageLoader::IsImage(fileName);
         if (isImageFile) {
             WinUtils::DisplaySystemPrintDialogForImage(selectedFiles, m_hWnd);
         }

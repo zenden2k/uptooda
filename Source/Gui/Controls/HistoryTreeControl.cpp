@@ -37,6 +37,7 @@
 #include "Core/i18n/Translator.h"
 #include "Core/AbstractServerIconCache.h"
 #include "Core/TaskDispatcher.h"
+#include "Core/Images/ImageLoader.h"
 #include "Gui/Helpers/DPIHelper.h"
 
 // CHistoryTreeControl
@@ -528,7 +529,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
         filename = Utf8ToWCstring(item->hi->localFilePath);
     }
     bool error = false;
-    if(IuCommonFunctions::IsImage(filename))
+    if(ImageLoader::IsImage(filename))
     {
         srcImg = ImageUtils::LoadImageFromFileExtended(filename);
         if (!srcImg) {
@@ -599,7 +600,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     {
         LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal);
 
-        if(IuCommonFunctions::IsImage(filename))
+        if(ImageLoader::IsImage(filename))
             gr.FillRectangle(&br,0, 0, width, height);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
@@ -632,7 +633,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             CString FileExt = WinUtils::GetFileExt(Filename);
             if(!lstrcmpi(FileExt, _T("jpg")))
                 FileExt = _T("JPEG");
-            if(IuCommonFunctions::IsImage(filename) && bm)
+            if(ImageLoader::IsImage(filename) && bm)
             {
                 Buffer.Format( _T("%s %dx%d (%s)"), FileExt.GetString(), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
             }
@@ -683,7 +684,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 
     std::string stdLocalFileName = item->hi->localFilePath;
     CString localFileName = Utf8ToWCstring(stdLocalFileName);
-    if(!IuCommonFunctions::IsImage(localFileName))
+    if(!ImageLoader::IsImage(localFileName))
     {
         return 0;
     }

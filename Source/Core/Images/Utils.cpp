@@ -524,7 +524,7 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
 
     CString szNameBuffer, buffer2;
 
-    if (IuCommonFunctions::IsImage(szFilename)) {
+    if (ImageLoader::IsImage(szFilename)) {
         szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
     } else {
         szNameBuffer = szFilename;

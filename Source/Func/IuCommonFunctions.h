@@ -23,9 +23,6 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
                          const CString& originalName = _T(""));
 CString MakeScreenshotFileName(const ScreenshotData& screenshotData, SIZE size);
 
-bool IsImage(LPCTSTR szFileName);
-bool IsImage(const std::string& fileName);
-
 CString FindDataFolder();
 
 CString PrepareFileDialogImageFilter();

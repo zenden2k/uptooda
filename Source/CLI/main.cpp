@@ -64,7 +64,6 @@
     #include <io.h>
     #include "Func/IuCommonFunctions.h"
     #include "Func/GdiPlusInitializer.h"
-    #include "Func/UpdatePackage.h"
     #include "Core/COMInitializer.h"
 #else
     #include <sys/stat.h>
@@ -105,7 +104,6 @@ std::unique_ptr<CUploadEngineList> list;
 namespace OutputGenerator = Uptooda::Core::OutputGenerator;
 OutputGenerator::CodeType codeType = OutputGenerator::ctClickableThumbnails;
 OutputGenerator::CodeLang codeLang = OutputGenerator::clPlain;
-bool autoUpdate = false;
 std::shared_ptr<UploadSession> session;
 
 std::mutex finishSignalMutex;
@@ -161,10 +159,6 @@ public:
 #endif
 };
 Translator translator; // dummy translator
-
-#ifdef _WIN32
-void DoUpdates(bool force = false);
-#endif
 
 std::chrono::steady_clock::time_point lastProgressTime;
 
@@ -525,60 +519,6 @@ void PrintServerParamList()
 }
 
 #ifdef _WIN32
-class Updater: public CUpdateStatusCallback {
-public:
-    explicit Updater(const CString& tempDirectory): m_UpdateManager(std::make_shared<NetworkClientFactory>(), tempDirectory){
-        m_UpdateManager.setUpdateStatusCallback(this);
-    }
-
-    void updateServers() {
-        std::cout<<"Checking for updates..."<<std::endl;
-        if (!m_UpdateManager.CheckUpdates()) {
-            std::cout<<"Error while updating"<<std::endl;
-            return;
-        }
-
-        Settings.LastUpdateTime = static_cast<int>(time(0));
-        if (m_UpdateManager.AreUpdatesAvailable())
-        {
-            for (const auto & i : m_UpdateManager.m_updateList)
-            {
-                std::wcerr << "Beginning to update: "<< i.displayName() << std::endl;
-            }
-
-            m_UpdateManager.DoUpdates();
-            if (m_UpdateManager.successPackageUpdatesCount())
-            {
-                std::cerr << "Successfully updated!";
-            }
-        }
-        else
-        {
-            std::cerr << "All is up-to-date" << std::endl;
-        }
-    }
-
-    void updateStatus(int packageIndex, const CString& status) override {
-        if (m_UpdateManager.m_updateList.size() > packageIndex+1) {
-            fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8(m_UpdateManager.m_updateList[packageIndex].displayName().GetString()).c_str(), IuCoreUtils::WstringToUtf8(status.GetString()).c_str());
-            fprintf(stderr, "\r");
-            fflush(stderr);
-        }
-    }
-protected:
-    CUpdateManager m_UpdateManager;
-};
-
-void DoUpdates(bool force) {
-	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
-        CString tempFolder, commonTempFolder;
-        IuCommonFunctions::CreateTempFolder(tempFolder, commonTempFolder);
-        Updater upd(tempFolder);
-		upd.updateServers();
-        IuCommonFunctions::ClearTempFolder(tempFolder);
-		Settings.LastUpdateTime = time(0);
-	}
-}
 
 // Convert UNICODE (UCS-2) command line arguments to utf-8
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
@@ -781,24 +721,7 @@ int main(int argc, char *argv[]){
          .flag()
          .store_into(useSystemProxy);
 
-    program.add_argument("-up", "--update")
-        .help("update servers.xml (the 'Data' directory must be writable, otherwise update will fail)")
-        .action([=](const auto& s) {
-            DoUpdates(true);
-            std::exit(0);
-        })
-        .default_value(false)
-        .implicit_value(true)
-        .nargs(0);
 #endif
-    /*program.add_argument("-d", "--disable_update")
-       .help(Disable auto-updating servers.xml")
-       .action([=](const auto& s) {
-           autoUpdate = false;
-       })
-       .default_value(false)
-       .implicit_value(true)
-       .nargs(0);*/
 
     program.add_argument("files")
          .help("files to upload on remote server")
@@ -911,12 +834,6 @@ int main(int argc, char *argv[]){
     if (filesToUpload.empty()) {
         return 0;
     }
-
-#ifdef _WIN32
-    if (autoUpdate) {
-        DoUpdates();
-    }
-#endif
 
     res = func();
 
