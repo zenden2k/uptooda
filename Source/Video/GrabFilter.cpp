@@ -106,8 +106,8 @@ HRESULT CGrabFilter::NonDelegatingQueryInterface(const IID& riid, void** ppv) {
             HRESULT hr = S_OK;
             try {
                 m_pPosition = new CPosPassThru(NAME("Dump Pass Through"),
-                    (IUnknown*)GetOwner(),
-                    (HRESULT*)&hr, m_grab->m_inputPin);
+                    GetOwner(),
+                    &hr, m_grab->m_inputPin);
             } catch (const std::bad_alloc&) {
                 return E_OUTOFMEMORY;
             }

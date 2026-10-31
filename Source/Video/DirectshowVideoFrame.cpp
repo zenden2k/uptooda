@@ -1,7 +1,6 @@
 #include "DirectshowVideoFrame.h"
 
 DirectshowVideoFrame::DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
-
     time_ = time;
 
     BITMAPFILEHEADER bfh;
@@ -23,24 +22,22 @@ DirectshowVideoFrame::DirectshowVideoFrame(unsigned char *data, size_t dataSize,
 
     int dataOffset = sizeof(bfh) + sizeof(bih);
     dataSize_ = dataSize + dataOffset;
-    data_ = new unsigned char[dataSize + dataOffset];
-    memcpy(data_, &bfh, sizeof(bfh));
-    memcpy(data_ + sizeof(bfh), &bih, sizeof(bih));
-    memcpy(data_ + dataOffset, data, dataSize);
+    data_ = std::make_unique<unsigned char[]>(dataSize + dataOffset);
+    memcpy(data_.get(), &bfh, sizeof(bfh));
+    memcpy(data_.get() + sizeof(bfh), &bih, sizeof(bih));
+    memcpy(data_.get() + dataOffset, data, dataSize);
 
     width_ = width;
     height_ = height;
 }
-DirectshowVideoFrame::~DirectshowVideoFrame() {
-    delete[] data_;
-}
+DirectshowVideoFrame::~DirectshowVideoFrame() = default;
 
 bool DirectshowVideoFrame::saveToFile(const std::string& fileName) const {
     std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
     if (!image) {
         return false;
     }
-    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
+    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_.get(), dataSize_, nullptr)) {
         return false;
     }
     return image->saveToFile(fileName);
@@ -51,7 +48,7 @@ std::unique_ptr<AbstractImage> DirectshowVideoFrame::toImage() const {
     if (!image) {
         return nullptr;
     }
-    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
+    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_.get(), dataSize_, nullptr)) {
         image.reset();
     }
     return image;

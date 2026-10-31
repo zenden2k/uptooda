@@ -1,6 +1,9 @@
 #ifndef IU_CORE_VIDEO_DIRECTSHOWVIDEOFRAME_H
 #define IU_CORE_VIDEO_DIRECTSHOWVIDEOFRAME_H
 
+#include <memory>
+#include <string>
+
 #include <windows.h>
 
 #include "AbstractVideoFrame.h"
@@ -13,7 +16,7 @@ public:
     std::unique_ptr<AbstractImage> toImage() const override;
 
 protected:
-    unsigned char *data_;
+    std::unique_ptr<unsigned char[]> data_;
     size_t dataSize_;
     DISALLOW_COPY_AND_ASSIGN(DirectshowVideoFrame);
 };

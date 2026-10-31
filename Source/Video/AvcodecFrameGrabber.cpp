@@ -141,7 +141,7 @@ public:
     }
 
     static std::string getFFmpegErrorMessage(int code) {
-        char strBuf[256] = {0};
+        char strBuf[256] = {};
         av_strerror(code, strBuf, sizeof(strBuf));
         return strBuf;
     }
