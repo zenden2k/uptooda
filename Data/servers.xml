@@ -348,6 +348,13 @@
         <Result DownloadUrlTemplate="$(DownloadUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
         <!-- /Thanks to Alex_Qwerty -->
+    <!-- is.gd is not accessible in Russia (works with VPN) -->
+    <Server Name="is.gd" Debug="0" Type="urlshortening" DefaultForTypes="urlshortening" WebsiteUrl="https://is.gd/">
+        <Actions>
+            <Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
+        </Actions>
+        <Result DirectUrlTemplate="$(ShortUrl)" />
+    </Server>
     <Server Name="u.to" Authorize="0" Type="urlshortening" WebsiteUrl="https://u.to">
         <Actions>
             <Action Type="post" Url="https://u.to/api/shorten/" AssignVars="surl:0" CustomHeaders="Content-Type:application/json;Referer:https://u.to/">
@@ -618,18 +625,6 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-<!--    <Server Name="yourfilestore.com" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">-->
-<!--        <Actions>-->
-<!--            <Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">-->
-<!--                <RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>-->
-<!--            </Action>-->
-<!--            <Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="UPLOAD_IDENTIFIER=$(UploadId);xcsrf_token=$(XcsrfToken);userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" -->
-<!--                    AssignVars="FileId:0;" Referer="https://yourfilestore.com/">-->
-<!--                <RegExp Pattern="(https://yourfilestore.com/delete/.+?)&quot;" AssignVars="DeleteUrl:0"/>-->
-<!--            </Action>-->
-<!--        </Actions>-->
-<!--        <Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>-->
-<!--    </Server>-->
     <Server Name="freeimage.host" MaxFileSize="67108864" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
         <Info>
             <SupportedFormats>
@@ -682,6 +677,21 @@
         </Actions>
         <Result DownloadUrlTemplate="stub" />
     </Server>
+<!--   <Server Name="media.cm" Type="video" Authorize="0" MaxFileSize="314572800" Plugin="media.cm" WebsiteUrl="https://media.cm/">-->
+<!--        <Info>-->
+<!--            <SupportedFormats>-->
+<!--                <FormatGroup MaxFileSize="314572800" UserTypes="anon">-->
+<!--                    <Format MimeType="video/*">*</Format>-->
+<!--                </FormatGroup>-->
+<!--            </SupportedFormats>-->
+<!--            <StorageTimeInfo>-->
+<!--                <StorageTime UserTypes="anon">90</StorageTime>-->
+<!--            </StorageTimeInfo>-->
+<!--        </Info>-->
+<!--        <Actions>-->
+<!--        </Actions>-->
+<!--        <Result DownloadUrlTemplate="stub" />-->
+<!--    </Server>-->
     <Server Name="upload.ee" Authorize="1" FileHost="1" Plugin="upload.ee" SupportsFolders="1" MaxFileSize="104857600" WebsiteUrl="https://www.upload.ee" 
         RegistrationUrl="https://www.upload.ee/register.html">
         <Info>
@@ -1043,6 +1053,22 @@
         </Actions>
         <Result DownloadUrlTemplate="stub" />
     </Server>
+    <Server Name="tempfiles.ninja" Types="image file" FileHost="1" MaxFileSize="104857600" Plugin="tempfiles.ninja"
+        WebsiteUrl="https://tempfiles.ninja/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="104857600">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>24h</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Actions>
+        </Actions>
+        <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub" />
+    </Server>
     <Server Name="imgsrc.ru" Plugin="imgsrc.ru" Authorize="2" SupportsFolders="1" WebsiteUrl="https://imgsrc.ru" RegistrationUrl="https://imgsrc.ru/main/join.php">
         <Actions>
         </Actions>
@@ -1260,6 +1286,19 @@
         <Result DownloadUrlTemplate="stub"/>
     </Server>-->
     <Server Name="webshare.cz" MaxFileSize="214748364800" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
+        <Actions>
+        </Actions>
+        <Result DownloadUrlTemplate="stub"/>
+    </Server>
+    <Server Name="1fichier.com" Type="file" FileHost="1" Authorize="1" NeedPassword="0" Plugin="1fichier.com" SupportsFolders="1" MaxFileSize="322122547200"
+        WebsiteUrl="https://1fichier.com/" RegistrationUrl="https://1fichier.com/en/register.pl">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="322122547200">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>

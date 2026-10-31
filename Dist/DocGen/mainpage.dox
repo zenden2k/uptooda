@@ -1,6 +1,6 @@
 /** 
 @mainpage Uptooda Scripting API
-@version 1.4.5
+@version 1.4.7
 
 <hr/> 
 @section Contents Contents 
@@ -22,7 +22,7 @@ Squirrel is a high level imperative, object-oriented programming language, desig
 <a href="http://www.squirrel-lang.org/doc/sqstdlib3.pdf" target="_blank">Squirrel 3.0 Standard Libraries manual (PDF)</a>
 </p>
 
-<p>Scripts should be saved in utf-8 encoding in files with <code>.nut</code> extension and placed in the Data/Scripts directory.</p>
+<p>Scripts should be saved in UTF-8 encoding in files with <code>.nut</code> extension and placed in the Data/Scripts directory.</p>
 
 <hr/>
 
