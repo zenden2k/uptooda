@@ -6,4 +6,5 @@ compiler.version=194
 compiler.cppstd=20
 compiler.runtime=static
 build_type=Release
+libde265/*:compiler.cppstd=17
 
