@@ -2,6 +2,23 @@
 #
 # https://svistunov.dev/uptooda
 
+v1.4.8 build 5600 (2026-11-01)
+
+New features and improvements
+
+- Added support for the 1fichier.com, tempfiles.ninja, file.kiwi and fex.net hosting services
+- Image editor improvements:
+  * Text input now uses DirectWrite on modern versions of Windows
+  * Added the "Speech baloon" tool
+  * Text color is now a separate option in the text settings panel
+- Added hotkeys for image editing items of the file list's context menu
+
+Fixes
+
+- Fixed uploading to imghippo.com and imagevenue.com
+- Restored support for Windows 7 SP1 without updates
+- Fixed Unicode handling in folder paths
+
 v1.4.7 build 5524 (2026-09-20)
 
 New features and improvements
