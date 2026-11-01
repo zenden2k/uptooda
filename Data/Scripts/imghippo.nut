@@ -7,7 +7,7 @@ function UploadFile(fileName, options) {
     local name = ExtractFileName(fileName);
     local mime = GetFileMimeType(name);
     nm.setUrl("https://api.imghippo.com/v1/upload");
-    nm.addPostField("api_key", key);
+    nm.addQueryHeader("X-API-Key", key);
     nm.addPostField("format", "json");
     nm.addPostFieldFile("file", fileName, name, mime);
     nm.doUploadMultipartData();

@@ -256,7 +256,7 @@
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>-->
     <!-- Blocked ?-->
-    <Server Name="imagevenue.com" Authorize="1" Plugin="imagevenue" WebsiteUrl="https://www.imagevenue.com" RegistrationUrl="https://www.imagevenue.com/auth/register">
+    <Server Name="imagevenue.com" Authorize="1" Plugin="imagevenue" WebsiteUrl="https://imagevenue.com" RegistrationUrl="https://imagevenue.com/auth/register">
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
