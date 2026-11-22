@@ -47,14 +47,12 @@ public :
 
         time_ = time;
 
-        BITMAPFILEHEADER bfh;
-        memset(&bfh, 0, sizeof(bfh));
+        BITMAPFILEHEADER bfh = {};
         bfh.bfType = ('M' << 8) | 'B';
         bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
         bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
 
-        BITMAPINFOHEADER bih;
-        memset(&bih, 0, sizeof(bih));
+        BITMAPINFOHEADER bih = {};
         bih.biSize = sizeof(bih);
         bih.biWidth = width;
         bih.biHeight = height;
@@ -116,7 +114,7 @@ class DirectshowFrameGrabber2Private : public CGrabCallback {
 public:
     class Initializer {
     public:
-        Initializer() {}
+        Initializer() = default;
 
         ~Initializer() {
             DbgTerminate();
@@ -125,7 +123,6 @@ public:
 
     DirectshowFrameGrabber2Private() {
         static Initializer initializer;
-        memset(&vih, 0, sizeof(vih));
     }
 
     DirectshowVideoFrame2* currentFrame() const {
@@ -151,7 +148,7 @@ public:
     CComPtr<IPin> pGrabPin;
     CComQIPtr<IObjectWithSite> pObjectWithSite;
     NoDirectVobSub graphBuilderCallback;
-    VIDEOINFOHEADER vih;
+    VIDEOINFOHEADER vih{};
 
     void OnDumpSample(REFERENCE_TIME SampleTime, BYTE* pBuffer, long BufferSize, BITMAPINFOHEADER* bih) override {
         LONGLONG time = SampleTime / 10000000;
@@ -282,7 +279,7 @@ bool DirectshowFrameGrabber2::seek(int64_t time) {
     if (FAILED(hr)) {
         LOG(WARNING) << "pControl->Run() failed." << DirectShowUtil::GetMessageForHresult(hr);
     }
-    //Sleep(1000);
+
     hr = d_ptr->pEvent->WaitForCompletion(INFINITE, &EvCode);
     if (FAILED(hr)) {
         LOG(WARNING) << "pEvent->WaitForCompletion() failed." << DirectShowUtil::GetMessageForHresult(hr);

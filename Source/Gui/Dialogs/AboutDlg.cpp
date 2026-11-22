@@ -156,6 +156,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
     memoText += CString(L"WinToast") + L"\t\thttps://github.com/mohabouje/WinToast\r\n";
     memoText += CString(L"xdgmime") + L"\t\thttps://gitlab.freedesktop.org/xdg/xdgmime\r\n\r\n";
+    memoText += CString(L"dotenv-cpp") + L"\t\thttps://github.com/laserpants/dotenv-cpp\r\n\r\n";
+    memoText += CString(L"Simple-Web-Server") + L"\t\thttps://github.com/eidheim/Simple-Web-Server\r\n\r\n";
+    memoText += CString(L"ScreenCapture") + L"\t\thttps://github.com/WindowsNT/ScreenCapture\r\n\r\n";
+    memoText += CString(L"xxHash") + L"\t\thttps://xxhash.com/\r\n\r\n";
 
     memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Data file path:") + CString(_T("\r\n")) + IuCommonFunctions::GetDataFolder() + _T("\r\n\r\n");

@@ -3,14 +3,12 @@
 DirectshowVideoFrame::DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
     time_ = time;
 
-    BITMAPFILEHEADER bfh;
-    memset(&bfh, 0, sizeof(bfh));
+    BITMAPFILEHEADER bfh = {};
     bfh.bfType = ('M' << 8) | 'B';
     bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
     bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
 
-    BITMAPINFOHEADER bih;
-    memset(&bih, 0, sizeof(bih));
+    BITMAPINFOHEADER bih = {};
     bih.biSize = sizeof(bih);
     bih.biWidth = width;
     bih.biHeight = height;

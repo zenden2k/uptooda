@@ -103,6 +103,7 @@ set(SRC_LIST
         Dialogs/ScreenRecorderWindow.cpp
         Dialogs/FileFormatCheckErrorDlg.cpp
         Dialogs/ServerListPopup.cpp
+        Dialogs/ServerInformationWindow.cpp
         Models/FileFormatCheckErrorModel.cpp
         Controls/CustomEditControl.cpp
         Controls/HistoryTreeControl.cpp
@@ -273,6 +274,7 @@ set(HEADER_LIST
         Dialogs/ServerProfileGroupSelectDialog.h
         Dialogs/FileFormatCheckErrorDlg.h
         Dialogs/ServerListPopup.h
+        Dialogs/ServerInformationWindow.h
         Dialogs/ScreenRecorderWindow.h
         Models/FileFormatCheckErrorModel.h
         Controls/CustomEditControl.h

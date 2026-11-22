@@ -219,6 +219,7 @@
 #define IDI_ICONALIGNLEFT               362
 #define IDI_ICONALIGNCENTER             363
 #define IDI_ICONALIGNRIGHT              364
+#define IDD_SERVERINFORMATION           365
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -883,6 +884,7 @@
 #define IDC_FILENAMEMACROSBUTTON        1379
 #define IDC_SCREENSHOTMACROSBUTTON      1380
 #define IDC_CLOSEBUTTON                 1382
+#define IDC_SERVERINFORMATIONTEXT       1383
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -929,9 +931,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        365
+#define _APS_NEXT_RESOURCE_VALUE        366
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1383
+#define _APS_NEXT_CONTROL_VALUE         1384
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

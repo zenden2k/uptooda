@@ -1,7 +1,5 @@
 #include "WebViewWindow.h"
 
-#include "Core/AppRuntimeInfo.h"
-
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CoreUtils.h"
 #include "resource.h"   
@@ -126,7 +124,6 @@ void CWebViewWindow::destroyFromAnotherThread()
 {
     SendMessage(WM_DESTROYWEBVIEWWINDOW);
 }
-
 
 LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if ( isModal_ ) {
