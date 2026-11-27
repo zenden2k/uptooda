@@ -1,7 +1,7 @@
 #ifndef PenTool_h_
 #define PenTool_h_
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "AbstractDrawingTool.h"

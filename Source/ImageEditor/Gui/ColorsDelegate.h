@@ -4,7 +4,7 @@
 #include "atlheaders.h"
 #include "Toolbar.h"
 #include "../Canvas.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "3rdpart/ColorButton.h"
 
 namespace ImageEditor {

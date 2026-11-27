@@ -4,7 +4,7 @@
 
 #include "ImageEditorView.h"
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Gui/GuiTools.h"
 #include "../MovableElements.h"
 #include "../InputBox.h"

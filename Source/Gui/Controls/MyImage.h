@@ -26,7 +26,7 @@
 #include <memory>
 
 #include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "3rdpart/thread.h"
 #include "Core/Utils/CoreUtils.h"
 

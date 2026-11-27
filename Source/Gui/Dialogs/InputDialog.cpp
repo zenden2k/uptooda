@@ -20,7 +20,7 @@
 
 #include "InputDialog.h"
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Gui/GuiTools.h"
 
 namespace {

@@ -8,7 +8,7 @@
 
 class DDAGrabSource: public FFmpegSource {
 public:
-    inline static constexpr auto SOURCE_ID = "ddagrab";
+    static constexpr auto SOURCE_ID = "ddagrab";
 
     DDAGrabSource(): FFmpegSource("ddagrab")
     {

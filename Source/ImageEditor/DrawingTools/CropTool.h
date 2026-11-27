@@ -1,7 +1,7 @@
 #ifndef CropTool_h_
 #define CropTool_h_
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "MoveAndResizeTool.h"
 

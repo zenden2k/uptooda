@@ -24,7 +24,7 @@
 #include "../Document.h"
 #include "../MovableElements.h"
 #include "Core/Utils/CoreUtils.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ImageEditor {
 

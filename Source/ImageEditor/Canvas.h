@@ -8,7 +8,7 @@
 
 #include <boost/signals2.hpp>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Utils/CoreTypes.h"
 #include "ImageEditor/Gui/InputBoxControl.h"
 #include "InputBox.h"

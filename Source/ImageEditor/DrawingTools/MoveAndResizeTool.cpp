@@ -27,7 +27,7 @@
 #include "../MovableElements.h"
 #include "../SpeechBaloon.h"
 #include "Core/Utils/CoreUtils.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ImageEditor {
 
@@ -173,7 +173,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
                 break;
             }
 
-            auto* speechBaloon = static_cast<SpeechBaloon*>(currentElement_);
+            auto* speechBaloon = dynamic_cast<SpeechBaloon*>(currentElement_);
             speechBaloon->TextElement::resize(speechBaloon->getWidth(), speechBaloon->getHeight());
 
             const RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
@@ -440,22 +440,25 @@ bool MoveAndResizeTool::canActivateElement(const MovableElement* element) const 
         || (elementType_ == ElementType::etNone && type != ElementType::etCrop);
 }
 
-MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, MovableElement** elem)
-{
+MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries(int x, int y, MovableElement** elem) {
     std::vector<MovableElement*> elements;
     canvas_->getElementsByType(ElementType::etNone, elements);
-    int count = elements.size();
-    for( int i  = count-1; i>= 0; i-- ) {
-        const bool canResizeElement = canActivateElement(elements[i])
-            || (elementType_ == ElementType::etNone && elements[i]->getType() == ElementType::etCrop);
-        if (!canResizeElement
-            || (!elements[i]->isSelected() && elements[i]->getType() != ElementType::etCrop)) {
+
+    for (auto it = elements.rbegin(); it != elements.rend(); ++it) {
+        MovableElement* element = *it;
+
+        const bool isCrop = element->getType() == ElementType::etCrop;
+        const bool canResizeElement = canActivateElement(element)
+            || (elementType_ == ElementType::etNone && isCrop);
+
+        if (!canResizeElement || (!element->isSelected() && !isCrop)) {
             continue;
         }
-        MovableElement::Grip grip = checkElementBoundaries(elements[i], x , y);
-        if ( grip.bt != BoundaryType::btNone ) {
-            if ( elem ) {
-                *elem = elements[i];
+
+        MovableElement::Grip grip = checkElementBoundaries(element, x, y);
+        if (grip.bt != BoundaryType::btNone) {
+            if (elem) {
+                *elem = element;
             }
             return grip;
         }
@@ -464,14 +467,15 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
     return {};
 }
 
-MovableElement::Grip MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
-{
-    for (size_t i = 0; i < element->grips_.size(); i++) {
-        if ( abs (x - element->grips_[i].pt.x) <= element->gripWidth_ + 2 &&  abs (y - element->grips_[i].pt.y) <= element->gripHeight_ + 2 ) {
-            return element->grips_[i];
-        }
-    }
-    return {};
+MovableElement::Grip MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y) {
+    const auto& grips = element->grips_;
+
+    const auto it = std::find_if(grips.begin(), grips.end(), [&](const auto& grip) {
+        return std::abs(x - grip.pt.x) <= element->gripWidth_ + 2
+            && std::abs(y - grip.pt.y) <= element->gripHeight_ + 2;
+    });
+
+    return it != grips.end() ? *it : MovableElement::Grip{};
 }
 
 void MoveAndResizeTool::cleanUp()

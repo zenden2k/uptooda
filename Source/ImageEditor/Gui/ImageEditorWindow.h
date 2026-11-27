@@ -7,7 +7,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/SearchByImage.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Func/IuCommonFunctions.h"

@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <windows.h>
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 class ColorQuantizer {
 public:

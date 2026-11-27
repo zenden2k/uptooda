@@ -1,7 +1,7 @@
 #ifndef TextTool_h_
 #define TextTool_h_
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "MoveAndResizeTool.h"

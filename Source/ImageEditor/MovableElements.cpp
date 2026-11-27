@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Canvas.h"
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
@@ -30,7 +30,8 @@
 
 namespace ImageEditor {
 
-Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) : MovableElement(canvas) {
+Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :
+    MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x = endX;
@@ -159,10 +160,13 @@ bool Line::isItemAtPos(int x, int y) {
     return false;
 }
 
-ImageEditor::ElementType Line::getType() const { return ElementType::etLine; }
+ImageEditor::ElementType Line::getType() const {
+    return ElementType::etLine;
+}
 
 TextElement::TextElement(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX, int endY,
-                         bool filled) : MovableElement(canvas) {
+                         bool filled) :
+    MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x = endX;
@@ -236,13 +240,21 @@ void TextElement::setTextAlignment(WORD alignment) {
     }
 }
 
-WORD TextElement::getTextAlignment() const { return inputBox_ ? inputBox_->getTextAlignment() : PFA_LEFT; }
+WORD TextElement::getTextAlignment() const {
+    return inputBox_ ? inputBox_->getTextAlignment() : PFA_LEFT;
+}
 
-LOGFONT TextElement::getFont() const { return font_; }
+LOGFONT TextElement::getFont() const {
+    return font_;
+}
 
-std::shared_ptr<InputBox> TextElement::getInputBox() const { return inputBox_; }
+std::shared_ptr<InputBox> TextElement::getInputBox() const {
+    return inputBox_;
+}
 
-void TextElement::onTextChanged(LPCTSTR text) { canvas_->updateView(getPaintBoundingRect()); }
+void TextElement::onTextChanged(LPCTSTR text) {
+    canvas_->updateView(getPaintBoundingRect());
+}
 
 void TextElement::onEditCanceled() {
     const bool deleteElement = isEmpty();
@@ -282,7 +294,9 @@ void TextElement::setTextColor(Gdiplus::Color color) {
     applyTextColor();
 }
 
-Gdiplus::Color TextElement::getTextColor() const { return textColor_; }
+Gdiplus::Color TextElement::getTextColor() const {
+    return textColor_;
+}
 
 void TextElement::applyTextColor() {
     if (inputBox_) {
@@ -297,11 +311,17 @@ void TextElement::onSelectionChanged(int min, int max, LOGFONT font, Gdiplus::Co
     canvas_->onTextColorChanged(color);
 }
 
-void TextElement::setColor(Gdiplus::Color color) { MovableElement::setColor(color); }
+void TextElement::setColor(Gdiplus::Color color) {
+    MovableElement::setColor(color);
+}
 
-bool TextElement::isEmpty() const { return firstEdit_ && inputBox_->isEmpty(); }
+bool TextElement::isEmpty() const {
+    return firstEdit_ && inputBox_->isEmpty();
+}
 
-ElementType TextElement::getType() const { return ElementType::etText; }
+ElementType TextElement::getType() const {
+    return ElementType::etText;
+}
 
 void TextElement::setSelected(bool selected) {
     MovableElement::setSelected(selected);
@@ -350,6 +370,7 @@ void TextElement::saveToHistory() {
         originalRawText_.clear();
     }
 }
+
 void TextElement::setRawText(const std::string& rawText) {
     if (inputBox_) {
         inputBox_->setRawText(rawText);
@@ -376,7 +397,9 @@ void TextElement::setFillBackground(bool fill) {
     isBackgroundColorUsed_ = fill;
 }
 
-bool TextElement::getFillBackground() const { return fillBackground_; }
+bool TextElement::getFillBackground() const {
+    return fillBackground_;
+}
 
 
 void TextElement::setPos(int x, int y) {
@@ -411,7 +434,8 @@ Gdiplus::Rect TextElement::getInputBoxRect() {
     return { getX() + 3, getY() + 3, (std::max)(1, getWidth() - 6), (std::max)(1, getHeight() - 6) };
 }
 
-Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY) : MovableElement(canvas) {
+Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY) :
+    MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x = endX;
@@ -421,7 +445,9 @@ Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY) : Movable
     isBackgroundColorUsed_ = false;
 }
 
-void Crop::render(Painter* gr) { MovableElement::render(gr); }
+void Crop::render(Painter* gr) {
+    MovableElement::render(gr);
+}
 
 void Crop::getAffectedSegments(AffectedSegments* segments) {
     int x = getX();
@@ -436,9 +462,13 @@ void Crop::getAffectedSegments(AffectedSegments* segments) {
     segments->markRect(x + width - penSize_, y, penSize_, height); // right
 }
 
-ImageEditor::ElementType Crop::getType() const { return ElementType::etCrop; }
+ImageEditor::ElementType Crop::getType() const {
+    return ElementType::etCrop;
+}
 
-void Crop::setPos(int x, int y) { return MovableElement::setPos(x, y); }
+void Crop::setPos(int x, int y) {
+    return MovableElement::setPos(x, y);
+}
 
 bool Crop::move(int offsetX, int offsetY, bool checkBounds) {
     int canvasWidth = canvas_->getWidth();
@@ -485,7 +515,8 @@ RECT Crop::getPaintBoundingRect() {
     return rc;
 }
 
-CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX, int endY) : MovableElement(canvas) {
+CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX, int endY) :
+    MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x = endX;
@@ -622,11 +653,11 @@ bool Rectangle::isItemAtPos(int x, int y) {
     int elementHeight = getHeight();
     int selectRadius = std::max<int>(kSelectRadius, penSize_);
     return (((x >= elementX - selectRadius && x <= elementX + selectRadius)
-             || (x >= elementX + elementWidth - selectRadius && x <= elementX + elementWidth + selectRadius))
+                || (x >= elementX + elementWidth - selectRadius && x <= elementX + elementWidth + selectRadius))
             && y >= elementY - selectRadius && y <= elementY + elementHeight + selectRadius)
 
         || (((y >= elementY - selectRadius && y <= elementY + selectRadius)
-             || (y >= elementY + elementHeight - selectRadius && y <= elementY + elementHeight + selectRadius))
+                || (y >= elementY + elementHeight - selectRadius && y <= elementY + elementHeight + selectRadius))
 
             && x >= elementX - selectRadius && x <= elementX + elementWidth + selectRadius);
 }
@@ -640,7 +671,9 @@ RECT Rectangle::getPaintBoundingRect() {
     return rc;
 }
 
-ImageEditor::ElementType Rectangle::getType() const { return ElementType::etRectangle; }
+ImageEditor::ElementType Rectangle::getType() const {
+    return ElementType::etRectangle;
+}
 
 Arrow::Arrow(Canvas* canvas, int startX, int startY, int endX, int endY, ArrowMode mode) :
     Line(canvas, startX, startY, endX, endY), mode_(mode) {
@@ -687,11 +720,11 @@ void Arrow::render(Painter* gr, Gdiplus::Color color, int penSize, POINT startPo
         const auto vy = ux;
 
         const auto half_width = 0.5f * head_width;
-        Point p1 { int(round(endPoint.x - head_length * ux + half_width * vx)),
-                   int(round(endPoint.y - head_length * uy + half_width * vy)) };
+        Point p1{ int(round(endPoint.x - head_length * ux + half_width * vx)),
+                  int(round(endPoint.y - head_length * uy + half_width * vy)) };
 
-        Point p2 { int(round(endPoint.x - head_length * ux - half_width * vx)),
-                   int(round(endPoint.y - head_length * uy - half_width * vy)) };
+        Point p2{ int(round(endPoint.x - head_length * ux - half_width * vx)),
+                  int(round(endPoint.y - head_length * uy - half_width * vy)) };
 
         pen2.SetEndCap(LineCapRound);
         pen2.SetStartCap(LineCapRound);
@@ -709,27 +742,39 @@ RECT Arrow::getPaintBoundingRect() {
     return res;
 }
 
-ImageEditor::ElementType Arrow::getType() const { return ElementType::etArrow; }
+ImageEditor::ElementType Arrow::getType() const {
+    return ElementType::etArrow;
+}
 
-Selection::Selection(Canvas* canvas, int startX, int startY, int endX, int endY) : MovableElement(canvas) {
+Selection::Selection(Canvas* canvas, int startX, int startY, int endX, int endY) :
+    MovableElement(canvas) {
     isColorUsed_ = false;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
 }
 
-void Selection::render(Painter* gr) { }
+void Selection::render(Painter* gr) {
+}
 
-ImageEditor::ElementType Selection::getType() const { return ElementType::etSelection; }
+ImageEditor::ElementType Selection::getType() const {
+    return ElementType::etSelection;
+}
 
-void Selection::createGrips() { throw std::logic_error("The method or operation is not implemented."); }
+void Selection::createGrips() {
+    throw std::logic_error("The method or operation is not implemented.");
+}
 
 FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool drawBorder) :
-    Rectangle(canvas, startX, startY, endX, endY, true, drawBorder) { }
+    Rectangle(canvas, startX, startY, endX, endY, true, drawBorder) {
+}
 
-ElementType FilledRectangle::getType() const { return ElementType::etBlurringRectangle; }
+ElementType FilledRectangle::getType() const {
+    return ElementType::etBlurringRectangle;
+}
 
 BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY,
-                                     bool pixelate, bool invertSelection) : MovableElement(canvas) {
+                                     bool pixelate, bool invertSelection) :
+    MovableElement(canvas) {
     blurRadius_ = blurRadius;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
@@ -738,15 +783,23 @@ BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int start
     invertSelection_ = invertSelection;
 }
 
-BlurringRectangle::~BlurringRectangle() { }
+BlurringRectangle::~BlurringRectangle() = default;
 
-void BlurringRectangle::setBlurRadius(float radius) { blurRadius_ = radius; }
+void BlurringRectangle::setBlurRadius(float radius) {
+    blurRadius_ = radius;
+}
 
-void BlurringRectangle::setInvertSelection(bool invert) { invertSelection_ = invert; }
+void BlurringRectangle::setInvertSelection(bool invert) {
+    invertSelection_ = invert;
+}
 
-bool BlurringRectangle::getInvertSelection() const { return invertSelection_; }
+bool BlurringRectangle::getInvertSelection() const {
+    return invertSelection_;
+}
 
-float BlurringRectangle::getBlurRadius() const { return blurRadius_; }
+float BlurringRectangle::getBlurRadius() const {
+    return blurRadius_;
+}
 
 RECT BlurringRectangle::getPaintBoundingRect() {
     if (invertSelection_) {
@@ -794,14 +847,19 @@ void BlurringRectangle::render(Painter* gr) {
     }
 }
 
-ImageEditor::ElementType BlurringRectangle::getType() const { return ElementType::etBlurringRectangle; }
+ImageEditor::ElementType BlurringRectangle::getType() const {
+    return ElementType::etBlurringRectangle;
+}
 
 
 PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY,
                                      bool invertSelection) :
-    BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true, invertSelection) { }
+    BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true, invertSelection) {
+}
 
-ElementType PixelateRectangle::getType() const { return ElementType::etPixelateRectangle; }
+ElementType PixelateRectangle::getType() const {
+    return ElementType::etPixelateRectangle;
+}
 
 
 RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX, int endY, bool filled /*= false */,
@@ -823,21 +881,27 @@ void RoundedRectangle::render(Painter* gr) {
 
     gr->SetClip(rgn.toNativeRegion().get(),
                 Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle,
-                                                // setting the clip
+    // setting the clip
     ImageUtils::DrawRoundedRectangle(gr, Rect(x, y, width, height), roundingRadius_ * 2, drawBorder_ ? &pen : nullptr,
                                      filled_ ? &br : 0);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
-ElementType RoundedRectangle::getType() const { return ElementType::etRoundedRectangle; }
+ElementType RoundedRectangle::getType() const {
+    return ElementType::etRoundedRectangle;
+}
 
 FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX, int endY,
                                                bool drawBorder) :
-    RoundedRectangle(canvas, startX, startY, endX, endY, true, drawBorder) { }
+    RoundedRectangle(canvas, startX, startY, endX, endY, true, drawBorder) {
+}
 
-ElementType FilledRoundedRectangle::getType() const { return ElementType::etFilledRoundedRectangle; }
+ElementType FilledRoundedRectangle::getType() const {
+    return ElementType::etFilledRoundedRectangle;
+}
 
-Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */, bool drawBorder) : MovableElement(canvas) {
+Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */, bool drawBorder) :
+    MovableElement(canvas) {
     filled_ = filled;
     setDrawBorder(drawBorder);
     isBackgroundColorUsed_ = filled;
@@ -909,7 +973,9 @@ RECT Ellipse::getPaintBoundingRect() {
     return rc;
 }
 
-ImageEditor::ElementType Ellipse::getType() const { return ElementType::etEllipse; }
+ImageEditor::ElementType Ellipse::getType() const {
+    return ElementType::etEllipse;
+}
 
 bool Ellipse::isItemAtPos(int x, int y) {
     using namespace Gdiplus;
@@ -922,17 +988,21 @@ bool Ellipse::isItemAtPos(int x, int y) {
         return containsPoint(Rect(elX, elY, width, height), Point(x, y));
     } else {
         return containsPoint(
-                   Rect(elX - selectRadius, elY - selectRadius, width + selectRadius * 2, height + selectRadius * 2),
-                   Point(x, y))
+                Rect(elX - selectRadius, elY - selectRadius, width + selectRadius * 2, height + selectRadius * 2),
+                Point(x, y))
             && !containsPoint(
-                   Rect(elX + selectRadius, elY + selectRadius, width - selectRadius * 2, height - selectRadius * 2),
-                   Point(x, y));
+                Rect(elX + selectRadius, elY + selectRadius, width - selectRadius * 2, height - selectRadius * 2),
+                Point(x, y));
     }
 }
 
-FilledEllipse::FilledEllipse(Canvas* canvas, bool drawBorder) : Ellipse(canvas, true, drawBorder) { }
+FilledEllipse::FilledEllipse(Canvas* canvas, bool drawBorder) :
+    Ellipse(canvas, true, drawBorder) {
+}
 
-ImageEditor::ElementType FilledEllipse::getType() const { return ElementType::etFilledEllipse; }
+ImageEditor::ElementType FilledEllipse::getType() const {
+    return ElementType::etFilledEllipse;
+}
 
 StepNumber::StepNumber(Canvas* canvas, int startX, int startY, int endX, int endY, int number, int fontSize) :
     MovableElement(canvas) {
@@ -979,9 +1049,13 @@ void StepNumber::render(Painter* gr) {
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
-RECT StepNumber::getPaintBoundingRect() { return MovableElement::getPaintBoundingRect(); }
+RECT StepNumber::getPaintBoundingRect() {
+    return MovableElement::getPaintBoundingRect();
+}
 
-ElementType StepNumber::getType() const { return ElementType::etStepNumber; }
+ElementType StepNumber::getType() const {
+    return ElementType::etStepNumber;
+}
 
 int StepNumber::recalcRadius() {
     using namespace Gdiplus;
@@ -1008,7 +1082,9 @@ void StepNumber::setNumber(int number) {
     }
 }
 
-bool StepNumber::isResizable() const { return false; }
+bool StepNumber::isResizable() const {
+    return false;
+}
 
 void StepNumber::setFontSize(int size) {
     if (fontSize_ != size) {

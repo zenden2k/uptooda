@@ -1,7 +1,7 @@
 #ifndef VectorElementTool_h_
 #define VectorElementTool_h_
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "MoveAndResizeTool.h"

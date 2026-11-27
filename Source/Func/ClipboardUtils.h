@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ClipboardUtils {
 

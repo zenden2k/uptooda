@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "CustomTrackBarControl.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Utils/CoreTypes.h"
 
 constexpr UINT MTBM_DROPDOWNMOUSEDOWN = WM_USER + 400;

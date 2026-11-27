@@ -30,7 +30,7 @@
 #include <libbase64.h>
 #include <webp/demux.h>
 #include <webp/encode.h>
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Logging.h"
 #include "Func/WinUtils.h"
 #include "Core/Images/ColorQuantizer.h"

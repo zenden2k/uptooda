@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "BasicTypes.h"
 #include "DrawingElement.h"
 

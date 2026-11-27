@@ -9,15 +9,13 @@
 #endif
 #include "WebBrowser/WTLBrowserView.h"
 
-CWebViewWindow::CWebViewWindow() {
+CWebViewWindow::CWebViewWindow(): comInitializer_(COM_MULTI_THREADED){
     isModal_ = false;
     messageLoopIsRunning_ = false;
     hWndClient_ = nullptr;
 }
 
-CWebViewWindow::~CWebViewWindow() {
-
-}
+CWebViewWindow::~CWebViewWindow() = default;
 
 LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME);
@@ -27,7 +25,6 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SetIcon(iconSmall_, FALSE);
 
     HWND hWnd = m_hWnd;
-    ::CoInitialize(NULL);
     HRESULT hr = E_FAIL;
     RECT rc;
     GetWindowRect(&rc);
@@ -170,13 +167,13 @@ std::string CWebViewWindow::runJavaScript(const CString& js) {
     return {};
 }
 
-CString CWebViewWindow::getUrl() {
+CString CWebViewWindow::getUrl() const {
     if (browserView_) {
         return browserView_->getUrl();
     }
     return {};
 }
-CString CWebViewWindow::getTitle() {
+CString CWebViewWindow::getTitle() const {
     if (browserView_) {
         return browserView_->getTitle();
     }

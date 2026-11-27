@@ -1,7 +1,7 @@
 #ifndef MoveAndResizeTool_h__
 #define MoveAndResizeTool_h__
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "AbstractDrawingTool.h"
@@ -26,7 +26,7 @@ protected:
     void createElement();
     bool canActivateElement(const MovableElement* element) const;
     MovableElement::Grip checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
-    MovableElement::Grip checkElementBoundaries(MovableElement*, int x, int y);
+    static MovableElement::Grip checkElementBoundaries(MovableElement*, int x, int y);
     static void cleanUp();
     CursorType getCursor(int x, int y) override;
     void mouseDoubleClick(int x, int y) override;

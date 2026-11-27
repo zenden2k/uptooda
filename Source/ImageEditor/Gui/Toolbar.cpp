@@ -3,7 +3,7 @@
 #include <strsafe.h>
 
 #include "Core/Logging.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Gui/GuiTools.h"
 #include "3rdpart/RoundRect.h"
 #include "resource.h"

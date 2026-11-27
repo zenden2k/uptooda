@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 #include "atlheaders.h"
 #include "Core/Utils/CoreTypes.h"

@@ -26,7 +26,7 @@
 #include "resource.h"
 
 #include "3rdpart/ColorButton.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 class FontEnumerator;

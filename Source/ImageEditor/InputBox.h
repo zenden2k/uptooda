@@ -3,7 +3,7 @@
 
 #include <boost/signals2.hpp>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "MovableElement.h"
 
 namespace ImageEditor {

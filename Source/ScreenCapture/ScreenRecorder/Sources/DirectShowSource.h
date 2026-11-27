@@ -6,7 +6,7 @@
 
 class DirectShowSource: public FFmpegSource {
 public:
-    inline static constexpr auto SOURCE_ID = "directshow";
+    static constexpr auto SOURCE_ID = "directshow";
 
     DirectShowSource(std::string deviceId)
         : FFmpegSource("directshow", true)

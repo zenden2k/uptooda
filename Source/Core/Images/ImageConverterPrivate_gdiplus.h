@@ -4,7 +4,7 @@
 #include <string>
 
 #include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "ImageConverterPrivateBase.h"
 #include "Utils.h"
 #include "Core/Images/AbstractImage.h"

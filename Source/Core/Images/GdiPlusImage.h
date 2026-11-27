@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "AbstractImage.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 class GdiPlusImage: public AbstractImage
 {

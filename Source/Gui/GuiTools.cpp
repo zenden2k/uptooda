@@ -34,7 +34,7 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Func/Library.h"
 #include "Gui/Helpers/DPIHelper.h"
 

@@ -21,7 +21,7 @@
 #include <cassert>
 #include <utility>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "DrawingElement.h"
 #include "Core/Logging.h"
 #include "Core/Images/Utils.h"
@@ -31,7 +31,7 @@ using namespace Gdiplus;
 
 Document::Document(int width, int height) {
     hasTransparentPixels_ = false;
-    currentImage_ = std::make_shared<Gdiplus::Bitmap>(width, height, PixelFormat32bppARGB);
+    currentImage_ = std::make_shared<Bitmap>(width, height, PixelFormat32bppARGB);
     init(true);
 }
 
@@ -44,7 +44,7 @@ Document::Document(const wchar_t* fileName) {
     }
 }
 
-Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels) {
+Document::Document(std::shared_ptr<Bitmap> sourceImage, bool hasTransparentPixels) {
     currentImage_ = std::move(sourceImage);
     hasTransparentPixels_ = hasTransparentPixels;
     init();
@@ -59,7 +59,6 @@ Document::~Document() {
 void Document::init(bool clear) {
     currentPainter_.reset();
     drawStarted_ = false;
-    originalImage_ = nullptr;
     if (currentImage_) {
         currentPainter_ = std::make_unique<Graphics>(currentImage_.get());
         if (clear) {
@@ -72,15 +71,15 @@ void Document::init(bool clear) {
 void Document::beginDrawing(bool cloneImage) {
     drawStarted_ = true;
     if (cloneImage) {
-        originalImage_ = currentImage_->Clone(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight(),
+        originalImage_ = currentImage_->Clone(0, 0, static_cast<int>(currentImage_->GetWidth()), static_cast<int>(currentImage_->GetHeight()),
                                               PixelFormat32bppARGB);
     }
     changedSegments_.clear();
 }
 
 void Document::addDrawingElement(DrawingElement* element) {
-    currentPainter_->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-    currentPainter_->SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+    currentPainter_->SetSmoothingMode(SmoothingModeAntiAlias);
+    currentPainter_->SetInterpolationMode(InterpolationModeHighQualityBicubic);
     AffectedSegments segments;
     element->getAffectedSegments(&segments);
     changedSegments_ += segments;
@@ -102,11 +101,11 @@ void Document::addAffectedSegments(const AffectedSegments& segments) {
     changedSegments_ += segments;
 }
 
-Gdiplus::Bitmap* Document::getBitmap() const {
+Bitmap* Document::getBitmap() const {
     return currentImage_.get();
 }
 
-void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
+void Document::updateBitmap(std::shared_ptr<Bitmap> bm) {
     saveDocumentState(true);
     currentImage_ = std::move(bm);
     init();
@@ -115,9 +114,9 @@ void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
 void Document::saveDocumentState(bool full) {
     int pixelSize = 4;
     std::deque<RECT> rects;
-    Gdiplus::Bitmap* srcImage = (originalImage_) ? originalImage_ : currentImage_.get();
-    int srcImageWidth = srcImage->GetWidth();
-    int srcImageHeight = srcImage->GetHeight();
+    Bitmap* srcImage = (originalImage_) ? originalImage_ : currentImage_.get();
+    int srcImageWidth = static_cast<int>(srcImage->GetWidth());
+    int srcImageHeight = static_cast<int>(srcImage->GetHeight());
 
     changedSegments_.getRects(rects, srcImageWidth, srcImageHeight); // may contain invalid segments!
     unsigned int pixels = 0;
@@ -129,8 +128,8 @@ void Document::saveDocumentState(bool full) {
 
     if (!full) {
         imageData = new unsigned char[dataSize];
-        Gdiplus::BitmapData bdSrc;
-        Gdiplus::Rect r(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight());
+        BitmapData bdSrc{};
+        Rect r(0, 0, static_cast<int>(currentImage_->GetWidth()), static_cast<int>(currentImage_->GetHeight()));
 
         if (srcImage->LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok) {
             delete[] imageData;
@@ -161,7 +160,6 @@ void Document::saveDocumentState(bool full) {
                     unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
                     unsigned int rowSize = rectWidth * pixelSize;
                     memcpy(pImageData, bpSrc + dataOffset, rowSize);
-                    //memset( pImageData, 255, rowSize );
                     pImageData += rowSize;
                 }
             }
@@ -186,10 +184,9 @@ void Document::saveDocumentState(bool full) {
 }
 
 void Document::checkTransparentPixels() {
-    using namespace Gdiplus;
-    BitmapData bitmapData;
-    Rect lockRect(0, 0, std::min<int>(10, currentImage_->GetWidth()), std::min<int>(10, currentImage_->GetHeight()));
-    if (currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
+    BitmapData bitmapData{};
+    Rect lockRect(0, 0, std::min<int>(10, static_cast<int>(currentImage_->GetWidth())), std::min(10, static_cast<int>(currentImage_->GetHeight())));
+    if (currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Gdiplus::Ok) {
         auto* source = static_cast<uint8_t*>(bitmapData.Scan0);
         unsigned int stride;
         if (bitmapData.Stride > 0) {
@@ -210,9 +207,9 @@ void Document::checkTransparentPixels() {
     }
 }
 
-void Document::render(Painter* gr, Gdiplus::Rect rc) {
+void Document::render(Painter* gr, Rect rc) {
     if (!gr || !currentImage_) return;
-    gr->DrawImage(currentImage_.get(), rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
+    gr->DrawImage(currentImage_.get(), rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, UnitPixel);
 }
 
 bool Document::undo() {
@@ -223,20 +220,17 @@ bool Document::undo() {
     history_.pop_back();
     std::deque<RECT> rects;
     auto image = currentImage_;
-    undoItem.segments.getRects(rects, image->GetWidth(), image->GetHeight());
+    undoItem.segments.getRects(rects, static_cast<int>(image->GetWidth()), static_cast<int>(image->GetHeight()));
 
-    Gdiplus::BitmapData bdSrc;
-    Gdiplus::Rect r(0, 0, image->GetWidth(), image->GetHeight());
+    BitmapData bdSrc{};
+    Rect r(0, 0, static_cast<int>(image->GetWidth()), static_cast<int>(image->GetHeight()));
     if (image->LockBits(&r, ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok) {
         return false;
     }
-    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+    auto bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
     unsigned char* pdata = undoItem.data;
-    int pixelSize = 4;
 
     if (undoItem.full) {
-        /*std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(undoItem.width, undoItem.height);
-        memcpy(bpSrc, pdata, undoItem.size);*/
         currentImage_ = undoItem.bmp;
         init();
     } else {
@@ -247,10 +241,10 @@ bool Document::undo() {
             int rectHeight = it->bottom - it->top;
 
             for (int j = 0; j < rectHeight; j++) {
+                int pixelSize = 4;
                 unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
                 unsigned int rowSize = rectWidth * pixelSize;
                 memcpy(bpSrc + dstDataOffset, pdata, rowSize);
-                //memset( bpSrc + dstDataOffset, 255, rowSize );
                 pdata += rowSize;
             }
         }
@@ -262,11 +256,11 @@ bool Document::undo() {
 }
 
 int Document::getWidth() const {
-    return currentImage_->GetWidth();
+    return static_cast<int>(currentImage_->GetWidth());
 }
 
 int Document::getHeight() const {
-    return currentImage_->GetHeight();
+    return static_cast<int>(currentImage_->GetHeight());
 }
 
 bool Document::isNull() const {
@@ -283,9 +277,9 @@ Painter* Document::getGraphicsObject() const {
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     saveDocumentState(true);
-    auto newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
-    Gdiplus::Graphics gr(newBitmap.get());
-    gr.Clear(Gdiplus::Color::Transparent);
+    auto newBitmap = std::make_shared<Bitmap>(cropWidth, cropHeight);
+    Graphics gr(newBitmap.get());
+    gr.Clear(Color::Transparent);
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
     currentImage_ = newBitmap;
 }

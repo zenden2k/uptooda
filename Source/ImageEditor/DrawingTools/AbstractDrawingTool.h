@@ -1,7 +1,7 @@
 #ifndef AbstractDrawingTool_h_
 #define AbstractDrawingTool_h_
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "CommonGuiSettings.h"
 #include "Core/Images/Utils.h"
 #include "Core/SearchByImage.h"

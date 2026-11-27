@@ -4,7 +4,7 @@
 #include "MediaInfoHelper.h"
 #endif
 #include "Core/ServiceLocator.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Images/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/i18n/Translator.h"

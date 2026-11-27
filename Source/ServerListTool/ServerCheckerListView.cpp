@@ -9,7 +9,9 @@ namespace ServersListTool {
 
 CServerCheckerListView::CServerCheckerListView(ServersCheckerModel* model) : model_(model){
     using namespace std::placeholders;
-    model_->setOnRowChangedCallback([this](auto index) { onRowChanged(index); });
+    model_->setOnRowChangedCallback([this](auto index) {
+        onRowChanged(index);
+    });
 }
 
 void CServerCheckerListView::Init() {

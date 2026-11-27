@@ -18,7 +18,7 @@
 
 #include "DrawingElement.h"
 #include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Logging.h"
 
 namespace ImageEditor {

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "AbstractDrawingTool.h"

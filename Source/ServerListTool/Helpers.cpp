@@ -1,6 +1,6 @@
 #include "Helpers.h"
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 

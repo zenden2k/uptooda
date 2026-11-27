@@ -26,7 +26,7 @@
 
 #include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ScreenCapture {
 

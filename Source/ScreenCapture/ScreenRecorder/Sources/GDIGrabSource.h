@@ -6,7 +6,7 @@
 
 class GDIGrabSource: public FFmpegSource {
 public:
-    inline static constexpr auto SOURCE_ID = "gdigrab";
+    static constexpr auto SOURCE_ID = "gdigrab";
 
     GDIGrabSource(): FFmpegSource("gdigrab") {
     }

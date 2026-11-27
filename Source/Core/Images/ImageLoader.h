@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Images/GdiPlusImage.h"
 
 class AbstractImageReader;

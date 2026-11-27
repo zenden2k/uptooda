@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <cassert>
 
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Logging.h"
 #include "Core/i18n/Translator.h"
 #include "Document.h"

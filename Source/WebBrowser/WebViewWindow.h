@@ -9,6 +9,7 @@
 //#include "resource.h"       // main symbols
 
 #include "3rdpart/thread.h"
+#include "Core/COMInitializer.h"
 
 class AbstractBrowserView;
 
@@ -17,7 +18,7 @@ class CWebViewWindow: public CWindowImpl<CWebViewWindow>//, public TimerAdapter<
 public:
 
     CWebViewWindow();
-    ~CWebViewWindow();
+    ~CWebViewWindow() override;
 
     DECLARE_WND_CLASS(_T("CWebViewWindow"))
     bool NavigateTo(const CString& url);
@@ -28,8 +29,8 @@ public:
     void destroyFromAnotherThread();
     bool displayHTML(const CString& html);
     std::string runJavaScript(const CString& js);
-    CString getUrl();
-    CString getTitle();
+    CString getUrl() const;
+    CString getTitle() const;
     void setBrowserFocus();
 
 protected:
@@ -68,6 +69,7 @@ protected:
     std::function<void(const CString&)> onUrlChanged_;
     std::function<void(const CString&)> onDocumentComplete_;
     std::function<bool(const CString&, LONG)> onNavigateError_;
+    COMInitializer comInitializer_;
 };
 
 

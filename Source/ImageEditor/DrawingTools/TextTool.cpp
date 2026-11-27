@@ -21,7 +21,7 @@
 #include "../Canvas.h"
 #include "../Document.h"
 #include "../MovableElements.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ImageEditor {
 

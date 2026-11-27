@@ -5,7 +5,7 @@
 #include <vector>
 
 #include <Windows.h>
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "BasicTypes.h"
 #include "DrawingElement.h"
 #include "Core/Utils/CoreTypes.h"
@@ -50,10 +50,10 @@ class Document {
         bool isInDrawingState() const;
     private:
         std::shared_ptr<Gdiplus::Bitmap> currentImage_;
-        Gdiplus::Bitmap* originalImage_;
+        Gdiplus::Bitmap* originalImage_{};
         std::unique_ptr<Painter> currentPainter_;
         std::vector<HistoryItem> history_;
-        bool drawStarted_;
+        bool drawStarted_ = false;
         AffectedSegments changedSegments_;
         bool hasTransparentPixels_;
         bool isSrcMultiFrame_ = false;

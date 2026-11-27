@@ -58,12 +58,16 @@ public:
         }
 
         const auto& items = par->getItems();
-        std::vector<CString> s; // Maybe only this vector of CString is enough?
+        std::vector<std::wstring> strings; // Maybe only this vector of CString is enough?
+        strings.reserve(items.size());
         std::vector<LPCTSTR> choices;
+        choices.reserve(items.size() + 1);
+
         for (const auto& it : items) {
-            s.emplace_back(IuCoreUtils::Utf8ToWstring(it.second).c_str());
-            choices.push_back(s.back().GetString());
+            strings.emplace_back(IuCoreUtils::Utf8ToWstring(it.second));
+            choices.emplace_back(strings.back().c_str());
         }
+
         choices.push_back(nullptr);
         return PropCreateList(U2W(par->getTitle()), choices.data(), par->selectedIndex(), lParam);
     }

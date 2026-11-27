@@ -28,7 +28,7 @@
 
 #include <cmath>
 #include <cassert>
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 namespace ImageEditor {
 

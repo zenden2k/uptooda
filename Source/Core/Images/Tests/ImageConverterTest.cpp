@@ -5,7 +5,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Tests/TestHelpers.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/CommonDefs.h"
 #include "atlheaders.h"
 

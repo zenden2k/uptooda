@@ -34,7 +34,7 @@
 #include "Core/i18n/Translator.h"
 #ifdef _WIN32
 #include "Func/IuCommonFunctions.h"
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 #include "Core/Images/Utils.h"
 #include "Core/Images/ImageLoader.h"
 #include "Func/WinUtils.h"

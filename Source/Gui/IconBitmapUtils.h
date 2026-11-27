@@ -20,7 +20,7 @@
 #include <map>
 #include <Windows.h>
 #include <Uxtheme.h>
-#include "3rdpart/GdiplusH.h"
+#include "3rdpart/GdiPlusH.h"
 
 /*#define STRICT_TYPED_ITEMIDS    // In case you use IDList, you want this on for better type safety.
 #include <windows.h>
