@@ -42,6 +42,6 @@ function UploadFile(filePath, options)
 function GetServerParamList()
 {
     return {
-        SecretKey = "SecretKey"
+        SecretKey = { title = "SecretKey", required = true }
     };
 }

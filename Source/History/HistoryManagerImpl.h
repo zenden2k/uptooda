@@ -62,7 +62,7 @@ class CHistoryManager: public IHistoryManager
         std::random_device rd_;
         std::mt19937 mt_;
         std::mutex sessionMutex_;
-        bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
+        static bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
         friend class CHistoryReader;
 };
 
@@ -73,7 +73,7 @@ class CHistoryReader : public IHistoryReader {
         bool loadFromFile(const std::string& filename) override;
         bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) override;
         size_t getSessionCount() const override;
-        void loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode);
+        static void loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode);
 
         // The pointer returned by this function is only valid
         //  during lifetime of CHistoryReader object

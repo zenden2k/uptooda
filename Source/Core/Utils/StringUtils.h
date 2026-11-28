@@ -124,6 +124,9 @@ namespace IuStringUtils
     }
 
     std::string RandomString(std::size_t length);
+
+    int StringToInt(const std::string& str);
+    int64_t StringToInt64(const std::string& str);
 };
 
 #endif

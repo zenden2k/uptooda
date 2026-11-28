@@ -11,7 +11,7 @@ function _PrintError(t, txt) {
 
 function UploadFile(fileName, options) {
     local task = options.getTask().getFileTask();
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = ServerParams.getParam("apiToken");
     local expiration = EXPIRATION_PERMANENT;
 
     try {
@@ -87,7 +87,7 @@ function UploadFile(fileName, options) {
 }
 
 function GetFolderList(list) {
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = ServerParams.getParam("apiToken");
 
     if (apiToken == "") {
         WriteLog("error", "[TeleBox] You must provide an API token.");
@@ -118,7 +118,7 @@ function GetFolderList(list) {
 }
 
 function CreateFolder(parentFolder, folder) {
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = ServerParams.getParam("apiToken");
 
     if (apiToken == "") {
         WriteLog("error", "[TeleBox] You must provide an API token.");
@@ -153,7 +153,7 @@ function CreateFolder(parentFolder, folder) {
 
 function GetServerParamList() {
     return {
-        //apiToken = "API token",
+        apiToken = { title = "API token", required = true },
         expiration = {
             title = tr("chevereto.expiration"),
             type = "choice",

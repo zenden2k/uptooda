@@ -505,11 +505,6 @@ std::string TimeStampToString(time_t t)
     return buf;
 }
 
-int64_t StringToInt64(const std::string& str)
-{
-    return strtoll(str.c_str(), nullptr, 10);
-}
-
 int64_t GetFileSize(const std::string& utf8Filename) {
     if (utf8Filename.empty()) {
         return -1;

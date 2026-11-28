@@ -1,6 +1,12 @@
 const UPLOAD_SERVER_URL = "https://nitroflare.net/plugins/fileupload/getServer";
 
 function UploadFile(fileName, options) {
+    local userHash = ServerParams.getParam("userHash");
+    if (userHash == "") {
+        WriteLog("error", "[nitroflare.net] Set the user hash in the server settings before uploading.");
+        return ResultCode.Failure;
+    }
+
     nm.enableResponseCodeChecking(false);
     nm.doGet(UPLOAD_SERVER_URL);
 
@@ -18,7 +24,7 @@ function UploadFile(fileName, options) {
     local task = options.getTask().getFileTask();
     nm.setUrl(uploadUrl);
     nm.addPostFieldFile("files", fileName, task.getDisplayName(), GetFileMimeType(fileName));
-    nm.addPostField("user", ServerParams.getParam("Password"));
+    nm.addPostField("user", userHash);
     nm.doUploadMultipartData();
 
     local responseBody = nm.responseBody();
@@ -41,4 +47,10 @@ function UploadFile(fileName, options) {
 
     options.setViewUrl(response.files[0].url);
     return ResultCode.Success;
+}
+
+function GetServerParamList() {
+    return {
+        userHash = { title = "User hash", required = true }
+    };
 }

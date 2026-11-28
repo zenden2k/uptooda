@@ -29,7 +29,6 @@
 #include "Gui/Dialogs/UploadParamsDlg.h"
 #include "Func/WinUtils.h"
 #include "Gui/IconBitmapUtils.h"
-#include "Gui/Dialogs/LoginDlg.h"
 #include "Gui/Dialogs/AddFtpServerDialog.h"
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
@@ -164,7 +163,8 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
     }
     CServerParamsDlg serverParamsDlg(serverProfile_, uploadEngineManager_);
 
-    if (serverParamsDlg.DoModal(m_hWnd) == IDOK) {
+    const auto result = serverParamsDlg.DoModal(m_hWnd);
+    if (result == IDOK || result == CServerParamsDlg::ID_DELETEACCOUNT) {
         serverProfile_ = serverParamsDlg.serverProfile();
         notifyChange();
     }
@@ -173,17 +173,10 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
     return 0;
 }
 
-void CServerSelectorControl::addAccount()
-{
-    ServerProfile serverProfileCopy = serverProfile_;
-    serverProfileCopy.setProfileName("");
-    CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
-
-    if (dlg.DoModal(m_hWnd) != IDCANCEL)
-    {
-        serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
-        serverProfileCopy.clearFolderInfo();
-        serverProfile_ = serverProfileCopy;
+void CServerSelectorControl::addAccount() {
+    CServerParamsDlg dlg(serverProfile_, uploadEngineManager_, CServerParamsDlg::Mode::ADD_ACCOUNT);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        serverProfile_ = dlg.serverProfile();
         updateInfoLabel();
         notifyChange();
     }
@@ -469,25 +462,11 @@ LRESULT CServerSelectorControl::OnAddAccountClick(WORD wNotifyCode, WORD wID, HW
     return 0;
 }
 
-LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
-    std::string UserName = serverSettings ? serverSettings->authData.Login: std::string();
-    ServerProfile copy = serverProfile_;
-    CLoginDlg dlg(copy, uploadEngineManager_);
-    if (dlg.DoModal(m_hWnd) != IDCANCEL) {
-        copy.setProfileName(WCstringToUtf8(dlg.accountName()));
-        if(Utf8ToWCstring(UserName) != dlg.accountName())
-        {
-            copy.setFolderId("");
-            copy.setFolderTitle("");
-            copy.setFolderUrl("");
-            serverProfile_.setParentIds({});
-            serverProfile_ = copy;
-            //iuPluginManager.UnloadPlugins();
-            //_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
-        }
+LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    CServerParamsDlg dlg(serverProfile_, uploadEngineManager_, CServerParamsDlg::Mode::EDIT_ACCOUNT);
+    const auto result = dlg.DoModal(m_hWnd);
+    if (result == IDOK || result == CServerParamsDlg::ID_DELETEACCOUNT) {
+        serverProfile_ = dlg.serverProfile();
         notifyChange();
         updateInfoLabel();
     }

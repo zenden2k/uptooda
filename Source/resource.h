@@ -27,7 +27,6 @@
 #define IDD_ADDFTPSERVERDIALOG          127
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
-#define IDD_LOGINDLG                    130
 #define IDD_LANGSELECT                  131
 #define IDD_MEDIAINFODLG                132
 #define IDD_SETTINGSDLG                 133
@@ -765,7 +764,7 @@
 #define IDC_URLSHORTENERPLACEHOLDER     1305
 #define IDC_PARAMETERSLABEL             1305
 #define IDC_DOLOGINLABEL2               1305
-#define IDC_SIGNUPLINK                  1305
+#define IDC_SIGNUPLINK                  1384
 #define IDC_ACCOUNTINFO                 1306
 #define IDC_AUTHORLABEL                 1306
 #define IDC_URLSHORTENERPLACEHOLDER2    1306
@@ -933,7 +932,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        366
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1384
+#define _APS_NEXT_CONTROL_VALUE         1385
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

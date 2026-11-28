@@ -423,7 +423,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
     for (int i = 0; i < argc; i++) {
         const char* val = argv[i] ? argv[i] : "";
         if (strcmp(azColName[i], "created_at") == 0) {
-            session->setTimeStamp(IuCoreUtils::StringToInt64(val));
+            session->setTimeStamp(IuStringUtils::StringToInt64(val));
             break;
         } else if (strcmp(azColName[i], "server_name") == 0) {
             session->setServerName(val);
@@ -438,7 +438,6 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
 }
 
 int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char **azColName){
-
     auto pthis = static_cast<CHistoryReader*>(userData);
 
     std::string sessionId;
@@ -459,7 +458,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
     for (int i = 0; i < argc; i++) {
         const char *val = argv[i] ? argv[i] : "";
         if (strcmp(azColName[i], "id") == 0) {
-            item.id = static_cast<int>(IuCoreUtils::StringToInt64(val));
+            item.id = IuStringUtils::StringToInt(val);
         } else if (strcmp(azColName[i], "direct_url") == 0) {
             item.directUrl = val;
         } else if (strcmp(azColName[i], "view_url") == 0) {
@@ -479,11 +478,11 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
         } else if (strcmp(azColName[i], "local_file_path") == 0) {
             item.localFilePath = val;
         } else if (strcmp(azColName[i], "created_at") == 0) {
-            item.timeStamp = IuCoreUtils::StringToInt64(val);
+            item.timeStamp = IuStringUtils::StringToInt64(val);
         } else if (strcmp(azColName[i], "sort_index") == 0) {
-            item.sortIndex = static_cast<int>(IuCoreUtils::StringToInt64(val));
+            item.sortIndex = static_cast<int>(IuStringUtils::StringToInt64(val));
         } else if (strcmp(azColName[i], "size") == 0) {
-            item.uploadFileSize = IuCoreUtils::StringToInt64(val);
+            item.uploadFileSize = IuStringUtils::StringToInt64(val);
         } else if (strcmp(azColName[i], "server_name") == 0) {
             item.serverName = val;
         }
@@ -522,7 +521,7 @@ void CHistoryReader::loadSessionFromXml(CHistorySession* session, SimpleXmlNode&
         ht.displayName = item.Attribute("DisplayName");
         ht.uploadFileSize = item.AttributeInt64("UploadFileSize");
         std::string sortIndex = item.Attribute("Index");
-        ht.sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::StringToInt64(sortIndex));
+        ht.sortIndex = sortIndex.empty() ? static_cast<int>(i) : IuStringUtils::StringToInt(sortIndex);
         // Fix invalid file size
         if (ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0) {
             ht.uploadFileSize = 0;

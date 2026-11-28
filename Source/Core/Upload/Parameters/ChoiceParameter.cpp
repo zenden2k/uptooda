@@ -21,7 +21,7 @@ void ChoiceParameter::setValue(const std::string& val) {
 
     for (const auto& it : items_) {
         if (it.first == val) {
-            selectedIndex_ = i;
+            selectedIndex_ = static_cast<int>(i);
             return;
         }
         ++i;

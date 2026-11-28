@@ -475,4 +475,13 @@ std::string RandomString(std::size_t length)
     return random_string;
 }
 
+int StringToInt(const std::string& str) {
+    return strtol(str.c_str(), nullptr, 10);
+}
+
+int64_t StringToInt64(const std::string& str)
+{
+    return strtoll(str.c_str(), nullptr, 10);
+}
+
 }

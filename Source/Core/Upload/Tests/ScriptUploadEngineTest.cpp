@@ -1,22 +1,16 @@
 #include <gtest/gtest.h>
+#include <map>
 
-#include "Core/Upload/ServerSync.h"
-#include "Core/Upload/FileUploadTask.h"
-#include "Core/Upload/UrlShorteningTask.h"
-#include "Core/Network/Tests/NetworkClientMock.h"
-#include "Tests/TestHelpers.h"
-#include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Network/Tests/NetworkClientMock.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/Upload/ServerSync.h"
+#include "Core/Upload/UrlShorteningTask.h"
+#include "Tests/TestHelpers.h"
 
 using namespace ::testing;
 
-template <typename Map>
-bool map_compare(Map const &lhs, Map const &rhs) {
-    // No predicate needed because there is operator== for pairs already.
-    return lhs.size() == rhs.size()
-        && std::equal(lhs.begin(), lhs.end(),
-        rhs.begin());
-}
 class ScriptUploadEngineTest : public ::testing::Test {
 public:
     ScriptUploadEngineTest() : constSizeFileName(TestHelpers::resolvePath("file_with_const_size.png")) {
@@ -140,13 +134,16 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     res = engine.getServerParamList(params);
     EXPECT_EQ(1, res);
 
-    /* std::map<std::string, std::string> expected = {
-        { "Param1", "Description1" },
-        { "Param2", "Description 2" },
-        { "Param3", "Description 3"}
+    std::map<std::string, std::pair<std::string, bool>> actual;
+    for (const auto& param : params) {
+        actual.emplace(param->getName(), std::pair { param->getDisplayTitle(), param->isRequired() });
+    }
+    const decltype(actual) expected {
+        { "Param1", { "Description1", false } },
+        { "Param2", { "Description 2", false } },
+        { "Param3", { "Description 3 *", true } },
     };
-
-    EXPECT_TRUE(map_compare(params, expected));*/
+    EXPECT_EQ(expected, actual);
 }
 
 TEST_F(ScriptUploadEngineTest, shortenUrl)

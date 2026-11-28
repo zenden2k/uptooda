@@ -16,7 +16,7 @@ function _ObtainToken() {
 
 function _UploadToAccount(FileName, options) {
     nm.enableResponseCodeChecking(true);
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
     if (apiKey == "") {
         WriteLog("error", "[imgbb.com] Cannot upload to account without API key");
         return ResultCode.Failure;
@@ -113,6 +113,7 @@ function UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
+        apiKey = "API key",
         expirationAuthorized = tr("imgbb.expiration_authorized", "Expiration in minutes (authorized)"),
         expiration = {
             title = tr("imgbb.expiration", "Expiration (anonymous)"),

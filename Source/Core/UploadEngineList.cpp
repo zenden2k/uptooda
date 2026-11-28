@@ -78,9 +78,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             ue.addUserType(UserTypes::REGISTERED);
         }
         std::string needPassword = cur.Attribute("NeedPassword");
-        ue.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::StringToInt64(needPassword) != 0);
+        ue.NeedPassword = needPassword.empty() ? true : (IuStringUtils::StringToInt64(needPassword) != 0);
         ue.LoginLabel = cur.Attribute("LoginLabel");
         ue.PasswordLabel = cur.Attribute("PasswordLabel");
+        ue.ApiCredentialParam = cur.Attribute("ApiCredentialParam");
         std::string RetryLimit = cur.Attribute("RetryLimit");
 
         if (RetryLimit.empty()) {
@@ -293,6 +294,15 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
         }
         ue.SupportThumbnails = !ue.ThumbUrlTemplate.empty();
+        if (!ue.ApiCredentialParam.empty()) {
+            // The GUI may load the server list after reading saved accounts.
+            const auto settings = serversSettings.find(ue.Name);
+            if (settings != serversSettings.end()) {
+                for (auto& entry : settings->second) {
+                    entry.second.migrateLegacyPassword(ue.ApiCredentialParam);
+                }
+            }
+        }
         m_list.push_back(std::move(uploadEngineData));
     }
 

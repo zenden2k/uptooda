@@ -1,5 +1,5 @@
 function UploadFile(FileName, options) {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("userKey");
     if (apiKey == "") {
         WriteLog("error", "[vgy.me] Cannot proceed without API key.");
         return -1;
@@ -20,4 +20,10 @@ function UploadFile(FileName, options) {
     }
 
     return 0;
+}
+
+function GetServerParamList() {
+    return {
+        userKey = { title = "User key", required = true }
+    };
 }

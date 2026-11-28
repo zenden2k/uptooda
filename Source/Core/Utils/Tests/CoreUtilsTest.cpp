@@ -166,13 +166,6 @@ TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 
 }
 
-TEST_F(CoreUtilsTest, stringToint64_t) 
-{
-    EXPECT_TRUE(StringToInt64("9223372036854775807")== 9223372036854775807);
-    EXPECT_TRUE(StringToInt64("-9223372036854775807") == INT64_C(-9223372036854775807));
-    EXPECT_TRUE(StringToInt64("0")== 0);
-}
-
 TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType) 
 {
     EXPECT_EQ("gif", GetDefaultExtensionForMimeType("image/gif"));

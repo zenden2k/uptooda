@@ -494,3 +494,10 @@ TEST_F(StringUtilsTest, StrCaseInsensitiveCompare_VeryLongStrings_DoesNotCrash) 
     longStr2[9999] = 'b'; // Последняя буква другая
     EXPECT_EQ(StrCaseInsensitiveCompare(longStr, longStr2), -1);
 }
+
+TEST_F(StringUtilsTest, StringToInt64)
+{
+    EXPECT_TRUE(StringToInt64("9223372036854775807")== 9223372036854775807);
+    EXPECT_TRUE(StringToInt64("-9223372036854775807") == INT64_C(-9223372036854775807));
+    EXPECT_TRUE(StringToInt64("0")== 0);
+}

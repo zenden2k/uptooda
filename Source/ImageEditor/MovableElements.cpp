@@ -56,7 +56,7 @@ void Line::render(Painter* gr) {
     if (!gr) {
         return;
     }
-    Gdiplus::Pen pen(color_, static_cast<REAL>(penSize_));
+    Pen pen(color_, static_cast<REAL>(penSize_));
     pen.SetStartCap(LineCapRound);
     pen.SetEndCap(LineCapRound);
     // CustomLineCap cap()
@@ -954,6 +954,7 @@ void Ellipse::createGrips() {
     grips_.resize(8);
     MovableElement::createGrips();
     // btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight,
+    // Removing unnecessary grips in reverse order
     grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopRight));
     grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopLeft));
     grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btBottomLeft));

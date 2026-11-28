@@ -47,54 +47,30 @@ CEncodedPassword& CEncodedPassword::operator=(const CString& text) {
 }
 #endif
 
-void CEncodedPassword::DecodeString(const std::string& encodedString, std::string & Result, const char* code) {
-    std::wstring szSource = IuCoreUtils::Utf8ToWstring(encodedString);
-    wchar_t szDestination[1024];
-    int br = strlen(code);
-    int n = szSource.length() / 2;
-    int j = 0;
-    memset(szDestination, 0, sizeof(szDestination));
+void CEncodedPassword::DecodeString(const std::string& encodedString, std::string& Result, const char* code) {
+    const size_t byteCount = encodedString.size() / 2;
+    std::wstring decoded((byteCount + sizeof(wchar_t) - 1) / sizeof(wchar_t), L'\0');
+    auto* bytes = reinterpret_cast<unsigned char*>(decoded.data());
+    const size_t codeLength = strlen(code);
 
-    int i;
-    auto* data = reinterpret_cast<uint8_t*>(szDestination);
-    *szDestination = 0;
-
-    for (i = 0; i < n; i++) {
-        if (j >= br)
-            j = 0;
-
-        uint8_t b;
-        b = static_cast<uint8_t>((szSource[i * 2] - L'A') * 16 + (szSource[i * 2 + 1] - L'A'));
-        b = b ^ code[j];
-        data[i] = b;
-        j++;
+    for (size_t index = 0; index < byteCount; ++index) {
+        const auto byte
+            = static_cast<unsigned char>((encodedString[index * 2] - 'A') * 16 + (encodedString[index * 2 + 1] - 'A'));
+        bytes[index] = byte ^ code[index % codeLength];
     }
-    data[i] = 0;
-    Result = IuCoreUtils::WstringToUtf8(szDestination);
+    Result = IuCoreUtils::WstringToUtf8(decoded.c_str());
 }
 
-void CEncodedPassword::EncodeString(const std::string& plainText, std::string& Result, const char* code)
-{
-    std::wstring szSource = IuCoreUtils::Utf8ToWstring(plainText);
-    wchar_t szDestination[1024];
-    int br = strlen(code);
-    int n = szSource.length() * 2;
-    int j = 0;
+void CEncodedPassword::EncodeString(const std::string& plainText, std::string& Result, const char* code) {
+    const std::wstring wideText = IuCoreUtils::Utf8ToWstring(plainText);
+    const auto* bytes = reinterpret_cast<const unsigned char*>(wideText.data());
+    const size_t codeLength = strlen(code);
+    const size_t byteCount = wideText.size() * sizeof(wchar_t);
+    Result.resize(byteCount * 2);
 
-    auto* data = reinterpret_cast<uint8_t*>(&szSource[0]);
-    *szDestination = 0;
-    for (int i = 0; i < n; i++) {
-        if (j >= br)
-            j = 0;
-
-        uint8_t b;
-        b = data[i] ^ code[j];
-        wchar_t bb[2] = { 0, 0 };
-        bb[0] = L'A' + b / 16;
-        wcscat(szDestination, bb);
-        bb[0] = L'A' + b % 16;
-        wcscat(szDestination, bb);
-        j++;
+    for (size_t index = 0; index < byteCount; ++index) {
+        const unsigned char byte = bytes[index] ^ code[index % codeLength];
+        Result[index * 2] = static_cast<char>('A' + byte / 16);
+        Result[index * 2 + 1] = static_cast<char>('A' + byte % 16);
     }
-    Result = IuCoreUtils::WstringToUtf8(szDestination);
 }

@@ -61,7 +61,6 @@ set(SRC_LIST
         Dialogs/InputDialog.cpp
         Dialogs/IntegrationSettings.cpp
         Dialogs/LangSelect.cpp
-        Dialogs/LoginDlg.cpp
         Dialogs/LogoSettings.cpp
         Dialogs/LogWindow.cpp
         Dialogs/MainDlg.cpp
@@ -233,7 +232,6 @@ set(HEADER_LIST
         Dialogs/InputDialog.h
         Dialogs/IntegrationSettings.h
         Dialogs/LangSelect.h
-        Dialogs/LoginDlg.h
         Dialogs/LogoSettings.h
         Dialogs/LogWindow.h
         Dialogs/MainDlg.h

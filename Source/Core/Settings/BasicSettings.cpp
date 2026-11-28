@@ -57,6 +57,10 @@ void BasicSettings::setEngineList(CUploadEngineListBase* engineList) {
     engineList_ = engineList;
 }
 
+namespace {
+constexpr std::string_view ENCODED_PARAM_PREFIX = "EncodedParam_";
+}
+
 bool BasicSettings::LoadAccounts(SimpleXmlNode root)
 {
     std::vector<SimpleXmlNode> servers;
@@ -72,11 +76,15 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
             if (attribName.empty()) {
                 continue;
             }
-            if (attribName.substr(0, 1) == "_") {
+            if (attribName.starts_with(ENCODED_PARAM_PREFIX)) {
+                CEncodedPassword param;
+                param.fromEncodedData(server.Attribute(attribName));
+                tempSettings.params[attribName.substr(ENCODED_PARAM_PREFIX.size())] = param;
+            } else if (attribName.starts_with('_')) {
                 std::string value = server.Attribute(attribName);
-                std::string attribName2 = attribName.substr(1, attribName.size() - 1);
-                if (!value.empty())
-                    tempSettings.params[attribName2] = std::move(value);
+                if (!value.empty()) {
+                    tempSettings.params.try_emplace(attribName.substr(1), std::move(value));
+                }
             }
         }
         tempSettings.authData.DoAuth = server.AttributeBool("Auth");
@@ -90,6 +98,9 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         CEncodedPassword pass;
         pass.fromEncodedData(encodedPass);
         tempSettings.authData.Password = pass;
+        if (const auto* engine = engineList_ ? engineList_->byName(server_name) : nullptr) {
+            tempSettings.migrateLegacyPassword(engine->ApiCredentialParam);
+        }
 
         tempSettings.defaultFolder.setId(server.Attribute("DefaultFolderId"));
         tempSettings.defaultFolder.viewUrl = server.Attribute("DefaultFolderUrl");
@@ -111,19 +122,24 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
             }
             SimpleXmlNode serverNode = root.CreateChild("Server");
             serverNode.SetAttribute("Name", it1->first);
+            const CUploadEngineData* ued = engineList_->byName(it1->first);
 
             for (auto param = it->second.params.begin(); param != sss.params.end(); ++param) {
                 if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
                     continue;
                 }
-                serverNode.SetAttribute("_" + param->first, param->second);
+                if (ued && param->first == ued->ApiCredentialParam) {
+                    CEncodedPassword value(param->second);
+                    serverNode.SetAttribute(std::string(ENCODED_PARAM_PREFIX) + param->first, value.toEncodedData());
+                } else {
+                    serverNode.SetAttribute("_" + param->first, param->second);
+                }
             }
             serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
             CEncodedPassword login(sss.authData.Login);
             serverNode.SetAttribute("Login", login.toEncodedData());
 
-            const CUploadEngineData* ued = engineList_->byName(it->first);
             if (!ued || ued->NeedPassword) {
                 CEncodedPassword pass(it->second.authData.Password);
                 serverNode.SetAttribute("Password", pass.toEncodedData());

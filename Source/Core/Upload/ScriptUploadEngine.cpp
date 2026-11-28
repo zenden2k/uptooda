@@ -84,6 +84,9 @@ void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& l
                 auto newParam = SqTableToParameter(it.getName(), typeStr, table);
                 if (newParam) {
                     newParam->setTitle(title);
+                    if (table.HasKey("required")) {
+                        newParam->setRequired(ScriptAPI::GetValue(table.GetValue<bool>("required")));
+                    }
                     list.push_back(std::move(newParam));
                 }
             } catch (const std::exception& ex) {

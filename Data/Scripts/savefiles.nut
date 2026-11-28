@@ -14,7 +14,7 @@ function _PrintError(t, txt) {
 // @return int - success(1), failure(0)
 function UploadFile(pathToFile, options) {
     local task = options.getTask().getFileTask();
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
 
     if (apiKey == "") {
         WriteLog("error", "[savefiles.com] API key not set!");
@@ -146,7 +146,7 @@ function UploadFile(pathToFile, options) {
 // Authenticating on remote server (optional function)
 // @return int - success(1), failure(0)
 function Authenticate() {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
     if (apiKey == "") {
         WriteLog("error", "[savefiles.com] API key not set!");
         return ResultCode.Failure;
@@ -174,7 +174,7 @@ function Authenticate() {
 // @var CFolderList list
 // @return int - success(1), failure(0)
 function GetFolderList(list) {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
     if (apiKey == "") {
         WriteLog("error", "[savefiles.com] API key not set!");
         return ResultCode.Failure;
@@ -224,7 +224,7 @@ function GetFolderList(list) {
 // @var CFolderItem album
 // @return int - success(1), failure(0)
 function CreateFolder(parentAlbum, album) {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
     if (apiKey == "") {
         WriteLog("error", "[savefiles.com] API key not set!");
         return ResultCode.Failure;
@@ -267,7 +267,7 @@ function CreateFolder(parentAlbum, album) {
 // @var CFolderItem album
 // @return int - success(1), failure(0)
 function ModifyFolder(album) {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
     if (apiKey == "") {
         WriteLog("error", "[savefiles.com] API key not set!");
         return ResultCode.Failure;
@@ -309,7 +309,7 @@ function ModifyFolder(album) {
 // optional function
 function GetServerParamList() {
     return {
-        apiKey = "API Key",
+        apiKey = { title = "API key", required = true },
         fileTitle = "File Title",
         fileDescription = "File Description",
         tags = "Tags (comma separated)",

@@ -58,9 +58,8 @@ function _ChooseMirrors(fileName, fileSize, availableMirrors, defaultMirrors, us
     return mirrors;
 }
 
-function _UploadToAccount(fileName, options) {
+function _UploadToAccount(fileName, options, apiKey) {
     local task = options.getTask().getFileTask();
-    local apiKey = ServerParams.getParam("Password");
     nm.setUrl(API_URL + "/api/v1/get_upload_info");
     nm.addPostField("api_key", apiKey);
     nm.doPost("");
@@ -131,10 +130,10 @@ function _UploadToAccount(fileName, options) {
 }
 
 function UploadFile(FileName, options) {
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("Login") == "" ? "" : ServerParams.getParam("apiKey");
 
     if (apiKey != "") {
-        return _UploadToAccount(FileName, options);
+        return _UploadToAccount(FileName, options, apiKey);
     }
 
     local fid = format("%c%c%c%c%c%c", rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A');
@@ -177,4 +176,10 @@ function UploadFile(FileName, options) {
     }
 
     return 0;
+}
+
+function GetServerParamList() {
+    return {
+        apiKey = "API key"
+    };
 }

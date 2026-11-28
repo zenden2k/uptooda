@@ -34,7 +34,6 @@
 #include "AddDirectoryServerDialog.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "LoginDlg.h"
 #include "ServerProfileGroupSelectDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -443,33 +442,13 @@ bool CUploadSettings::OnShow()
     return true;
 }
 
-LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
-{
-    bool ImageServer = (wID % 2)!=0;
-
-    ServerProfile & serverProfile = ImageServer? getSessionImageServerItem() : getSessionFileServerItem();
-    CLoginDlg dlg(serverProfile, uploadEngineManager_);
-
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* serverSettings = Settings->getServerSettings(ImageServer ? getSessionImageServerItem() : getSessionFileServerItem());
-
-    std::string UserName = serverSettings ? serverSettings->authData.Login : std::string();
-    bool prevAuthEnabled = serverSettings ? serverSettings->authData.DoAuth : false;
-    UINT dlgResult = dlg.DoModal(m_hWnd);
-
-    if (dlgResult  == IDOK) {
-        ServerSettingsStruct* ss = Settings->getServerSettings(ImageServer ? getSessionImageServerItem() : getSessionFileServerItem());
-        std::string newUserName = ss ? ss->authData.Login : std::string();
-        bool newAuth = ss ? ss->authData.DoAuth : false;
-        serverProfile.setProfileName(WCstringToUtf8(dlg.accountName()));
-        if(UserName != newUserName || newAuth != prevAuthEnabled) {
-            serverProfile.clearFolderInfo();
-        }
-
-        UpdateAllPlaceSelectors();
-    } else if (dlgResult == CLoginDlg::ID_DELETEACCOUNT) {
-        serverProfile.clearFolderInfo();
-        serverProfile.setProfileName("");
+LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/) {
+    const bool isImageServer = (wID % 2) != 0;
+    auto& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    CServerParamsDlg dlg(serverProfile, uploadEngineManager_, CServerParamsDlg::Mode::EDIT_ACCOUNT);
+    const auto result = dlg.DoModal(m_hWnd);
+    if (result == IDOK || result == CServerParamsDlg::ID_DELETEACCOUNT) {
+        serverProfile = dlg.serverProfile();
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -1087,20 +1066,20 @@ void CUploadSettings::SetInitialFocus(){
     ::SetFocus(WizardDlg->GetDlgItem(IDC_NEXT));
 }
 
-LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    bool ImageServer = (wID % 2)!=0;
-    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
+LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    bool ImageServer = (wID % 2) != 0;
 
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
-    const CUploadEngineData *ue = serverProfile.uploadEngineData();
-    if (!ue->UsingPlugin && ue->Engine.empty()) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APP_NAME, MB_ICONINFORMATION);
+    const auto* ue = serverProfile.uploadEngineData();
+    if (!ue || (!ue->UsingPlugin && ue->Engine.empty() && !ue->NeedAuthorization && !ue->SupportsFolders)) {
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APP_NAME,
+                                      MB_ICONINFORMATION);
         return false;
     }
 
     CServerParamsDlg dlg(serverProfile, uploadEngineManager_);
-    if ( dlg.DoModal(m_hWnd) == IDOK) {
+    const auto result = dlg.DoModal(m_hWnd);
+    if (result == IDOK || result == CServerParamsDlg::ID_DELETEACCOUNT) {
         serverProfile = dlg.serverProfile();
         UpdateAllPlaceSelectors();
     }
@@ -1359,20 +1338,12 @@ LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWN
     return 0;
 }
 
-LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    bool isImageServer = (wID % 2)!=0;
-
-    ServerProfile & serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
-    ServerProfile serverProfileCopy = serverProfile;
-    serverProfileCopy.setProfileName("");
-    CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
-    UINT dlgResult = dlg.DoModal(m_hWnd);
-    //ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
-    if (dlgResult  != IDCANCEL) {
-        serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
-        serverProfileCopy.clearFolderInfo();
-        serverProfile = serverProfileCopy;
+LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    const bool isImageServer = (wID % 2) != 0;
+    auto& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    CServerParamsDlg dlg(serverProfile, uploadEngineManager_, CServerParamsDlg::Mode::ADD_ACCOUNT);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        serverProfile = dlg.serverProfile();
         UpdateAllPlaceSelectors();
     }
     return 0;

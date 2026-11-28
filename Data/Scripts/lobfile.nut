@@ -103,7 +103,7 @@ function Authenticate() {
 // Required function to define server parameters
 function GetServerParamList() {
     return {
-        apiKey = "API Key",
+        apiKey = { title = "API Key", required = true },
         enableSHA256 = {
             title = "Enable SHA256 verification",
             type = "boolean"

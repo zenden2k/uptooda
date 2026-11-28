@@ -960,7 +960,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
         }
     }
     region->PrepareShooting(!(bool)(m_source != 0));
-    std::shared_ptr<Gdiplus::Bitmap> capturedBitmap;
+    std::shared_ptr<Bitmap> capturedBitmap;
     m_capturedBitmap = region->GetImage(srcDC);
     region->AfterShooting();
     if (m_source)

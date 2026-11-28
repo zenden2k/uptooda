@@ -252,6 +252,7 @@
                         <xs:attribute type="ServerTypes" name="Types" use="optional"/>
                         <xs:attribute type="xs:string" name="LoginLabel" use="optional"/>
                         <xs:attribute type="xs:string" name="PasswordLabel" use="optional"/>
+                        <xs:attribute type="xs:string" name="ApiCredentialParam" use="optional"/>
                         <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/> 
                         <xs:attribute type="Bool" name="UploadToTempServer" use="optional"/>  
                         <xs:attribute type="MinVersionType" name="MinVersion" use="optional"/>  

@@ -62,8 +62,16 @@ function GetServerParamList()
 	local a =
 	{
         Param1 = "Description1",
-		Param2 = "Description 2"
-		Param3 = "Description 3"
+        Param2 = {
+            title = "Description 2",
+            type = "text",
+            required = false
+        },
+        Param3 = {
+            title = "Description 3",
+            type = "boolean",
+            required = true
+        }
 	}
 	return a;
 }

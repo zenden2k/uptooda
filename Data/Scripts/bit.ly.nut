@@ -92,6 +92,6 @@ function ShortenUrl(url, options) {
 
 function GetServerParamList() {
     return {
-        token = "Token"
+        token = { title = "Token", required = true }
     };
 }

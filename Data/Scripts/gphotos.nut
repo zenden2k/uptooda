@@ -380,7 +380,7 @@ function GetFolderAccessTypeList() {
 
 function GetServerParamList() {
     return {
-        token = "token",
+        token = { title = "token", required = true },
         tokenType = "tokenType",
         expiresIn = "expiresIn",
         refreshToken = "refreshToken",

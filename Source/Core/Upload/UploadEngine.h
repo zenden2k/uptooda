@@ -169,6 +169,14 @@ public:
     CFolderItem newFolder;
     CFolderItem defaultFolder;
 
+    void migrateLegacyPassword(const std::string& paramName) {
+        if (!paramName.empty() && !authData.Password.empty()) {
+            std::lock_guard<std::mutex> lock(*paramsMutex_);
+            params.try_emplace(paramName, std::move(authData.Password));
+            authData.Password.clear();
+        }
+    }
+
     bool isEmpty() const {
         return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && params.empty() && defaultFolder.getId().empty();
     }
@@ -237,6 +245,7 @@ class CUploadEngineData
         std::vector<FileFormatGroup> ForbiddenFormatGroups;
         std::vector<StorageTime> StorageTimeInfo;
         std::string LoginLabel, PasswordLabel;
+        std::string ApiCredentialParam;
         std::string UserAgent;
         std::string Engine;
         int RetryLimit;

@@ -58,8 +58,8 @@ public:
         }
 
         const auto& items = par->getItems();
-        std::vector<std::wstring> strings; // Maybe only this vector of CString is enough?
-        strings.reserve(items.size());
+        std::vector<std::wstring> strings;
+        strings.reserve(items.size()); // mandatory: otherwise, reallocation invalidates c_str()
         std::vector<LPCTSTR> choices;
         choices.reserve(items.size() + 1);
 
@@ -69,7 +69,7 @@ public:
         }
 
         choices.push_back(nullptr);
-        return PropCreateList(U2W(par->getTitle()), choices.data(), par->selectedIndex(), lParam);
+        return PropCreateList(title, choices.data(), par->selectedIndex(), lParam);
     }
 
     bool save(AbstractParameter* parameter, const CComVariant& value) override {
@@ -115,7 +115,6 @@ void ParameterListAdapter::updateControl(ServerSettingsStruct* serverSettings) {
     });
     for (const auto& parameter : *parameterList_) {
         HPROPERTY prop = nullptr;
-        CString name = U2W(parameter->getName());
         std::string value = serverSettings ? serverSettings->params[parameter->getName()] : std::string();
         auto lParam = reinterpret_cast<LPARAM>(parameter.get());
 
@@ -123,7 +122,7 @@ void ParameterListAdapter::updateControl(ServerSettingsStruct* serverSettings) {
 
         if (controller) {
             parameter->setValue(value);
-            prop = controller->show(parameter.get(), U2W(parameter->getTitle()), value, lParam);
+            prop = controller->show(parameter.get(), U2W(parameter->getDisplayTitle()), value, lParam);
         }
 
         if (prop) {

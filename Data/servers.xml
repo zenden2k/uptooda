@@ -387,14 +387,8 @@
     <Server Name="bit.ly" Authorize="2" Type="urlshortening" Plugin="bit.ly" NeedPassword="0" WebsiteUrl="https://bitly.com">
         <Result DirectUrlTemplate="stub"/>
     </Server>
-    <Server Name="0.mk" Authorize="2" Type="urlshortening" WebsiteUrl="https://0.mk/" PasswordLabel="API token">
-        <Actions>
-            <Action Type="post" Url="https://0.mk/api/links" CustomHeaders="Content-Type:application/json;Authorization:Bearer $(_PASSWORD)">
-                <Body><![CDATA[{"url":$(_ORIGINALURL|jsonescape)}]]></Body>
-                <Call Function="json" Arg1="shortUrl" AssignVars="ShortUrl:0;" Required="1"/>
-            </Action>
-        </Actions>
-        <Result DirectUrlTemplate="$(ShortUrl)" />
+    <Server Name="0.mk" Plugin="0.mk" Authorize="2" Type="urlshortening" WebsiteUrl="https://0.mk/" NeedPassword="0" ApiCredentialParam="apiToken" LoginLabel="Profile name">
+        <Result DirectUrlTemplate="stub"/>
     </Server>
     <Server Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" WebsiteUrl="https://vk.com/">
         <Info>  
@@ -448,7 +442,7 @@
     <Server Name="geekpic.net" Plugin="geekpic" MinVersion="1.3.2.4462" WebsiteUrl="https://pic4net.com/">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" Authorize="1" FileHost="1" MaxFileSize="524288000" PasswordLabel="ApiKey" MaxThreads="1"
+    <Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" Authorize="1" FileHost="1" MaxFileSize="524288000" NeedPassword="0" ApiCredentialParam="apiKey" LoginLabel="Profile name" MaxThreads="1"
         WebsiteUrl="https://www.mirrored.to" RegistrationUrl="https://www.mirrored.to/p/sign-up">
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
@@ -546,7 +540,7 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
 
-    <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
+    <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" NeedPassword="0" ApiCredentialParam="apiKey" LoginLabel="Profile name" WebsiteUrl="https://imgbb.com/"
             RegistrationUrl="https://imgbb.com/signup">
         <Info>
             <SupportedFormats>
@@ -610,7 +604,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" PasswordLabel="User key" WebsiteUrl="https://vgy.me"
+    <Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" NeedPassword="0" ApiCredentialParam="userKey" LoginLabel="Profile name" WebsiteUrl="https://vgy.me"
         RegistrationUrl="https://vgy.me/auth/register">
         <Info>
             <SupportedFormats>
@@ -1225,7 +1219,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
     </Server>
-    <Server Name="nitroflare.net" FileHost="1" Authorize="2" Plugin="nitroflare.net" WebsiteUrl="https://nitroflare.net/" RegistrationUrl="https://nitroflare.net/register" PasswordLabel="User hash">
+    <Server Name="nitroflare.net" FileHost="1" Authorize="2" Plugin="nitroflare.net" WebsiteUrl="https://nitroflare.net/" RegistrationUrl="https://nitroflare.net/register" NeedPassword="0" ApiCredentialParam="userHash" LoginLabel="Profile name">
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" />
@@ -1275,7 +1269,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(Link)"/>
     </Server>
-    <Server Name="TeleBox" FileHost="1" Authorize="2" Plugin="telebox" SupportsFolders="1" WebsiteUrl="https://www.linkbox.to/" RegistrationUrl="https://www.linkbox.to/signup" PasswordLabel="API token" MaxThreads="1">
+    <Server Name="TeleBox" FileHost="1" Authorize="2" Plugin="telebox" SupportsFolders="1" WebsiteUrl="https://www.linkbox.to/" RegistrationUrl="https://www.linkbox.to/signup" NeedPassword="0" ApiCredentialParam="apiToken" LoginLabel="Profile name" MaxThreads="1">
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
@@ -1411,34 +1405,23 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgpx.com" Types="image file" Authorize="1" Plugin="imgpx" WebsiteUrl="https://imgpx.com/" RegistrationUrl="https://imgpx.com/en/register" MaxThreads="1">
+    <Server Name="imgpx.com" Types="image file" Authorize="2" NeedPassword="0" LoginLabel="Profile name" Plugin="imgpx" WebsiteUrl="https://imgpx.com/" RegistrationUrl="https://imgpx.com/en/register" MaxThreads="1">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="16777216" UserTypes="anon">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                </FormatGroup>	
-                 <FormatGroup MaxFileSize="33554432" UserTypes="anon">
-                    <Format MimeType="application/pdf">*.pdf</Format>
-                    <Format MimeType="text/plain">*.txt</Format>
-                    <Format MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document">*.docx</Format>
-                    <Format MimeType="application/msword">*.doc</Format>
-                    <Format MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">*.xlsx</Format>
-                </FormatGroup>	
                 <FormatGroup MaxFileSize="33554432" UserTypes="reg">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>
                     <Format MimeType="image/bmp">*.bmp</Format>
                     <Format MimeType="image/webp">*.webp</Format>
-                </FormatGroup>	
+                </FormatGroup>
                 <FormatGroup MaxFileSize="67108864" UserTypes="reg">
                     <Format MimeType="application/pdf">*.pdf</Format>
                     <Format MimeType="text/plain">*.txt</Format>
                     <Format MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document">*.docx</Format>
                     <Format MimeType="application/msword">*.doc</Format>
                     <Format MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">*.xlsx</Format>
-                </FormatGroup>  
+                </FormatGroup>
             </SupportedFormats>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
@@ -1449,7 +1432,7 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <!-- Chevereto v4 uploader -->
-    <Server Name="radikal.cloud" Authorize="2" MaxFileSize="20971520" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
+    <Server Name="radikal.cloud" Plugin="radikal.cloud" Authorize="2" MaxFileSize="20971520" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" NeedPassword="0" ApiCredentialParam="apiKey" LoginLabel="Profile name">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="10485760" UserTypes="anon">
@@ -1472,15 +1455,7 @@
                 <StorageTime UserTypes="reg">-1</StorageTime>
             </StorageTimeInfo>
         </Info>
-        <Actions>
-            <Action Type="upload" Url="https://radikal.cloud/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
-                <Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
-                <Call Function="json" Arg1="image.url" AssignVars="DirectUrl:0;"/>
-                <Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
-                <Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;"/>
-            </Action>
-        </Actions>
-        <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <Server Name="anonpic.net" Plugin="anonpic.net" WebsiteUrl="https://anonpic.net/">
         <Actions>
@@ -1493,7 +1468,7 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
 
-    <Server Name="thumbsnap.com" Types="image video" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
+    <Server Name="thumbsnap.com" Types="image video" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" NeedPassword="0" ApiCredentialParam="apiKey" LoginLabel="Profile name">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="50331648" UserTypes="reg">
@@ -1542,7 +1517,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
-    <Server Name="savefiles.com" MaxFileSize="21474836480" Type="video" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" PasswordLabel="API key" MaxThreads="1">
+    <Server Name="savefiles.com" MaxFileSize="21474836480" Type="video" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" NeedPassword="0" ApiCredentialParam="apiKey" LoginLabel="Profile name" MaxThreads="1">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="21474836480" UserTypes="reg">
@@ -1564,7 +1539,7 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgchest.com" MaxFileSize="10485760" Authorize="2" PasswordLabel="API token" WebsiteUrl="https://imgchest.com/" RegistrationUrl="https://imgchest.com/register">
+    <Server Name="imgchest.com" Plugin="imgchest.com" MaxFileSize="10485760" Authorize="2" NeedPassword="0" ApiCredentialParam="apiToken" LoginLabel="Profile name" WebsiteUrl="https://imgchest.com/" RegistrationUrl="https://imgchest.com/register">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="10485760" UserTypes="reg">
@@ -1575,16 +1550,9 @@
                 </FormatGroup>
             </SupportedFormats>
         </Info>
-        <Actions>
-            <Action Type="upload" Url="https://api.imgchest.com/v1/post" PostParams="images[]=%filename%;" CustomHeaders="Authorization:Bearer $(_PASSWORD)">
-                <Call Function="json" Arg1="data.id" AssignVars="FileId:0;" Required="1"/>
-                <Call Function="json" Arg1="data.images[0].link" AssignVars="DirectUrl:0;" Required="0"/>
-                <Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;" Required="0"/>
-            </Action>
-        </Actions>
-        <Result ImageUrlTemplate="$(DirectUrl)" DownloadUrlTemplate="https://imgchest.com/p/$(FileId)" DeleteUrl="$(DeleteUrl)" />
+        <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
-    <Server Name="gofile.io" Type="file" MaxFileSize="-1" Authorize="1" Plugin="gofile" WebsiteUrl="https://gofile.io/" PasswordLabel="API token" SupportsFolders="0">
+    <Server Name="gofile.io" Type="file" MaxFileSize="-1" Authorize="1" Plugin="gofile" WebsiteUrl="https://gofile.io/" NeedPassword="0" ApiCredentialParam="apiToken" LoginLabel="Profile name" SupportsFolders="0">
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>

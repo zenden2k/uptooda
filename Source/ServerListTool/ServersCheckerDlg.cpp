@@ -29,6 +29,7 @@ CServersCheckerDlg::CServersCheckerDlg(WtlGuiSettings* settings, UploadEngineMan
 
 LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
@@ -51,6 +52,11 @@ LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
     serversChecker_->setOnFinishedCallback([this] { processFinished(); });
     return TRUE;
+}
+
+LRESULT CServersCheckerDlg::OnDestroy(UINT, WPARAM, LPARAM, BOOL&) {
+    GuiTools::ClearWindowPointer(m_hWnd);
+    return 0;
 }
 
 LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -215,7 +221,10 @@ bool CServersCheckerDlg::isRunning() const
 }
 
 void CServersCheckerDlg::processFinished() {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this, wnd = m_hWnd] {
+        if (!GuiTools::CheckWindowPointer(wnd, this)) {
+            return;
+        };
         ::EnableWindow(GetDlgItem(IDOK), true);
         ::EnableWindow(GetDlgItem(IDCANCEL), true);
         GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);

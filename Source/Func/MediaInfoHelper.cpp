@@ -29,6 +29,7 @@
 #include "WinUtils.h"
 #include "Core/AppRuntimeInfo.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Utils/StringUtils.h"
 
 #define TR_COND(s) (enableLocalization ? TR(s): _T(s))
 
@@ -146,7 +147,7 @@ bool GetMediaFileInfo(LPCWSTR fileName, CString& buffer, CString& fullInfo, bool
     CString Duration;
     CString DurationStr = mi.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name).c_str();
     if (!DurationStr.IsEmpty()) {
-        uint64_t duration = IuCoreUtils::StringToInt64(W2U(DurationStr));
+        uint64_t duration = IuStringUtils::StringToInt64(W2U(DurationStr));
         Duration = U2W(TimestampToStr(duration, 1000));
     } else {
         Duration = mi.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name).c_str();

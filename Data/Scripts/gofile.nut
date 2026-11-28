@@ -7,6 +7,10 @@
 const UPLOAD_URL = "https://upload.gofile.io/uploadfile";
 const API_BASE_URL = "https://api.gofile.io";
 
+function _GetApiToken() {
+    return ServerParams.getParam("Login") == "" ? "" : ServerParams.getParam("apiToken");
+}
+
 function _PrintError(t, txt) {
     local errorMessage = "[gofile.io] " + txt + " Response code: " + nm.responseCode();
     if (t != null && "message" in t) {
@@ -31,7 +35,7 @@ function UploadFile(pathToFile, options) {
     local task = options.getTask().getFileTask();
     
     // Get API token if provided (for authenticated uploads)
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = _GetApiToken();
     local folderId = ""; //options.getFolderID();
     local uploadRegion = ServerParams.getParam("uploadRegion");
     
@@ -120,7 +124,7 @@ function UploadFile(pathToFile, options) {
  */
 function Authenticate() {
     local userName = ServerParams.getParam("Login");
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = _GetApiToken();
     
     if (apiToken == "") {
         if (userName != "") {
@@ -179,7 +183,7 @@ function _ObtainRootFolder(apiToken) {
  */
 function GetFolderList(list) {
     local parentId = list.parentFolder().getId();
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = _GetApiToken();
 
     if (parentId == "") {
         local rootFolderId = _ObtainRootFolder(apiToken);
@@ -204,7 +208,7 @@ function GetFolderList(list) {
  * @return int - success(1), failure(0)
  */
 function CreateFolder(parentAlbum, album) {
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = _GetApiToken();
     
     if (apiToken == "") {
         WriteLog("error", "[gofile.io] API token required for folder creation");
@@ -251,7 +255,7 @@ function CreateFolder(parentAlbum, album) {
  * @return int - success(1), failure(0)
  */
 function ModifyFolder(album) {
-    local apiToken = ServerParams.getParam("Password");
+    local apiToken = _GetApiToken();
     
     if (apiToken == "") {
         WriteLog("error", "[gofile.io] API token required for folder modification");
@@ -295,6 +299,7 @@ function GetFolderAccessTypeList() {
  */
 function GetServerParamList() {
     return {
+        apiToken = "API token",
         uploadRegion = {
             title = "Upload Region",
             type = "choice",

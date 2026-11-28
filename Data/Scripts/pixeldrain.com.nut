@@ -43,6 +43,6 @@ function UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
-        apiKey = "API key",
+        apiKey = { title = "API key", required = true },
     };
 }

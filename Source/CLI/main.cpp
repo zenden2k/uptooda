@@ -365,7 +365,6 @@ int func() {
     serviceLocator->setDialogProvider(&dialogProvider);
     serviceLocator->setTranslator(&translator);
 
-    Settings.setEngineList(list.get());
     ServiceLocator::instance()->setEngineList(list.get());
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
@@ -428,7 +427,11 @@ int func() {
 
     ServerSettingsStruct& s = Settings.ServersSettings[uploadEngineData->Name][login];
 
-    s.authData.Password = password;
+    if (uploadEngineData->ApiCredentialParam.empty()) {
+        s.authData.Password = password;
+    } else if (!password.empty()) {
+        s.setParam(uploadEngineData->ApiCredentialParam, password);
+    }
     s.authData.Login = login;
     if(!login.empty()) {
         s.authData.DoAuth = true;
@@ -504,7 +507,7 @@ void PrintServerParamList()
         pluginLoader->getServerParamList(parameterList);
         int i = 0;
         for (auto& parameter : parameterList) {
-            std::cout << ++i << ") " << parameter->getTitle() << std::endl
+            std::cout << ++i << ") " << parameter->getDisplayTitle() << std::endl
                       << "Name: " << parameter->getName() << " Type: " << parameter->getType() << std::endl;
 
             std::string description = parameter->getDescription();
@@ -789,7 +792,8 @@ int main(int argc, char *argv[]){
     if (IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
     }
-    Settings.LoadSettings(settingsFolder,"settings_cli.xml");
+    Settings.setEngineList(list.get());
+    Settings.LoadSettings(settingsFolder, "settings_cli.xml");
 
     try {
         program.parse_args(argc, argv);

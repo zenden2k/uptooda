@@ -21,21 +21,28 @@ LoginDialog::LoginDialog(ServerProfile& serverProfile, bool createNew, QWidget *
     }
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
-	LoginInfo li = serverSettings ? serverSettings->authData: LoginInfo();
-	auto ued = serverProfile_.uploadEngineData();
+    const LoginInfo li = serverSettings ? serverSettings->authData : LoginInfo();
+    std::string credential = li.Password;
+    auto ued = serverProfile_.uploadEngineData();
     if (ued) {
         QString loginLabelText = ued->LoginLabel.empty() ? tr("Login:") : U2Q(ued->LoginLabel) + ":";
         ui->loginLabel->setText(loginLabelText);
-        QString passwordLabelText = ued->PasswordLabel.empty() ? tr("Password:") : U2Q(ued->PasswordLabel) +":";
-        ui->passwordLabel->setText(passwordLabelText);
-        ui->passwordLabel->setEnabled(ued->NeedPassword);
-        ui->passwordEdit->setEnabled(ued->NeedPassword);
+        const bool hasApiCredential = !ued->ApiCredentialParam.empty();
+        if (hasApiCredential) {
+            ui->passwordLabel->setText(tr("API credential:"));
+            credential = serverSettings ? serverSettings->getParam(ued->ApiCredentialParam) : std::string();
+        } else {
+            QString passwordLabelText = ued->PasswordLabel.empty() ? tr("Password:") : U2Q(ued->PasswordLabel) + ":";
+            ui->passwordLabel->setText(passwordLabelText);
+        }
+        ui->passwordLabel->setEnabled(ued->NeedPassword || hasApiCredential);
+        ui->passwordEdit->setEnabled(ued->NeedPassword || hasApiCredential);
     }
-	
-	accountName_ = U2Q(li.Login);
+
+    accountName_ = U2Q(li.Login);
 
 	ui->loginEdit->setText(accountName_);
-	ui->passwordEdit->setText(U2Q(li.Password));
+	ui->passwordEdit->setText(U2Q(credential));
 
 
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::onAccept);
@@ -76,13 +83,20 @@ void LoginDialog::onAccept() {
 	accountName_ = buffer;
     serverProfile_.setProfileName(Q2U(buffer));
     li.Login = Q2U(buffer);
-	li.Password = Q2U(ui->passwordEdit->text());
-	li.DoAuth = true;
-	//uploadEngineManager_->resetAuthorization(serverProfile_);
+    const auto* engine = serverProfile_.uploadEngineData();
+    const std::string credential = Q2U(ui->passwordEdit->text());
+    if (!engine || engine->ApiCredentialParam.empty()) {
+        li.Password = credential;
+    }
+    li.DoAuth = true;
+    // uploadEngineManager_->resetAuthorization(serverProfile_);
 
     ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
-    if(serverSettings) {
+    if (serverSettings) {
         serverSettings->authData = li;
+        if (engine && !engine->ApiCredentialParam.empty()) {
+            serverSettings->setParam(engine->ApiCredentialParam, credential);
+        }
     }
-	accept();
+    accept();
 }

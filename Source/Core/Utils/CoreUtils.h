@@ -126,7 +126,6 @@ namespace IuCoreUtils
     std::string ToString(double value, int precision);
     std::string Utf8ToSystemLocale(const std::string& str);
     std::string SystemLocaleToUtf8(const std::string& str);
-    int64_t StringToInt64(const std::string& str);
     std::string GetFileMimeType(const std::string&);
     std::string GetFileMimeTypeByName(const std::string& fileName);
     std::string GetFileMimeTypeByContents(const std::string& fileName);

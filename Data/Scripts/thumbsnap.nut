@@ -14,7 +14,7 @@ function _PrintError(t, txt) {
 // @return int - success(1), failure(0)
 function UploadFile(pathToFile, options) {
     local task = options.getTask().getFileTask();
-    local apiKey = ServerParams.getParam("Password");
+    local apiKey = ServerParams.getParam("apiKey");
 
     if (apiKey == "") {
         WriteLog("error", "[thumbsnap.com] API key not set!");
@@ -88,4 +88,10 @@ function UploadFile(pathToFile, options) {
     options.setThumbUrl(thumbnailUrl);
 
     return ResultCode.Success;
+}
+
+function GetServerParamList() {
+    return {
+        apiKey = { title = "API key", required = true }
+    };
 }
