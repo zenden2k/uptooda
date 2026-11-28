@@ -1,177 +1,138 @@
 #include "WebpImageReader.h"
 
+#include <cstring>
+#include <limits>
+
 #include <webp/decode.h>
 #include <webp/demux.h>
 
-#include <boost/format.hpp>
-
-#include "Core/Logging.h"
-#include "Core/Images/GdiPlusImage.h"
 #include "Utils.h"
-
-struct WebPPic {
-    int width;
-    int height;
-    uint8_t* rgba;
-    bool animated;
-};
 
 using namespace Gdiplus;
 
+namespace {
+
+std::unique_ptr<Bitmap> CopyBgraBitmap(const uint8_t* data, int width, int height) {
+    auto bitmap = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
+    BitmapData dstData;
+    Rect rect(0, 0, width, height);
+    if (bitmap->LockBits(&rect, ImageLockModeWrite, PixelFormat32bppARGB, &dstData) != Ok) {
+        return { };
+    }
+    const auto rowSize = static_cast<size_t>(width) * 4;
+    for (int y = 0; y < height; ++y) {
+        auto* dstRow = static_cast<uint8_t*>(dstData.Scan0) + static_cast<ptrdiff_t>(y) * dstData.Stride;
+        std::memcpy(dstRow, data + y * rowSize, rowSize);
+    }
+    bitmap->UnlockBits(&dstData);
+    return bitmap;
+}
+
+} // namespace
+
 std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileName) {
+    lastError_.clear();
     try {
-        auto [data, dataSize] = ImageUtils::ExUtilReadFile(fileName);
-        if (!data) {
-            return {};
-        }
-        return readFromMemory(data.get(), dataSize);
-    } catch (const std::exception&) {
-        return {};
+        auto [data, size] = ImageUtils::ExUtilReadFile(fileName);
+        return readFromMemory(data.get(), size);
+    }
+    catch (const std::exception&) {
+        lastError_ = L"Could not load WebP file";
+        return { };
     }
 }
 
 std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, size_t size) {
-    WebPPic pic;
-    memset(&pic, 0, sizeof(pic));
-    if (!readWebP(data, size, &pic)) {
-        return nullptr;
+    lastError_.clear();
+    WebPBitstreamFeatures features;
+    if (WebPGetFeatures(data, size, &features) != VP8_STATUS_OK) {
+        lastError_ = L"Could not read WebP image features";
+        return { };
     }
 
-    auto* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
-    std::unique_ptr<GdiPlusImage> img = std::make_unique<GdiPlusImage>(bm);
-    //std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(pic.width, pic.height, PixelFormat32bppARGB);
-    BitmapData dstData;
-    Rect rc(0, 0, pic.width, pic.height);
+    if (features.has_animation) {
+        return readAnimation(data, size);
+    }
 
-    if (bm->LockBits(&rc, ImageLockModeWrite, PixelFormat32bppARGB, &dstData) == Ok) {
-        auto dstBits = static_cast<uint8_t *>(dstData.Scan0);
-        memcpy(dstBits, pic.rgba, pic.height * pic.width * 4);
+    std::unique_ptr<uint8_t, decltype(&WebPFree)> pixels(WebPDecodeBGRA(data, size, nullptr, nullptr), WebPFree);
+    auto bitmap = pixels ? CopyBgraBitmap(pixels.get(), features.width, features.height) : nullptr;
+    if (!bitmap) {
+        lastError_ = L"Could not decode WebP image";
+        return { };
+    }
+    auto result = std::make_unique<GdiPlusImage>();
+    result->appendFrame(std::move(bitmap), 0);
+    result->setSrcFormat("webp");
+    return result;
+}
 
-        bm->UnlockBits(&dstData);
+std::unique_ptr<GdiPlusImage> WebpImageReader::readAnimation(const uint8_t* data, size_t size) {
+    WebPAnimDecoderOptions options;
+    if (!WebPAnimDecoderOptionsInit(&options)) {
+        lastError_ = L"Could not initialize WebP animation options";
+        return { };
     }
-    if (pic.animated) {
-        delete[] pic.rgba;
+    options.color_mode = MODE_BGRA;
+    const WebPData webpData { data, size };
+    std::unique_ptr<WebPAnimDecoder, decltype(&WebPAnimDecoderDelete)> decoder(WebPAnimDecoderNew(&webpData, &options),
+                                                                               WebPAnimDecoderDelete);
+    WebPAnimInfo info;
+    if (!decoder || !WebPAnimDecoderGetInfo(decoder.get(), &info) || info.frame_count == 0) {
+        lastError_ = L"Could not read WebP animation";
+        return { };
     }
-    else {
-        WebPFree(pic.rgba);
+
+    auto result = std::make_unique<GdiPlusImage>();
+    const auto frameCount = frameMode_ == ImageFrameMode::ALL_FRAMES ? info.frame_count : 1;
+    int previousTimestamp = 0;
+    for (uint32_t index = 0; index < frameCount; ++index) {
+        uint8_t* pixels;
+        int timestamp;
+        if (!WebPAnimDecoderGetNext(decoder.get(), &pixels, &timestamp) || timestamp < previousTimestamp) {
+            lastError_ = L"Could not decode WebP animation frame";
+            return { };
+        }
+        auto bitmap = CopyBgraBitmap(pixels, info.canvas_width, info.canvas_height);
+        if (!bitmap) {
+            lastError_ = L"Could not create a bitmap from the WebP animation frame";
+            return { };
+        }
+        result->appendFrame(std::move(bitmap), timestamp - previousTimestamp);
+        previousTimestamp = timestamp;
     }
-    img->setSrcMultiFrame(pic.animated);
-    img->setSrcFormat("webp");
-    return img;
+    result->setSrcMultiFrame(true);
+    result->setSrcFormat("webp");
+    return result;
 }
 
 std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
-    LARGE_INTEGER li;
-    li.QuadPart = 0;
-
-    if (FAILED(stream->Seek(li, STREAM_SEEK_SET, nullptr))) {
-        return nullptr;
+    lastError_.clear();
+    LARGE_INTEGER start { };
+    if (FAILED(stream->Seek(start, STREAM_SEEK_SET, nullptr))) {
+        return { };
     }
-
     STATSTG stats;
     if (FAILED(stream->Stat(&stats, STATFLAG_NONAME))) {
-        return nullptr;
+        return { };
     }
-    ULONGLONG sSize = stats.cbSize.QuadPart;
-    ULONG bytesRead;
-    std::unique_ptr<uint8_t[]> pBuffer;
+    if (stats.cbSize.QuadPart > std::numeric_limits<ULONG>::max()) {
+        lastError_ = L"WebP stream is too large";
+        return { };
+    }
+    const auto size = static_cast<ULONG>(stats.cbSize.QuadPart);
     try {
-        pBuffer = std::make_unique<uint8_t[]>(sSize);
-    }
-    catch (std::exception &) {
-        lastError_ = str(boost::wformat(L"Unable to allocate %d bytes") % sSize);
-        return nullptr;
-    }
-   
-    if (FAILED(stream->Read(pBuffer.get(), static_cast<ULONG>(sSize), &bytesRead))) {
-        lastError_ = L"Failed to read from IStream";
-        return nullptr;
-    }
-
-    return readFromMemory(pBuffer.get(), sSize);
-}
-
-bool WebpImageReader::readWebP(const uint8_t* const data, size_t data_size, WebPPic* pic) {
-    VP8StatusCode status = VP8_STATUS_OK;
-    WebPDecoderConfig config;
-    WebPDecBuffer* const output_buffer = &config.output;
-    WebPBitstreamFeatures* const bitstream = &config.input;
-
-    if (!WebPInitDecoderConfig(&config)) {
-        LOG(ERROR) << "Library version mismatch!\n";
-        return false;
-    }
-
-    status = WebPGetFeatures(data, data_size, bitstream);
-    if (status != VP8_STATUS_OK) {
-        LOG(WARNING) << "Error loading input webp data, status code=" << status;
-        return false;
-    }
-    pic->animated = !!bitstream->has_animation;
-
-    if (bitstream->has_animation) {
-        WebPData webp_data;
-        WebPDataInit(&webp_data);
-        webp_data.bytes = data;
-        webp_data.size = data_size;
-        WebPAnimInfo anim_info;
-        WebPAnimDecoderOptions options;
-        memset(&options, 0, sizeof(options));
-        options.color_mode = MODE_BGRA;
-
-        WebPAnimDecoder* dec = WebPAnimDecoderNew(&webp_data, &options);
-        if (dec == nullptr) {
-            LOG(WARNING) << "Error parsing webp image";
-            return false;
+        auto buffer = std::make_unique<uint8_t[]>(size);
+        ULONG bytesRead;
+        if (FAILED(stream->Read(buffer.get(), size, &bytesRead)) || bytesRead != size) {
+            lastError_ = L"Failed to read WebP stream";
+            return { };
         }
-
-        if (!WebPAnimDecoderGetInfo(dec, &anim_info)) {
-            WebPAnimDecoderDelete(dec);
-            LOG(WARNING) << "Error getting global info about the animation";
-            return false;
-        }
-
-        pic->width = anim_info.canvas_width;
-        pic->height = anim_info.canvas_height;
-
-        // Decode just first frame
-        if (WebPAnimDecoderHasMoreFrames(dec)) {
-            uint8_t* frame_rgba;
-            int timestamp;
-
-            if (!WebPAnimDecoderGetNext(dec, &frame_rgba, &timestamp)) {
-                WebPAnimDecoderDelete(dec);
-                return false;
-            }
-            unsigned int frameSize = anim_info.canvas_width*anim_info.canvas_height * 4;
-            pic->rgba = new uint8_t[frameSize];
-            memcpy(pic->rgba, frame_rgba, frameSize);
-        }
-        WebPAnimDecoderDelete(dec);
-
+        return readFromMemory(buffer.get(), size);
     }
-    else {
-        //output_buffer->colorspace = has_alpha ? MODE_RGBA : MODE_RGB;
-
-        pic->rgba = WebPDecodeBGRA(data, data_size, &pic->width, &pic->height);
+    catch (const std::bad_alloc&) {
+        lastError_ = L"Could not allocate memory for WebP image";
+        return { };
     }
-    if (!pic->rgba) {
-        return false;
-    }
-    /*if (status == VP8_STATUS_OK) {
-          /*pic->rgba = output_buffer->u.RGBA.rgba;
-          pic->stride = output_buffer->u.RGBA.stride;
-          pic->width = output_buffer->width;
-          pic->height = output_buffer->height;*/
-
-
-          /*ok = has_alpha ? WebPPictureImportRGBA(pic, rgba, stride)
-                    : WebPPictureImportRGB(pic, rgba, stride);*
-            }*/
-
-
-    WebPFreeDecBuffer(output_buffer);
-    return true;
 }
 
 std::wstring WebpImageReader::getLastError() {

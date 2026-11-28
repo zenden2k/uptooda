@@ -25,27 +25,25 @@
 
 #include <memory>
 
-#include "atlheaders.h"
 #include "3rdpart/GdiPlusH.h"
-#include "3rdpart/thread.h"
-#include "Core/Utils/CoreUtils.h"
+#include "Core/Images/GdiPlusImage.h"
+#include "atlheaders.h"
 
-class CMyImage :
-    public CWindowImpl<CMyImage>, public CThreadImpl<CMyImage>
-{
+class CMyImage : public CWindowImpl<CMyImage> {
 public:
     CMyImage();
     ~CMyImage();
     DECLARE_WND_CLASS(_T("CMyImage"))
 
     BEGIN_MSG_MAP(CMyImage)
-        MESSAGE_HANDLER(WM_PAINT, OnPaint)
-        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-        MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkg)
-        MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-        MSG_WM_LBUTTONDOWN(OnLButtonDown)
-        MSG_WM_RBUTTONDOWN(OnLButtonDown)
-        MSG_WM_MBUTTONUP(OnLButtonDown)
+    MESSAGE_HANDLER(WM_PAINT, OnPaint)
+    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+    MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkg)
+    MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+    MSG_WM_LBUTTONDOWN(OnLButtonDown)
+    MSG_WM_RBUTTONDOWN(OnLButtonDown)
+    MSG_WM_MBUTTONUP(OnLButtonDown)
+    MSG_WM_TIMER(onTimer)
     END_MSG_MAP()
 
     LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -59,8 +57,10 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-    bool loadImage(LPCTSTR FileName, std::shared_ptr<Gdiplus::Image> img = NULL, int ResourceID = 0, bool Bitmap = false,
-        COLORREF transp = 0, bool allowEnlarge = false, bool whiteBg = false, bool drawBorder = true);
+    bool loadImage(LPCTSTR FileName, std::shared_ptr<Gdiplus::Image> img = NULL, int ResourceID = 0,
+                   bool Bitmap = false, COLORREF transp = 0, bool allowEnlarge = false, bool whiteBg = false,
+                   bool drawBorder = true);
+    void loadPreview(std::unique_ptr<GdiPlusImage> image);
 
     int imageWidth() const;
     int imageHeight() const;
@@ -70,28 +70,22 @@ public:
     void reset();
     void setHideParent(bool hide);
 
-    // Animation thread procedure
-    DWORD Run();
 private:
-    Gdiplus::Bitmap* bm_{};
+    static constexpr UINT_PTR ANIMATION_TIMER = 1;
     bool hideParent_ = false;
     bool imageLoaded_ = false;
     int imageWidth_ = 0, imageHeight_ = 0;
-    HBITMAP backBufferBm_{};
+    HBITMAP backBufferBm_ { };
     HGDIOBJ oldBm_ = nullptr;
-    HDC backBufferDc_{};
+    HDC backBufferDc_ { };
     int backBufferWidth_ = 0, backBufferHeight_ = 0;
-    int frameCount_ = 0;
-    bool isAnimated_ = false;
-    unique_c_ptr<Gdiplus::PropertyItem> propertyItem_;
-    std::shared_ptr<Gdiplus::Image> animatedImage_;
-    CEvent pauseEvent_, exitEvent_;
+    std::shared_ptr<GdiPlusImage> animatedImage_;
     bool paused_ = false;
-    int framePosition_ = 0;
+    size_t framePosition_ = 0;
     Gdiplus::Rect destRect_;
-    void initAnimation();
-    bool testForAnimatedGIF(Gdiplus::Image* img);
-    bool drawFrame();
+    void onTimer(UINT_PTR timerId);
+    void scheduleFrame();
+    void drawFrame();
 };
 
 #endif // MYIMAGE_H

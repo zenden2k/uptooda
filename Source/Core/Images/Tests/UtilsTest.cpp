@@ -32,6 +32,38 @@ public:
     }
 };
 
+TEST_F(UtilsTest, LoadAnimatedGifAndWebp) {
+    struct TestImage {
+        const char* Path;
+        size_t FrameCount;
+        uint64_t FirstFrameDurationMs;
+    };
+    const TestImage images[] = {
+        { "Images/animation.gif", 10, 150 },
+        { "Images/animated-webp-supported.webp", 12, 70 },
+    };
+    for (const auto& [path, frameCount, firstFrameDurationMs] : images) {
+        SCOPED_TRACE(path);
+        const auto fileName = IuCoreUtils::Utf8ToWstring(TestHelpers::resolvePath(path));
+        ImageLoader loader;
+        auto first = loader.loadFromFile(fileName.c_str(), ImageFrameMode::FIRST_FRAME);
+        ASSERT_TRUE(first);
+        EXPECT_TRUE(first->isSrcMultiFrame());
+        EXPECT_EQ(1u, first->frameCount());
+
+        auto [data, size] = ExUtilReadFile(fileName.c_str());
+        ASSERT_TRUE(data);
+        auto all = loader.loadFromMemory(data.get(), size, ImageFrameMode::ALL_FRAMES);
+        ASSERT_TRUE(all);
+        ASSERT_EQ(frameCount, all->frameCount());
+        EXPECT_EQ(first->getBitmap()->GetWidth(), all->frameBitmap(1)->GetWidth());
+        EXPECT_EQ(first->getBitmap()->GetHeight(), all->frameBitmap(1)->GetHeight());
+        EXPECT_NE(all->frameBitmap(0), all->frameBitmap(1));
+        EXPECT_EQ(first->frameDurationMs(0), all->frameDurationMs(0));
+        EXPECT_EQ(firstFrameDurationMs, all->frameDurationMs(0));
+    }
+}
+
 TEST_F(UtilsTest, BitmapFromMemory)
 {
     std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");

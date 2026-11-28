@@ -8,7 +8,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "EncodedPassword.h"
 
-typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
+typedef std::map<std::string, std::map<std::string, ServerSettingsStruct>> ServerSettingsMap;
 
 struct ConnectionSettingsStruct {
     enum UseProxyEnum { kNoProxy = 0, kUserProxy, kSystemProxy };
@@ -62,13 +62,16 @@ protected:
     SettingsManager mgr_;
     std::string fileName_;
     std::string rootName_;
-  
+
     CUploadEngineListBase* engineList_;
     bool loadFromRegistry_;
     bool LoadAccounts(SimpleXmlNode root);
     bool SaveAccounts(SimpleXmlNode root);
     void BindToManager();
-    virtual bool PostLoadSettings(SimpleXml &xml);
-    virtual bool PostSaveSettings(SimpleXml &xml);
+    virtual bool PostLoadSettings(SimpleXml& xml);
+    virtual bool PostSaveSettings(SimpleXml& xml);
+
+private:
+    bool serverAccountsLoadFailed_ = false;
 };
 #endif

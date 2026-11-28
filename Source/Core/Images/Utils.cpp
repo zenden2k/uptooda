@@ -731,12 +731,17 @@ bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag) {
 }
 
 std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName) {
+    return LoadImageFromFileExtended(fileName, ImageFrameMode::FIRST_FRAME);
+}
+
+std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName, ImageFrameMode frameMode) {
     ImageLoader loader;
-    auto result = loader.loadFromFile(fileName);
+    auto result = loader.loadFromFile(fileName, frameMode);
     if (!result) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Image Loader"),
-            _T("Cannot load image.") + CString(L"\r\n") + loader.getLastError().c_str(),
-            CString(_T("File:")) + _T(" ") + fileName);
+                                                    _T("Cannot load image.") + CString(L"\r\n")
+                                                        + loader.getLastError().c_str(),
+                                                    CString(_T("File:")) + _T(" ") + fileName);
     }
     return result;
 }

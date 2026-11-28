@@ -5,6 +5,7 @@ set(SRC_LIST
     Tests.cpp
     TestHelpers.cpp
     sqtest.cpp
+   ../Core/Settings/Tests/BasicSettingsTest.cpp
    ../Core/Utils/Tests/CoreUtilsTest.cpp
    ../Core/Utils/Tests/CryptoUtilsTest.cpp
    ../Core/Utils/Tests/StringUtilsTest.cpp

@@ -8,3 +8,8 @@ compiler.runtime=static
 build_type=Release
 libde265/*:compiler.cppstd=17
 
+[conf]
+# Keep AVIF decoding in the same module as libheif when using the static CRT.
+libheif/*:tools.cmake.cmaketoolchain:extra_variables={'WITH_DAV1D': {'value': 'ON', 'cache': True, 'type': 'BOOL'}, 'WITH_DAV1D_PLUGIN': {'value': 'OFF', 'cache': True, 'type': 'BOOL'}}
+libheif/*:tools.info.package_id:confs=['tools.cmake.cmaketoolchain:extra_variables']
+

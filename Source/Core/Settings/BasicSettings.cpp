@@ -24,11 +24,11 @@ limitations under the License.
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "EncodedPassword.h"
 #include "Core/BasicConstants.h"
+#include "Core/Utils/CryptoUtils.h"
+#include "EncodedPassword.h"
 
-BasicSettings::BasicSettings()
-{
+BasicSettings::BasicSettings() {
     rootName_ = "ImageUploader";
     LastUpdateTime = 0;
     UploadBufferSize = 1024 * 1024;
@@ -59,14 +59,32 @@ void BasicSettings::setEngineList(CUploadEngineListBase* engineList) {
 
 namespace {
 constexpr std::string_view ENCODED_PARAM_PREFIX = "EncodedParam_";
+constexpr std::string_view ENCRYPTED_VALUE_PREFIX = "ENC:";
+
+const std::string& ServerSettingsKey() {
+    static const auto key = IuCoreUtils::CryptoUtils::Base64Decode(ENV_A_E_K);
+    return key;
 }
 
-bool BasicSettings::LoadAccounts(SimpleXmlNode root)
-{
+std::string EncryptServerSetting(const std::string& value) {
+    return std::string(ENCRYPTED_VALUE_PREFIX) + IuCoreUtils::CryptoUtils::EncryptAES(value, ServerSettingsKey());
+}
+
+std::string DecodeServerSetting(const std::string& value) {
+    if (value.starts_with(ENCRYPTED_VALUE_PREFIX)) {
+        return IuCoreUtils::CryptoUtils::DecryptAES(value.substr(ENCRYPTED_VALUE_PREFIX.size()), ServerSettingsKey());
+    }
+    std::string decoded;
+    CEncodedPassword::DecodeString(value, decoded);
+    return decoded;
+}
+}
+
+bool BasicSettings::LoadAccounts(SimpleXmlNode root) {
     std::vector<SimpleXmlNode> servers;
     root.GetChilds("Server", servers);
 
-    for (const auto& server: servers) {
+    for (const auto& server : servers) {
         std::string server_name = server.Attribute("Name");
         std::vector<std::string> attribs;
         server.GetAttributes(attribs);
@@ -77,10 +95,10 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
                 continue;
             }
             if (attribName.starts_with(ENCODED_PARAM_PREFIX)) {
-                CEncodedPassword param;
-                param.fromEncodedData(server.Attribute(attribName));
-                tempSettings.params[attribName.substr(ENCODED_PARAM_PREFIX.size())] = param;
+                tempSettings.params[attribName.substr(ENCODED_PARAM_PREFIX.size())]
+                    = DecodeServerSetting(server.Attribute(attribName));
             } else if (attribName.starts_with('_')) {
+                // Legacy plaintext values may also start with ENC:.
                 std::string value = server.Attribute(attribName);
                 if (!value.empty()) {
                     tempSettings.params.try_emplace(attribName.substr(1), std::move(value));
@@ -89,15 +107,8 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         }
         tempSettings.authData.DoAuth = server.AttributeBool("Auth");
 
-        std::string encodedLogin = server.Attribute("Login");
-        CEncodedPassword login;
-        login.fromEncodedData(encodedLogin);
-        tempSettings.authData.Login = login;
-
-        std::string encodedPass = server.Attribute("Password");
-        CEncodedPassword pass;
-        pass.fromEncodedData(encodedPass);
-        tempSettings.authData.Password = pass;
+        tempSettings.authData.Login = DecodeServerSetting(server.Attribute("Login"));
+        tempSettings.authData.Password = DecodeServerSetting(server.Attribute("Password"));
         if (const auto* engine = engineList_ ? engineList_->byName(server_name) : nullptr) {
             tempSettings.migrateLegacyPassword(engine->ApiCredentialParam);
         }
@@ -112,52 +123,42 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
     return true;
 }
 
-bool BasicSettings::SaveAccounts(SimpleXmlNode root)
-{
-    for (auto it1 = ServersSettings.begin(); it1 != ServersSettings.end(); ++it1) {
-        for (auto it = it1->second.begin(); it != it1->second.end(); ++it) {
-            ServerSettingsStruct & sss = it->second;
-            if (sss.isEmpty()) {
+bool BasicSettings::SaveAccounts(SimpleXmlNode root) {
+    for (const auto& [serverName, accounts] : ServersSettings) {
+        const auto* engine = engineList_ ? engineList_->byName(serverName) : nullptr;
+        for (const auto& [accountName, settings] : accounts) {
+            std::lock_guard lock(*settings.paramsMutex_);
+            if (settings.isEmpty()) {
                 continue;
             }
             SimpleXmlNode serverNode = root.CreateChild("Server");
-            serverNode.SetAttribute("Name", it1->first);
-            const CUploadEngineData* ued = engineList_->byName(it1->first);
+            serverNode.SetAttribute("Name", serverName);
 
-            for (auto param = it->second.params.begin(); param != sss.params.end(); ++param) {
-                if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
+            for (const auto& [name, value] : settings.params) {
+                if (name == "FolderID" || name == "FolderUrl" || name == "FolderTitle") {
                     continue;
                 }
-                if (ued && param->first == ued->ApiCredentialParam) {
-                    CEncodedPassword value(param->second);
-                    serverNode.SetAttribute(std::string(ENCODED_PARAM_PREFIX) + param->first, value.toEncodedData());
-                } else {
-                    serverNode.SetAttribute("_" + param->first, param->second);
-                }
+                serverNode.SetAttribute(std::string(ENCODED_PARAM_PREFIX) + name, EncryptServerSetting(value));
             }
-            serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
+            serverNode.SetAttributeBool("Auth", settings.authData.DoAuth);
+            serverNode.SetAttribute("Login", EncryptServerSetting(settings.authData.Login));
 
-            CEncodedPassword login(sss.authData.Login);
-            serverNode.SetAttribute("Login", login.toEncodedData());
-
-            if (!ued || ued->NeedPassword) {
-                CEncodedPassword pass(it->second.authData.Password);
-                serverNode.SetAttribute("Password", pass.toEncodedData());
+            if (!engine || engine->NeedPassword) {
+                serverNode.SetAttribute("Password", EncryptServerSetting(settings.authData.Password));
             }
 
-            if (!it->second.defaultFolder.getId().empty()) {
-                serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
-                serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
-                serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
-                serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
+            if (!settings.defaultFolder.getId().empty()) {
+                serverNode.SetAttributeString("DefaultFolderId", settings.defaultFolder.getId());
+                serverNode.SetAttributeString("DefaultFolderUrl", settings.defaultFolder.viewUrl);
+                serverNode.SetAttributeString("DefaultFolderTitle", settings.defaultFolder.getTitle());
+                serverNode.SetAttributeString("DefaultFolderParentIds", myToString(settings.defaultFolder.parentIds));
             }
         }
     }
     return true;
 }
 
-void BasicSettings::BindToManager()
-{
+void BasicSettings::BindToManager() {
     SettingsNode& upload = mgr_["Uploading"];
     upload.n_bind(MaxThreads);
     upload.n_bind(MaxUploadSpeed);
@@ -167,8 +168,7 @@ bool BasicSettings::PostLoadSettings(SimpleXml& xml) {
     return true;
 }
 
-bool BasicSettings::PostSaveSettings(SimpleXml& xml)
-{
+bool BasicSettings::PostSaveSettings(SimpleXml& xml) {
     return true;
 }
 
@@ -179,25 +179,42 @@ void BasicSettings::notifyChange() {
 bool BasicSettings::LoadSettings(const std::string& szDir, const std::string& fileName, bool LoadFromRegistry) {
     loadFromRegistry_ = LoadFromRegistry;
     fileName_ = !szDir.empty() ? szDir + ((!fileName.empty()) ? fileName : "Settings.xml")
-        : SettingsFolder + (!fileName.empty() ? fileName : "Settings.xml");
+                               : SettingsFolder + (!fileName.empty() ? fileName : "Settings.xml");
+    serverAccountsLoadFailed_ = false;
     if (!IuCoreUtils::FileExists(fileName_)) {
         return true;
     }
     SimpleXml xml;
     xml.LoadFromFile(fileName_);
     mgr_.loadFromXmlNode(xml.getRoot(rootName_).GetChild("Settings"));
-    LoadAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
+    try {
+        LoadAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
+    }
+    catch (const std::exception& e) {
+        serverAccountsLoadFailed_ = true;
+        LOG(ERROR) << "Could not decode server settings in " << fileName_ << ": " << e.what();
+        return false;
+    }
     PostLoadSettings(xml);
     notifyChange();
     return true;
 }
 
-bool BasicSettings::SaveSettings()
-{
+bool BasicSettings::SaveSettings() {
+    if (serverAccountsLoadFailed_) {
+        LOG(ERROR) << "Could not save settings because server settings could not be decoded in " << fileName_;
+        return false;
+    }
     SimpleXml xml;
     mgr_.saveToXmlNode(xml.getRoot(rootName_).GetChild("Settings"));
     PostSaveSettings(xml);
-    SaveAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
+    try {
+        SaveAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
+    }
+    catch (const std::exception& e) {
+        LOG(ERROR) << "Could not encrypt server settings in " << fileName_ << ": " << e.what();
+        return false;
+    }
 
     bool result = true;
     if (!xml.SaveToFile(fileName_)) {
@@ -208,8 +225,7 @@ bool BasicSettings::SaveSettings()
     return result;
 }
 
-ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile, bool create)
-{
+ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile, bool create) {
     std::lock_guard<std::mutex> lock(serverSettingsMutex_);
     if (create) {
         return &ServersSettings[profile.serverName()][profile.profileName()];
@@ -240,7 +256,7 @@ void BasicSettings::clearServerSettings() {
         std::lock_guard<std::mutex> lock(serverSettingsMutex_);
 
         for (auto& [serverName, serverMap] : ServersSettings) {
-            //const CUploadEngineData* ued = engineList_->byName(serverName);
+            // const CUploadEngineData* ued = engineList_->byName(serverName);
 
             // Maybe we should skip profiles related to these scripts ?
             // bool isBuiltInScript = ued  && !ued->PluginName.empty() &&

@@ -786,7 +786,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             int i =0;
             if ( serverUsers.size() && !serverProfile.profileName().empty() ) {
                 mi.wID = IDC_LOGINTOOLBUTTON + static_cast<int>(isImageServer);
-                CString changeAccountSettingsStr = TR("Edit login credentials...");
+                CString changeAccountSettingsStr = TR("Account and server settings...");
                 mi.dwTypeData = const_cast<LPWSTR>(changeAccountSettingsStr.GetString());
                 mi.cch = changeAccountSettingsStr.GetLength();
                 sub.InsertMenuItem(i++, true, &mi);

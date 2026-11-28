@@ -20,109 +20,190 @@
 
 #include "ImageView.h"
 
+#include <algorithm>
+#include <chrono>
+
+#include <glog/logging.h>
+
 #include "Core/Images/Utils.h"
+#include "Core/ServiceLocator.h"
+#include "Core/TaskDispatcher.h"
 
 // CImageView
-CImageViewWindow::CImageViewWindow()
-{
+CImageViewWindow::CImageViewWindow() {
     callback_ = nullptr;
     currentParent_ = nullptr;
 }
 
-CImageViewWindow::~CImageViewWindow()
-{
+CImageViewWindow::~CImageViewWindow() {
 }
 
-LRESULT CImageViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    RECT rc = {380, 37, 636, 240};
+LRESULT CImageViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    RECT rc = { 380, 37, 636, 240 };
     imageControl_.Create(m_hWnd, rc, 0, WS_CHILD | WS_VISIBLE);
     imageControl_.setHideParent(true);
 
-    SetFocus();
-    return 0;  // Let the system set the focus
+    return TRUE;
 }
 
 LRESULT CImageViewWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    resetView();
     return 0;
 }
 
-LRESULT CImageViewWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
+LRESULT CImageViewWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     hide();
     return 0;
 }
 
 LRESULT CImageViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    switch (wParam) {
-        case kDblClickTimer:
-        {
-            imageControl_.setHideParent(true);
-            KillTimer(kDblClickTimer);
-        }
-        break;
+    if (wParam == IMAGE_LOAD_TIMER) {
+        checkImageLoad();
     }
     return 0;
 }
 
-LRESULT CImageViewWindow::OnKillFocus(HWND hwndNewFocus)
-{
-    return ShowWindow(SW_HIDE);
+LRESULT CImageViewWindow::onClick(UINT flags, CPoint point) {
+    hide();
+    return 0;
 }
 
-bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
-    currentItem_ = item;
-    std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(item.fileName);
-    if (!srcImg) {
+bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND parent) {
+    if (!SetTimer(IMAGE_LOAD_TIMER, USER_TIMER_MINIMUM)) {
         return false;
     }
-    Gdiplus::Bitmap* img = srcImg->getBitmap();
 
-    if (img) {
-        float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
-        float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN) - 50);
-        float imgwidth = static_cast<float>(img->GetWidth());
-        float imgheight = static_cast<float>(img->GetHeight());
-        float newwidth = imgwidth;
-        float newheight = imgheight;
-
-        if (newwidth > width || newheight > height) {
-            float k1 = imgwidth / imgheight;
-            float k2 = width / height;
-            if (k1 >= k2) {
-                newwidth = width;
-                newheight = newwidth / imgwidth*imgheight;
-            } else {
-                newheight = height;
-                newwidth = (newheight / imgheight)*imgwidth;
+    std::packaged_task<std::unique_ptr<GdiPlusImage>()> loadImage([fileName = item.fileName] {
+        return ImageUtils::LoadImageFromFileExtended(fileName, ImageFrameMode::ALL_FRAMES);
+    });
+    imageLoad_ = std::make_shared<std::future<std::unique_ptr<GdiPlusImage>>>(loadImage.get_future());
+    currentItem_ = item;
+    currentParent_ = parent;
+    requestForeground_ = ::GetForegroundWindow();
+    loadingDeadline_ = ::GetTickCount64() + LOADING_DELAY_MS;
+    ServiceLocator::instance()->taskDispatcher()->post(
+        [loadImage = std::move(loadImage), request = std::weak_ptr(imageLoad_)]() mutable {
+            // Skip queued loads that were superseded or dismissed.
+            if (!request.expired()) {
+                loadImage();
             }
-        }
-
-        int realwidth = static_cast<int>(newwidth + 2);
-        int realheight = static_cast<int>(newheight + 2);
-
-        if (realwidth < 200) realwidth = 200;
-        if (realheight < 180) realheight = 180;
-
-        imageControl_.MoveWindow(0, 0, realwidth, realheight);
-        imageControl_.loadImage(item.fileName, std::shared_ptr<Gdiplus::Image>(srcImg->releaseBitmap()));
-        imageControl_.ShowWindow(SW_SHOW);
-
-        currentParent_ = Parent;
-        MyCenterWindow(Parent, realwidth, realheight);
-        if (!IsWindowVisible()) {
-            imageControl_.setHideParent(false);
-            SetTimer(kDblClickTimer, 300);
-        }
-        ShowWindow(SW_SHOW);
-        SetForegroundWindow(m_hWnd);
-    }
-
-    return false;
+        });
+    return true;
 }
 
-LRESULT CImageViewWindow::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
-{
+void CImageViewWindow::checkImageLoad() {
+    if (!imageLoad_) {
+        return;
+    }
+    if (!IsWindowVisible() && ::GetForegroundWindow() != requestForeground_) {
+        hide();
+        return;
+    }
+    if (imageLoad_->wait_for(std::chrono::milliseconds(0)) != std::future_status::ready) {
+        if (!progressRing_ && ::GetTickCount64() >= loadingDeadline_) {
+            showLoadingIndicator();
+        }
+        return;
+    }
+
+    KillTimer(IMAGE_LOAD_TIMER);
+    auto imageLoad = std::move(imageLoad_);
+    std::unique_ptr<GdiPlusImage> image;
+    try {
+        image = imageLoad->get();
+    }
+    catch (const std::exception& ex) {
+        LOG(WARNING) << "Could not load ImageView preview: " << ex.what();
+    }
+
+    if (image && image->getBitmap()) {
+        showImage(std::move(image));
+    } else if (hasPreview_) {
+        hideLoadingIndicator();
+        imageControl_.ShowWindow(SW_SHOW);
+        imageControl_.setPause(false);
+    } else {
+        hide();
+    }
+}
+
+void CImageViewWindow::showLoadingIndicator() {
+    if (!IsWindowVisible()) {
+        MyCenterWindow(currentParent_, MIN_PREVIEW_WIDTH, MIN_PREVIEW_HEIGHT);
+    }
+
+    constexpr int RING_SIZE = 36;
+    CRect clientRect;
+    GetClientRect(&clientRect);
+    int left = (clientRect.Width() - RING_SIZE) / 2;
+    int top = (clientRect.Height() - RING_SIZE) / 2;
+    auto progressRing = std::make_unique<CProgressRingControl>();
+    CStatic placeholder;
+    if (!placeholder.Create(m_hWnd, CRect(left, top, left + RING_SIZE, top + RING_SIZE), nullptr,
+                            WS_CHILD | WS_DISABLED)) {
+        return;
+    }
+    if (!progressRing->SubclassWindow(placeholder)) {
+        placeholder.DestroyWindow();
+        return;
+    }
+
+    progressRing_ = std::move(progressRing);
+    imageControl_.setPause(true);
+    imageControl_.ShowWindow(SW_HIDE);
+    progressRing_->ShowWindow(SW_SHOW);
+    showPreviewWindow();
+}
+
+void CImageViewWindow::hideLoadingIndicator() {
+    if (progressRing_) {
+        progressRing_->DestroyWindow();
+        progressRing_.reset();
+    }
+}
+
+void CImageViewWindow::showPreviewWindow() {
+    if (IsWindowVisible()) {
+        return;
+    }
+
+    ShowWindow(SW_SHOW);
+    SetForegroundWindow(m_hWnd);
+    if (::GetActiveWindow() == m_hWnd) {
+        SetFocus();
+    }
+}
+
+void CImageViewWindow::showImage(std::unique_ptr<GdiPlusImage> image) {
+    float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
+    float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN) - 50);
+    float imageWidth = static_cast<float>(image->getWidth());
+    float imageHeight = static_cast<float>(image->getHeight());
+    float previewWidth = imageWidth;
+    float previewHeight = imageHeight;
+
+    if (previewWidth > width || previewHeight > height) {
+        if (imageWidth / imageHeight >= width / height) {
+            previewWidth = width;
+            previewHeight = width / imageWidth * imageHeight;
+        } else {
+            previewHeight = height;
+            previewWidth = height / imageHeight * imageWidth;
+        }
+    }
+
+    int windowWidth = std::max(MIN_PREVIEW_WIDTH, static_cast<int>(previewWidth + 2));
+    int windowHeight = std::max(MIN_PREVIEW_HEIGHT, static_cast<int>(previewHeight + 2));
+    hideLoadingIndicator();
+    imageControl_.MoveWindow(0, 0, windowWidth, windowHeight);
+    imageControl_.loadPreview(std::move(image));
+    imageControl_.ShowWindow(SW_SHOW);
+    hasPreview_ = true;
+    MyCenterWindow(currentParent_, windowWidth, windowHeight);
+    showPreviewWindow();
+}
+
+LRESULT CImageViewWindow::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact) {
     if (state == WA_INACTIVE) {
         hide();
     }
@@ -160,8 +241,8 @@ void CImageViewWindow::MyCenterWindow(HWND hWndCenter, int width, int height) {
 
         rcArea = minfo.rcWork;
 
-        //if (hWndCenter == NULL)
-            rcCenter = rcArea;
+        // if (hWndCenter == NULL)
+        rcCenter = rcArea;
         /*else
             ::GetWindowRect(hWndCenter, &rcCenter);*/
     } else {
@@ -197,10 +278,9 @@ void CImageViewWindow::MyCenterWindow(HWND hWndCenter, int width, int height) {
     SetWindowPos(NULL, xLeft, yTop, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
-{
+LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags) {
     switch (vk) {
-        case VK_RIGHT:
+    case VK_RIGHT:
         {
             if (callback_) {
                 CImageViewItem item = callback_->getNextImgViewItem(currentItem_);
@@ -210,7 +290,7 @@ LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
             }
         }
         break;
-        case VK_LEFT:
+    case VK_LEFT:
         {
             if (callback_) {
                 CImageViewItem item = callback_->getPrevImgViewItem(currentItem_);
@@ -220,9 +300,9 @@ LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
             }
         }
         break;
-        case VK_RETURN:
-        case VK_ESCAPE:
-            hide();
+    case VK_RETURN:
+    case VK_ESCAPE:
+        hide();
     }
     return 0;
 }
@@ -232,6 +312,23 @@ void CImageViewWindow::setCallback(CImageViewCallback* callback) {
 }
 
 void CImageViewWindow::hide() {
-    ShowWindow(SW_HIDE);
+    if (IsWindowVisible()) {
+        ShowWindow(SW_HIDE);
+    } else {
+        resetView();
+    }
+}
+
+void CImageViewWindow::onShowWindow(BOOL show, UINT status) {
+    if (!show && status == 0) {
+        resetView();
+    }
+}
+
+void CImageViewWindow::resetView() {
+    KillTimer(IMAGE_LOAD_TIMER);
+    imageLoad_.reset();
+    hideLoadingIndicator();
     imageControl_.reset();
+    hasPreview_ = false;
 }

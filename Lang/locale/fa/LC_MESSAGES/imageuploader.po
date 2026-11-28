@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 13:41+0300\n"
+"POT-Creation-Date: 2026-11-28 15:39+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/image-uploader/"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:680
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:659
 msgctxt "upload_settings_wizard_page.server_button"
 msgid "%1% + %2%"
 msgstr ""
@@ -105,7 +105,7 @@ msgid_plural "%d servers selected"
 msgstr[0] "پوشه ای انتخاب نشده است"
 msgstr[1] "پوشه ای انتخاب نشده است"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1467
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1438
 #, fuzzy, c-format
 #| msgid "No Folder Selected"
 msgctxt "upload_settings_wizard_page.more_servers_link"
@@ -146,7 +146,7 @@ msgstr ""
 msgid "%s of %s (%d%%) %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:67
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:73
 #, c-format
 msgid "%s server settings"
 msgstr "%s تنظیمات سرور"
@@ -163,14 +163,14 @@ msgid_plural "%u errors have not been fixed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:441
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:440
 msgid "&Upload"
 msgstr "اپلود"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:346
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:347
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1323
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1324
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1302
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1303
 msgid "(edited)"
 msgstr ""
 
@@ -187,8 +187,8 @@ msgstr ""
 msgid "< Back"
 msgstr "< قبلی"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:418
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:873
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:411
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:852
 msgid "<no authentication>"
 msgstr "<no athentication>"
 
@@ -216,16 +216,21 @@ msgstr "دستیابی:"
 msgid "Account"
 msgstr "...اکانت را مشخص کنید"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:726
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:789
+#, fuzzy
+#| msgid "%s server settings"
+msgid "Account and server settings..."
+msgstr "%s تنظیمات سرور"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:705
 msgid "Account is not enabled"
 msgstr "اکانت فعال نیست"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:218
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:277
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:248
 msgid "Account with such name already exists."
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:260
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:253
 msgid "Account..."
 msgstr ""
 
@@ -270,8 +275,8 @@ msgstr ""
 msgid "Add Menu Item"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:439
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:891
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:432
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:870
 #, fuzzy
 #| msgid "Specify account..."
 msgid "Add account..."
@@ -325,7 +330,7 @@ msgstr "...انتخاب سرور"
 msgid "Add text"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:197
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:196
 msgid "Add text on thumbnail"
 msgstr ""
 
@@ -420,7 +425,7 @@ msgid ""
 msgstr ""
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:96
-#: ../Source/Gui/Components/ParameterListAdapter.cpp:169
+#: ../Source/Gui/Components/ParameterListAdapter.cpp:172
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:282
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
@@ -462,7 +467,7 @@ msgstr ""
 msgid "Always copy captured image to clipboard"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:99
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:105
 #, fuzzy
 #| msgid "Account is not enabled"
 msgid "An account is required."
@@ -532,7 +537,7 @@ msgstr ""
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:172
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:386
 #, c-format
 msgid "Are you sure you want to delete this account from %s's internal list?"
 msgstr ""
@@ -555,8 +560,8 @@ msgstr ""
 "توجه! کلید میانبرهای سراسری فقط زمانی فعال هستد که ایکون کنار ساعت نمایش "
 "داده شود"
 
-#: ../Source/Func/MediaInfoHelper.cpp:221
-#: ../Source/Func/MediaInfoHelper.cpp:226
+#: ../Source/Func/MediaInfoHelper.cpp:222
+#: ../Source/Func/MediaInfoHelper.cpp:227
 msgid "Audio"
 msgstr "صوت"
 
@@ -577,7 +582,7 @@ msgstr "فایل صوتی"
 msgid "Audio source:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:330
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:441
 msgid "Authenticated successfully."
 msgstr ""
 
@@ -594,22 +599,18 @@ msgid "Authorization on proxy"
 msgstr "اجازه با پراکسی"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:247
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
 msgid "Authorize"
 msgstr "اجازه"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:78
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:238
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:237
 msgid "Auto"
 msgstr "خودکار"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:44
 msgid "Automatically check for updates"
 msgstr ""
-
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:86
-msgid "Autorization parameters"
-msgstr "پارامتر اجازه"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:19
 msgid "Backend:"
@@ -693,7 +694,6 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:90
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:251
 #: ../Source/Gui/Dialogs/InputDialog.cpp:54
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:72
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:481
@@ -701,7 +701,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:150
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
@@ -826,7 +826,7 @@ msgstr ""
 "اپلود شود"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:43
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:187
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:186
 msgid "Change width:"
 msgstr "تغییر عرض:"
 
@@ -857,12 +857,12 @@ msgstr ""
 msgid "Choose files"
 msgstr ""
 
-#: ../Source/Gui/Components/ParameterListAdapter.cpp:180
+#: ../Source/Gui/Components/ParameterListAdapter.cpp:183
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1915
 msgid "Choose folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:646
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:625
 msgid "Choose folder..."
 msgstr "...انتخاب پوشه"
 
@@ -874,11 +874,11 @@ msgstr ""
 msgid "Choose monitor"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:212
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:213
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:214
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:218
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:219
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:220
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1464
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1435
 msgid "Choose more servers..."
 msgstr ""
 
@@ -887,10 +887,10 @@ msgstr ""
 msgid "Choose program"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:328
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:321
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:144
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:674
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:653
 msgid "Choose server"
 msgstr "انتخاب سرور"
 
@@ -898,7 +898,7 @@ msgstr "انتخاب سرور"
 msgid "Choose server for uploading images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:640
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:619
 msgid "Choose server..."
 msgstr "...انتخاب سرور"
 
@@ -963,7 +963,7 @@ msgstr ""
 msgid "Clear window's background"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:198
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:197
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "کلیک روی دکمه \"اپلود\"برای شروع فرایند اپلود"
 
@@ -982,7 +982,7 @@ msgstr "تصویر کوچک قابل کلیک"
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:566
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:76
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:104
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:174
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:188
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:175
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:57
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
@@ -1115,7 +1115,7 @@ msgid "Copy e-mail"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:387
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:969
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:948
 msgid "Copy folder's ID"
 msgstr ""
 
@@ -1184,7 +1184,7 @@ msgstr "کپی به کلیپ برد"
 msgid "Could not add server."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:335
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:447
 msgid "Could not authenticate. Please try again."
 msgstr "Could not authenticate. PLease try again."
 
@@ -1261,7 +1261,7 @@ msgid "Create nested folder"
 msgstr "ایجاد پوشه تودرتو"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:53
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:193
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:192
 msgid "Create thumbnails"
 msgstr ""
 
@@ -1333,7 +1333,7 @@ msgstr ""
 msgid "Delete Profile"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:93
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:63
 msgid "Delete account"
 msgstr ""
 
@@ -1380,12 +1380,12 @@ msgstr "هیچیک"
 msgid "Documentation"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:116
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:95
 #, c-format
 msgid "Don't have an account? Sign up on %s right now!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1140
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1119
 msgid "Don't resize"
 msgstr ""
 
@@ -1417,7 +1417,7 @@ msgstr "رسم فریم"
 msgid "Draw frame"
 msgstr "رسم فریم"
 
-#: ../Source/Func/MediaInfoHelper.cpp:155
+#: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Duration: "
 msgstr "مدت زمان:"
 
@@ -1427,7 +1427,7 @@ msgstr "مدت زمان:"
 msgid "Edit"
 msgstr "ویرایش"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:180
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:179
 msgid "Edit Profile"
 msgstr ""
 
@@ -1443,8 +1443,7 @@ msgstr "ویرایش پوشه"
 msgid "Edit hotkey..."
 msgstr "...ویرایش کلید میانبر"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:367
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:810
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:360
 msgid "Edit login credentials..."
 msgstr ""
 
@@ -1461,7 +1460,7 @@ msgstr ""
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:261
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:254
 msgid "Enter account information"
 msgstr ""
 
@@ -1501,9 +1500,6 @@ msgstr "متن را وارد کنید:"
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:152
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:163
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:169
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:218
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:272
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:191
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:157
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:220
@@ -1512,6 +1508,8 @@ msgstr "متن را وارد کنید:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:202
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:747
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:239
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:248
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1521,8 +1519,8 @@ msgstr "متن را وارد کنید:"
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
 #: ../Source/Gui/Dialogs/TextViewDlg.cpp:81
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:324
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:343
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:323
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:342
 msgid "Error"
 msgstr ""
 
@@ -1629,7 +1627,7 @@ msgstr "موفق به بارگیری لیست پوشه نشد"
 msgid "Failed to load folder list."
 msgstr "موفق به بارگیری لیست پوشه نشد"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:342
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:455
 msgid "Failed to logout."
 msgstr ""
 
@@ -1685,7 +1683,7 @@ msgstr "فایل تجاوز کرده از اندازه فایل  محدود \"%s
 msgid "File formats"
 msgstr "فرمت:"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:81
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:87
 msgctxt "server_information.server_type"
 msgid "File hosting"
 msgstr ""
@@ -1728,7 +1726,7 @@ msgstr "استفاده از قالب"
 msgid "Filename:"
 msgstr "نام فایل:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:140
+#: ../Source/Func/MediaInfoHelper.cpp:141
 msgid "Filename: "
 msgstr "نام فایل:"
 
@@ -1740,7 +1738,7 @@ msgstr ""
 msgid "Files total:"
 msgstr ""
 
-#: ../Source/Func/MediaInfoHelper.cpp:144
+#: ../Source/Func/MediaInfoHelper.cpp:145
 msgid "Filesize: "
 msgstr "اندازه فایل:"
 
@@ -1817,7 +1815,7 @@ msgstr "لیست پوشه در سرور %s برای اکانت '%s':"
 msgid "Folder name:"
 msgstr "نام پوشه:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:58
 msgid "Folder/album:"
 msgstr ""
 
@@ -1839,7 +1837,7 @@ msgstr "...فونت"
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:36
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:185
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:184
 msgid "Format:"
 msgstr "فرمت:"
 
@@ -1917,7 +1915,7 @@ msgid "Global hotkey:"
 msgstr "کلید میانبر سراسری:"
 
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:814
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1074
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1053
 msgid "Go to signup page"
 msgstr "بروبه صفحه ثبت نام"
 
@@ -2054,7 +2052,7 @@ msgstr ""
 msgid "Image Settings and Server Selection"
 msgstr "تنظیمات تصاویر و انتخاب سرور"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:80
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:86
 #, fuzzy
 #| msgid "Image settings"
 msgctxt "server_information.server_type"
@@ -2065,14 +2063,14 @@ msgstr "تنظیمات تصویر"
 msgid "Image processing"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
 msgid "Image processing settings..."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:245
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:421
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:49
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:190
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:189
 msgid "Image settings"
 msgstr "تنظیمات تصویر"
 
@@ -2299,7 +2297,7 @@ msgstr ""
 msgid "Logging in..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:270
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:237
 #, fuzzy
 #| msgid "Login:"
 msgid "Login"
@@ -2307,18 +2305,17 @@ msgstr "ورود:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:21
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:206
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:251
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:65
 msgid "Login:"
 msgstr "ورود:"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:94
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:62
 msgid "Logout"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:342
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:455
 msgid "Logout successfully."
 msgstr ""
 
@@ -2340,7 +2337,7 @@ msgid "Macros list"
 msgstr "پاک کردن لیست"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:34
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:146
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:152
 #, fuzzy
 #| msgid "Filesize: "
 msgid "Max. file size"
@@ -2416,7 +2413,7 @@ msgstr ""
 msgid "New Profile Name"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:962
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:941
 msgid "New folder"
 msgstr "پوشه جدید"
 
@@ -2433,7 +2430,7 @@ msgstr "بعدی >"
 msgid "No"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:738
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:717
 msgid "No Folder Selected"
 msgstr "پوشه ای انتخاب نشده است"
 
@@ -2488,12 +2485,11 @@ msgstr "تعداد فریم ها:"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:57
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:58
 #: ../Source/Gui/Dialogs/InputDialog.cpp:55
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:91
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:81
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:149
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:46
@@ -2517,7 +2513,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:207
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:375
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:973
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:952
 msgid "Open in Web Browser"
 msgstr "بازکردن در مرورگر وب"
 
@@ -2560,9 +2556,9 @@ msgstr "بازکردن در پوشه"
 msgid "Open system connection settings"
 msgstr "تنظیمات ارتباط"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:125
 #: ../Source/Gui/Dialogs/ServerListPopup.cpp:812
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1081
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:87
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1060
 msgid "Open the website"
 msgstr ""
 
@@ -2571,8 +2567,8 @@ msgid "Open with..."
 msgstr ""
 
 #: ../Source/Core/Upload/DefaultUploadEngine.cpp:76
-#: ../Source/Core/Upload/ScriptUploadEngine.cpp:392
-#: ../Source/Core/Upload/ScriptUploadEngine.cpp:417
+#: ../Source/Core/Upload/ScriptUploadEngine.cpp:395
+#: ../Source/Core/Upload/ScriptUploadEngine.cpp:420
 #, fuzzy
 #| msgid "File uploading was cancelled by user."
 msgid "Operation was cancelled by user."
@@ -2584,20 +2580,19 @@ msgstr "اپلود فایل توسط کاربر لغو شده است"
 msgid "Options"
 msgstr "گزینه ها"
 
-#: ../Source/Func/MediaInfoHelper.cpp:159
+#: ../Source/Func/MediaInfoHelper.cpp:160
 msgid "Overall bitrate: "
 msgstr "مجموع سرعت ذره ای:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
 msgid "Parameters:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:22
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:207
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:67
 msgid "Password:"
 msgstr "رمزعبور:"
 
@@ -2654,7 +2649,7 @@ msgid ""
 "take affect."
 msgstr "لطفا توجه داشته باشید برای اثر گذاشتن تغییر زبان به ریستارت نیاز دارید"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:352
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:351
 #, c-format
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "لطفا تایید تنظیمات را برای '%s' سرور مشخص کنید"
@@ -2724,7 +2719,7 @@ msgid "Process Status"
 msgstr "وضعیت"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:50
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:191
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:190
 msgid "Process images before upload"
 msgstr ""
 
@@ -2746,7 +2741,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:40
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:51
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:189
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:188
 msgid "Profile:"
 msgstr ""
 
@@ -2770,7 +2765,7 @@ msgstr "نوع پراکسی:"
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:34
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:186
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:185
 msgid "Quality:"
 msgstr "کیفیت:"
 
@@ -2815,7 +2810,7 @@ msgstr ""
 msgid "Registered user"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:96
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:102
 msgid "Registration URL"
 msgstr ""
 
@@ -2859,7 +2854,7 @@ msgstr "رفع از لیست"
 msgid "Remove from list"
 msgstr "رفع از لیست"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:145
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:80
 msgid "Remove this account from the list (not from the remote server)"
 msgstr ""
 
@@ -3081,7 +3076,7 @@ msgstr ""
 msgid "Search by image"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:87
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:93
 msgctxt "server_information.server_type"
 msgid "Search by image"
 msgstr ""
@@ -3158,7 +3153,7 @@ msgstr "..عکس از ناحیه انتخاب شده"
 msgid "Select window..."
 msgstr "ضبط پنجره فعال"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:58
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:58
 msgid "Select..."
 msgstr ""
@@ -3179,7 +3174,7 @@ msgstr ""
 msgid "Server [:port]:"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:537
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:516
 msgid "Server and authentication settings"
 msgstr ""
 
@@ -3205,7 +3200,7 @@ msgstr ""
 msgid "Server for uploading images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:173
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:187
 #, fuzzy
 #| msgid "View Media File Information"
 msgid "Server information"
@@ -3219,20 +3214,20 @@ msgstr ""
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:823
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1061
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:802
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1040
 msgid "Server settings..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:199
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:198
 msgid "Server to host other file formats"
 msgstr "سرور به هاست دیگر فایل فرمت ها"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:194
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:193
 msgid "Server to host your images"
 msgstr "سرور به هاست تصاویر"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:89
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:95
 #, fuzzy
 #| msgid "Server settings"
 msgctxt "server_information.server_type"
@@ -3278,7 +3273,7 @@ msgstr ""
 msgid "Settings have been saved."
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
 msgid "Settings..."
 msgstr "...تنظیمات"
 
@@ -3299,7 +3294,7 @@ msgid "Shorten URL"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:374
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1251
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1230
 #, c-format
 msgid "Shorten URL using %s"
 msgstr ""
@@ -3372,7 +3367,9 @@ msgstr ""
 msgid "Show tray icon"
 msgstr "نمایش ایکون کنار ساعت"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:104
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:61
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:343
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:453
 msgid "Sign in..."
 msgstr ""
 
@@ -3385,7 +3382,7 @@ msgid "Skip all"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:59
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:200
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:199
 msgid "Skip animated"
 msgstr ""
 
@@ -3405,7 +3402,7 @@ msgstr ""
 msgid "Source code"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:724
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:703
 msgid "Specify account..."
 msgstr "...اکانت را مشخص کنید"
 
@@ -3452,7 +3449,7 @@ msgid "Stopped"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerListView.cpp:35
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:145
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:151
 msgid "Storage time"
 msgstr ""
 
@@ -3466,7 +3463,7 @@ msgstr ""
 msgid "Stroke color:"
 msgstr "ضخامت رنگ:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:266
+#: ../Source/Func/MediaInfoHelper.cpp:267
 msgid "Subtitles: "
 msgstr "زیرنویس:"
 
@@ -3482,7 +3479,7 @@ msgstr ""
 msgid "Summary:"
 msgstr "خلاصه:"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:147
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:153
 #, fuzzy
 #| msgid "Format:"
 msgid "Supported file formats"
@@ -3551,7 +3548,7 @@ msgstr "استفاده از لینک مستقیم"
 msgid "Text files"
 msgstr "فایل های ویدیو"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:83
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:89
 #, fuzzy
 #| msgid "Text on image"
 msgctxt "server_information.server_type"
@@ -3578,7 +3575,7 @@ msgstr ""
 msgid "Thanks to:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:271
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:238
 #, c-format
 msgid "The field '%s' cannot be empty."
 msgstr ""
@@ -3611,11 +3608,11 @@ msgstr ""
 msgid "These files cannot be uploaded to chosen servers:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:201
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:200
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1098
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -3653,11 +3650,11 @@ msgstr ""
 msgid "Thumbnail width:"
 msgstr "عرض تصویر کوچک:"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:196
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:195
 msgid "Thumbnail's size:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:192
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:191
 msgid "Thumbnails"
 msgstr ""
 
@@ -3734,14 +3731,14 @@ msgstr ""
 msgid "URL for downloading:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:85
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:91
 msgctxt "server_information.server_type"
 msgid "URL shortening"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:111
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1166
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1145
 msgid "URL shortening server"
 msgstr ""
 
@@ -3749,7 +3746,7 @@ msgstr ""
 msgid "URL:"
 msgstr ""
 
-#: ../Source/Gui/Controls/MyImage.cpp:176
+#: ../Source/Gui/Controls/MyImage.cpp:171
 #: ../Source/Gui/Controls/ThumbsView.cpp:344
 msgid "Unable to load picture"
 msgstr "قادر به بارگیری تصویر نیست"
@@ -3776,12 +3773,12 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:148
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:154
 msgctxt "server_information.file_formats"
 msgid "Unknown"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:133
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:139
 msgctxt "server_information.max_file_size"
 msgid "Unknown"
 msgstr ""
@@ -3795,7 +3792,7 @@ msgstr ""
 msgid "Unknown status"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:135
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:141
 msgctxt "server_information.max_file_size"
 msgid "Unlimited"
 msgstr ""
@@ -3878,7 +3875,7 @@ msgstr ""
 msgid "Upload to Web"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:334
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:333
 #, c-format
 msgid ""
 "Upload to server '%s' is impossible without account.\n"
@@ -3952,7 +3949,7 @@ msgid "Use provided proxy:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:54
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:195
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:194
 msgid "Use server-side thumbnails"
 msgstr ""
 
@@ -3964,7 +3961,7 @@ msgstr ""
 msgid "Use template"
 msgstr "استفاده از قالب"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:90
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:89
 msgid "User name"
 msgstr ""
 
@@ -4010,7 +4007,7 @@ msgstr "ویدیو:"
 msgid "Video files"
 msgstr "فایل های ویدیو"
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:82
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:88
 #, fuzzy
 #| msgid "Highlight"
 msgctxt "server_information.server_type"
@@ -4029,7 +4026,7 @@ msgstr "پردازش پوشه:"
 msgid "Video source:"
 msgstr "ویدیو:"
 
-#: ../Source/Func/MediaInfoHelper.cpp:166
+#: ../Source/Func/MediaInfoHelper.cpp:167
 msgid "Video: "
 msgstr "ویدیو:"
 
@@ -4084,7 +4081,7 @@ msgstr "موقعیت واترمارک:"
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:93
+#: ../Source/Gui/Dialogs/ServerInformationWindow.cpp:99
 msgid "Website"
 msgstr ""
 
@@ -4141,11 +4138,11 @@ msgstr ""
 msgid "You have not selected account for server \"%s\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:343
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:342
 msgid "You have not selected an file server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:324
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:323
 msgid "You have not selected an image server"
 msgstr ""
 
@@ -4163,7 +4160,7 @@ msgid "a pic of the whole screen or selected region"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:47
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:188
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:187
 msgid "and/or height:"
 msgstr "و/یا ارتفاع:"
 
@@ -4262,8 +4259,7 @@ msgstr ""
 msgid "multiple files"
 msgstr "چندین فایل"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:113
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:227
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:208
 msgid "not selected"
 msgstr ""
 
@@ -4337,6 +4333,9 @@ msgstr "تغییر عرض:"
 #: ../Source/Gui/Dialogs/VideoGrabberSettingsPage.cpp:162
 msgid "year"
 msgstr ""
+
+#~ msgid "Autorization parameters"
+#~ msgstr "پارامتر اجازه"
 
 #, fuzzy
 #~| msgid "Highlight"

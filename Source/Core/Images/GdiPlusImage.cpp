@@ -2,29 +2,25 @@
 
 #include <map>
 
+#include "Core/Images/Utils.h"
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/Images/Utils.h"
 
 
 using namespace Gdiplus;
 
-GdiPlusImage::GdiPlusImage()
-    : bm_(nullptr)
-{
+GdiPlusImage::GdiPlusImage() : bm_(nullptr) {
     init();
 }
 
-GdiPlusImage::GdiPlusImage(Gdiplus::Image* bm, bool takeOwnership)
-{
+GdiPlusImage::GdiPlusImage(Gdiplus::Image* bm, bool takeOwnership) {
     init();
     bm_ = bm;
     takeOwnership_ = takeOwnership;
 }
 
-void GdiPlusImage::init()
-{
+void GdiPlusImage::init() {
     width_ = 0;
     height_ = 0;
     takeOwnership_ = true;
@@ -50,17 +46,16 @@ bool GdiPlusImage::loadFromFile(const std::string& fileName) {
 }
 
 
-bool GdiPlusImage::saveToFile(const std::string& fileName) const
-{
+bool GdiPlusImage::saveToFile(const std::string& fileName) const {
     std::map<std::string, std::string> mimeTypes;
     mimeTypes["jpg"] = "image/jpeg"; //-V691
     mimeTypes["jpeg"] = "image/jpeg";
     mimeTypes["png"] = "image/png";
     std::string ext = IuStringUtils::ToLower(IuCoreUtils::ExtractFileExt(fileName));
 
-    auto it  = mimeTypes.find(ext);
-    if ( it == mimeTypes.end() ) {
-        LOG(ERROR) << "Format "<<ext<<" is not supported";
+    auto it = mimeTypes.find(ext);
+    if (it == mimeTypes.end()) {
+        LOG(ERROR) << "Format " << ext << " is not supported";
         return false;
     }
     std::string mimeType = it->second;
@@ -74,18 +69,18 @@ bool GdiPlusImage::saveToFile(const std::string& fileName) const
         eps.Parameter[0].Type = EncoderParameterValueTypeLong;
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &quality;
-    } else if (mimeType == "image/png"){
-            eps.Parameter[0].Guid = EncoderCompression;
-            eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-            eps.Parameter[0].NumberOfValues = 1;
-            eps.Parameter[0].Value = &quality;
+    } else if (mimeType == "image/png") {
+        eps.Parameter[0].Guid = EncoderCompression;
+        eps.Parameter[0].Type = EncoderParameterValueTypeLong;
+        eps.Parameter[0].NumberOfValues = 1;
+        eps.Parameter[0].Value = &quality;
     } else {
         LOG(ERROR) << "Mime  type  " << mimeType << " is not supported";
         return false;
     }
 
-    if (ImageUtils::GetEncoderClsid(IuCoreUtils::Utf8ToWstring(mimeType).c_str(), &clsidEncoder) != -1){
-        if ( mimeType == "image/jpeg") {
+    if (ImageUtils::GetEncoderClsid(IuCoreUtils::Utf8ToWstring(mimeType).c_str(), &clsidEncoder) != -1) {
+        if (mimeType == "image/jpeg") {
             return bm_->Save(IuCoreUtils::Utf8ToWstring(fileName).c_str(), &clsidEncoder, &eps) == Ok;
         } else {
             return bm_->Save(IuCoreUtils::Utf8ToWstring(fileName).c_str(), &clsidEncoder) == Ok;
@@ -94,14 +89,13 @@ bool GdiPlusImage::saveToFile(const std::string& fileName) const
     return false;
 }
 
-bool GdiPlusImage::isNull() const
-{
+bool GdiPlusImage::isNull() const {
     return !bm_ || bm_->GetLastStatus() != Ok;
 }
 
 
-bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter)
-{
+bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize,
+                                   void* parameter) {
     try {
         if (dt == AbstractImage::dfRGB888) {
             auto lineSizeInBytes = reinterpret_cast<size_t>(parameter);
@@ -130,32 +124,29 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
         } else {
             LOG(ERROR) << "Format not supported " << dt;
         }
-    } catch (const std::bad_alloc& ex) {
+    }
+    catch (const std::bad_alloc& ex) {
         LOG(ERROR) << "Not enough memory";
     }
-   
+
     return false;
 }
 
-Gdiplus::Bitmap* GdiPlusImage::getBitmap() const
-{
+Gdiplus::Bitmap* GdiPlusImage::getBitmap() const {
     return dynamic_cast<Gdiplus::Bitmap*>(bm_);
 }
 
-int GdiPlusImage::getWidth() const
-{
+int GdiPlusImage::getWidth() const {
     return bm_->GetWidth();
 }
 
-int GdiPlusImage::getHeight() const
-{
+int GdiPlusImage::getHeight() const {
     return bm_->GetHeight();
 }
 
-bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t dataSize)
-{
+bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t dataSize) {
     BITMAPINFOHEADER bih;
-    memset( &bih, 0, sizeof(bih) );
+    memset(&bih, 0, sizeof(bih));
     bih.biSize = sizeof(bih);
     bih.biWidth = width;
     bih.biHeight = height;
@@ -163,12 +154,12 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
     bih.biBitCount = 24;
 
     BITMAPINFO bi;
-    memset( &bi, 0, sizeof(bi) );
+    memset(&bi, 0, sizeof(bi));
     bi.bmiHeader = bih;
 
-   
+
     /*size_t newLineSize = 4 * ((width * 3 + 3) / 4);*/
-    //bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
+    // bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
     bm_ = new Gdiplus::Bitmap(&bi, data);
 
     if (bm_->GetLastStatus() == Ok) {
@@ -196,4 +187,25 @@ void GdiPlusImage::setSrcMultiFrame(bool animated) {
 
 bool GdiPlusImage::isSrcMultiFrame() const {
     return isSrcMultiFrame_;
+}
+
+void GdiPlusImage::appendFrame(std::unique_ptr<Gdiplus::Bitmap> bitmap, uint64_t durationMs) {
+    if (!bm_) {
+        bm_ = bitmap.release();
+        firstFrameDurationMs_ = durationMs;
+    } else {
+        additionalFrames_.push_back({ std::move(bitmap), durationMs });
+    }
+}
+
+size_t GdiPlusImage::frameCount() const {
+    return bm_ ? 1 + additionalFrames_.size() : 0;
+}
+
+Gdiplus::Bitmap* GdiPlusImage::frameBitmap(size_t index) const {
+    return index == 0 ? getBitmap() : additionalFrames_.at(index - 1).Bitmap.get();
+}
+
+uint64_t GdiPlusImage::frameDurationMs(size_t index) const {
+    return index == 0 ? firstFrameDurationMs_ : additionalFrames_.at(index - 1).DurationMs;
 }

@@ -20,26 +20,29 @@
 
 #include "CryptoUtils.h"
 
-#include <cmath>
 #include <array>
+#include <cmath>
 #include <fstream>
-#include <sstream>
 #include <iomanip>
+#include <limits>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
 
 #include <libbase64.h>
-#include <openssl/evp.h>
-#include <openssl/conf.h>
-#include <openssl/err.h>
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
 #include <openssl/md5.h>
 #define XXH_INLINE_ALL
 #include <filesystem>
 #include <xxhash.h>
 
-#include "IOException.h"
-#include "CoreUtils.h"
 #include "Core/Upload/CommonTypes.h"
+#include "CoreUtils.h"
+#include "IOException.h"
 
 namespace IuCoreUtils::CryptoUtils {
 
@@ -49,8 +52,7 @@ std::string ToHex(uint64_t value) {
     return ss.str();
 }
 
-std::string Base64Encode(const std::string& data)
-{
+std::string Base64Encode(const std::string& data) {
     std::string res;
     size_t outlen = ((4 * data.length() / 3) + 3) & ~3;
     res.resize(outlen);
@@ -68,8 +70,7 @@ std::string Base64EncodeRaw(const char* bytes, unsigned int len) {
     return res;
 }
 
-std::string Base64Decode(const std::string& data)
-{
+std::string Base64Decode(const std::string& data) {
     std::string res;
     auto outlen = static_cast<size_t>(std::ceil(data.length() * 3 / 4.0));
     res.resize(outlen);
@@ -113,52 +114,85 @@ bool Base64EncodeFile(const std::string& fileName, std::string& result) {
     base64_stream_encode_final(&state, encoded_cur, &outlen);
     total_len += outlen;
     result.resize(total_len);
-    //encoded_cur += outlen;
+    // encoded_cur += outlen;
     return true;
 }
 
-std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr) {
-    const std::vector<unsigned char> key(keyStr.begin(), keyStr.end());
-    if (key.size() != 16) {
+namespace {
+
+constexpr int AES_BLOCK_SIZE = 16;
+constexpr int AES_MAX_INPUT_SIZE = (std::numeric_limits<int>::max)();
+using CipherContext = std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)>;
+
+} // namespace
+
+std::string EncryptAES(const std::string& plaintext, const std::string& keyStr) {
+    if (keyStr.size() != AES_BLOCK_SIZE) {
         throw std::runtime_error("Key must be 16 bytes for AES-128");
     }
-
-    std::string base64Str = Base64Decode(base64cipher);
-    std::vector<unsigned char> cipherData(base64Str.begin(), base64Str.end());
-
-    if (cipherData.size() <= 16) {
-        throw std::runtime_error("Ciphertext too short (no IV)");
+    if (plaintext.size() > AES_MAX_INPUT_SIZE - AES_BLOCK_SIZE) {
+        throw std::runtime_error("Plaintext too large for AES-128");
     }
 
-    std::vector<unsigned char> iv(cipherData.begin(), cipherData.begin() + 16);
-    std::vector<unsigned char> encrypted(cipherData.begin() + 16, cipherData.end());
-
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
+    CipherContext context(EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
+    if (!context) {
         throw std::runtime_error("EVP_CIPHER_CTX_new failed");
     }
 
-    int len;
-    std::vector<unsigned char> plaintext(encrypted.size() + 16);
+    std::string result = CryptographicRandomBytes(AES_BLOCK_SIZE);
+    result.resize(AES_BLOCK_SIZE + plaintext.size() + AES_BLOCK_SIZE);
+    auto* iv = reinterpret_cast<unsigned char*>(result.data());
+    auto* encrypted = iv + AES_BLOCK_SIZE;
+    int encryptedLength = 0;
+    int finalLength = 0;
+    if (EVP_EncryptInit_ex(context.get(), EVP_aes_128_cbc(), nullptr,
+                           reinterpret_cast<const unsigned char*>(keyStr.data()), iv)
+            != 1
+        || EVP_EncryptUpdate(context.get(), encrypted, &encryptedLength,
+                             reinterpret_cast<const unsigned char*>(plaintext.data()),
+                             static_cast<int>(plaintext.size()))
+            != 1
+        || EVP_EncryptFinal_ex(context.get(), encrypted + encryptedLength, &finalLength) != 1) {
+        throw std::runtime_error("AES-128-CBC encryption failed");
+    }
+    result.resize(AES_BLOCK_SIZE + static_cast<size_t>(encryptedLength) + finalLength);
+    return Base64Encode(result);
+}
 
-    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), nullptr, key.data(), iv.data())) {
-        throw std::runtime_error("EVP_DecryptInit_ex failed");
+std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr) {
+    if (keyStr.size() != AES_BLOCK_SIZE) {
+        throw std::runtime_error("Key must be 16 bytes for AES-128");
     }
 
-    if (1 != EVP_DecryptUpdate(ctx, plaintext.data(), &len, encrypted.data(), encrypted.size())) {
-        throw std::runtime_error("EVP_DecryptUpdate failed");
+    std::string cipherData(base64cipher.size(), '\0');
+    size_t decodedLength = 0;
+    if (base64_decode(base64cipher.data(), base64cipher.size(), cipherData.data(), &decodedLength, 0) != 1
+        || decodedLength < 2 * AES_BLOCK_SIZE || decodedLength % AES_BLOCK_SIZE != 0
+        || decodedLength - AES_BLOCK_SIZE > AES_MAX_INPUT_SIZE) {
+        throw std::runtime_error("Invalid AES-128-CBC ciphertext");
     }
 
-    int plaintext_len = len;
-
-    if (1 != EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len)) {
-        throw std::runtime_error("EVP_DecryptFinal_ex failed");
+    CipherContext context(EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
+    if (!context) {
+        throw std::runtime_error("EVP_CIPHER_CTX_new failed");
     }
 
-    plaintext_len += len;
-    EVP_CIPHER_CTX_free(ctx);
-
-    return std::string(plaintext.begin(), plaintext.begin() + plaintext_len);
+    const auto* iv = reinterpret_cast<const unsigned char*>(cipherData.data());
+    std::string plaintext(decodedLength, '\0');
+    auto* output = reinterpret_cast<unsigned char*>(plaintext.data());
+    int plaintextLength = 0;
+    int finalLength = 0;
+    if (EVP_DecryptInit_ex(context.get(), EVP_aes_128_cbc(), nullptr,
+                           reinterpret_cast<const unsigned char*>(keyStr.data()), iv)
+            != 1
+        || EVP_DecryptUpdate(context.get(), output, &plaintextLength, iv + AES_BLOCK_SIZE,
+                             static_cast<int>(decodedLength - AES_BLOCK_SIZE))
+            != 1
+        || EVP_DecryptFinal_ex(context.get(), output + plaintextLength, &finalLength) != 1) {
+        throw std::runtime_error("AES-128-CBC decryption failed");
+    }
+    plaintext.resize(plaintextLength + finalLength);
+    return plaintext;
 }
 
 static void _crypt_to64(char* s, unsigned long v, int n) {
@@ -183,9 +217,9 @@ std::string Md5Crypt(const char* pw, const char* salt) {
     unsigned long l;
     int sl, pl;
     unsigned int i;
-    std::array<unsigned char, MD5_SIZE> final {};
+    std::array<unsigned char, MD5_SIZE> final { };
     const char *sp, *ep;
-    std::array<char, PASSWORD_MAX_LEN> passwd {};
+    std::array<char, PASSWORD_MAX_LEN> passwd { };
     const char* magic = "$1$";
     size_t passwd_len = 0;
     size_t pw_len = strlen(pw);
@@ -230,8 +264,7 @@ std::string Md5Crypt(const char* pw, const char* salt) {
     MD5_Final(final.data(), &ctx1);
 
     for (pl = (int)pw_len; pl > 0; pl -= MD5_SIZE) {
-        MD5_Update(&ctx, (const unsigned char*) final.data(),
-            (unsigned int)(pl > MD5_SIZE ? MD5_SIZE : pl));
+        MD5_Update(&ctx, (const unsigned char*) final.data(), (unsigned int)(pl > MD5_SIZE ? MD5_SIZE : pl));
     }
 
     // Clear sensitive data

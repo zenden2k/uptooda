@@ -20,9 +20,13 @@
 
 #pragma once
 
+#include <future>
+#include <memory>
+
+#include "MyImage.h"
+#include "ProgressRingControl.h"
 #include "atlheaders.h"
-#include "resource.h"       // main symbols
-#include "myimage.h"
+#include "resource.h" // main symbols
 
 
 // CImageView
@@ -38,51 +42,70 @@ struct CImageViewItem {
 
 class CImageViewCallback {
 public:
-    virtual CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem)=0;
-    virtual CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem)=0;
+    virtual CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem) = 0;
+    virtual CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem) = 0;
 
     virtual ~CImageViewCallback() = default;
 };
-class CImageViewWindow :
-    public CDialogImpl<CImageViewWindow>
-{
-    public:
-        CImageViewWindow();
-        ~CImageViewWindow();
-        enum { IDD = IDD_IMAGEVIEW, kDblClickTimer = 1 };
+class CImageViewWindow : public CDialogImpl<CImageViewWindow> {
+public:
+    CImageViewWindow();
+    ~CImageViewWindow();
+    enum { IDD = IDD_IMAGEVIEW };
 
-         BEGIN_MSG_MAP(CImageView)
-            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-            MESSAGE_HANDLER(WM_TIMER, OnTimer)
-            MSG_WM_KILLFOCUS(OnKillFocus)
-            MSG_WM_ACTIVATE(OnActivate)
-            MSG_WM_KEYDOWN(OnKeyDown)
-              COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-              COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedOK)
-         END_MSG_MAP()
-         // Handler prototypes:
-         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    BEGIN_MSG_MAP(CImageView)
+    MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+    MESSAGE_HANDLER(WM_TIMER, OnTimer)
+    MSG_WM_ACTIVATE(OnActivate)
+    MSG_WM_SHOWWINDOW(onShowWindow)
+    MSG_WM_KEYDOWN(OnKeyDown)
+    MSG_WM_LBUTTONDOWN(onClick)
+    MSG_WM_RBUTTONDOWN(onClick)
+    MSG_WM_MBUTTONUP(onClick)
+    COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+    COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedOK)
+    END_MSG_MAP()
+    // Handler prototypes:
+    //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-        LRESULT OnKillFocus(HWND hwndNewFocus);
-        LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
-        void setCallback(CImageViewCallback* callback);
-        bool ViewImage(const CImageViewItem&, HWND Parent = NULL);
-        LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
-        void MyCenterWindow(HWND hWndCenter, int width, int height);
-        void hide();
+    LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
+    void setCallback(CImageViewCallback* callback);
+    bool ViewImage(const CImageViewItem&, HWND Parent = NULL);
+    LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
+    void onShowWindow(BOOL show, UINT status);
+    void MyCenterWindow(HWND hWndCenter, int width, int height);
+    void hide();
+
 protected:
     CImageViewCallback* callback_;
     CImageViewItem currentItem_;
     HWND currentParent_;
     CMyImage imageControl_;
-    //CPictureExWnd animationControl_;
+
+private:
+    static constexpr UINT_PTR IMAGE_LOAD_TIMER = 1;
+    static constexpr UINT LOADING_DELAY_MS = 300;
+    static constexpr int MIN_PREVIEW_WIDTH = 200;
+    static constexpr int MIN_PREVIEW_HEIGHT = 180;
+
+    void checkImageLoad();
+    LRESULT onClick(UINT flags, CPoint point);
+    void showLoadingIndicator();
+    void hideLoadingIndicator();
+    void showPreviewWindow();
+    void showImage(std::unique_ptr<GdiPlusImage> image);
+    void resetView();
+
+    std::shared_ptr<std::future<std::unique_ptr<GdiPlusImage>>> imageLoad_;
+    std::unique_ptr<CProgressRingControl> progressRing_;
+    ULONGLONG loadingDeadline_ = 0;
+    HWND requestForeground_ = nullptr;
+    bool hasPreview_ = false;
 };
-
-

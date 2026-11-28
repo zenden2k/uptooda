@@ -6,6 +6,7 @@
 #include "atlheaders.h"
 #include "3rdpart/GdiPlusH.h"
 #include "Core/Images/GdiPlusImage.h"
+#include "Core/Images/ImageLoader.h"
 
 namespace ImageUtils {
 
@@ -80,6 +81,7 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
 bool SaveImageFromClipboardDataUriFormat(const CString& clipboardText, CString& fileName);
 // Load image from file with webp support
 std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName);
+std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName, ImageFrameMode frameMode);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
 
 /**

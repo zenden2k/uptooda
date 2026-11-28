@@ -4,16 +4,15 @@
 #include <boost/format.hpp>
 
 #include "Core/Upload/CommonTypes.h"
-#include "WebpImageReader.h"
-#include "GdiplusImageReader.h"
-#include "HeifImageReader.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/WinUtils.h"
+#include "GdiplusImageReader.h"
+#include "HeifImageReader.h"
+#include "WebpImageReader.h"
 
-std::unordered_set<std::string> ImageLoader::SupportedImageExtensions = {
-    "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif", "tif", "tiff", "webp", "heic", "heif", "avif", "emf",
-    "wmf"
-};
+std::unordered_set<std::string> ImageLoader::SupportedImageExtensions
+    = { "jpg", "jpeg", "jpe",  "jif",  "jfif", "png",  "bmp", "gif",
+        "tif", "tiff", "webp", "heic", "heif", "avif", "emf", "wmf" };
 
 bool ImageLoader::IsImage(LPCTSTR szFileName) {
     if (!szFileName) {
@@ -40,17 +39,17 @@ bool ImageLoader::IsImage(const std::string& fileName) {
     return ImageLoader::SupportedImageExtensions.find(ext) != ImageLoader::SupportedImageExtensions.end();
 }
 
-std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName) {
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName, ImageFrameMode frameMode) {
     FILE* f = _wfopen(fileName, L"rb");
     if (!f) {
         lastError_ = str(boost::wformat(L"Cannot open file %s for reading.") % std::wstring(fileName));
         return nullptr;
     }
     uint8_t buffer[16];
-    fread(buffer, 1, sizeof(buffer), f);
+    const auto bytesRead = fread(buffer, 1, sizeof(buffer), f);
     fclose(f);
-    ImageFormat format = getImageFormatFromData(buffer, sizeof(buffer));
-    auto reader = createReaderForFormat(format);
+    ImageFormat format = getImageFormatFromData(buffer, bytesRead);
+    auto reader = createReaderForFormat(format, frameMode);
     auto result = reader->readFromFile(fileName);
     if (!result) {
         lastError_ = reader->getLastError();
@@ -58,9 +57,9 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName)
     return result;
 }
 
-std::unique_ptr<GdiPlusImage> ImageLoader::loadFromMemory(uint8_t* data, size_t size) {
-    ImageFormat format = getImageFormatFromData(data, sizeof(size));
-    auto reader = createReaderForFormat(format);
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromMemory(uint8_t* data, size_t size, ImageFrameMode frameMode) {
+    ImageFormat format = getImageFormatFromData(data, size);
+    auto reader = createReaderForFormat(format, frameMode);
     auto result = reader->readFromMemory(data, size);
     if (!result) {
         lastError_ = reader->getLastError();
@@ -68,8 +67,8 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromMemory(uint8_t* data, size_t 
     return result;
 }
 
-std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance, LPCTSTR szResName,
-    LPCTSTR szResType) {
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType,
+                                                            ImageFrameMode frameMode) {
     using namespace Gdiplus;
     HRSRC hrsrc = FindResource(hInstance, szResName, szResType);
     if (!hrsrc)
@@ -87,7 +86,7 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance,
     }
 
     // use load from IStream
-    auto reader = createReaderForFormat(format);
+    auto reader = createReaderForFormat(format, frameMode);
     auto result = reader->readFromStream(pStream);
     if (!result) {
         lastError_ = reader->getLastError();
@@ -109,20 +108,19 @@ ImageFormat ImageLoader::getImageFormatFromData(uint8_t* data, size_t size) {
     if (HeifImageReader::canRead(data, size)) {
         return ImageFormat::Heif;
     }
-    if (data[0] == 'R' && data[1] == 'I' &&data[2] == 'F' &&data[3] == 'F'
-        && data[8] == 'W' && data[9] == 'E' && data[10] == 'B'&& data[11] == 'P'
-        ) {
+    if (data[0] == 'R' && data[1] == 'I' && data[2] == 'F' && data[3] == 'F' && data[8] == 'W' && data[9] == 'E'
+        && data[10] == 'B' && data[11] == 'P') {
         return ImageFormat::WebP;
     }
     return ImageFormat::Unknown;
 }
 
-std::unique_ptr<AbstractImageReader> ImageLoader::createReaderForFormat(ImageFormat format) {
+std::unique_ptr<AbstractImageReader> ImageLoader::createReaderForFormat(ImageFormat format, ImageFrameMode frameMode) {
     if (format == ImageFormat::Heif) {
-        return std::make_unique<HeifImageReader>();
+        return std::make_unique<HeifImageReader>(frameMode);
     }
     if (format == ImageFormat::WebP) {
-        return std::make_unique<WebpImageReader>();
+        return std::make_unique<WebpImageReader>(frameMode);
     }
-    return std::make_unique<GdiplusImageReader>();
+    return std::make_unique<GdiplusImageReader>(frameMode);
 }
